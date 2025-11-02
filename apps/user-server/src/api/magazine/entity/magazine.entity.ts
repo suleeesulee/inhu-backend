@@ -77,13 +77,6 @@ export class MagazineEntity {
    */
   public isLiked: boolean;
 
-  /**
-   * 고정한 시간
-   *
-   * @example "2025-10-09T12:00:00Z"
-   */
-  public pinnedAt: Date | null;
-
   constructor(data: MagazineEntity) {
     Object.assign(this, data);
   }
@@ -107,7 +100,6 @@ export class MagazineEntity {
         MagazinePlaceEntity.fromModel(model, userBookmarkedPlaceList),
       ),
       isLiked,
-      pinnedAt: model.pinnedAt,
     });
   }
 }

@@ -8,6 +8,7 @@ export class MagazineOverviewEntity extends PickType(MagazineEntity, [
   'thumbnailImagePath',
   'createdAt',
   'activatedAt',
+  'pinnedAt',
 ]) {
   constructor(data: MagazineOverviewEntity) {
     super();
@@ -23,6 +24,7 @@ export class MagazineOverviewEntity extends PickType(MagazineEntity, [
       thumbnailImagePath: model.thumbnailImagePath,
       createdAt: model.createdAt,
       activatedAt: model.activatedAt,
+      pinnedAt: model.pinnedAt,
     });
   }
 }
