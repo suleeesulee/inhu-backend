@@ -77,6 +77,13 @@ export class MagazineEntity {
    */
   public placeList: MagazinePlaceEntity[];
 
+  /**
+   * 고정한 시간
+   *
+   * @example "2025-10-09T12:00:00Z"
+   */
+  public pinnedAt: Date | null;
+
   constructor(data: MagazineEntity) {
     Object.assign(this, data);
   }
@@ -94,6 +101,7 @@ export class MagazineEntity {
       createdAt: model.createdAt,
       activatedAt: model.activatedAt,
       placeList: model.placeList.map(MagazinePlaceEntity.fromModel),
+      pinnedAt: model.pinnedAt,
     });
   }
 }

@@ -4,11 +4,15 @@ import { PlaceSeedHelper } from '@libs/testing/seed/place/place.seed';
 import { MagazineSeedHelper } from '@libs/testing/seed/magazine/magazine.seed';
 import { MagazineEntity } from '@admin/api/magazine/entity/magazine.entity';
 import { MagazineOverviewEntity } from '@admin/api/magazine/entity/magazine-overview.entity';
+import { PinnedMagazineSeedHelper } from '@libs/testing/seed/pinned-magazine/pinned-magazine.seed';
 
 describe('Magazine e2e test', () => {
   const testHelper = TestHelper.create(AdminServerModule);
   const placeSeedHelper = testHelper.seedHelper(PlaceSeedHelper);
   const magazineSeedHelper = testHelper.seedHelper(MagazineSeedHelper);
+  const pinnedMagazineSeedHelper = testHelper.seedHelper(
+    PinnedMagazineSeedHelper,
+  );
 
   beforeEach(async () => {
     await testHelper.init();
@@ -91,54 +95,154 @@ describe('Magazine e2e test', () => {
       expect(count).toBe(2);
     });
 
-    // TODO 정렬 기준 확실해지면 다시 작성
-    // it('200 - activated check(activated: true)', async () => {
+    it('200 - activated filter (undefined)', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const [magazine1, magazine2] = await magazineSeedHelper.seedAll([
+        { deletedAt: null, activatedAt: new Date() },
+        { deletedAt: null, activatedAt: null },
+      ]);
+
+      const response = await testHelper
+        .test()
+        .get('/magazine/all')
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .query({ page: 1 })
+        .expect(200);
+
+      const magazineList: MagazineOverviewEntity[] = response.body.magazineList;
+      const count: number = response.body.count;
+
+      expect(Array.isArray(magazineList)).toBe(true);
+      expect(magazineList.length).toBe(2);
+      expect(count).toBe(2);
+      expect(magazineList[0].idx).toBe(magazine2.idx);
+      expect(magazineList[1].idx).toBe(magazine1.idx);
+    });
+
+    it('200 - activated filter (false)', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const [magazine1, magazine2, magazine3] =
+        await magazineSeedHelper.seedAll([
+          { deletedAt: null, activatedAt: new Date() },
+          { deletedAt: null, activatedAt: null },
+          { deletedAt: null, activatedAt: null },
+        ]);
+
+      const response = await testHelper
+        .test()
+        .get('/magazine/all')
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .query({ page: 1, activated: false })
+        .expect(200);
+
+      const magazineList: MagazineOverviewEntity[] = response.body.magazineList;
+      const count: number = response.body.count;
+
+      expect(Array.isArray(magazineList)).toBe(true);
+      expect(magazineList.length).toBe(2);
+      expect(count).toBe(2);
+      expect(magazineList[0].idx).toBe(magazine3.idx);
+      expect(magazineList[1].idx).toBe(magazine2.idx);
+    });
+
+    it('200 - activated filter (true)', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const [magazine1, magazine2, magazine3] =
+        await magazineSeedHelper.seedAll([
+          { deletedAt: null, activatedAt: new Date() },
+          { deletedAt: null, activatedAt: new Date() },
+          { deletedAt: null, activatedAt: null },
+        ]);
+
+      const response = await testHelper
+        .test()
+        .get('/magazine/all')
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .query({ page: 1, activated: true })
+        .expect(200);
+
+      const magazineList: MagazineOverviewEntity[] = response.body.magazineList;
+      const count: number = response.body.count;
+
+      expect(Array.isArray(magazineList)).toBe(true);
+      expect(magazineList.length).toBe(2);
+      expect(count).toBe(2);
+      expect(magazineList[0].idx).toBe(magazine2.idx);
+      expect(magazineList[1].idx).toBe(magazine1.idx);
+    });
+
+    it('200 - pinned filter (true)', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const [magazine1, magazine2, magazine3] =
+        await magazineSeedHelper.seedAll([
+          { deletedAt: null, activatedAt: new Date() },
+          { deletedAt: null, activatedAt: new Date() },
+          { deletedAt: null, activatedAt: new Date() },
+        ]);
+
+      await pinnedMagazineSeedHelper.seedAll([
+        { idx: magazine1.idx },
+        { idx: magazine2.idx },
+      ]);
+
+      const response = await testHelper
+        .test()
+        .get('/magazine/all')
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .query({ page: 1, pinned: true })
+        .expect(200);
+
+      const magazineList: MagazineOverviewEntity[] = response.body.magazineList;
+      const count: number = response.body.count;
+
+      expect(Array.isArray(magazineList)).toBe(true);
+      expect(magazineList.length).toBe(2);
+      expect(count).toBe(3);
+      expect(magazineList[0].idx).toBe(magazine2.idx);
+      expect(magazineList[1].idx).toBe(magazine1.idx);
+    });
+
+    it('200 - pinned filter (false)', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const [magazine1, magazine2, magazine3] =
+        await magazineSeedHelper.seedAll([
+          { deletedAt: null, activatedAt: new Date() },
+          { deletedAt: null, activatedAt: new Date() },
+          { deletedAt: null, activatedAt: new Date() },
+        ]);
+
+      await pinnedMagazineSeedHelper.seedAll([{ idx: magazine1.idx }]);
+
+      const response = await testHelper
+        .test()
+        .get('/magazine/all')
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .query({ page: 1, pinned: false })
+        .expect(200);
+
+      const magazineList: MagazineOverviewEntity[] = response.body.magazineList;
+      const count: number = response.body.count;
+
+      expect(Array.isArray(magazineList)).toBe(true);
+      expect(magazineList.length).toBe(2);
+      expect(count).toBe(3);
+      expect(magazineList[0].idx).toBe(magazine3.idx);
+      expect(magazineList[1].idx).toBe(magazine2.idx);
+    });
+
+    // it('200 - pinned filter (undefined)', async () => {
     //   const loginUser = testHelper.loginAdmin.admin1;
-    //   const [magazine1, magazine2] = await magazineSeedHelper.seedAll([
-    //     { deletedAt: null, activatedAt: new Date() },
-    //     { deletedAt: null, activatedAt: null },
-    //   ]);
+    //   const [magazine1, magazine2, magazine3, magazine4] =
+    //     await magazineSeedHelper.seedAll([
+    //       { deletedAt: null, activatedAt: new Date() },
+    //       { deletedAt: null, activatedAt: new Date() },
+    //       { deletedAt: null, activatedAt: new Date() },
+    //       { deletedAt: null, activatedAt: new Date() },
+    //     ]);
 
-    //   const response = await testHelper
-    //     .test()
-    //     .get('/magazine/all')
-    //     .set('Cookie', `token=Bearer ${loginUser.token}`)
-    //     .query({ page: 1, activated: true })
-    //     .expect(200);
-
-    //   const magazineList: MagazineOverviewEntity[] = response.body.magazineList;
-    //   const hasNext: boolean = response.body.hasNext;
-
-    //   expect(magazineList.length).toBe(1);
-    //   expect(magazineList[0].idx).toBe(magazine1.idx);
-    // });
-
-    // it('200 - activated check(activated: false)', async () => {
-    //   const loginUser = testHelper.loginAdmin.admin1;
-    //   const [magazine1, magazine2] = await magazineSeedHelper.seedAll([
-    //     { deletedAt: null, activatedAt: new Date() },
-    //     { deletedAt: null, activatedAt: null },
-    //   ]);
-
-    //   const response = await testHelper
-    //     .test()
-    //     .get('/magazine/all')
-    //     .set('Cookie', `token=Bearer ${loginUser.token}`)
-    //     .query({ page: 1, activated: false })
-    //     .expect(200);
-
-    //   const magazineList: MagazineOverviewEntity[] = response.body.magazineList;
-    //   const hasNext: boolean = response.body.hasNext;
-
-    //   expect(magazineList.length).toBe(1);
-    //   expect(magazineList[0].idx).toBe(magazine2.idx);
-    // });
-
-    // it('200 - activated check(activated: undefined)', async () => {
-    //   const loginUser = testHelper.loginAdmin.admin1;
-    //   const [magazine1, magazine2] = await magazineSeedHelper.seedAll([
-    //     { deletedAt: null, activatedAt: new Date() },
-    //     { deletedAt: null, activatedAt: null },
+    //   await pinnedMagazineSeedHelper.seedAll([
+    //     { idx: magazine1.idx },
+    //     { idx: magazine2.idx },
     //   ]);
 
     //   const response = await testHelper
@@ -149,11 +253,15 @@ describe('Magazine e2e test', () => {
     //     .expect(200);
 
     //   const magazineList: MagazineOverviewEntity[] = response.body.magazineList;
-    //   const hasNext: boolean = response.body.hasNext;
+    //   const count: number = response.body.count;
 
-    //   expect(magazineList.length).toBe(2);
-    //   expect(magazineList[0].idx).toBe(magazine1.idx);
-    //   expect(magazineList[1].idx).toBe(magazine2.idx);
+    //   expect(Array.isArray(magazineList)).toBe(true);
+    //   expect(magazineList.length).toBe(4);
+    //   expect(count).toBe(4);
+    //   expect(magazineList[0].idx).toBe(magazine2.idx);
+    //   expect(magazineList[1].idx).toBe(magazine1.idx);
+    //   expect(magazineList[2].idx).toBe(magazine4.idx);
+    //   expect(magazineList[3].idx).toBe(magazine3.idx);
     // });
 
     it('400 - invalid page', async () => {

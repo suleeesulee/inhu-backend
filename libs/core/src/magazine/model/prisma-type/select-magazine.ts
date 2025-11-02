@@ -14,6 +14,7 @@ export const SELECT_MAGAZINE = Prisma.validator<Prisma.MagazineDefaultArgs>()({
     createdAt: true,
     activatedAt: true,
     placeList: SELECT_MAGAZINE_PLACE,
+    pinnedMagazine: true,
   },
 });
 

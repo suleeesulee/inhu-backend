@@ -13,6 +13,11 @@ import {
   SelectMagazineOverview,
 } from './model/prisma-type/select-magazine-overview';
 import { UpdateMagazineInput } from './inputs/update-magazine.input';
+import {
+  SELECT_LIKED_MAGAZINE_OVERVIEW,
+  SelectLikedMagazineOverview,
+} from './model/prisma-type/select-liked-magazine-overview';
+import { GetAllLikedMagazineInput } from './inputs/get-all-liked-magazine.input';
 
 @Injectable()
 export class MagazineCoreRepository {
@@ -41,9 +46,32 @@ export class MagazineCoreRepository {
         AND: [
           { deletedAt: null },
           this.getActivatedAtFilterWhereClause(input.activated),
+          this.getPinnedAtFilterWhereClause(input.pinned),
         ],
       },
       orderBy: this.getOrderByClause(input),
+      take: input.take,
+      skip: input.skip,
+    });
+  }
+
+  public async selectLikedMagazineAllByUserIdx(
+    input: GetAllLikedMagazineInput,
+  ): Promise<SelectLikedMagazineOverview[]> {
+    return await this.txHost.tx.magazineLike.findMany({
+      ...SELECT_LIKED_MAGAZINE_OVERVIEW,
+      where: {
+        userIdx: input.userIdx,
+        magazine: {
+          AND: [
+            { deletedAt: null },
+            this.getActivatedAtFilterWhereClause(input.activated),
+          ],
+        },
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
       take: input.take,
       skip: input.skip,
     });
@@ -170,20 +198,36 @@ export class MagazineCoreRepository {
     return { activatedAt: null };
   }
 
+  private getPinnedAtFilterWhereClause(
+    pinned?: boolean,
+  ): Prisma.MagazineWhereInput {
+    if (pinned === undefined) {
+      return {};
+    }
+    if (pinned) {
+      return { pinnedMagazine: { isNot: null } };
+    }
+    return { pinnedMagazine: null };
+  }
+
   private getOrderByClause({
     orderBy,
-  }: Pick<
-    GetAllMagazineInput,
-    'orderBy'
-  >): Prisma.MagazineOrderByWithRelationInput {
-    if (orderBy === 'like') {
-      return { likeCount: 'desc' };
-    } else if (orderBy === 'view') {
-      return { viewCount: 'desc' };
-    } else if (orderBy === 'time') {
-      return { createdAt: 'desc' };
-    } else {
-      return { createdAt: 'desc' };
-    }
+    pinned,
+  }: Pick<GetAllMagazineInput, 'orderBy' | 'pinned'>):
+    | Prisma.MagazineOrderByWithRelationInput
+    | Prisma.MagazineOrderByWithRelationInput[] {
+    const orderByMap: Record<string, Prisma.MagazineOrderByWithRelationInput> =
+      {
+        like: { likeCount: 'desc' },
+        view: { viewCount: 'desc' },
+        time: { createdAt: 'desc' },
+      };
+
+    const orderByClause = orderByMap[orderBy ?? 'time'];
+
+    // if (pinned == undefined) {
+    //   return [{ pinnedMagazine: { createdAt: 'desc' } }, orderByClause];
+    // }
+    return orderByClause;
   }
 }
