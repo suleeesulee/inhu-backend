@@ -57,6 +57,11 @@ export class MagazineModel {
    */
   public placeList: MagazinePlaceModel[];
 
+  /**
+   * 고정한 시간
+   */
+  public pinnedAt: Date | null;
+
   constructor(data: MagazineModel) {
     Object.assign(this, data);
   }
@@ -76,6 +81,7 @@ export class MagazineModel {
       placeList: magazine.placeList.map((mp) =>
         MagazinePlaceModel.fromPrisma(mp),
       ),
+      pinnedAt: magazine.pinnedMagazine?.createdAt || null,
     });
   }
 }
