@@ -1,4 +1,4 @@
-import { NaverBlogEntity } from '@libs/common/modules/naver-blog/entity/NaverBlogEntity';
+import { NaverBlogEntity } from '@libs/common/modules/naver-blog/entity/naver-blog.entity';
 import { NaverBlogNotFoundException } from '@libs/common/modules/naver-blog/exception/NaverBlogNotFoundException';
 import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
