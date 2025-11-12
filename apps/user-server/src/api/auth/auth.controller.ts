@@ -21,6 +21,7 @@ import { SocialLoginAppResponseDto } from '@user/api/auth/dto/response/social-lo
 import { SocialLoginWebResponseDto } from '@user/api/auth/dto/response/social-login-web-response.dto';
 import { TokenIssuedBy } from '@user/common/module/login-token/constants/token-issued-by.constants';
 import { Request, Response } from 'express';
+import { GuestLoginDto } from './dto/request/guest-login.dto';
 
 @Controller('/auth')
 export class AuthController {
@@ -75,10 +76,14 @@ export class AuthController {
   }
 
   // !temporary guest login for test
-  @Get('/guest/login/web')
-  public async guestLoginWeb(@Res({ passthrough: true }) res: Response) {
+  @Post('/guest/login/web')
+  public async guestLoginWeb(
+    @Res({ passthrough: true }) res: Response,
+    @Body() dto: GuestLoginDto,
+  ) {
     const { accessToken, refreshToken } = await this.authService.guestLogin(
       TokenIssuedBy.WEB,
+      dto,
     );
 
     res.cookie('refreshToken', `Bearer ${refreshToken}`, cookieConfig());
@@ -87,10 +92,11 @@ export class AuthController {
   }
 
   // !temporary guest login for test
-  @Get('/guest/login/app')
-  public async guestLoginApp() {
+  @Post('/guest/login/app')
+  public async guestLoginApp(@Body() dto: GuestLoginDto) {
     const { accessToken, refreshToken } = await this.authService.guestLogin(
       TokenIssuedBy.APP,
+      dto,
     );
 
     return { accessToken, refreshToken };
