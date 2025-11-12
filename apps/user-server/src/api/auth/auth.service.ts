@@ -2,6 +2,7 @@ import { AuthProvider } from '@libs/core/user/constants/auth-provider.constant';
 import { UserModel } from '@libs/core/user/model/user.model';
 import { UserCoreService } from '@libs/core/user/user-core.service';
 import {
+  ForbiddenException,
   Injectable,
   InternalServerErrorException,
   UnauthorizedException,
@@ -13,6 +14,7 @@ import { OAuthInfo } from '@user/api/auth/types/OAuthInfo';
 import { TokenIssuedBy } from '@user/common/module/login-token/constants/token-issued-by.constants';
 import { LoginTokenService } from '@user/common/module/login-token/login-token.service';
 import { Request } from 'express';
+import { GuestLoginDto } from './dto/request/guest-login.dto';
 
 @Injectable()
 export class AuthService {
@@ -44,7 +46,11 @@ export class AuthService {
   }
 
   // !게스트 로그인 (temporary)
-  public async guestLogin(issuedBy: TokenIssuedBy) {
+  public async guestLogin(issuedBy: TokenIssuedBy, dto: GuestLoginDto) {
+    if (dto.pw !== '000908') {
+      throw new ForbiddenException('Invalid guest login password');
+    }
+
     const userModel = await this.userCoreService.getUserByNickname('guest');
 
     return await this.loginTokenService.issueTokenSet(
