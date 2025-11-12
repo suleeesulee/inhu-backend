@@ -18,6 +18,7 @@ import { CreateMenuDto } from './dto/request/create-menu.dto';
 import { UpdateMenuDto } from './dto/request/update-menu.dto';
 import { Exception } from '@libs/common/decorator/exception.decorator';
 import { UpdateMenuSortOrderDto } from './dto/request/update-menu-sort-order.dto';
+import { NaverMenuEntity } from './entity/naver-menu.entity';
 
 @Controller()
 export class MenuController {
@@ -48,6 +49,23 @@ export class MenuController {
     @Body() dto: CreateMenuDto,
   ): Promise<MenuEntity> {
     return await this.menuService.createMenuByPlaceIdx(placeIdx, dto);
+  }
+
+  /**
+   * 장소 url로 메뉴 크롤링
+   */
+  @AdminAuth()
+  @Exception(
+    404,
+    `
+    - Cannot find menu from the given place url
+    - Cannot find selector`,
+  )
+  @Get('/crawling/place/menu')
+  public async crawlingNaverMenuViaPlaceUrl(
+    @Query('url') url: string,
+  ): Promise<NaverMenuEntity[]> {
+    return await this.menuService.crawlingNaverMenuViaPlaceUrl(url);
   }
 
   /**
