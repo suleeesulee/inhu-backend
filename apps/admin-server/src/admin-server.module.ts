@@ -18,6 +18,7 @@ import { BlogReviewModule } from '@admin/api/blog-review/blog-review.module';
 import { MagazineModule } from './api/magazine/magazine.module';
 import { OpenAIModule } from '@libs/common/modules/openAI/openAI.module';
 import { PinnedMagazineModule } from './api/pinned-magazine/pinned-magazine.module';
+import { NaverMenuModule } from '@libs/common/modules/naver-menu/naver-menu.module';
 
 @Module({
   imports: [
@@ -44,6 +45,7 @@ import { PinnedMagazineModule } from './api/pinned-magazine/pinned-magazine.modu
     MagazineModule,
     OpenAIModule,
     PinnedMagazineModule,
+    NaverMenuModule,
   ],
 })
 export class AdminServerModule implements NestModule {

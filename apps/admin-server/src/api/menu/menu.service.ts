@@ -1,8 +1,4 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { GetAllMenuDto } from './dto/request/get-all-menu.dto';
 import { MenuEntity } from './entity/menu.entity';
 import { CreateMenuDto } from './dto/request/create-menu.dto';
@@ -11,6 +7,11 @@ import { MenuCoreService } from '@libs/core/menu/menu-core.service';
 import { PlaceCoreService } from '@libs/core/place/place-core.service';
 import { UpdateMenuSortOrderDto } from './dto/request/update-menu-sort-order.dto';
 import { ReviewCoreService } from '@libs/core/review/review-core.service';
+import { NaverMenuService } from '@libs/common/modules/naver-menu/naver-menu.service';
+import { NaverMenuEntity } from './entity/naver-menu.entity';
+import { S3Service } from '@libs/common/modules/s3/s3.service';
+import { v4 as uuidv4 } from 'uuid';
+import { S3Folder } from '@libs/common/modules/s3/constants/s3-folder.constants';
 
 @Injectable()
 export class MenuService {
@@ -18,6 +19,8 @@ export class MenuService {
     private readonly menuCoreService: MenuCoreService,
     private readonly placeCoreService: PlaceCoreService,
     private readonly reviewCoreService: ReviewCoreService,
+    private readonly naverMenuService: NaverMenuService,
+    private readonly s3Service: S3Service,
   ) {}
 
   public async getAllMenuByPlaceIdx(
@@ -59,6 +62,24 @@ export class MenuService {
     });
 
     return MenuEntity.fromModel(menuModel);
+  }
+
+  public async crawlingNaverMenuViaPlaceUrl(
+    url: string,
+  ): Promise<NaverMenuEntity[]> {
+    const naverMenuList = await this.naverMenuService.extractNaverMenu(url);
+
+    return await Promise.all(
+      naverMenuList.map(async (menu) =>
+        NaverMenuEntity.fromModel({
+          name: menu.name,
+          content: menu.content,
+          price: menu.price,
+          imagePath: await this.uploadImage(menu.imagePath),
+          isFlexible: menu.isFlexible,
+        }),
+      ),
+    );
   }
 
   public async createMenuReview(
@@ -136,5 +157,19 @@ export class MenuService {
       reviewIdx,
       menuIdx,
     );
+  }
+
+  private async uploadImage(url: string | null): Promise<string | null> {
+    if (!url) return null;
+
+    const model = await this.s3Service.uploadImageFromUrl(
+      {
+        name: uuidv4() + '.png',
+        path: S3Folder.MENU,
+      },
+      url,
+    );
+
+    return model.path;
   }
 }
