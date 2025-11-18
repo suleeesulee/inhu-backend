@@ -19,6 +19,7 @@ import { UpdateMenuDto } from './dto/request/update-menu.dto';
 import { Exception } from '@libs/common/decorator/exception.decorator';
 import { UpdateMenuSortOrderDto } from './dto/request/update-menu-sort-order.dto';
 import { NaverMenuEntity } from './entity/naver-menu.entity';
+import { MenuCrawlingDto } from './dto/request/menu-crawling.dto';
 
 @Controller()
 export class MenuController {
@@ -61,11 +62,11 @@ export class MenuController {
     - Cannot find menu from the given place url
     - Cannot find selector`,
   )
-  @Get('/crawling/place/menu')
+  @Post('/menu/crawling')
   public async crawlingNaverMenuViaPlaceUrl(
-    @Query('url') url: string,
+    @Body() dto: MenuCrawlingDto,
   ): Promise<NaverMenuEntity[]> {
-    return await this.menuService.crawlingNaverMenuViaPlaceUrl(url);
+    return await this.menuService.crawlingNaverMenuViaPlaceUrl(dto);
   }
 
   /**

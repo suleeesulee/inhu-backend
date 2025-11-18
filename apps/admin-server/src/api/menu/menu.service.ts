@@ -12,6 +12,7 @@ import { NaverMenuEntity } from './entity/naver-menu.entity';
 import { S3Service } from '@libs/common/modules/s3/s3.service';
 import { v4 as uuidv4 } from 'uuid';
 import { S3Folder } from '@libs/common/modules/s3/constants/s3-folder.constants';
+import { MenuCrawlingDto } from './dto/request/menu-crawling.dto';
 
 @Injectable()
 export class MenuService {
@@ -65,9 +66,9 @@ export class MenuService {
   }
 
   public async crawlingNaverMenuViaPlaceUrl(
-    url: string,
+    dto: MenuCrawlingDto,
   ): Promise<NaverMenuEntity[]> {
-    const naverMenuList = await this.naverMenuService.extractNaverMenu(url);
+    const naverMenuList = await this.naverMenuService.extractNaverMenu(dto.url);
 
     return await Promise.all(
       naverMenuList.map(async (menu) =>
