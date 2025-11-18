@@ -18,7 +18,6 @@ import { IRefreshTokenStorage } from '@user/common/module/login-token/storage/re
       }),
       inject: [ConfigService],
     }),
-    ConfigModule.forFeature(loginJwtConfig),
     RedisModule,
   ],
   providers: [
