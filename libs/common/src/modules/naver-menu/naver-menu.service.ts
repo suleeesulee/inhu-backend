@@ -1,12 +1,20 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import puppeteer, { Browser, Frame, Page } from 'puppeteer';
 import { NaverMenu } from './naver-menu';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class NaverMenuService {
+  private readonly PUPPETEER_EXECUTABLE_PATH: string;
+
+  constructor(private readonly configService: ConfigService) {
+    this.PUPPETEER_EXECUTABLE_PATH =
+      this.configService.get<string>('naverMenu.executablePath') || '';
+  }
+
   public async extractNaverMenu(url: string): Promise<NaverMenu[]> {
     const browser = await puppeteer.launch({
-      executablePath: '/usr/bin/chromium',
+      executablePath: this.PUPPETEER_EXECUTABLE_PATH,
       args: [
         '--disable-gpu',
         '--disable-setuid-sandbox',
