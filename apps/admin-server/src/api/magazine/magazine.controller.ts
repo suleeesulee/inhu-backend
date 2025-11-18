@@ -98,7 +98,9 @@ export class MagazineController {
    * @author 이수인
    */
   @Post('/description/recommend')
-  public async recommendDescriptionWithOpenAI(dto: RecommendDescriptionDto) {
+  public async recommendDescriptionWithOpenAI(
+    @Body() dto: RecommendDescriptionDto,
+  ) {
     return await this.openAIService.recommendDescription(
       dto.title,
       dto.content,
