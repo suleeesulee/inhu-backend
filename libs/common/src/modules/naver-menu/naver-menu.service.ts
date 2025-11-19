@@ -5,28 +5,39 @@ import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class NaverMenuService {
-  private readonly PUPPETEER_EXECUTABLE_PATH: string;
+  private readonly PUPPETEER_CUSTOM_EXECUTABLE_PATH: string;
+  private readonly PUPPETEER_SELECTOR_TIMEOUT: number;
 
   constructor(private readonly configService: ConfigService) {
-    this.PUPPETEER_EXECUTABLE_PATH =
+    this.PUPPETEER_CUSTOM_EXECUTABLE_PATH =
       this.configService.get<string>('naverMenu.executablePath') || '';
+    this.PUPPETEER_SELECTOR_TIMEOUT =
+      this.configService.get<number>('naverMenu.selectorTimeout') || 30000;
   }
 
   public async extractNaverMenu(url: string): Promise<NaverMenu[]> {
+    const replaceUrl = url.replace('placePath=/home', 'placePath=/menu');
+    const newUrl = new URL(replaceUrl).toString();
+
     const browser = await puppeteer.launch({
-      executablePath: this.PUPPETEER_EXECUTABLE_PATH,
+      executablePath: this.PUPPETEER_CUSTOM_EXECUTABLE_PATH,
       args: [
-        '--disable-gpu',
-        '--disable-setuid-sandbox',
         '--no-sandbox',
+        '--disable-setuid-sandbox',
+        '--disable-gpu',
         '--no-zygote',
       ],
     });
     const page = await browser.newPage();
 
-    await this.gotoNaverPlacePage(url, page, browser);
+    await this.gotoNaverPlacePage(newUrl, page, browser);
 
-    await this.waitForSelectorWithTimeout(page, '#entryIframe', 5000, browser);
+    await this.waitForSelectorWithTimeout(
+      page,
+      '#entryIframe',
+      this.PUPPETEER_SELECTOR_TIMEOUT,
+      browser,
+    );
 
     const frames = page.frames();
     let frame: Frame | null = null;
@@ -48,14 +59,20 @@ export class NaverMenuService {
       );
     }
 
-    await this.waitForSelectorWithTimeout(frame, '#app-root', 5000, browser);
-
-    const menuSelector = 'div.YYh8o.gHymq > a[href*="/menu"]';
-    await this.waitForSelectorWithTimeout(frame, menuSelector, 5000, browser);
-    await frame.click(menuSelector);
+    await this.waitForSelectorWithTimeout(
+      frame,
+      '#app-root',
+      this.PUPPETEER_SELECTOR_TIMEOUT,
+      browser,
+    );
 
     const liSelector = 'li.E2jtL';
-    await this.waitForSelectorWithTimeout(frame, liSelector, 5000, browser);
+    await this.waitForSelectorWithTimeout(
+      frame,
+      liSelector,
+      this.PUPPETEER_SELECTOR_TIMEOUT,
+      browser,
+    );
 
     const expandButtonSelector = 'a.fvwqf';
     await this.expandMenuAll(frame, expandButtonSelector);
@@ -92,6 +109,7 @@ export class NaverMenuService {
     );
 
     await browser.close();
+
     return menuItemList;
   }
 
@@ -133,7 +151,9 @@ export class NaverMenuService {
    */
   private async expandMenuAll(target: Frame, selector: string) {
     try {
-      await target.waitForSelector(selector, { timeout: 5000 });
+      await target.waitForSelector(selector, {
+        timeout: this.PUPPETEER_SELECTOR_TIMEOUT,
+      });
 
       while (true) {
         const expandButton = await target.$(selector);
