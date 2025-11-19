@@ -6,19 +6,24 @@ import * as fs from 'fs';
 
 @Injectable()
 export class NaverMenuService {
-  private readonly PUPPETEER_EXECUTABLE_PATH: string;
+  private readonly PUPPETEER_CUSTOM_EXECUTABLE_PATH: string;
   private readonly PUPPETEER_SELECTOR_TIMEOUT: number;
 
   constructor(private readonly configService: ConfigService) {
-    this.PUPPETEER_EXECUTABLE_PATH =
+    this.PUPPETEER_CUSTOM_EXECUTABLE_PATH =
       this.configService.get<string>('naverMenu.executablePath') || '';
     this.PUPPETEER_SELECTOR_TIMEOUT =
       this.configService.get<number>('naverMenu.selectorTimeout') || 30000;
   }
 
   public async extractNaverMenu(url: string): Promise<NaverMenu[]> {
+    console.log(
+      'PUPPETEER_CUSTOM_EXECUTABLE_PATH:',
+      this.PUPPETEER_CUSTOM_EXECUTABLE_PATH,
+    );
+
     const browser = await puppeteer.launch({
-      executablePath: this.PUPPETEER_EXECUTABLE_PATH,
+      executablePath: this.PUPPETEER_CUSTOM_EXECUTABLE_PATH,
       args: [
         '--no-sandbox',
         '--disable-setuid-sandbox',
