@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import puppeteer, { Browser, Frame, Page } from 'puppeteer';
+import puppeteer, { Browser, Page } from 'puppeteer';
 import { NaverMenu } from './naver-menu';
 import { ConfigService } from '@nestjs/config';
 
@@ -21,6 +21,7 @@ export class NaverMenuService {
     ).toString();
 
     const browser = await puppeteer.launch({
+      headless: 'shell',
       executablePath: this.PUPPETEER_CUSTOM_EXECUTABLE_PATH,
       args: [
         '--no-sandbox',
@@ -91,6 +92,7 @@ export class NaverMenuService {
         return items;
       },
     );
+    console.log('크롤링 완료:', menuItemList);
 
     await browser.close();
     return menuItemList;
