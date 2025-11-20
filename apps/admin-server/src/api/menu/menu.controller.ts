@@ -59,7 +59,7 @@ export class MenuController {
   @Exception(
     404,
     `
-    - Cannot find menu from the given place url
+    - Cannot find place from the given naverPlaceId
     - Cannot find selector`,
   )
   @Post('/menu/crawling')
