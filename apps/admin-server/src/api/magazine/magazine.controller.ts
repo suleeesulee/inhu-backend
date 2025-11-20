@@ -21,6 +21,7 @@ import { ActivateMagazineByIdxDto } from './dto/request/activate-magazine-by-idx
 import { UpdateMagazineByIdxDto } from './dto/request/update-magazine-by-idx.dto';
 import { OpenAIService } from '@libs/common/modules/openAI/openAI.service';
 import { RecommendDescriptionDto } from './dto/request/recommend-description.dto';
+import { DescriptionRecommendResponseDto } from './dto/response/description-recommend.response.dto';
 
 @Controller('magazine')
 export class MagazineController {
@@ -97,10 +98,11 @@ export class MagazineController {
    *
    * @author 이수인
    */
+  @AdminAuth()
   @Post('/description/recommend')
   public async recommendDescriptionWithOpenAI(
     @Body() dto: RecommendDescriptionDto,
-  ) {
+  ): Promise<DescriptionRecommendResponseDto> {
     return await this.openAIService.recommendDescription(
       dto.title,
       dto.content,
