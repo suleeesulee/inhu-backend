@@ -69,7 +69,7 @@ export class MenuService {
     dto: MenuCrawlingDto,
   ): Promise<NaverMenuEntity[]> {
     const naverMenuList = await this.naverMenuService.extractNaverMenu(
-      dto.placeIdx,
+      dto.naverPlaceId,
     );
 
     return await Promise.all(

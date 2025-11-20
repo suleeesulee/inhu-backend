@@ -15,9 +15,9 @@ export class NaverMenuService {
       this.configService.get<number>('naverMenu.selectorTimeout') || 30000;
   }
 
-  public async extractNaverMenu(placeIdx?: string): Promise<NaverMenu[]> {
+  public async extractNaverMenu(naverPlaceId?: string): Promise<NaverMenu[]> {
     const url = new URL(
-      `https://pcmap.place.naver.com/restaurant/${placeIdx}`,
+      `https://pcmap.place.naver.com/restaurant/${naverPlaceId}`,
     ).toString();
 
     const browser = await puppeteer.launch({
@@ -92,7 +92,6 @@ export class NaverMenuService {
         return items;
       },
     );
-    console.log('크롤링 완료:', menuItemList);
 
     await browser.close();
     return menuItemList;
