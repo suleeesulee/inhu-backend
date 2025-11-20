@@ -1,3 +1,4 @@
+import { DescriptionRecommendResponseDto } from '@admin/api/magazine/dto/response/description-recommend.response.dto';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import OpenAI from 'openai';
@@ -16,7 +17,7 @@ export class OpenAIService {
     title: string,
     content: string,
     imagePath: string,
-  ): Promise<string> {
+  ): Promise<DescriptionRecommendResponseDto> {
     const response = await this.client.responses.create({
       model: 'gpt-5-mini',
       instructions:
@@ -39,6 +40,6 @@ export class OpenAIService {
       ],
     });
 
-    return response.output_text;
+    return { description: response.output_text };
   }
 }
