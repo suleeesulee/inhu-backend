@@ -21,7 +21,6 @@ export class NaverMenuService {
     ).toString();
 
     const browser = await puppeteer.launch({
-      headless: false,
       executablePath: this.PUPPETEER_CUSTOM_EXECUTABLE_PATH,
       args: [
         '--no-sandbox',
