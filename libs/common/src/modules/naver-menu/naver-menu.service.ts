@@ -15,9 +15,10 @@ export class NaverMenuService {
       this.configService.get<number>('naverMenu.selectorTimeout') || 30000;
   }
 
-  public async extractNaverMenu(url: string): Promise<NaverMenu[]> {
-    const replaceUrl = url.replace('placePath=/home', 'placePath=/menu');
-    const newUrl = new URL(replaceUrl).toString();
+  public async extractNaverMenu(placeIdx?: string): Promise<NaverMenu[]> {
+    const url = new URL(
+      `https://pcmap.place.naver.com/restaurant/${placeIdx}`,
+    ).toString();
 
     const browser = await puppeteer.launch({
       executablePath: this.PUPPETEER_CUSTOM_EXECUTABLE_PATH,
@@ -30,54 +31,37 @@ export class NaverMenuService {
     });
     const page = await browser.newPage();
 
-    await this.gotoNaverPlacePage(newUrl, page, browser);
+    await this.gotoNaverPlacePage(url, page, browser);
 
     await this.waitForSelectorWithTimeout(
       page,
-      '#entryIframe',
-      this.PUPPETEER_SELECTOR_TIMEOUT,
-      browser,
-    );
-
-    const frames = page.frames();
-    let frame: Frame | null = null;
-
-    /**
-     * entryIframe 프레임을 찾는 로직
-     */
-    for (const currentFrame of frames) {
-      const frameElement = await currentFrame.frameElement();
-      const id = await frameElement?.evaluate((el) => el.id);
-      if (id === 'entryIframe') {
-        frame = currentFrame;
-        break;
-      }
-    }
-    if (!frame) {
-      throw new NotFoundException(
-        'Iframe(entryIframe)을 page.frames() 루프에서 찾을 수 없습니다.',
-      );
-    }
-
-    await this.waitForSelectorWithTimeout(
-      frame,
       '#app-root',
       this.PUPPETEER_SELECTOR_TIMEOUT,
       browser,
     );
 
+    try {
+      const menuSelector = 'div.YYh8o.gHymq > a[href*="/menu"]';
+      await this.waitForSelectorWithTimeout(page, menuSelector, 5000, browser);
+      await page.click(menuSelector);
+    } catch (error) {
+      console.log('메뉴가 존재하지 않습니다.');
+      await browser.close();
+      return [];
+    }
+
     const liSelector = 'li.E2jtL';
     await this.waitForSelectorWithTimeout(
-      frame,
+      page,
       liSelector,
       this.PUPPETEER_SELECTOR_TIMEOUT,
       browser,
     );
 
     const expandButtonSelector = 'a.fvwqf';
-    await this.expandMenuAll(frame, expandButtonSelector);
+    await this.expandMenuAll(page, expandButtonSelector);
 
-    const menuItemList: NaverMenu[] = await frame.$$eval(
+    const menuItemList: NaverMenu[] = await page.$$eval(
       liSelector,
       (elements) => {
         const items: NaverMenu[] = [];
@@ -109,7 +93,6 @@ export class NaverMenuService {
     );
 
     await browser.close();
-
     return menuItemList;
   }
 
@@ -131,7 +114,7 @@ export class NaverMenuService {
    * 타임아웃이 발생하면 브라우저를 종료하고 NotFoundException을 던집니다.
    */
   private async waitForSelectorWithTimeout(
-    target: Frame | Page,
+    target: Page,
     selector: string,
     timeout: number,
     browser: Browser,
@@ -149,7 +132,7 @@ export class NaverMenuService {
   /**
    * 메뉴 펼쳐서 더보기 버튼을 모두 클릭하는 메서드
    */
-  private async expandMenuAll(target: Frame, selector: string) {
+  private async expandMenuAll(target: Page, selector: string) {
     try {
       await target.waitForSelector(selector, {
         timeout: this.PUPPETEER_SELECTOR_TIMEOUT,
