@@ -8,5 +8,5 @@ export class MenuCrawlingDto {
    */
   @IsNotEmpty()
   @IsString()
-  placeIdx: string;
+  naverPlaceId: string;
 }
