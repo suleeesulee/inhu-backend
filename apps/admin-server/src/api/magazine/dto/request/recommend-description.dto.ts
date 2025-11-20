@@ -27,4 +27,13 @@ export class RecommendDescriptionDto {
   @IsUrl()
   @IsNotEmpty()
   thumbnailImagePath: string;
+
+  /**
+   * 사용자 추가 요청 프롬프트
+   *
+   * @example "유쾌하고 재밌는 말투로 해줘"
+   */
+  @IsNotEmpty()
+  @IsString()
+  prompt: string;
 }

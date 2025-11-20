@@ -107,6 +107,7 @@ export class MagazineController {
       dto.title,
       dto.content,
       dto.thumbnailImagePath,
+      dto.prompt,
     );
   }
 
