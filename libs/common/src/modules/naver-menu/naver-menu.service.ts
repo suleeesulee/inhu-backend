@@ -93,7 +93,6 @@ export class NaverMenuService {
     );
 
     await browser.close();
-    console.log('네이버 메뉴 크롤링 완료:', menuItemList);
     return menuItemList;
   }
 
