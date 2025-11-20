@@ -68,7 +68,9 @@ export class MenuService {
   public async crawlingNaverMenuViaPlaceUrl(
     dto: MenuCrawlingDto,
   ): Promise<NaverMenuEntity[]> {
-    const naverMenuList = await this.naverMenuService.extractNaverMenu(dto.url);
+    const naverMenuList = await this.naverMenuService.extractNaverMenu(
+      dto.placeIdx,
+    );
 
     return await Promise.all(
       naverMenuList.map(async (menu) =>
