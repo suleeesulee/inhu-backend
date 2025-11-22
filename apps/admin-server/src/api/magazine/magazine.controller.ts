@@ -106,7 +106,7 @@ export class MagazineController {
     return await this.openAIService.recommendDescription(
       dto.title,
       dto.content,
-      dto.thumbnailImagePath,
+      `https://inhu-files.s3.ap-northeast-2.amazonaws.com${dto.thumbnailImagePath}`,
       dto.prompt,
     );
   }
