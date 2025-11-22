@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, IsUrl } from 'class-validator';
+import { IsNotEmpty, IsString } from 'class-validator';
 
 export class RecommendDescriptionDto {
   /**
@@ -22,9 +22,9 @@ export class RecommendDescriptionDto {
   /**
    * 썸네일 이미지 경로
    *
-   * @example "https://inhu-files.s3.ap-northeast-2.amazonaws.com/magazine/7c218cf5-b04b-4a86-a027-ebffe4f4f64d.webp"
+   * @example "/magazine/7c218cf5-b04b-4a86-a027-ebffe4f4f64d.webp"
    */
-  @IsUrl()
+  @IsString()
   @IsNotEmpty()
   thumbnailImagePath: string;
 
