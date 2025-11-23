@@ -18,8 +18,10 @@ export class UserCoreRepository {
   ) {}
 
   // ! temporary
-  public async selectUserByNickname(nickname: string): Promise<SelectUser> {
-    return this.txHost.tx.user.findFirstOrThrow({
+  public async selectUserByNickname(
+    nickname: string,
+  ): Promise<SelectUser | null> {
+    return this.txHost.tx.user.findFirst({
       ...SELECT_USER,
       where: { nickname, deletedAt: null },
     });
