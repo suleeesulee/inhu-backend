@@ -17,7 +17,7 @@ export class UserCoreService {
   constructor(private readonly userCoreRepository: UserCoreRepository) {}
 
   // ! temporary
-  public async getUserByNickname(nickname: string): Promise<UserModel> {
+  public async getUserByNickname(nickname: string): Promise<UserModel | null> {
     const user = await this.userCoreRepository.selectUserByNickname(nickname);
 
     return user && UserModel.fromPrisma(user);
