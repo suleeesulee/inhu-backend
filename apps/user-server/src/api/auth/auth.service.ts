@@ -5,6 +5,7 @@ import {
   ForbiddenException,
   Injectable,
   InternalServerErrorException,
+  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { ISocialLoginStrategy } from '@user/api/auth/social-login/ISocialLogin-strategy.interface';
@@ -52,6 +53,9 @@ export class AuthService {
     }
 
     const userModel = await this.userCoreService.getUserByNickname('guest');
+    if (!userModel) {
+      throw new NotFoundException('Guest user not found');
+    }
 
     return await this.loginTokenService.issueTokenSet(
       { idx: userModel.idx },

@@ -9,5 +9,6 @@ CREATE DATABASE inhu OWNER inhu_admin;
 \i /rdb/default-seed.sql
 
 INSERT INTO user_tb (nickname) VALUES ('nickname1');
+INSERT INTO user_tb (nickname) VALUES ('guest');
 
 INSERT INTO admin_account_tb (idx, id, pw) VALUES (1, '1234', '$2b$10$l.EPjNQZOAdfiLqk5Lp8sujej5a7MTVCV7KL1z9wykrAZz04uSLLG');
