@@ -6,6 +6,8 @@ import { PlaceRoadAddressModel } from './place-road-address.model';
 import { SelectPlace } from './prisma-type/select-place';
 import { PlaceWeeklyClosedDayModel } from './place-weekly-closed-day.model';
 import { KeywordModel } from '@libs/core/keyword/model/keyword.model';
+import { MainCategory } from '@libs/core/category/contants/main-category.contant';
+import { MoodCategory } from '@libs/core/category/contants/mood-category.constant';
 
 /**
  * 장소 모델
@@ -98,6 +100,10 @@ export class PlaceModel {
 
   public topKeywordList: KeywordModel[];
 
+  public mainCategoryList: MainCategory[];
+
+  public moodCategoryList: MoodCategory[];
+
   constructor(data: PlaceModel) {
     Object.assign(this, data);
   }
@@ -129,6 +135,12 @@ export class PlaceModel {
         PlaceWeeklyClosedDayModel.fromPrisma,
       ),
       roadAddress: PlaceRoadAddressModel.fromPrisma(place.roadAddress),
+      mainCategoryList: place.placeMainCategoryMappingList.map(
+        ({ mainCategoryIdx }) => mainCategoryIdx as MainCategory,
+      ),
+      moodCategoryList: place.placeMoodCategoryMappingList.map(
+        ({ moodCategoryIdx }) => moodCategoryIdx as MoodCategory,
+      ),
     });
   }
 }
