@@ -23,6 +23,8 @@ import {
 } from './model/prisma-type/select-place-marker';
 import { GetPlaceMarkerInput } from './inputs/get-place-overview-marker.input';
 import { SelectPlaceWeeklyClosedDay } from './model/prisma-type/select-place-weekly-closed-day';
+import { MainCategory } from '../category/constants/main-category.constant';
+import { MoodCategory } from '../category/constants/mood-category.constant';
 
 @Injectable()
 export class PlaceCoreRepository {
@@ -73,6 +75,8 @@ export class PlaceCoreRepository {
     activated,
     permanentlyClosed,
     searchKeyword,
+    mainCategoryList,
+    moodCategoryList,
   }: GetPlaceOverviewInput): Promise<SelectPlaceOverview[]> {
     const now = this.dateUtilService.getNow();
     const todayKst = this.dateUtilService.transformKoreanDate(now);
@@ -96,6 +100,8 @@ export class PlaceCoreRepository {
           this.getActivatedAtFilterWhereClause(activated), // 활성화 필터링
           this.getPermanentlyClosedFilterWhereClause(permanentlyClosed), // 폐점 여부 필터링
           this.getSearchKeywordWhereClause(searchKeyword), // 검색 키워드 필터링
+          this.getMainCategoryFilterWhereClause(mainCategoryList), // 메인 카테고리 필터링
+          this.getMoodCategoryFilterWhereClause(moodCategoryList), // 분위기 카테고리 필터링
         ],
       },
       orderBy: this.getOrderByClause({ order, orderBy }),
@@ -322,6 +328,38 @@ export class PlaceCoreRepository {
     }
 
     return { placeTypeMappingList: { some: { placeTypeIdx: { in: types } } } };
+  }
+
+  private getMainCategoryFilterWhereClause(
+    mainCategoryList?: MainCategory[],
+  ): Prisma.PlaceWhereInput {
+    if (mainCategoryList === undefined || mainCategoryList.length === 0) {
+      return {};
+    }
+
+    return {
+      AND: mainCategoryList.map((category) => ({
+        placeMainCategoryMappingList: {
+          some: { mainCategoryIdx: category },
+        },
+      })),
+    };
+  }
+
+  private getMoodCategoryFilterWhereClause(
+    moodCategoryList?: MoodCategory[],
+  ): Prisma.PlaceWhereInput {
+    if (moodCategoryList === undefined || moodCategoryList.length === 0) {
+      return {};
+    }
+
+    return {
+      AND: moodCategoryList.map((category) => ({
+        placeMoodCategoryMappingList: {
+          some: { moodCategoryIdx: category },
+        },
+      })),
+    };
   }
 
   private getActivatedAtFilterWhereClause(
