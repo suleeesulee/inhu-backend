@@ -14,6 +14,9 @@ import { PlaceType } from '@libs/core/place/constants/place-type.constant';
 import { PlaceModel } from '@libs/core/place/model/place.model';
 import { PlaceWeeklyClosedDayEntity } from './place-weekly-closed-day.entity';
 import { IsEnumValue } from '@libs/common/decorator/is-enum-value.decorator';
+import { MainCategory } from '@libs/core/category/contants/main-category.contant';
+import { MoodCategory } from '@libs/core/category/contants/mood-category.constant';
+import { UniqueArray } from '@libs/common/decorator/unique-array.decorator';
 
 export class PlaceEntity {
   /**
@@ -121,6 +124,20 @@ export class PlaceEntity {
    */
   public breakTimeList: PlaceBreakTimeEntity[];
 
+  /**
+   * 메인 카테고리 목록
+   */
+  @UniqueArray()
+  @IsEnumValue(MainCategory, { each: true })
+  public mainCategoryList: MainCategory[];
+
+  /**
+   * 분위기 카테고리 목록
+   */
+  @UniqueArray()
+  @IsEnumValue(MoodCategory, { each: true })
+  public moodCategoryList: MoodCategory[];
+
   constructor(data: PlaceEntity) {
     Object.assign(this, data);
   }
@@ -147,6 +164,8 @@ export class PlaceEntity {
       breakTimeList: model.breakTimeList.map(PlaceBreakTimeEntity.fromModel),
       activatedAt: model.activatedAt,
       permanentlyClosedAt: model.permanentlyClosedAt,
+      mainCategoryList: model.mainCategoryList,
+      moodCategoryList: model.moodCategoryList,
     });
   }
 }
