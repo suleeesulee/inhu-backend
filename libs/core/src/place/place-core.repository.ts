@@ -538,6 +538,26 @@ export class PlaceCoreRepository {
               },
             }
           : undefined,
+        placeMainCategoryMappingList: input.mainCategoryList
+          ? {
+              deleteMany: {},
+              createMany: {
+                data: input.mainCategoryList.map((mainCategoryIdx) => ({
+                  mainCategoryIdx,
+                })),
+              },
+            }
+          : undefined,
+        placeMoodCategoryMappingList: input.moodCategoryList
+          ? {
+              deleteMany: {},
+              createMany: {
+                data: input.moodCategoryList.map((moodCategoryIdx) => ({
+                  moodCategoryIdx,
+                })),
+              },
+            }
+          : undefined,
       },
       where: { idx, deletedAt: null },
     });
