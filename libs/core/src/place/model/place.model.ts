@@ -6,8 +6,8 @@ import { PlaceRoadAddressModel } from './place-road-address.model';
 import { SelectPlace } from './prisma-type/select-place';
 import { PlaceWeeklyClosedDayModel } from './place-weekly-closed-day.model';
 import { KeywordModel } from '@libs/core/keyword/model/keyword.model';
-import { MainCategory } from '@libs/core/category/contants/main-category.contant';
-import { MoodCategory } from '@libs/core/category/contants/mood-category.constant';
+import { MainCategory } from '@libs/core/category/constants/main-category.constant';
+import { MoodCategory } from '@libs/core/category/constants/mood-category.constant';
 
 /**
  * 장소 모델

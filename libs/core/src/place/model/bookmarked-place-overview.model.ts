@@ -8,8 +8,8 @@ import { PlaceClosedDayModel } from './place-closed-day.model';
 import { PlaceOperatingHourModel } from './place-operating-hour.model';
 import { PlaceWeeklyClosedDayModel } from './place-weekly-closed-day.model';
 import { PlaceBreakTimeModel } from './place-break-time.model';
-import { MainCategory } from '@libs/core/category/contants/main-category.contant';
-import { MoodCategory } from '@libs/core/category/contants/mood-category.constant';
+import { MainCategory } from '@libs/core/category/constants/main-category.constant';
+import { MoodCategory } from '@libs/core/category/constants/mood-category.constant';
 
 /**
  * 북마크된 장소 개요 모델

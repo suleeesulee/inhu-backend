@@ -14,8 +14,8 @@ import { PlaceType } from '@libs/core/place/constants/place-type.constant';
 import { PlaceModel } from '@libs/core/place/model/place.model';
 import { PlaceWeeklyClosedDayEntity } from './place-weekly-closed-day.entity';
 import { IsEnumValue } from '@libs/common/decorator/is-enum-value.decorator';
-import { MainCategory } from '@libs/core/category/contants/main-category.contant';
-import { MoodCategory } from '@libs/core/category/contants/mood-category.constant';
+import { MainCategory } from '@libs/core/category/constants/main-category.constant';
+import { MoodCategory } from '@libs/core/category/constants/mood-category.constant';
 import { UniqueArray } from '@libs/common/decorator/unique-array.decorator';
 
 export class PlaceEntity {

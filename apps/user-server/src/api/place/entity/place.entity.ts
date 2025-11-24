@@ -6,6 +6,8 @@ import { PlaceBreakTimeEntity } from '@user/api/place/entity/place-break-time.en
 import { PlaceType } from '@libs/core/place/constants/place-type.constant';
 import { PlaceModel } from '@libs/core/place/model/place.model';
 import { PlaceWeeklyClosedDayEntity } from '@user/api/place/entity/place-weekly-closed-day.entity';
+import { MainCategory } from '@libs/core/category/constants/main-category.constant';
+import { MoodCategory } from '@libs/core/category/constants/mood-category.constant';
 
 export class PlaceEntity {
   /**
@@ -97,6 +99,16 @@ export class PlaceEntity {
    */
   public breakTimeList: PlaceBreakTimeEntity[];
 
+  /**
+   * 메인 카테고리 목록
+   */
+  public mainCategoryList: MainCategory[];
+
+  /**
+   * 분위기 카테고리 목록
+   */
+  public moodCategoryList: MoodCategory[];
+
   constructor(data: PlaceEntity) {
     Object.assign(this, data);
   }
@@ -122,6 +134,8 @@ export class PlaceEntity {
       ),
       closedDayList: model.closedDayList.map(PlaceClosedDayEntity.fromModel),
       breakTimeList: model.breakTimeList.map(PlaceBreakTimeEntity.fromModel),
+      mainCategoryList: model.mainCategoryList,
+      moodCategoryList: model.moodCategoryList,
     });
   }
 }
