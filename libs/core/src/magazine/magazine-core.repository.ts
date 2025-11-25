@@ -18,6 +18,7 @@ import {
   SelectLikedMagazineOverview,
 } from './model/prisma-type/select-liked-magazine-overview';
 import { GetAllLikedMagazineInput } from './inputs/get-all-liked-magazine.input';
+import { UpdateMagazineCategoryInput } from './inputs/update-magazine-category.input';
 
 @Injectable()
 export class MagazineCoreRepository {
@@ -138,6 +139,47 @@ export class MagazineCoreRepository {
             }
           : undefined,
       },
+    });
+  }
+
+  public async updateMagazineCategoryByIdx(
+    idx: number,
+    input: UpdateMagazineCategoryInput,
+  ): Promise<void> {
+    await this.txHost.tx.magazine.update({
+      data: {
+        placeTypeMagazineMappingList: input.typeList
+          ? {
+              deleteMany: {},
+              createMany: {
+                data: input.typeList.map((typeIdx) => ({
+                  placeTypeIdx: typeIdx,
+                })),
+              },
+            }
+          : undefined,
+        magazineMainCategoryMappingList: input.mainCategoryList
+          ? {
+              deleteMany: {},
+              createMany: {
+                data: input.mainCategoryList.map((mainCategoryIdx) => ({
+                  mainCategoryIdx,
+                })),
+              },
+            }
+          : undefined,
+        magazineMoodCategoryMappingList: input.moodCategoryList
+          ? {
+              deleteMany: {},
+              createMany: {
+                data: input.moodCategoryList.map((moodCategoryIdx) => ({
+                  moodCategoryIdx,
+                })),
+              },
+            }
+          : undefined,
+      },
+      where: { idx, deletedAt: null },
     });
   }
 
