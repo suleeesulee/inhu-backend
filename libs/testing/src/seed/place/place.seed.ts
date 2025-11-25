@@ -59,6 +59,8 @@ export class PlaceSeedHelper extends ISeedHelper<
       weeklyClosedDayList: defaultValue(input.weeklyClosedDayList, null),
       breakTime: defaultValue(input.breakTime, null),
       keywordCountList: defaultValue(input.keywordCountList, null),
+      mainCategoryList: defaultValue(input.mainCategoryList, null),
+      moodCategoryList: defaultValue(input.moodCategoryList, null),
     };
   }
 
@@ -153,6 +155,24 @@ export class PlaceSeedHelper extends ISeedHelper<
                     count,
                   }),
                 ),
+              },
+            }
+          : undefined,
+        placeMainCategoryMappingList: filledInput.mainCategoryList
+          ? {
+              createMany: {
+                data: filledInput.mainCategoryList.map((categoryIdx) => ({
+                  mainCategoryIdx: categoryIdx,
+                })),
+              },
+            }
+          : undefined,
+        placeMoodCategoryMappingList: filledInput.moodCategoryList
+          ? {
+              createMany: {
+                data: filledInput.moodCategoryList.map((categoryIdx) => ({
+                  moodCategoryIdx: categoryIdx,
+                })),
               },
             }
           : undefined,
