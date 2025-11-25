@@ -49,6 +49,12 @@ describe('Magazine e2e test', () => {
         activatedAt: new Date(),
         deletedAt: null,
         placeIdxList: [placeSeed.idx],
+        type: PlaceType.CAFE,
+        mainCategoryList: [MainCategory.BAKERY, MainCategory.SANDWICH],
+        moodCategoryList: [
+          MoodCategory.STUDY_FRIENDLY,
+          MoodCategory.DESSERT_HOTSPOT,
+        ],
       });
 
       const response = await testHelper
@@ -74,6 +80,9 @@ describe('Magazine e2e test', () => {
       expect(magazine.activatedAt).toEqual(
         magazineSeed.activatedAt?.toISOString(),
       );
+      expect(magazine.type).toBe(magazineSeed.type);
+      expect(magazine.mainCategoryList).toEqual(magazineSeed.mainCategoryList);
+      expect(magazine.moodCategoryList).toEqual(magazineSeed.moodCategoryList);
     });
 
     it('200 - magazineList empty due to page too high', async () => {
@@ -302,6 +311,12 @@ describe('Magazine e2e test', () => {
         activatedAt: new Date(),
         deletedAt: null,
         placeIdxList: [placeSeed.idx],
+        type: PlaceType.CAFE,
+        mainCategoryList: [MainCategory.BAKERY, MainCategory.SANDWICH],
+        moodCategoryList: [
+          MoodCategory.STUDY_FRIENDLY,
+          MoodCategory.DESSERT_HOTSPOT,
+        ],
       });
 
       const response = await testHelper
@@ -338,6 +353,9 @@ describe('Magazine e2e test', () => {
       expect(magazine.placeList[0].imagePathList).toEqual(
         placeSeed.placeImgList,
       );
+      expect(magazine.type).toBe(magazineSeed.type);
+      expect(magazine.mainCategoryList).toEqual(magazineSeed.mainCategoryList);
+      expect(magazine.moodCategoryList).toEqual(magazineSeed.moodCategoryList);
     });
 
     it('200 - does not increase view count', async () => {
