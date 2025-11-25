@@ -22,7 +22,7 @@ export class RecommendDescriptionDto {
   /**
    * 썸네일 이미지 경로
    *
-   * @example "/magazine/7c218cf5-b04b-4a86-a027-ebffe4f4f64d.webp"
+   * @example "magazine/7c218cf5-b04b-4a86-a027-ebffe4f4f64d.webp"
    */
   @IsString()
   @IsNotEmpty()

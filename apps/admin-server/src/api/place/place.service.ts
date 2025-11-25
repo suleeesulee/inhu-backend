@@ -16,6 +16,7 @@ import { KakaoAddressService } from '@libs/modules/kakao-address/kakao-address.s
 import { AddressRequiredException } from './exception/address-required.exception';
 import { AlreadyExistWeeklyClosedDayException } from './exception/already-exist-weekly-closed-day.exception';
 import { WeeklyCloseType } from '@libs/core/place/constants/weekly-close-type.constant';
+import { CreatePlaceCategoryDto } from './dto/request/create-place-category.dto';
 
 @Injectable()
 export class PlaceService {
@@ -96,6 +97,21 @@ export class PlaceService {
       .then(PlaceEntity.fromModel);
   }
 
+  public async createPlaceCategoryByIdx(
+    idx: number,
+    dto: CreatePlaceCategoryDto,
+  ): Promise<void> {
+    const place = await this.placeCoreService.getPlaceByIdx(idx);
+    if (!place) {
+      throw new PlaceNotFoundException('Cannot find place with idx: ' + idx);
+    }
+
+    return await this.placeCoreService.updatePlaceByIdx(idx, {
+      mainCategoryList: dto.mainCategoryList,
+      moodCategoryList: dto.moodCategoryList,
+    });
+  }
+
   public async updatePlaceByIdx(
     idx: number,
     dto: UpdatePlaceDto,
@@ -140,6 +156,21 @@ export class PlaceService {
         closedDate: date,
         type,
       })),
+    });
+  }
+
+  public async updatePlaceCategoryByIdx(
+    idx: number,
+    dto: CreatePlaceCategoryDto,
+  ): Promise<void> {
+    const place = await this.placeCoreService.getPlaceByIdx(idx);
+    if (!place) {
+      throw new PlaceNotFoundException('Cannot find place with idx: ' + idx);
+    }
+
+    return await this.placeCoreService.updatePlaceByIdx(idx, {
+      mainCategoryList: dto.mainCategoryList,
+      moodCategoryList: dto.moodCategoryList,
     });
   }
 

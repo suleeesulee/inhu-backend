@@ -18,6 +18,8 @@ export class PlaceOverviewEntity extends PickType(PlaceEntity, [
   'operatingHourList',
   'weeklyClosedDayList',
   'breakTimeList',
+  'mainCategoryList',
+  'moodCategoryList',
 ]) {
   constructor(data: PlaceOverviewEntity) {
     super();
@@ -39,6 +41,8 @@ export class PlaceOverviewEntity extends PickType(PlaceEntity, [
       operatingHourList: model.operatingHourList,
       weeklyClosedDayList: model.weeklyClosedDayList,
       breakTimeList: model.breakTimeList,
+      mainCategoryList: model.mainCategoryList,
+      moodCategoryList: model.moodCategoryList,
     });
   }
 }
