@@ -33,6 +33,8 @@ export class PlaceService {
       types: dto.type ? [dto.type] : undefined,
       orderBy: dto.orderby,
       bookmarkUserIdx: undefined,
+      mainCategoryList: dto.mainCategoryList,
+      moodCategoryList: dto.moodCategoryList,
     };
     let placeOverviewModelList: PlaceOverviewModel[];
 

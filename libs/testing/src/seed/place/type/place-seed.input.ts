@@ -1,4 +1,6 @@
 import { DayOfWeek } from '@libs/common/modules/date-util/constants/day-of-week.constants';
+import { MainCategory } from '@libs/core/category/constants/main-category.constant';
+import { MoodCategory } from '@libs/core/category/constants/mood-category.constant';
 import { PlaceType } from '@libs/core/place/constants/place-type.constant';
 import { WeeklyCloseType } from '@libs/core/place/constants/weekly-close-type.constant';
 
@@ -64,4 +66,6 @@ export type PlaceSeedInput = {
         count: number;
       }[]
     | null;
+  mainCategoryList?: MainCategory[] | null;
+  moodCategoryList?: MoodCategory[] | null;
 };

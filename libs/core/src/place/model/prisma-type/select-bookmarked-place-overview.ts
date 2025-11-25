@@ -71,6 +71,16 @@ export const SELECT_BOOKMARKED_PLACE_OVERVIEW =
               endAt: true,
             },
           },
+          placeMainCategoryMappingList: {
+            select: {
+              mainCategoryIdx: true,
+            },
+          },
+          placeMoodCategoryMappingList: {
+            select: {
+              moodCategoryIdx: true,
+            },
+          },
         },
       },
     },

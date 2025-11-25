@@ -65,6 +65,16 @@ export const SELECT_PLACE = Prisma.validator<Prisma.PlaceDefaultArgs>()({
         endAt: true,
       },
     },
+    placeMainCategoryMappingList: {
+      select: {
+        mainCategoryIdx: true,
+      },
+    },
+    placeMoodCategoryMappingList: {
+      select: {
+        moodCategoryIdx: true,
+      },
+    },
   },
 });
 

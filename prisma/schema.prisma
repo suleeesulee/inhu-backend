@@ -41,32 +41,34 @@ model PlaceImage {
 }
 
 model Place {
-  idx                   Int                 @id @default(autoincrement())
-  name                  String              @db.VarChar
-  tel                   String?             @db.VarChar
-  reviewCount           Int                 @default(0) @map("review_count")
-  bookmarkCount         Int                 @default(0) @map("bookmark_count")
-  roadAddressIdx        Int                 @map("road_address_idx")
-  isClosedOnHoliday     Boolean?            @map("is_closed_on_holiday")
-  createdAt             DateTime            @default(now()) @map("created_at") @db.Timestamptz(6)
-  deletedAt             DateTime?           @map("deleted_at") @db.Timestamptz(6)
-  permanentlyClosedAt   DateTime?           @map("permanently_closed_at") @db.Timestamptz(6)
-  activatedAt           DateTime?           @map("activated_at") @db.Timestamptz(6)
-  blogReview            BlogReview[]
-  bookmarkList          Bookmark[]
-  breakTimeList         BreakTime[]
-  closedDayList         ClosedDay[]
-  magazinePlaceList     MagazinePlace[]
-  menuList              Menu[]
-  operatingHourList     OperatingHour[]
-  pickedPlace           PickedPlace?
-  placeImageList        PlaceImage[]
-  placeKeywordCountList PlaceKeywordCount[]
-  placeOwnerList        PlaceOwner[]
-  roadAddress           RoadAddress         @relation(fields: [roadAddressIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_road_address_tb_to_place_tb")
-  placeTypeMappingList  PlaceTypeMapping[]
-  reviewList            Review[]
-  weeklyClosedDayList   WeeklyClosedDay[]
+  idx                          Int                        @id @default(autoincrement())
+  name                         String                     @db.VarChar
+  tel                          String?                    @db.VarChar
+  reviewCount                  Int                        @default(0) @map("review_count")
+  bookmarkCount                Int                        @default(0) @map("bookmark_count")
+  roadAddressIdx               Int                        @map("road_address_idx")
+  isClosedOnHoliday            Boolean?                   @map("is_closed_on_holiday")
+  createdAt                    DateTime                   @default(now()) @map("created_at") @db.Timestamptz(6)
+  deletedAt                    DateTime?                  @map("deleted_at") @db.Timestamptz(6)
+  permanentlyClosedAt          DateTime?                  @map("permanently_closed_at") @db.Timestamptz(6)
+  activatedAt                  DateTime?                  @map("activated_at") @db.Timestamptz(6)
+  blogReview                   BlogReview[]
+  bookmarkList                 Bookmark[]
+  breakTimeList                BreakTime[]
+  closedDayList                ClosedDay[]
+  magazinePlaceList            MagazinePlace[]
+  menuList                     Menu[]
+  operatingHourList            OperatingHour[]
+  pickedPlace                  PickedPlace?
+  placeImageList               PlaceImage[]
+  placeKeywordCountList        PlaceKeywordCount[]
+  placeMainCategoryMappingList PlaceMainCategoryMapping[]
+  placeMoodCategoryMappingList PlaceMoodCategoryMapping[]
+  placeOwnerList               PlaceOwner[]
+  roadAddress                  RoadAddress                @relation(fields: [roadAddressIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_road_address_tb_to_place_tb")
+  placeTypeMappingList         PlaceTypeMapping[]
+  reviewList                   Review[]
+  weeklyClosedDayList          WeeklyClosedDay[]
 
   @@map("place_tb")
 }
@@ -370,17 +372,17 @@ model MagazinePlace {
 }
 
 model Magazine {
-  idx                Int               @id @default(autoincrement())
-  title              String            @db.VarChar
-  description        String?           @db.VarChar
-  content            String            @db.VarChar
-  thumbnailImagePath String?           @map("thumbnail_image_path") @db.VarChar
-  isTitleVisible     Boolean           @default(false) @map("is_title_visible")
-  likeCount          Int               @default(0) @map("like_count")
-  viewCount          Int               @default(0) @map("view_count")
-  createdAt          DateTime          @default(now()) @map("created_at") @db.Timestamptz(6)
-  activatedAt        DateTime?         @map("activated_at") @db.Timestamptz(6)
-  deletedAt          DateTime?         @map("deleted_at") @db.Timestamptz(6)
+  idx                Int             @id @default(autoincrement())
+  title              String          @db.VarChar
+  description        String?         @db.VarChar
+  content            String          @db.VarChar
+  thumbnailImagePath String?         @map("thumbnail_image_path") @db.VarChar
+  isTitleVisible     Boolean         @default(false) @map("is_title_visible")
+  likeCount          Int             @default(0) @map("like_count")
+  viewCount          Int             @default(0) @map("view_count")
+  createdAt          DateTime        @default(now()) @map("created_at") @db.Timestamptz(6)
+  activatedAt        DateTime?       @map("activated_at") @db.Timestamptz(6)
+  deletedAt          DateTime?       @map("deleted_at") @db.Timestamptz(6)
   magazineLike       MagazineLike[]
   placeList          MagazinePlace[]
   pinnedMagazine     PinnedMagazine?
@@ -400,9 +402,49 @@ model MagazineLike {
 }
 
 model PinnedMagazine {
-  idx        Int      @id
-  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
-  magazine   Magazine @relation(fields: [idx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_magazine_tb_to_pinned_magazine_tb")
+  idx       Int      @id
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  magazine  Magazine @relation(fields: [idx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_magazine_tb_to_pinned_magazine_tb")
 
   @@map("pinned_magazine_tb")
+}
+
+model PlaceMainCategoryMapping {
+  mainCategoryIdx Int          @map("main_category_idx")
+  placeIdx        Int          @map("place_idx")
+  mainCategory    MainCategory @relation(fields: [mainCategoryIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_main_category_tb_to_place_main_category_mapping_tb")
+  place           Place        @relation(fields: [placeIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_place_tb_to_place_main_category_mapping_tb")
+
+  @@id([mainCategoryIdx, placeIdx])
+  @@map("place_main_category_mapping_tb")
+}
+
+model PlaceMoodCategoryMapping {
+  moodCategoryIdx Int          @map("mood_category_idx")
+  placeIdx        Int          @map("place_idx")
+  moodCategory    MoodCategory @relation(fields: [moodCategoryIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_mood_category_tb_to_place_mood_category_mapping_tb")
+  place           Place        @relation(fields: [placeIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_place_tb_to_place_mood_category_mapping_tb")
+
+  @@id([moodCategoryIdx, placeIdx])
+  @@map("place_mood_category_mapping_tb")
+}
+
+model MainCategory {
+  idx                          Int                        @id
+  content                      String                     @unique @db.VarChar
+  createdAt                    DateTime                   @default(now()) @map("created_at") @db.Timestamptz(6)
+  deletedAt                    DateTime?                  @map("deleted_at") @db.Timestamptz(6)
+  placeMainCategoryMappingList PlaceMainCategoryMapping[]
+
+  @@map("main_category_tb")
+}
+
+model MoodCategory {
+  idx                          Int                        @id
+  content                      String                     @unique @db.VarChar
+  createdAt                    DateTime                   @default(now()) @map("created_at") @db.Timestamptz(6)
+  deletedAt                    DateTime?                  @map("deleted_at") @db.Timestamptz(6)
+  placeMoodCategoryMappingList PlaceMoodCategoryMapping[]
+
+  @@map("mood_category_tb")
 }

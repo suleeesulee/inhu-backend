@@ -23,6 +23,9 @@ import {
 } from './model/prisma-type/select-place-marker';
 import { GetPlaceMarkerInput } from './inputs/get-place-overview-marker.input';
 import { SelectPlaceWeeklyClosedDay } from './model/prisma-type/select-place-weekly-closed-day';
+import { MainCategory } from '../category/constants/main-category.constant';
+import { MoodCategory } from '../category/constants/mood-category.constant';
+import { UpdatePlaceCategoryInput } from './inputs/update-place-category.input';
 
 @Injectable()
 export class PlaceCoreRepository {
@@ -73,6 +76,8 @@ export class PlaceCoreRepository {
     activated,
     permanentlyClosed,
     searchKeyword,
+    mainCategoryList,
+    moodCategoryList,
   }: GetPlaceOverviewInput): Promise<SelectPlaceOverview[]> {
     const now = this.dateUtilService.getNow();
     const todayKst = this.dateUtilService.transformKoreanDate(now);
@@ -96,6 +101,8 @@ export class PlaceCoreRepository {
           this.getActivatedAtFilterWhereClause(activated), // 활성화 필터링
           this.getPermanentlyClosedFilterWhereClause(permanentlyClosed), // 폐점 여부 필터링
           this.getSearchKeywordWhereClause(searchKeyword), // 검색 키워드 필터링
+          this.getMainCategoryFilterWhereClause(mainCategoryList), // 메인 카테고리 필터링
+          this.getMoodCategoryFilterWhereClause(moodCategoryList), // 분위기 카테고리 필터링
         ],
       },
       orderBy: this.getOrderByClause({ order, orderBy }),
@@ -324,6 +331,38 @@ export class PlaceCoreRepository {
     return { placeTypeMappingList: { some: { placeTypeIdx: { in: types } } } };
   }
 
+  private getMainCategoryFilterWhereClause(
+    mainCategoryList?: MainCategory[],
+  ): Prisma.PlaceWhereInput {
+    if (mainCategoryList === undefined || mainCategoryList.length === 0) {
+      return {};
+    }
+
+    return {
+      AND: mainCategoryList.map((category) => ({
+        placeMainCategoryMappingList: {
+          some: { mainCategoryIdx: category },
+        },
+      })),
+    };
+  }
+
+  private getMoodCategoryFilterWhereClause(
+    moodCategoryList?: MoodCategory[],
+  ): Prisma.PlaceWhereInput {
+    if (moodCategoryList === undefined || moodCategoryList.length === 0) {
+      return {};
+    }
+
+    return {
+      AND: moodCategoryList.map((category) => ({
+        placeMoodCategoryMappingList: {
+          some: { moodCategoryIdx: category },
+        },
+      })),
+    };
+  }
+
   private getActivatedAtFilterWhereClause(
     activated?: boolean,
   ): Prisma.PlaceWhereInput {
@@ -534,6 +573,47 @@ export class PlaceCoreRepository {
                   day,
                   startAt: `1970-01-01T${startAt}Z`,
                   endAt: `1970-01-01T${endAt}Z`,
+                })),
+              },
+            }
+          : undefined,
+      },
+      where: { idx, deletedAt: null },
+    });
+  }
+
+  public async updatePlaceCategoryByIdx(
+    idx: number,
+    input: UpdatePlaceCategoryInput,
+  ): Promise<void> {
+    await this.txHost.tx.place.update({
+      data: {
+        placeTypeMappingList: input.typeList
+          ? {
+              deleteMany: {},
+              createMany: {
+                data: input.typeList.map((typeIdx) => ({
+                  placeTypeIdx: typeIdx,
+                })),
+              },
+            }
+          : undefined,
+        placeMainCategoryMappingList: input.mainCategoryList
+          ? {
+              deleteMany: {},
+              createMany: {
+                data: input.mainCategoryList.map((mainCategoryIdx) => ({
+                  mainCategoryIdx,
+                })),
+              },
+            }
+          : undefined,
+        placeMoodCategoryMappingList: input.moodCategoryList
+          ? {
+              deleteMany: {},
+              createMany: {
+                data: input.moodCategoryList.map((moodCategoryIdx) => ({
+                  moodCategoryIdx,
                 })),
               },
             }

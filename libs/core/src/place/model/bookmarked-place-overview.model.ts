@@ -8,6 +8,8 @@ import { PlaceClosedDayModel } from './place-closed-day.model';
 import { PlaceOperatingHourModel } from './place-operating-hour.model';
 import { PlaceWeeklyClosedDayModel } from './place-weekly-closed-day.model';
 import { PlaceBreakTimeModel } from './place-break-time.model';
+import { MainCategory } from '@libs/core/category/constants/main-category.constant';
+import { MoodCategory } from '@libs/core/category/constants/mood-category.constant';
 
 /**
  * 북마크된 장소 개요 모델
@@ -32,6 +34,8 @@ export class BookmarkedPlaceOverviewModel extends PickType(PlaceOverviewModel, [
   'operatingHourList',
   'weeklyClosedDayList',
   'breakTimeList',
+  'mainCategoryList',
+  'moodCategoryList',
 ]) {
   public bookmarkAt: Date;
 
@@ -71,6 +75,12 @@ export class BookmarkedPlaceOverviewModel extends PickType(PlaceOverviewModel, [
         PlaceWeeklyClosedDayModel.fromPrisma,
       ),
       breakTimeList: place.breakTimeList.map(PlaceBreakTimeModel.fromPrisma),
+      mainCategoryList: place.placeMainCategoryMappingList.map(
+        ({ mainCategoryIdx }) => mainCategoryIdx as MainCategory,
+      ),
+      moodCategoryList: place.placeMoodCategoryMappingList.map(
+        ({ moodCategoryIdx }) => moodCategoryIdx as MoodCategory,
+      ),
     });
   }
 }

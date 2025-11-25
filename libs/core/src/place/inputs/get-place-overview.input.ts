@@ -1,4 +1,6 @@
+import { MainCategory } from '@libs/core/category/constants/main-category.constant';
 import { PlaceType } from '../constants/place-type.constant';
+import { MoodCategory } from '@libs/core/category/constants/mood-category.constant';
 
 /**
  * 장소 개요 조회 입력 input
@@ -72,4 +74,14 @@ export class GetPlaceOverviewInput {
    * - 장소 이름, 메뉴 이름, 메뉴 설명으로 검색 가능
    */
   searchKeyword?: string;
+
+  /**
+   * 메인 카테고리 필터링
+   */
+  mainCategoryList?: MainCategory[];
+
+  /**
+   * 분위기 카테고리 필터링
+   */
+  moodCategoryList?: MoodCategory[];
 }

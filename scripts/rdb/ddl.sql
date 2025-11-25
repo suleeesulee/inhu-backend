@@ -67,6 +67,15 @@ CREATE TABLE magazine_tb
   PRIMARY KEY (idx)
 );
 
+CREATE TABLE main_category_tb
+(
+  idx        int                      NOT NULL,
+  content    varchar                  NOT NULL UNIQUE,
+  created_at timestamp with time zone NOT NULL DEFAULT NOW(),
+  deleted_at timestamp with time zone,
+  PRIMARY KEY (idx)
+);
+
 CREATE TABLE menu_review_tb
 (
   menu_idx   int NOT NULL,
@@ -86,6 +95,15 @@ CREATE TABLE menu_tb
   sort_order  smallint                 NOT NULL,
   created_at  timestamp with time zone NOT NULL DEFAULT NOW(),
   deleted_at  timestamp with time zone,
+  PRIMARY KEY (idx)
+);
+
+CREATE TABLE mood_category_tb
+(
+  idx        int                      NOT NULL,
+  content    varchar                  NOT NULL UNIQUE,
+  created_at timestamp with time zone NOT NULL DEFAULT NOW(),
+  deleted_at timestamp with time zone,
   PRIMARY KEY (idx)
 );
 
@@ -126,6 +144,20 @@ CREATE TABLE place_keyword_count_tb
   keyword_idx int NOT NULL,
   count       int NOT NULL DEFAULT 0,
   PRIMARY KEY (place_idx, keyword_idx)
+);
+
+CREATE TABLE place_main_category_mapping_tb
+(
+  main_category_idx int NOT NULL,
+  place_idx         int NOT NULL,
+  PRIMARY KEY (main_category_idx, place_idx)
+);
+
+CREATE TABLE place_mood_category_mapping_tb
+(
+  mood_category_idx int NOT NULL,
+  place_idx         int NOT NULL,
+  PRIMARY KEY (mood_category_idx, place_idx)
 );
 
 CREATE TABLE place_tb
@@ -503,3 +535,23 @@ ALTER TABLE pinned_magazine_tb
   ADD CONSTRAINT FK_magazine_tb_TO_pinned_magazine_tb
     FOREIGN KEY (idx)
     REFERENCES magazine_tb (idx);
+
+ALTER TABLE place_main_category_mapping_tb
+  ADD CONSTRAINT FK_main_category_tb_TO_place_main_category_mapping_tb
+    FOREIGN KEY (main_category_idx)
+    REFERENCES main_category_tb (idx);
+
+ALTER TABLE place_main_category_mapping_tb
+  ADD CONSTRAINT FK_place_tb_TO_place_main_category_mapping_tb
+    FOREIGN KEY (place_idx)
+    REFERENCES place_tb (idx);
+
+ALTER TABLE place_mood_category_mapping_tb
+  ADD CONSTRAINT FK_mood_category_tb_TO_place_mood_category_mapping_tb
+    FOREIGN KEY (mood_category_idx)
+    REFERENCES mood_category_tb (idx);
+
+ALTER TABLE place_mood_category_mapping_tb
+  ADD CONSTRAINT FK_place_tb_TO_place_mood_category_mapping_tb
+    FOREIGN KEY (place_idx)
+    REFERENCES place_tb (idx);
