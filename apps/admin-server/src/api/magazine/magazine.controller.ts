@@ -117,7 +117,7 @@ export class MagazineController {
    * 특정 메거진 카테고리 생성
    */
   @AdminAuth()
-  @Post('/category/:idx')
+  @Post('/:idx/category')
   @Exception(400, 'Invalid category idx')
   @Exception(404, 'Category not found')
   @HttpCode(200)
@@ -149,7 +149,7 @@ export class MagazineController {
    * 특정 매거진 카테고리 수정
    */
   @AdminAuth()
-  @Put('/category/:idx')
+  @Put('/:idx/category')
   @Exception(400, 'Invalid category idx')
   @Exception(404, 'Category not found')
   @HttpCode(200)
