@@ -13,6 +13,7 @@ import { Transactional } from '@nestjs-cls/transactional';
 import { DateUtilService } from '@libs/common/modules/date-util/date-util.service';
 import { WeeklyCloseType } from './constants/weekly-close-type.constant';
 import { PlaceWeeklyClosedDayModel } from './model/place-weekly-closed-day.model';
+import { UpdatePlaceCategoryInput } from './inputs/update-place-category.input';
 
 /**
  * 장소 관련 핵심 서비스
@@ -95,6 +96,13 @@ export class PlaceCoreService {
     input: UpdatePlaceInput,
   ): Promise<void> {
     return await this.placeCoreRepository.updatePlaceByIdx(idx, input);
+  }
+
+  public async updatePlaceCategoryByIdx(
+    idx: number,
+    input: UpdatePlaceCategoryInput,
+  ): Promise<void> {
+    return await this.placeCoreRepository.updatePlaceCategoryByIdx(idx, input);
   }
 
   public async deletePlaceByIdx(idx: number): Promise<void> {

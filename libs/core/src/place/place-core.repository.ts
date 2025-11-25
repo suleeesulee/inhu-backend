@@ -25,6 +25,7 @@ import { GetPlaceMarkerInput } from './inputs/get-place-overview-marker.input';
 import { SelectPlaceWeeklyClosedDay } from './model/prisma-type/select-place-weekly-closed-day';
 import { MainCategory } from '../category/constants/main-category.constant';
 import { MoodCategory } from '../category/constants/mood-category.constant';
+import { UpdatePlaceCategoryInput } from './inputs/update-place-category.input';
 
 @Injectable()
 export class PlaceCoreRepository {
@@ -572,6 +573,27 @@ export class PlaceCoreRepository {
                   day,
                   startAt: `1970-01-01T${startAt}Z`,
                   endAt: `1970-01-01T${endAt}Z`,
+                })),
+              },
+            }
+          : undefined,
+      },
+      where: { idx, deletedAt: null },
+    });
+  }
+
+  public async updatePlaceCategoryByIdx(
+    idx: number,
+    input: UpdatePlaceCategoryInput,
+  ): Promise<void> {
+    await this.txHost.tx.place.update({
+      data: {
+        placeTypeMappingList: input.typeList
+          ? {
+              deleteMany: {},
+              createMany: {
+                data: input.typeList.map((typeIdx) => ({
+                  placeTypeIdx: typeIdx,
                 })),
               },
             }

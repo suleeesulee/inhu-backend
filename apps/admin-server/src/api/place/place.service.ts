@@ -17,6 +17,7 @@ import { AddressRequiredException } from './exception/address-required.exception
 import { AlreadyExistWeeklyClosedDayException } from './exception/already-exist-weekly-closed-day.exception';
 import { WeeklyCloseType } from '@libs/core/place/constants/weekly-close-type.constant';
 import { CreatePlaceCategoryDto } from './dto/request/create-place-category.dto';
+import { UpdatePlaceCategoryDto } from './dto/request/update-place-category.dto';
 
 @Injectable()
 export class PlaceService {
@@ -106,10 +107,7 @@ export class PlaceService {
       throw new PlaceNotFoundException('Cannot find place with idx: ' + idx);
     }
 
-    return await this.placeCoreService.updatePlaceByIdx(idx, {
-      mainCategoryList: dto.mainCategoryList,
-      moodCategoryList: dto.moodCategoryList,
-    });
+    return await this.placeCoreService.updatePlaceCategoryByIdx(idx, dto);
   }
 
   public async updatePlaceByIdx(
@@ -161,17 +159,14 @@ export class PlaceService {
 
   public async updatePlaceCategoryByIdx(
     idx: number,
-    dto: CreatePlaceCategoryDto,
+    dto: UpdatePlaceCategoryDto,
   ): Promise<void> {
     const place = await this.placeCoreService.getPlaceByIdx(idx);
     if (!place) {
       throw new PlaceNotFoundException('Cannot find place with idx: ' + idx);
     }
 
-    return await this.placeCoreService.updatePlaceByIdx(idx, {
-      mainCategoryList: dto.mainCategoryList,
-      moodCategoryList: dto.moodCategoryList,
-    });
+    return await this.placeCoreService.updatePlaceCategoryByIdx(idx, dto);
   }
 
   public async deletePlaceByIdx(idx: number): Promise<void> {
