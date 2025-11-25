@@ -53,6 +53,12 @@ describe('Menu E2E test', () => {
         activatedAt: new Date(),
         deletedAt: null,
         placeIdxList: [placeSeed.idx],
+        type: PlaceType.CAFE,
+        mainCategoryList: [MainCategory.BAKERY, MainCategory.SANDWICH],
+        moodCategoryList: [
+          MoodCategory.STUDY_FRIENDLY,
+          MoodCategory.DESSERT_HOTSPOT,
+        ],
       });
       await magazineLikeSeedHelper.seed({
         magazineIdx: magazineSeed.idx,
@@ -91,6 +97,9 @@ describe('Menu E2E test', () => {
       );
       expect(magazine.placeList[0].bookmark).toBe(true);
       expect(magazine.isLiked).toBe(true);
+      expect(magazine.type).toBe(magazineSeed.type);
+      expect(magazine.mainCategoryList).toEqual(magazineSeed.mainCategoryList);
+      expect(magazine.moodCategoryList).toEqual(magazineSeed.moodCategoryList);
     });
 
     it('200 - bookmark check when not bookmarked', async () => {
@@ -255,6 +264,12 @@ describe('Menu E2E test', () => {
         isTitleVisible: true,
         activatedAt: new Date(),
         deletedAt: null,
+        type: PlaceType.CAFE,
+        mainCategoryList: [MainCategory.BAKERY, MainCategory.SANDWICH],
+        moodCategoryList: [
+          MoodCategory.STUDY_FRIENDLY,
+          MoodCategory.DESSERT_HOTSPOT,
+        ],
       });
 
       await magazineLikeSeedHelper.seed({
@@ -286,6 +301,11 @@ describe('Menu E2E test', () => {
       expect(magazine.viewCount).toBe(0);
       expect(magazine.thumbnailImagePath).toBe(magazineSeed.thumbnailPath);
       expect(magazine.isLiked).toBe(true);
+      expect(magazine.type).toBe(magazineSeed.type);
+      expect(magazine.mainCategoryList[0]).toBe(MainCategory.BAKERY);
+      expect(magazine.mainCategoryList[1]).toBe(MainCategory.SANDWICH);
+      expect(magazine.moodCategoryList[0]).toBe(MoodCategory.STUDY_FRIENDLY);
+      expect(magazine.moodCategoryList[1]).toBe(MoodCategory.DESSERT_HOTSPOT);
     });
 
     it('200 - not select magazine that is not activated', async () => {
@@ -939,16 +959,31 @@ describe('Menu E2E test', () => {
             likeCount: 5,
             activatedAt: new Date(),
             deletedAt: null,
+            type: PlaceType.CAFE,
+            mainCategoryList: [MainCategory.BAKERY, MainCategory.SANDWICH],
+            moodCategoryList: [
+              MoodCategory.STUDY_FRIENDLY,
+              MoodCategory.DESSERT_HOTSPOT,
+            ],
           },
           {
             likeCount: 10,
             activatedAt: new Date(),
             deletedAt: null,
+            type: PlaceType.RESTAURANT,
+            mainCategoryList: [MainCategory.FAST_FOOD, MainCategory.DESSERT],
+            moodCategoryList: [
+              MoodCategory.COST_EFFECTIVE,
+              MoodCategory.GOOD_ATMOSPHERE,
+            ],
           },
           {
             likeCount: 3,
             activatedAt: new Date(),
             deletedAt: null,
+            type: PlaceType.BAR,
+            mainCategoryList: [MainCategory.BUNGEOPPANG, MainCategory.DESSERT],
+            moodCategoryList: [MoodCategory.DATE, MoodCategory.SOLO_DRINKING],
           },
         ]);
 
@@ -992,6 +1027,16 @@ describe('Menu E2E test', () => {
       expect(magazineList[1].likeCount).toBe(magazine1.likeCount + 1);
       expect(magazineList[1].viewCount).toBe(magazine1.viewCount);
       expect(magazineList[1].isLiked).toBe(true);
+
+      expect(magazineList[0].type).toBe(magazine2.type);
+      expect(magazineList[0].mainCategoryList[0]).toBe(MainCategory.FAST_FOOD);
+      expect(magazineList[0].mainCategoryList[1]).toBe(MainCategory.DESSERT);
+      expect(magazineList[0].moodCategoryList[0]).toBe(
+        MoodCategory.COST_EFFECTIVE,
+      );
+      expect(magazineList[0].moodCategoryList[1]).toBe(
+        MoodCategory.GOOD_ATMOSPHERE,
+      );
 
       expect(magazineList.map(({ idx }) => idx)).toStrictEqual([
         magazine2.idx,
