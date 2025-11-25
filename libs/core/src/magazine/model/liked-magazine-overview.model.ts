@@ -1,6 +1,9 @@
 import { PickType } from '@nestjs/swagger';
 import { MagazineOverviewModel } from './magazine-overview.model';
 import { SelectLikedMagazineOverview } from './prisma-type/select-liked-magazine-overview';
+import { PlaceType } from '@libs/core/place/constants/place-type.constant';
+import { MainCategory } from '@libs/core/category/constants/main-category.constant';
+import { MoodCategory } from '@libs/core/category/constants/mood-category.constant';
 
 export class LikedMagazineOverviewModel extends PickType(
   MagazineOverviewModel,
@@ -15,6 +18,9 @@ export class LikedMagazineOverviewModel extends PickType(
     'createdAt',
     'activatedAt',
     'pinnedAt',
+    'type',
+    'mainCategoryList',
+    'moodCategoryList',
   ],
 ) {
   constructor(data: LikedMagazineOverviewModel) {
@@ -36,6 +42,17 @@ export class LikedMagazineOverviewModel extends PickType(
       createdAt: likedMagazine.magazine.createdAt,
       activatedAt: likedMagazine.magazine.activatedAt,
       pinnedAt: likedMagazine.magazine.pinnedMagazine?.createdAt || null,
+      type: likedMagazine.magazine.placeTypeMagazineMappingList.map(
+        ({ placeTypeIdx }) => placeTypeIdx,
+      )[0] as PlaceType,
+      mainCategoryList:
+        likedMagazine.magazine.magazineMainCategoryMappingList.map(
+          ({ mainCategoryIdx }) => mainCategoryIdx as MainCategory,
+        ),
+      moodCategoryList:
+        likedMagazine.magazine.magazineMoodCategoryMappingList.map(
+          ({ moodCategoryIdx }) => moodCategoryIdx as MoodCategory,
+        ),
     });
   }
 }

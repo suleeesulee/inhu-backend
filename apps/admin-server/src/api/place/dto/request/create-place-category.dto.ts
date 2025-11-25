@@ -9,6 +9,9 @@ export class CreatePlaceCategoryDto extends PickType(PlaceEntity, [
   'mainCategoryList',
   'moodCategoryList',
 ]) {
+  /**
+   * 장소 유형 리스트
+   */
   @ToArray()
   @UniqueArray()
   @IsEnumValue(PlaceType, { each: true })

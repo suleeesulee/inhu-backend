@@ -1,5 +1,8 @@
+import { MainCategory } from '@libs/core/category/constants/main-category.constant';
 import { MagazinePlaceModel } from './magazine-place.model';
 import { SelectMagazine } from './prisma-type/select-magazine';
+import { MoodCategory } from '@libs/core/category/constants/mood-category.constant';
+import { PlaceType } from '@libs/core/place/constants/place-type.constant';
 
 export class MagazineModel {
   /**
@@ -62,6 +65,21 @@ export class MagazineModel {
    */
   public pinnedAt: Date | null;
 
+  /**
+   * 특정 장소 유형
+   */
+  public type: PlaceType;
+
+  /**
+   * 메인 카테고리 리스트
+   */
+  public mainCategoryList: MainCategory[];
+
+  /**
+   * 분위기 카테고리 리스트
+   */
+  public moodCategoryList: MoodCategory[];
+
   constructor(data: MagazineModel) {
     Object.assign(this, data);
   }
@@ -82,6 +100,15 @@ export class MagazineModel {
         MagazinePlaceModel.fromPrisma(mp),
       ),
       pinnedAt: magazine.pinnedMagazine?.createdAt || null,
+      type: magazine.placeTypeMagazineMappingList.map(
+        ({ placeTypeIdx }) => placeTypeIdx,
+      )[0] as PlaceType,
+      mainCategoryList: magazine.magazineMainCategoryMappingList.map(
+        ({ mainCategoryIdx }) => mainCategoryIdx as MainCategory,
+      ),
+      moodCategoryList: magazine.magazineMoodCategoryMappingList.map(
+        ({ moodCategoryIdx }) => moodCategoryIdx as MoodCategory,
+      ),
     });
   }
 }
