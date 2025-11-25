@@ -19,6 +19,9 @@ import {
 } from './model/prisma-type/select-liked-magazine-overview';
 import { GetAllLikedMagazineInput } from './inputs/get-all-liked-magazine.input';
 import { UpdateMagazineCategoryInput } from './inputs/update-magazine-category.input';
+import { PlaceType } from '../place/constants/place-type.constant';
+import { MainCategory } from '../category/constants/main-category.constant';
+import { MoodCategory } from '../category/constants/mood-category.constant';
 
 @Injectable()
 export class MagazineCoreRepository {
@@ -48,6 +51,9 @@ export class MagazineCoreRepository {
           { deletedAt: null },
           this.getActivatedAtFilterWhereClause(input.activated),
           this.getPinnedAtFilterWhereClause(input.pinned),
+          this.getTypesFilterWhereClause(input.typeList), // 타입 필터링
+          this.getMainCategoryFilterWhereClause(input.mainCategoryList), // 메인 카테고리 필터링
+          this.getMoodCategoryFilterWhereClause(input.moodCategoryList), // 분위기 카테고리 필터링
         ],
       },
       orderBy: this.getOrderByClause(input),
@@ -271,5 +277,49 @@ export class MagazineCoreRepository {
     //   return [{ pinnedMagazine: { createdAt: 'desc' } }, orderByClause];
     // }
     return orderByClause;
+  }
+
+  private getTypesFilterWhereClause(
+    typeList?: PlaceType[],
+  ): Prisma.MagazineWhereInput {
+    if (typeList === undefined || typeList.length === 0) {
+      return {};
+    }
+
+    return {
+      placeTypeMagazineMappingList: { some: { magazineIdx: { in: typeList } } },
+    };
+  }
+
+  private getMainCategoryFilterWhereClause(
+    mainCategoryList?: MainCategory[],
+  ): Prisma.MagazineWhereInput {
+    if (mainCategoryList === undefined || mainCategoryList.length === 0) {
+      return {};
+    }
+
+    return {
+      AND: mainCategoryList.map((category) => ({
+        magazineMainCategoryMappingList: {
+          some: { mainCategoryIdx: category },
+        },
+      })),
+    };
+  }
+
+  private getMoodCategoryFilterWhereClause(
+    moodCategoryList?: MoodCategory[],
+  ): Prisma.MagazineWhereInput {
+    if (moodCategoryList === undefined || moodCategoryList.length === 0) {
+      return {};
+    }
+
+    return {
+      AND: moodCategoryList.map((category) => ({
+        magazineMoodCategoryMappingList: {
+          some: { moodCategoryIdx: category },
+        },
+      })),
+    };
   }
 }
