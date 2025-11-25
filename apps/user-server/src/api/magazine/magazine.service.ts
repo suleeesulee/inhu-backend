@@ -71,6 +71,9 @@ export class MagazineService {
         skip: SKIP,
         activated: true,
         orderBy: dto.orderBy,
+        typeList: dto.type ? [dto.type] : undefined,
+        mainCategoryList: dto.mainCategoryList,
+        moodCategoryList: dto.moodCategoryList,
       });
 
     const paginatedList = magazineOverviewModelList.slice(0, TAKE);

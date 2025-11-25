@@ -16,6 +16,21 @@ export const SELECT_LIKED_MAGAZINE_OVERVIEW =
           createdAt: true,
           activatedAt: true,
           pinnedMagazine: true,
+          placeTypeMagazineMappingList: {
+            select: {
+              placeTypeIdx: true,
+            },
+          },
+          magazineMainCategoryMappingList: {
+            select: {
+              mainCategoryIdx: true,
+            },
+          },
+          magazineMoodCategoryMappingList: {
+            select: {
+              moodCategoryIdx: true,
+            },
+          },
         },
       },
     },

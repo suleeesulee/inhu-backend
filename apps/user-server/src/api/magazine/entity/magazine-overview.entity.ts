@@ -12,6 +12,9 @@ export class MagazineOverviewEntity extends PickType(MagazineEntity, [
   'viewCount',
   'createdAt',
   'isLiked',
+  'type',
+  'mainCategoryList',
+  'moodCategoryList',
 ]) {
   constructor(data: MagazineOverviewEntity) {
     super();
@@ -32,6 +35,9 @@ export class MagazineOverviewEntity extends PickType(MagazineEntity, [
       viewCount: model.viewCount,
       createdAt: model.createdAt,
       isLiked,
+      type: model.type,
+      mainCategoryList: model.mainCategoryList,
+      moodCategoryList: model.moodCategoryList,
     });
   }
 }

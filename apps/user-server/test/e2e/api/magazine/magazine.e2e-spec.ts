@@ -1,3 +1,6 @@
+import { MainCategory } from '@libs/core/category/constants/main-category.constant';
+import { MoodCategory } from '@libs/core/category/constants/mood-category.constant';
+import { PlaceType } from '@libs/core/place/constants/place-type.constant';
 import { BookmarkSeedHelper } from '@libs/testing/seed/bookmark/bookmark.seed';
 import { MagazineLikeSeedHelper } from '@libs/testing/seed/magazine-like/magazine-like.seed';
 import { MagazineSeedHelper } from '@libs/testing/seed/magazine/magazine.seed';
@@ -50,6 +53,12 @@ describe('Menu E2E test', () => {
         activatedAt: new Date(),
         deletedAt: null,
         placeIdxList: [placeSeed.idx],
+        type: PlaceType.CAFE,
+        mainCategoryList: [MainCategory.BAKERY, MainCategory.SANDWICH],
+        moodCategoryList: [
+          MoodCategory.STUDY_FRIENDLY,
+          MoodCategory.DESSERT_HOTSPOT,
+        ],
       });
       await magazineLikeSeedHelper.seed({
         magazineIdx: magazineSeed.idx,
@@ -88,6 +97,9 @@ describe('Menu E2E test', () => {
       );
       expect(magazine.placeList[0].bookmark).toBe(true);
       expect(magazine.isLiked).toBe(true);
+      expect(magazine.type).toBe(magazineSeed.type);
+      expect(magazine.mainCategoryList).toEqual(magazineSeed.mainCategoryList);
+      expect(magazine.moodCategoryList).toEqual(magazineSeed.moodCategoryList);
     });
 
     it('200 - bookmark check when not bookmarked', async () => {
@@ -252,6 +264,12 @@ describe('Menu E2E test', () => {
         isTitleVisible: true,
         activatedAt: new Date(),
         deletedAt: null,
+        type: PlaceType.CAFE,
+        mainCategoryList: [MainCategory.BAKERY, MainCategory.SANDWICH],
+        moodCategoryList: [
+          MoodCategory.STUDY_FRIENDLY,
+          MoodCategory.DESSERT_HOTSPOT,
+        ],
       });
 
       await magazineLikeSeedHelper.seed({
@@ -283,6 +301,11 @@ describe('Menu E2E test', () => {
       expect(magazine.viewCount).toBe(0);
       expect(magazine.thumbnailImagePath).toBe(magazineSeed.thumbnailPath);
       expect(magazine.isLiked).toBe(true);
+      expect(magazine.type).toBe(magazineSeed.type);
+      expect(magazine.mainCategoryList[0]).toBe(MainCategory.BAKERY);
+      expect(magazine.mainCategoryList[1]).toBe(MainCategory.SANDWICH);
+      expect(magazine.moodCategoryList[0]).toBe(MoodCategory.STUDY_FRIENDLY);
+      expect(magazine.moodCategoryList[1]).toBe(MoodCategory.DESSERT_HOTSPOT);
     });
 
     it('200 - not select magazine that is not activated', async () => {
@@ -496,6 +519,435 @@ describe('Menu E2E test', () => {
       expect(magazineList[0].isLiked).toBe(true);
       expect(magazineList[1].isLiked).toBe(false);
     });
+
+    it('200 - type filtering check', async () => {
+      const [magazine1, magazine2, magazine3] =
+        await magazineSeedHelper.seedAll([
+          {
+            activatedAt: new Date(),
+            type: PlaceType.CAFE,
+          },
+          {
+            activatedAt: new Date(),
+            type: PlaceType.RESTAURANT,
+          },
+          {
+            activatedAt: new Date(),
+            type: PlaceType.BAR,
+          },
+        ]);
+
+      const response = await testHelper
+        .test()
+        .get('/magazine/all')
+        .query({
+          page: 1,
+          type: PlaceType.CAFE,
+        })
+        .expect(200);
+
+      const magazineList: MagazineOverviewEntity[] = response.body.magazineList;
+
+      expect(magazineList.map(({ idx }) => idx).sort()).toStrictEqual(
+        [magazine1.idx].sort(),
+      );
+    });
+
+    it('200 - main category filtering check (mainCategory === undefined)', async () => {
+      const [magazine1, magazine2, magazine3] =
+        await magazineSeedHelper.seedAll([
+          {
+            activatedAt: new Date(),
+            mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
+          },
+          {
+            activatedAt: new Date(),
+            mainCategoryList: [MainCategory.BUNGEOPPANG, MainCategory.SANDWICH],
+          },
+          {
+            activatedAt: new Date(),
+            mainCategoryList: [MainCategory.SANDWICH, MainCategory.DESSERT],
+          },
+        ]);
+
+      const response = await testHelper
+        .test()
+        .get('/magazine/all')
+        .query({
+          page: 1,
+        })
+        .expect(200);
+
+      const magazineList: MagazineOverviewEntity[] = response.body.magazineList;
+
+      expect(magazineList.map(({ idx }) => idx).sort()).toStrictEqual(
+        [magazine1.idx, magazine2.idx, magazine3.idx].sort(),
+      );
+    });
+
+    it('200 - main category filtering check (single condition, multiple matched)', async () => {
+      const [magazine1, magazine2, magazine3] =
+        await magazineSeedHelper.seedAll([
+          {
+            activatedAt: new Date(),
+            mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
+          },
+          {
+            activatedAt: new Date(),
+            mainCategoryList: [MainCategory.BUNGEOPPANG, MainCategory.SANDWICH],
+          },
+          {
+            activatedAt: new Date(),
+            mainCategoryList: [MainCategory.SANDWICH, MainCategory.DESSERT],
+          },
+        ]);
+
+      const response = await testHelper
+        .test()
+        .get('/magazine/all')
+        .query({
+          page: 1,
+          mainCategoryList: [MainCategory.BUNGEOPPANG],
+        })
+        .expect(200);
+
+      const magazineList: MagazineOverviewEntity[] = response.body.magazineList;
+
+      expect(magazineList.map(({ idx }) => idx).sort()).toStrictEqual(
+        [magazine1.idx, magazine2.idx].sort(),
+      );
+    });
+
+    it('200 - main category filtering check (multiple conditions, single matched)', async () => {
+      const [magazine1, magazine2, magazine3] =
+        await magazineSeedHelper.seedAll([
+          {
+            activatedAt: new Date(),
+            mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
+          },
+          {
+            activatedAt: new Date(),
+            mainCategoryList: [MainCategory.BUNGEOPPANG, MainCategory.SANDWICH],
+          },
+          {
+            activatedAt: new Date(),
+            mainCategoryList: [MainCategory.SANDWICH, MainCategory.DESSERT],
+          },
+        ]);
+
+      const response = await testHelper
+        .test()
+        .get('/magazine/all')
+        .query({
+          page: 1,
+          mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
+        })
+        .expect(200);
+
+      const magazineList: MagazineOverviewEntity[] = response.body.magazineList;
+
+      expect(magazineList.map(({ idx }) => idx).sort()).toStrictEqual(
+        [magazine1.idx].sort(),
+      );
+    });
+
+    it('200 - main category filtering check (single condition, single matched)', async () => {
+      const [magazine1, magazine2, magazine3] =
+        await magazineSeedHelper.seedAll([
+          {
+            activatedAt: new Date(),
+            mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
+          },
+          {
+            activatedAt: new Date(),
+            mainCategoryList: [MainCategory.BUNGEOPPANG, MainCategory.SANDWICH],
+          },
+          {
+            activatedAt: new Date(),
+            mainCategoryList: [MainCategory.SANDWICH, MainCategory.DESSERT],
+          },
+        ]);
+
+      const response = await testHelper
+        .test()
+        .get('/magazine/all')
+        .query({
+          page: 1,
+          mainCategoryList: [MainCategory.BAKERY],
+        })
+        .expect(200);
+
+      const magazineList: MagazineOverviewEntity[] = response.body.magazineList;
+
+      expect(magazineList.map(({ idx }) => idx).sort()).toStrictEqual(
+        [magazine1.idx].sort(),
+      );
+    });
+
+    it('200 - main category filtering check (single conditions, no matched)', async () => {
+      const [magazine1, magazine2, magazine3] =
+        await magazineSeedHelper.seedAll([
+          {
+            activatedAt: new Date(),
+            mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
+          },
+          {
+            activatedAt: new Date(),
+            mainCategoryList: [MainCategory.BUNGEOPPANG, MainCategory.SANDWICH],
+          },
+          {
+            activatedAt: new Date(),
+            mainCategoryList: [MainCategory.SANDWICH, MainCategory.DESSERT],
+          },
+        ]);
+
+      const response = await testHelper
+        .test()
+        .get('/magazine/all')
+        .query({
+          page: 1,
+          mainCategoryList: [MainCategory.FAST_FOOD],
+        })
+        .expect(200);
+
+      const magazineList: MagazineOverviewEntity[] = response.body.magazineList;
+
+      expect(magazineList).toHaveLength(0);
+      expect(magazineList).toEqual([]);
+    });
+
+    it('200 - main category filtering check (multiple conditions, no matched)', async () => {
+      const [magazine1, magazine2, magazine3] =
+        await magazineSeedHelper.seedAll([
+          {
+            activatedAt: new Date(),
+            mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
+          },
+          {
+            activatedAt: new Date(),
+            mainCategoryList: [MainCategory.BUNGEOPPANG, MainCategory.SANDWICH],
+          },
+          {
+            activatedAt: new Date(),
+            mainCategoryList: [MainCategory.SANDWICH, MainCategory.DESSERT],
+          },
+        ]);
+
+      const response = await testHelper
+        .test()
+        .get('/magazine/all')
+        .query({
+          page: 1,
+          mainCategoryList: [MainCategory.BAKERY, MainCategory.FAST_FOOD],
+        })
+        .expect(200);
+
+      const magazineList: MagazineOverviewEntity[] = response.body.magazineList;
+
+      expect(magazineList).toHaveLength(0);
+      expect(magazineList).toEqual([]);
+    });
+
+    it('200 - main category & mood category filtering check(single mood condition, single matched)', async () => {
+      const [magazine1, magazine2, magazine3] =
+        await magazineSeedHelper.seedAll([
+          {
+            activatedAt: new Date(),
+            mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
+            moodCategoryList: [MoodCategory.COST_EFFECTIVE, MoodCategory.DATE],
+          },
+          {
+            activatedAt: new Date(),
+            mainCategoryList: [MainCategory.BUNGEOPPANG, MainCategory.SANDWICH],
+            moodCategoryList: [MoodCategory.DATE, MoodCategory.DESSERT_HOTSPOT],
+          },
+          {
+            activatedAt: new Date(),
+            mainCategoryList: [MainCategory.SANDWICH, MainCategory.DESSERT],
+            moodCategoryList: [
+              MoodCategory.DESSERT_HOTSPOT,
+              MoodCategory.GOOD_ATMOSPHERE,
+            ],
+          },
+        ]);
+
+      const response = await testHelper
+        .test()
+        .get('/magazine/all')
+        .query({
+          page: 1,
+          mainCategoryList: [MainCategory.BAKERY],
+          moodCategoryList: [MoodCategory.COST_EFFECTIVE],
+        })
+        .expect(200);
+
+      const magazineList: MagazineOverviewEntity[] = response.body.magazineList;
+
+      expect(magazineList.map(({ idx }) => idx).sort()).toStrictEqual(
+        [magazine1.idx].sort(),
+      );
+    });
+
+    it('200 - main category & mood category filtering check(single mood condition, multiple matched)', async () => {
+      const [magazine1, magazine2, magazine3] =
+        await magazineSeedHelper.seedAll([
+          {
+            activatedAt: new Date(),
+            mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
+            moodCategoryList: [MoodCategory.COST_EFFECTIVE, MoodCategory.DATE],
+          },
+          {
+            activatedAt: new Date(),
+            mainCategoryList: [MainCategory.BUNGEOPPANG, MainCategory.SANDWICH],
+            moodCategoryList: [MoodCategory.DATE, MoodCategory.DESSERT_HOTSPOT],
+          },
+          {
+            activatedAt: new Date(),
+            mainCategoryList: [MainCategory.SANDWICH, MainCategory.DESSERT],
+            moodCategoryList: [
+              MoodCategory.DESSERT_HOTSPOT,
+              MoodCategory.GOOD_ATMOSPHERE,
+            ],
+          },
+        ]);
+
+      const response = await testHelper
+        .test()
+        .get('/magazine/all')
+        .query({
+          page: 1,
+          mainCategoryList: [MainCategory.BUNGEOPPANG],
+          moodCategoryList: [MoodCategory.DATE],
+        })
+        .expect(200);
+
+      const magazineList: MagazineOverviewEntity[] = response.body.magazineList;
+
+      expect(magazineList.map(({ idx }) => idx).sort()).toStrictEqual(
+        [magazine1.idx, magazine2.idx].sort(),
+      );
+    });
+
+    it('200 - main category & mood category filtering check(multiple mood conditions, single matched)', async () => {
+      const [magazine1, magazine2, magazine3] =
+        await magazineSeedHelper.seedAll([
+          {
+            activatedAt: new Date(),
+            mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
+            moodCategoryList: [MoodCategory.COST_EFFECTIVE, MoodCategory.DATE],
+          },
+          {
+            activatedAt: new Date(),
+            mainCategoryList: [MainCategory.BUNGEOPPANG, MainCategory.SANDWICH],
+            moodCategoryList: [MoodCategory.DATE, MoodCategory.DESSERT_HOTSPOT],
+          },
+          {
+            activatedAt: new Date(),
+            mainCategoryList: [MainCategory.SANDWICH, MainCategory.DESSERT],
+            moodCategoryList: [
+              MoodCategory.DESSERT_HOTSPOT,
+              MoodCategory.GOOD_ATMOSPHERE,
+            ],
+          },
+        ]);
+
+      const response = await testHelper
+        .test()
+        .get('/magazine/all')
+        .query({
+          page: 1,
+          mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
+          moodCategoryList: [MoodCategory.COST_EFFECTIVE, MoodCategory.DATE],
+        })
+        .expect(200);
+
+      const magazineList: MagazineOverviewEntity[] = response.body.magazineList;
+
+      expect(magazineList.map(({ idx }) => idx).sort()).toStrictEqual(
+        [magazine1.idx].sort(),
+      );
+    });
+
+    it('200 - main category & mood category filtering check(single mood conditions, no matched)', async () => {
+      const [magazine1, magazine2, magazine3] =
+        await magazineSeedHelper.seedAll([
+          {
+            activatedAt: new Date(),
+            mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
+            moodCategoryList: [MoodCategory.COST_EFFECTIVE, MoodCategory.DATE],
+          },
+          {
+            activatedAt: new Date(),
+            mainCategoryList: [MainCategory.BUNGEOPPANG, MainCategory.SANDWICH],
+            moodCategoryList: [MoodCategory.DATE, MoodCategory.DESSERT_HOTSPOT],
+          },
+          {
+            activatedAt: new Date(),
+            mainCategoryList: [MainCategory.SANDWICH, MainCategory.DESSERT],
+            moodCategoryList: [
+              MoodCategory.DESSERT_HOTSPOT,
+              MoodCategory.GOOD_ATMOSPHERE,
+            ],
+          },
+        ]);
+
+      const response = await testHelper
+        .test()
+        .get('/magazine/all')
+        .query({
+          page: 1,
+          mainCategoryList: [MainCategory.BAKERY],
+          moodCategoryList: [MoodCategory.DESSERT_HOTSPOT],
+        })
+        .expect(200);
+
+      const magazineList: MagazineOverviewEntity[] = response.body.magazineList;
+
+      expect(magazineList).toHaveLength(0);
+      expect(magazineList).toEqual([]);
+    });
+
+    it('200 - main category & mood category filtering check(multiple mood conditions, no matched)', async () => {
+      const [magazine1, magazine2, magazine3] =
+        await magazineSeedHelper.seedAll([
+          {
+            activatedAt: new Date(),
+            mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
+            moodCategoryList: [MoodCategory.COST_EFFECTIVE, MoodCategory.DATE],
+          },
+          {
+            activatedAt: new Date(),
+            mainCategoryList: [MainCategory.BUNGEOPPANG, MainCategory.SANDWICH],
+            moodCategoryList: [MoodCategory.DATE, MoodCategory.DESSERT_HOTSPOT],
+          },
+          {
+            activatedAt: new Date(),
+            mainCategoryList: [MainCategory.SANDWICH, MainCategory.DESSERT],
+            moodCategoryList: [
+              MoodCategory.DESSERT_HOTSPOT,
+              MoodCategory.GOOD_ATMOSPHERE,
+            ],
+          },
+        ]);
+
+      const response = await testHelper
+        .test()
+        .get('/magazine/all')
+        .query({
+          page: 1,
+          mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
+          moodCategoryList: [
+            MoodCategory.COST_EFFECTIVE,
+            MoodCategory.DESSERT_HOTSPOT,
+          ],
+        })
+        .expect(200);
+
+      const magazineList: MagazineOverviewEntity[] = response.body.magazineList;
+
+      expect(magazineList).toHaveLength(0);
+      expect(magazineList).toEqual([]);
+    });
   });
 
   describe('GET /magazine/liked/all', () => {
@@ -507,16 +959,31 @@ describe('Menu E2E test', () => {
             likeCount: 5,
             activatedAt: new Date(),
             deletedAt: null,
+            type: PlaceType.CAFE,
+            mainCategoryList: [MainCategory.BAKERY, MainCategory.SANDWICH],
+            moodCategoryList: [
+              MoodCategory.STUDY_FRIENDLY,
+              MoodCategory.DESSERT_HOTSPOT,
+            ],
           },
           {
             likeCount: 10,
             activatedAt: new Date(),
             deletedAt: null,
+            type: PlaceType.RESTAURANT,
+            mainCategoryList: [MainCategory.FAST_FOOD, MainCategory.DESSERT],
+            moodCategoryList: [
+              MoodCategory.COST_EFFECTIVE,
+              MoodCategory.GOOD_ATMOSPHERE,
+            ],
           },
           {
             likeCount: 3,
             activatedAt: new Date(),
             deletedAt: null,
+            type: PlaceType.BAR,
+            mainCategoryList: [MainCategory.BUNGEOPPANG, MainCategory.DESSERT],
+            moodCategoryList: [MoodCategory.DATE, MoodCategory.SOLO_DRINKING],
           },
         ]);
 
@@ -560,6 +1027,16 @@ describe('Menu E2E test', () => {
       expect(magazineList[1].likeCount).toBe(magazine1.likeCount + 1);
       expect(magazineList[1].viewCount).toBe(magazine1.viewCount);
       expect(magazineList[1].isLiked).toBe(true);
+
+      expect(magazineList[0].type).toBe(magazine2.type);
+      expect(magazineList[0].mainCategoryList[0]).toBe(MainCategory.FAST_FOOD);
+      expect(magazineList[0].mainCategoryList[1]).toBe(MainCategory.DESSERT);
+      expect(magazineList[0].moodCategoryList[0]).toBe(
+        MoodCategory.COST_EFFECTIVE,
+      );
+      expect(magazineList[0].moodCategoryList[1]).toBe(
+        MoodCategory.GOOD_ATMOSPHERE,
+      );
 
       expect(magazineList.map(({ idx }) => idx)).toStrictEqual([
         magazine2.idx,
