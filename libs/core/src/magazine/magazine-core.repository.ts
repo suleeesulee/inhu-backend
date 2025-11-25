@@ -287,7 +287,9 @@ export class MagazineCoreRepository {
     }
 
     return {
-      placeTypeMagazineMappingList: { some: { magazineIdx: { in: typeList } } },
+      placeTypeMagazineMappingList: {
+        some: { placeTypeIdx: { in: typeList } },
+      },
     };
   }
 
