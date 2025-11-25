@@ -17,6 +17,7 @@ import { IsEnumValue } from '@libs/common/decorator/is-enum-value.decorator';
 import { MainCategory } from '@libs/core/category/constants/main-category.constant';
 import { MoodCategory } from '@libs/core/category/constants/mood-category.constant';
 import { UniqueArray } from '@libs/common/decorator/unique-array.decorator';
+import { ToArray } from '@libs/common/decorator/to-array.decorator';
 
 export class PlaceEntity {
   /**
@@ -127,6 +128,7 @@ export class PlaceEntity {
   /**
    * 메인 카테고리 목록
    */
+  @ToArray()
   @UniqueArray()
   @IsEnumValue(MainCategory, { each: true })
   public mainCategoryList: MainCategory[];
@@ -134,6 +136,7 @@ export class PlaceEntity {
   /**
    * 분위기 카테고리 목록
    */
+  @ToArray()
   @UniqueArray()
   @IsEnumValue(MoodCategory, { each: true })
   public moodCategoryList: MoodCategory[];

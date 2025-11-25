@@ -948,9 +948,14 @@ describe('Place E2E test', () => {
   describe('POST /place/:idx/category', () => {
     it('200 - successfully add single main category and no mood category to place', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
-      const place = await placeSeedHelper.seed({});
+      const place = await placeSeedHelper.seed({
+        type: PlaceType.CAFE,
+      });
 
       const prisma = testHelper.getPrisma();
+      const beforeTypeList = await prisma.placeTypeMapping.findMany({
+        where: { placeIdx: place.idx },
+      });
       const beforeMainCategoryList =
         await prisma.placeMainCategoryMapping.findMany({
           where: { placeIdx: place.idx },
@@ -960,6 +965,8 @@ describe('Place E2E test', () => {
           where: { placeIdx: place.idx },
         });
 
+      expect(beforeTypeList.length).toBe(1);
+      expect(beforeTypeList[0].placeTypeIdx).toBe(PlaceType.CAFE);
       expect(beforeMainCategoryList.length).toBe(0);
       expect(beforeMoodCategoryList.length).toBe(0);
 
@@ -968,11 +975,15 @@ describe('Place E2E test', () => {
         .post(`/place/${place.idx}/category`)
         .set('Cookie', `token=Bearer ${loginUser.token}`)
         .send({
+          typeList: [PlaceType.CAFE],
           mainCategoryList: [MainCategory.BAKERY],
           moodCategoryList: [],
         })
         .expect(200);
 
+      const afterTypeList = await prisma.placeTypeMapping.findMany({
+        where: { placeIdx: place.idx },
+      });
       const afterMainCategoryList =
         await prisma.placeMainCategoryMapping.findMany({
           where: { placeIdx: place.idx },
@@ -982,6 +993,8 @@ describe('Place E2E test', () => {
           where: { placeIdx: place.idx },
         });
 
+      expect(afterTypeList.length).toBe(1);
+      expect(afterTypeList[0].placeTypeIdx).toBe(PlaceType.CAFE);
       expect(afterMainCategoryList.length).toBe(1);
       expect(afterMainCategoryList[0].mainCategoryIdx).toBe(
         MainCategory.BAKERY,
@@ -991,9 +1004,15 @@ describe('Place E2E test', () => {
 
     it('200 - successfully add no main category and single mood category to place', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
-      const place = await placeSeedHelper.seed({});
+      const place = await placeSeedHelper.seed({
+        type: PlaceType.CAFE,
+      });
 
       const prisma = testHelper.getPrisma();
+
+      const beforeTypeList = await prisma.placeTypeMapping.findMany({
+        where: { placeIdx: place.idx },
+      });
       const beforeMainCategoryList =
         await prisma.placeMainCategoryMapping.findMany({
           where: { placeIdx: place.idx },
@@ -1003,6 +1022,8 @@ describe('Place E2E test', () => {
           where: { placeIdx: place.idx },
         });
 
+      expect(beforeTypeList.length).toBe(1);
+      expect(beforeTypeList[0].placeTypeIdx).toBe(PlaceType.CAFE);
       expect(beforeMainCategoryList.length).toBe(0);
       expect(beforeMoodCategoryList.length).toBe(0);
 
@@ -1011,11 +1032,15 @@ describe('Place E2E test', () => {
         .post(`/place/${place.idx}/category`)
         .set('Cookie', `token=Bearer ${loginUser.token}`)
         .send({
+          typeList: [PlaceType.CAFE],
           mainCategoryList: [],
           moodCategoryList: [MoodCategory.DESSERT_HOTSPOT],
         })
         .expect(200);
 
+      const afterTypeList = await prisma.placeTypeMapping.findMany({
+        where: { placeIdx: place.idx },
+      });
       const afterMainCategoryList =
         await prisma.placeMainCategoryMapping.findMany({
           where: { placeIdx: place.idx },
@@ -1025,6 +1050,8 @@ describe('Place E2E test', () => {
           where: { placeIdx: place.idx },
         });
 
+      expect(afterTypeList.length).toBe(1);
+      expect(afterTypeList[0].placeTypeIdx).toBe(PlaceType.CAFE);
       expect(afterMainCategoryList.length).toBe(0);
       expect(afterMoodCategoryList.length).toBe(1);
       expect(afterMoodCategoryList[0].moodCategoryIdx).toBe(
@@ -1034,9 +1061,14 @@ describe('Place E2E test', () => {
 
     it('200 - successfully adds multiple main category and single mood category to place', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
-      const place = await placeSeedHelper.seed({});
+      const place = await placeSeedHelper.seed({
+        type: PlaceType.CAFE,
+      });
 
       const prisma = testHelper.getPrisma();
+      const beforeTypeList = await prisma.placeTypeMapping.findMany({
+        where: { placeIdx: place.idx },
+      });
       const beforeMainCategoryList =
         await prisma.placeMainCategoryMapping.findMany({
           where: { placeIdx: place.idx },
@@ -1046,6 +1078,8 @@ describe('Place E2E test', () => {
           where: { placeIdx: place.idx },
         });
 
+      expect(beforeTypeList.length).toBe(1);
+      expect(beforeTypeList[0].placeTypeIdx).toBe(PlaceType.CAFE);
       expect(beforeMainCategoryList.length).toBe(0);
       expect(beforeMoodCategoryList.length).toBe(0);
 
@@ -1054,6 +1088,7 @@ describe('Place E2E test', () => {
         .post(`/place/${place.idx}/category`)
         .set('Cookie', `token=Bearer ${loginUser.token}`)
         .send({
+          typeList: [PlaceType.CAFE],
           mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
           moodCategoryList: [
             MoodCategory.STUDY_FRIENDLY,
@@ -1062,6 +1097,9 @@ describe('Place E2E test', () => {
         })
         .expect(200);
 
+      const afterTypeList = await prisma.placeTypeMapping.findMany({
+        where: { placeIdx: place.idx },
+      });
       const afterMainCategoryList =
         await prisma.placeMainCategoryMapping.findMany({
           where: { placeIdx: place.idx },
@@ -1071,6 +1109,8 @@ describe('Place E2E test', () => {
           where: { placeIdx: place.idx },
         });
 
+      expect(afterTypeList.length).toBe(1);
+      expect(afterTypeList[0].placeTypeIdx).toBe(PlaceType.CAFE);
       expect(afterMainCategoryList.length).toBe(2);
       expect(
         afterMainCategoryList
@@ -1089,9 +1129,14 @@ describe('Place E2E test', () => {
 
     it('200 - successfully adds single main category and multiple mood category to place', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
-      const place = await placeSeedHelper.seed({});
+      const place = await placeSeedHelper.seed({
+        type: PlaceType.CAFE,
+      });
 
       const prisma = testHelper.getPrisma();
+      const beforeTypeList = await prisma.placeTypeMapping.findMany({
+        where: { placeIdx: place.idx },
+      });
       const beforeMainCategoryList =
         await prisma.placeMainCategoryMapping.findMany({
           where: { placeIdx: place.idx },
@@ -1101,6 +1146,8 @@ describe('Place E2E test', () => {
           where: { placeIdx: place.idx },
         });
 
+      expect(beforeTypeList.length).toBe(1);
+      expect(beforeTypeList[0].placeTypeIdx).toBe(PlaceType.CAFE);
       expect(beforeMainCategoryList.length).toBe(0);
       expect(beforeMoodCategoryList.length).toBe(0);
 
@@ -1109,6 +1156,7 @@ describe('Place E2E test', () => {
         .post(`/place/${place.idx}/category`)
         .set('Cookie', `token=Bearer ${loginUser.token}`)
         .send({
+          typeList: [PlaceType.CAFE],
           mainCategoryList: [MainCategory.BAKERY],
           moodCategoryList: [
             MoodCategory.STUDY_FRIENDLY,
@@ -1117,6 +1165,9 @@ describe('Place E2E test', () => {
         })
         .expect(200);
 
+      const afterTypeList = await prisma.placeTypeMapping.findMany({
+        where: { placeIdx: place.idx },
+      });
       const afterMainCategoryList =
         await prisma.placeMainCategoryMapping.findMany({
           where: { placeIdx: place.idx },
@@ -1126,6 +1177,8 @@ describe('Place E2E test', () => {
           where: { placeIdx: place.idx },
         });
 
+      expect(afterTypeList.length).toBe(1);
+      expect(afterTypeList[0].placeTypeIdx).toBe(PlaceType.CAFE);
       expect(afterMainCategoryList.length).toBe(1);
       expect(afterMainCategoryList[0].mainCategoryIdx).toBe(
         MainCategory.BAKERY,
@@ -1142,9 +1195,14 @@ describe('Place E2E test', () => {
 
     it('200 - successfully adds multiple main category and no mood category to place', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
-      const place = await placeSeedHelper.seed({});
+      const place = await placeSeedHelper.seed({
+        type: PlaceType.CAFE,
+      });
 
       const prisma = testHelper.getPrisma();
+      const beforeTypeList = await prisma.placeTypeMapping.findMany({
+        where: { placeIdx: place.idx },
+      });
       const beforeMainCategoryList =
         await prisma.placeMainCategoryMapping.findMany({
           where: { placeIdx: place.idx },
@@ -1154,6 +1212,8 @@ describe('Place E2E test', () => {
           where: { placeIdx: place.idx },
         });
 
+      expect(beforeTypeList.length).toBe(1);
+      expect(beforeTypeList[0].placeTypeIdx).toBe(PlaceType.CAFE);
       expect(beforeMainCategoryList.length).toBe(0);
       expect(beforeMoodCategoryList.length).toBe(0);
 
@@ -1162,11 +1222,15 @@ describe('Place E2E test', () => {
         .post(`/place/${place.idx}/category`)
         .set('Cookie', `token=Bearer ${loginUser.token}`)
         .send({
+          typeList: [PlaceType.CAFE],
           mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
           moodCategoryList: [],
         })
         .expect(200);
 
+      const afterTypeList = await prisma.placeTypeMapping.findMany({
+        where: { placeIdx: place.idx },
+      });
       const afterMainCategoryList =
         await prisma.placeMainCategoryMapping.findMany({
           where: { placeIdx: place.idx },
@@ -1176,6 +1240,8 @@ describe('Place E2E test', () => {
           where: { placeIdx: place.idx },
         });
 
+      expect(afterTypeList.length).toBe(1);
+      expect(afterTypeList[0].placeTypeIdx).toBe(PlaceType.CAFE);
       expect(afterMainCategoryList.length).toBe(2);
       expect(
         afterMainCategoryList
@@ -1187,9 +1253,14 @@ describe('Place E2E test', () => {
 
     it('200 - successfully adds no main category and multiple mood category to place', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
-      const place = await placeSeedHelper.seed({});
+      const place = await placeSeedHelper.seed({
+        type: PlaceType.CAFE,
+      });
 
       const prisma = testHelper.getPrisma();
+      const beforeTypeList = await prisma.placeTypeMapping.findMany({
+        where: { placeIdx: place.idx },
+      });
       const beforeMainCategoryList =
         await prisma.placeMainCategoryMapping.findMany({
           where: { placeIdx: place.idx },
@@ -1207,6 +1278,7 @@ describe('Place E2E test', () => {
         .post(`/place/${place.idx}/category`)
         .set('Cookie', `token=Bearer ${loginUser.token}`)
         .send({
+          typeList: [PlaceType.CAFE],
           mainCategoryList: [],
           moodCategoryList: [
             MoodCategory.STUDY_FRIENDLY,
@@ -1215,6 +1287,9 @@ describe('Place E2E test', () => {
         })
         .expect(200);
 
+      const afterTypeList = await prisma.placeTypeMapping.findMany({
+        where: { placeIdx: place.idx },
+      });
       const afterMainCategoryList =
         await prisma.placeMainCategoryMapping.findMany({
           where: { placeIdx: place.idx },
@@ -1223,6 +1298,9 @@ describe('Place E2E test', () => {
         await prisma.placeMoodCategoryMapping.findMany({
           where: { placeIdx: place.idx },
         });
+
+      expect(afterTypeList.length).toBe(1);
+      expect(afterTypeList[0].placeTypeIdx).toBe(PlaceType.CAFE);
       expect(afterMainCategoryList.length).toBe(0);
       expect(afterMoodCategoryList.length).toBe(2);
       expect(
@@ -1236,9 +1314,14 @@ describe('Place E2E test', () => {
 
     it('200 - successfully adds duplicate category is ignored and unique categories are added to place', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
-      const place = await placeSeedHelper.seed({});
+      const place = await placeSeedHelper.seed({
+        type: PlaceType.CAFE,
+      });
 
       const prisma = testHelper.getPrisma();
+      const beforeTypeList = await prisma.placeTypeMapping.findMany({
+        where: { placeIdx: place.idx },
+      });
       const beforeMainCategoryList =
         await prisma.placeMainCategoryMapping.findMany({
           where: { placeIdx: place.idx },
@@ -1248,6 +1331,8 @@ describe('Place E2E test', () => {
           where: { placeIdx: place.idx },
         });
 
+      expect(beforeTypeList.length).toBe(1);
+      expect(beforeTypeList[0].placeTypeIdx).toBe(PlaceType.CAFE);
       expect(beforeMainCategoryList.length).toBe(0);
       expect(beforeMoodCategoryList.length).toBe(0);
 
@@ -1256,6 +1341,7 @@ describe('Place E2E test', () => {
         .post(`/place/${place.idx}/category`)
         .set('Cookie', `token=Bearer ${loginUser.token}`)
         .send({
+          typeList: [PlaceType.CAFE],
           mainCategoryList: [
             MainCategory.BAKERY,
             MainCategory.BAKERY,
@@ -1269,6 +1355,9 @@ describe('Place E2E test', () => {
         })
         .expect(200);
 
+      const afterTypeList = await prisma.placeTypeMapping.findMany({
+        where: { placeIdx: place.idx },
+      });
       const afterMainCategoryList =
         await prisma.placeMainCategoryMapping.findMany({
           where: { placeIdx: place.idx },
@@ -1278,6 +1367,78 @@ describe('Place E2E test', () => {
           where: { placeIdx: place.idx },
         });
 
+      expect(afterTypeList.length).toBe(1);
+      expect(afterTypeList[0].placeTypeIdx).toBe(PlaceType.CAFE);
+      expect(afterMainCategoryList.length).toBe(2);
+      expect(
+        afterMainCategoryList
+          .map((category) => category.mainCategoryIdx)
+          .sort(),
+      ).toStrictEqual([MainCategory.BAKERY, MainCategory.BUNGEOPPANG].sort());
+      expect(afterMoodCategoryList.length).toBe(2);
+      expect(
+        afterMoodCategoryList
+          .map((category) => category.moodCategoryIdx)
+          .sort(),
+      ).toStrictEqual(
+        [MoodCategory.STUDY_FRIENDLY, MoodCategory.DESSERT_HOTSPOT].sort(),
+      );
+    });
+
+    it('200 - successfully adds multiple types, main category and mood category to place', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const place = await placeSeedHelper.seed({
+        type: PlaceType.CAFE,
+      });
+
+      const prisma = testHelper.getPrisma();
+      const beforeTypeList = await prisma.placeTypeMapping.findMany({
+        where: { placeIdx: place.idx },
+      });
+      const beforeMainCategoryList =
+        await prisma.placeMainCategoryMapping.findMany({
+          where: { placeIdx: place.idx },
+        });
+      const beforeMoodCategoryList =
+        await prisma.placeMoodCategoryMapping.findMany({
+          where: { placeIdx: place.idx },
+        });
+
+      expect(beforeTypeList.length).toBe(1);
+      expect(beforeTypeList[0].placeTypeIdx).toBe(PlaceType.CAFE);
+      expect(beforeMainCategoryList.length).toBe(0);
+      expect(beforeMoodCategoryList.length).toBe(0);
+
+      await testHelper
+        .test()
+        .post(`/place/${place.idx}/category`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send({
+          typeList: [PlaceType.CAFE, PlaceType.RESTAURANT],
+          mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
+          moodCategoryList: [
+            MoodCategory.STUDY_FRIENDLY,
+            MoodCategory.DESSERT_HOTSPOT,
+          ],
+        })
+        .expect(200);
+
+      const afterTypeList = await prisma.placeTypeMapping.findMany({
+        where: { placeIdx: place.idx },
+      });
+      const afterMainCategoryList =
+        await prisma.placeMainCategoryMapping.findMany({
+          where: { placeIdx: place.idx },
+        });
+      const afterMoodCategoryList =
+        await prisma.placeMoodCategoryMapping.findMany({
+          where: { placeIdx: place.idx },
+        });
+
+      expect(afterTypeList.length).toBe(2);
+      expect(
+        afterTypeList.map((type) => type.placeTypeIdx).sort(),
+      ).toStrictEqual([PlaceType.CAFE, PlaceType.RESTAURANT].sort());
       expect(afterMainCategoryList.length).toBe(2);
       expect(
         afterMainCategoryList
@@ -1301,6 +1462,7 @@ describe('Place E2E test', () => {
         .test()
         .post(`/place/${place.idx}/category`)
         .send({
+          typeList: [PlaceType.CAFE],
           mainCategoryList: [MainCategory.BAKERY],
           moodCategoryList: [MoodCategory.DESSERT_HOTSPOT],
         })
@@ -1316,6 +1478,7 @@ describe('Place E2E test', () => {
         .post(`/place/${invalidPlaceIdx}/category`)
         .set('Cookie', `token=Bearer ${loginUser.token}`)
         .send({
+          typeList: [PlaceType.CAFE],
           mainCategoryList: [MainCategory.BAKERY],
           moodCategoryList: [MoodCategory.DESSERT_HOTSPOT],
         })
@@ -1331,6 +1494,7 @@ describe('Place E2E test', () => {
         .post(`/place/${nonExistentPlaceIdx}/category`)
         .set('Cookie', `token=Bearer ${loginUser.token}`)
         .send({
+          typeList: [PlaceType.CAFE],
           mainCategoryList: [MainCategory.BAKERY],
           moodCategoryList: [MoodCategory.DESSERT_HOTSPOT],
         })
@@ -1342,6 +1506,7 @@ describe('Place E2E test', () => {
     it('200 - successfully updates single main category and no mood category to place', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const place = await placeSeedHelper.seed({
+        type: PlaceType.CAFE,
         mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
         moodCategoryList: [
           MoodCategory.STUDY_FRIENDLY,
@@ -1350,6 +1515,9 @@ describe('Place E2E test', () => {
       });
 
       const prisma = testHelper.getPrisma();
+      const beforeTypeList = await prisma.placeTypeMapping.findMany({
+        where: { placeIdx: place.idx },
+      });
       const beforeMainCategoryList =
         await prisma.placeMainCategoryMapping.findMany({
           where: { placeIdx: place.idx },
@@ -1359,6 +1527,8 @@ describe('Place E2E test', () => {
           where: { placeIdx: place.idx },
         });
 
+      expect(beforeTypeList.length).toBe(1);
+      expect(beforeTypeList[0].placeTypeIdx).toBe(PlaceType.CAFE);
       expect(beforeMainCategoryList.length).toBe(2);
       expect(beforeMoodCategoryList.length).toBe(2);
 
@@ -1367,11 +1537,15 @@ describe('Place E2E test', () => {
         .put(`/place/${place.idx}/category`)
         .set('Cookie', `token=Bearer ${loginUser.token}`)
         .send({
+          typeList: [PlaceType.CAFE],
           mainCategoryList: [MainCategory.DESSERT],
           moodCategoryList: [],
         })
         .expect(200);
 
+      const afterTypeList = await prisma.placeTypeMapping.findMany({
+        where: { placeIdx: place.idx },
+      });
       const afterMainCategoryList =
         await prisma.placeMainCategoryMapping.findMany({
           where: { placeIdx: place.idx },
@@ -1381,6 +1555,8 @@ describe('Place E2E test', () => {
           where: { placeIdx: place.idx },
         });
 
+      expect(afterTypeList.length).toBe(1);
+      expect(afterTypeList[0].placeTypeIdx).toBe(PlaceType.CAFE);
       expect(afterMainCategoryList.length).toBe(1);
       expect(afterMainCategoryList[0].mainCategoryIdx).toBe(
         MainCategory.DESSERT,
@@ -1391,6 +1567,7 @@ describe('Place E2E test', () => {
     it('200 - successfully updates no main category and single mood category to place', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const place = await placeSeedHelper.seed({
+        type: PlaceType.CAFE,
         mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
         moodCategoryList: [
           MoodCategory.STUDY_FRIENDLY,
@@ -1399,6 +1576,9 @@ describe('Place E2E test', () => {
       });
 
       const prisma = testHelper.getPrisma();
+      const beforeTypeList = await prisma.placeTypeMapping.findMany({
+        where: { placeIdx: place.idx },
+      });
       const beforeMainCategoryList =
         await prisma.placeMainCategoryMapping.findMany({
           where: { placeIdx: place.idx },
@@ -1408,6 +1588,8 @@ describe('Place E2E test', () => {
           where: { placeIdx: place.idx },
         });
 
+      expect(beforeTypeList.length).toBe(1);
+      expect(beforeTypeList[0].placeTypeIdx).toBe(PlaceType.CAFE);
       expect(beforeMainCategoryList.length).toBe(2);
       expect(beforeMoodCategoryList.length).toBe(2);
 
@@ -1416,11 +1598,15 @@ describe('Place E2E test', () => {
         .put(`/place/${place.idx}/category`)
         .set('Cookie', `token=Bearer ${loginUser.token}`)
         .send({
+          typeList: [PlaceType.CAFE],
           mainCategoryList: [],
           moodCategoryList: [MoodCategory.GOOD_ATMOSPHERE],
         })
         .expect(200);
 
+      const afterTypeList = await prisma.placeTypeMapping.findMany({
+        where: { placeIdx: place.idx },
+      });
       const afterMainCategoryList =
         await prisma.placeMainCategoryMapping.findMany({
           where: { placeIdx: place.idx },
@@ -1430,6 +1616,8 @@ describe('Place E2E test', () => {
           where: { placeIdx: place.idx },
         });
 
+      expect(afterTypeList.length).toBe(1);
+      expect(afterTypeList[0].placeTypeIdx).toBe(PlaceType.CAFE);
       expect(afterMainCategoryList.length).toBe(0);
       expect(afterMoodCategoryList.length).toBe(1);
       expect(afterMoodCategoryList[0].moodCategoryIdx).toBe(
@@ -1440,6 +1628,7 @@ describe('Place E2E test', () => {
     it('200 - successfully updates multiple main category and single mood category to place', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const place = await placeSeedHelper.seed({
+        type: PlaceType.CAFE,
         mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
         moodCategoryList: [
           MoodCategory.STUDY_FRIENDLY,
@@ -1448,6 +1637,9 @@ describe('Place E2E test', () => {
       });
 
       const prisma = testHelper.getPrisma();
+      const beforeTypeList = await prisma.placeTypeMapping.findMany({
+        where: { placeIdx: place.idx },
+      });
       const beforeMainCategoryList =
         await prisma.placeMainCategoryMapping.findMany({
           where: { placeIdx: place.idx },
@@ -1465,11 +1657,15 @@ describe('Place E2E test', () => {
         .put(`/place/${place.idx}/category`)
         .set('Cookie', `token=Bearer ${loginUser.token}`)
         .send({
+          typeList: [PlaceType.CAFE],
           mainCategoryList: [MainCategory.DESSERT, MainCategory.SANDWICH],
           moodCategoryList: [MoodCategory.GOOD_ATMOSPHERE],
         })
         .expect(200);
 
+      const afterTypeList = await prisma.placeTypeMapping.findMany({
+        where: { placeIdx: place.idx },
+      });
       const afterMainCategoryList =
         await prisma.placeMainCategoryMapping.findMany({
           where: { placeIdx: place.idx },
@@ -1479,6 +1675,8 @@ describe('Place E2E test', () => {
           where: { placeIdx: place.idx },
         });
 
+      expect(afterTypeList.length).toBe(1);
+      expect(afterTypeList[0].placeTypeIdx).toBe(PlaceType.CAFE);
       expect(afterMainCategoryList.length).toBe(2);
       expect(
         afterMainCategoryList
@@ -1494,6 +1692,7 @@ describe('Place E2E test', () => {
     it('200 successfully updates single main category and multiple mood category to place', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const place = await placeSeedHelper.seed({
+        type: PlaceType.CAFE,
         mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
         moodCategoryList: [
           MoodCategory.STUDY_FRIENDLY,
@@ -1502,6 +1701,9 @@ describe('Place E2E test', () => {
       });
 
       const prisma = testHelper.getPrisma();
+      const beforeTypeList = await prisma.placeTypeMapping.findMany({
+        where: { placeIdx: place.idx },
+      });
       const beforeMainCategoryList =
         await prisma.placeMainCategoryMapping.findMany({
           where: { placeIdx: place.idx },
@@ -1519,11 +1721,15 @@ describe('Place E2E test', () => {
         .put(`/place/${place.idx}/category`)
         .set('Cookie', `token=Bearer ${loginUser.token}`)
         .send({
+          typeList: [PlaceType.CAFE],
           mainCategoryList: [MainCategory.DESSERT],
           moodCategoryList: [MoodCategory.GOOD_ATMOSPHERE, MoodCategory.DATE],
         })
         .expect(200);
 
+      const afterTypeList = await prisma.placeTypeMapping.findMany({
+        where: { placeIdx: place.idx },
+      });
       const afterMainCategoryList =
         await prisma.placeMainCategoryMapping.findMany({
           where: { placeIdx: place.idx },
@@ -1533,6 +1739,8 @@ describe('Place E2E test', () => {
           where: { placeIdx: place.idx },
         });
 
+      expect(afterTypeList.length).toBe(1);
+      expect(afterTypeList[0].placeTypeIdx).toBe(PlaceType.CAFE);
       expect(afterMainCategoryList.length).toBe(1);
       expect(afterMainCategoryList[0].mainCategoryIdx).toBe(
         MainCategory.DESSERT,
@@ -1548,6 +1756,7 @@ describe('Place E2E test', () => {
     it('200 - successfully updates multiple main category and no mood category to place', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const place = await placeSeedHelper.seed({
+        type: PlaceType.CAFE,
         mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
         moodCategoryList: [
           MoodCategory.STUDY_FRIENDLY,
@@ -1556,6 +1765,9 @@ describe('Place E2E test', () => {
       });
 
       const prisma = testHelper.getPrisma();
+      const beforeTypeList = await prisma.placeTypeMapping.findMany({
+        where: { placeIdx: place.idx },
+      });
       const beforeMainCategoryList =
         await prisma.placeMainCategoryMapping.findMany({
           where: { placeIdx: place.idx },
@@ -1573,11 +1785,15 @@ describe('Place E2E test', () => {
         .put(`/place/${place.idx}/category`)
         .set('Cookie', `token=Bearer ${loginUser.token}`)
         .send({
+          typeList: [PlaceType.CAFE],
           mainCategoryList: [MainCategory.DESSERT, MainCategory.SANDWICH],
           moodCategoryList: [],
         })
         .expect(200);
 
+      const afterTypeList = await prisma.placeTypeMapping.findMany({
+        where: { placeIdx: place.idx },
+      });
       const afterMainCategoryList =
         await prisma.placeMainCategoryMapping.findMany({
           where: { placeIdx: place.idx },
@@ -1587,6 +1803,8 @@ describe('Place E2E test', () => {
           where: { placeIdx: place.idx },
         });
 
+      expect(afterTypeList.length).toBe(1);
+      expect(afterTypeList[0].placeTypeIdx).toBe(PlaceType.CAFE);
       expect(afterMainCategoryList.length).toBe(2);
       expect(
         afterMainCategoryList
@@ -1599,6 +1817,7 @@ describe('Place E2E test', () => {
     it('200 - successfully updates no main category and multiple mood category to place', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const place = await placeSeedHelper.seed({
+        type: PlaceType.CAFE,
         mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
         moodCategoryList: [
           MoodCategory.STUDY_FRIENDLY,
@@ -1607,6 +1826,9 @@ describe('Place E2E test', () => {
       });
 
       const prisma = testHelper.getPrisma();
+      const beforeTypeList = await prisma.placeTypeMapping.findMany({
+        where: { placeIdx: place.idx },
+      });
       const beforeMainCategoryList =
         await prisma.placeMainCategoryMapping.findMany({
           where: { placeIdx: place.idx },
@@ -1616,6 +1838,8 @@ describe('Place E2E test', () => {
           where: { placeIdx: place.idx },
         });
 
+      expect(beforeTypeList.length).toBe(1);
+      expect(beforeTypeList[0].placeTypeIdx).toBe(PlaceType.CAFE);
       expect(beforeMainCategoryList.length).toBe(2);
       expect(beforeMoodCategoryList.length).toBe(2);
 
@@ -1624,11 +1848,15 @@ describe('Place E2E test', () => {
         .put(`/place/${place.idx}/category`)
         .set('Cookie', `token=Bearer ${loginUser.token}`)
         .send({
+          typeList: [PlaceType.CAFE],
           mainCategoryList: [],
           moodCategoryList: [MoodCategory.GOOD_ATMOSPHERE, MoodCategory.DATE],
         })
         .expect(200);
 
+      const afterTypeList = await prisma.placeTypeMapping.findMany({
+        where: { placeIdx: place.idx },
+      });
       const afterMainCategoryList =
         await prisma.placeMainCategoryMapping.findMany({
           where: { placeIdx: place.idx },
@@ -1638,6 +1866,8 @@ describe('Place E2E test', () => {
           where: { placeIdx: place.idx },
         });
 
+      expect(afterTypeList.length).toBe(1);
+      expect(afterTypeList[0].placeTypeIdx).toBe(PlaceType.CAFE);
       expect(afterMainCategoryList.length).toBe(0);
       expect(afterMoodCategoryList.length).toBe(2);
       expect(
@@ -1650,6 +1880,7 @@ describe('Place E2E test', () => {
     it('200 - successfully updates duplicate category is ignored and unique categories are added to place', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const place = await placeSeedHelper.seed({
+        type: PlaceType.CAFE,
         mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
         moodCategoryList: [
           MoodCategory.STUDY_FRIENDLY,
@@ -1658,6 +1889,9 @@ describe('Place E2E test', () => {
       });
 
       const prisma = testHelper.getPrisma();
+      const beforeTypeList = await prisma.placeTypeMapping.findMany({
+        where: { placeIdx: place.idx },
+      });
       const beforeMainCategoryList =
         await prisma.placeMainCategoryMapping.findMany({
           where: { placeIdx: place.idx },
@@ -1667,6 +1901,8 @@ describe('Place E2E test', () => {
           where: { placeIdx: place.idx },
         });
 
+      expect(beforeTypeList.length).toBe(1);
+      expect(beforeTypeList[0].placeTypeIdx).toBe(PlaceType.CAFE);
       expect(beforeMainCategoryList.length).toBe(2);
       expect(beforeMoodCategoryList.length).toBe(2);
 
@@ -1675,6 +1911,7 @@ describe('Place E2E test', () => {
         .put(`/place/${place.idx}/category`)
         .set('Cookie', `token=Bearer ${loginUser.token}`)
         .send({
+          typeList: [PlaceType.CAFE],
           mainCategoryList: [
             MainCategory.DESSERT,
             MainCategory.DESSERT,
@@ -1688,6 +1925,9 @@ describe('Place E2E test', () => {
         })
         .expect(200);
 
+      const afterTypeList = await prisma.placeTypeMapping.findMany({
+        where: { placeIdx: place.idx },
+      });
       const afterMainCategoryList =
         await prisma.placeMainCategoryMapping.findMany({
           where: { placeIdx: place.idx },
@@ -1697,6 +1937,78 @@ describe('Place E2E test', () => {
           where: { placeIdx: place.idx },
         });
 
+      expect(afterTypeList.length).toBe(1);
+      expect(afterTypeList[0].placeTypeIdx).toBe(PlaceType.CAFE);
+      expect(afterMainCategoryList.length).toBe(2);
+      expect(
+        afterMainCategoryList
+          .map((category) => category.mainCategoryIdx)
+          .sort(),
+      ).toStrictEqual([MainCategory.DESSERT, MainCategory.SANDWICH].sort());
+      expect(afterMoodCategoryList.length).toBe(2);
+      expect(
+        afterMoodCategoryList
+          .map((category) => category.moodCategoryIdx)
+          .sort(),
+      ).toStrictEqual([MoodCategory.GOOD_ATMOSPHERE, MoodCategory.DATE].sort());
+    });
+
+    it('200 - successfully updates multiple types, main category and mood category to place', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const place = await placeSeedHelper.seed({
+        type: PlaceType.CAFE,
+        mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
+        moodCategoryList: [
+          MoodCategory.STUDY_FRIENDLY,
+          MoodCategory.DESSERT_HOTSPOT,
+        ],
+      });
+
+      const prisma = testHelper.getPrisma();
+      const beforeTypeList = await prisma.placeTypeMapping.findMany({
+        where: { placeIdx: place.idx },
+      });
+      const beforeMainCategoryList =
+        await prisma.placeMainCategoryMapping.findMany({
+          where: { placeIdx: place.idx },
+        });
+      const beforeMoodCategoryList =
+        await prisma.placeMoodCategoryMapping.findMany({
+          where: { placeIdx: place.idx },
+        });
+
+      expect(beforeTypeList.length).toBe(1);
+      expect(beforeTypeList[0].placeTypeIdx).toBe(PlaceType.CAFE);
+      expect(beforeMainCategoryList.length).toBe(2);
+      expect(beforeMoodCategoryList.length).toBe(2);
+
+      await testHelper
+        .test()
+        .put(`/place/${place.idx}/category`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send({
+          typeList: [PlaceType.CAFE, PlaceType.RESTAURANT],
+          mainCategoryList: [MainCategory.DESSERT, MainCategory.SANDWICH],
+          moodCategoryList: [MoodCategory.GOOD_ATMOSPHERE, MoodCategory.DATE],
+        })
+        .expect(200);
+
+      const afterTypeList = await prisma.placeTypeMapping.findMany({
+        where: { placeIdx: place.idx },
+      });
+      const afterMainCategoryList =
+        await prisma.placeMainCategoryMapping.findMany({
+          where: { placeIdx: place.idx },
+        });
+      const afterMoodCategoryList =
+        await prisma.placeMoodCategoryMapping.findMany({
+          where: { placeIdx: place.idx },
+        });
+
+      expect(afterTypeList.length).toBe(2);
+      expect(
+        afterTypeList.map((type) => type.placeTypeIdx).sort(),
+      ).toStrictEqual([PlaceType.CAFE, PlaceType.RESTAURANT].sort());
       expect(afterMainCategoryList.length).toBe(2);
       expect(
         afterMainCategoryList
@@ -1713,6 +2025,7 @@ describe('Place E2E test', () => {
 
     it('401 - no access token', async () => {
       const place = await placeSeedHelper.seed({
+        type: PlaceType.CAFE,
         mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
         moodCategoryList: [
           MoodCategory.STUDY_FRIENDLY,
@@ -1724,6 +2037,7 @@ describe('Place E2E test', () => {
         .test()
         .put(`/place/${place.idx}/category`)
         .send({
+          typeList: [PlaceType.CAFE],
           mainCategoryList: [MainCategory.DESSERT],
           moodCategoryList: [MoodCategory.GOOD_ATMOSPHERE],
         })
@@ -1739,6 +2053,7 @@ describe('Place E2E test', () => {
         .put(`/place/${invalidPlaceIdx}/category`)
         .set('Cookie', `token=Bearer ${loginUser.token}`)
         .send({
+          typeList: [PlaceType.CAFE],
           mainCategoryList: [MainCategory.DESSERT],
           moodCategoryList: [MoodCategory.GOOD_ATMOSPHERE],
         })
@@ -1754,6 +2069,7 @@ describe('Place E2E test', () => {
         .put(`/place/${nonExistentPlaceIdx}/category`)
         .set('Cookie', `token=Bearer ${loginUser.token}`)
         .send({
+          typeList: [PlaceType.CAFE],
           mainCategoryList: [MainCategory.DESSERT],
           moodCategoryList: [MoodCategory.GOOD_ATMOSPHERE],
         })
@@ -2014,8 +2330,6 @@ describe('Place E2E test', () => {
         .expect(404);
     });
   });
-
-  describe('PUT /place/:idx/category', () => {});
 
   describe('DELETE /place/:idx', () => {
     it('200 - confirms place is deleted successfully', async () => {
