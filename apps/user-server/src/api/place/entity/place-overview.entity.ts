@@ -19,6 +19,7 @@ export class PlaceOverviewEntity extends PickType(PlaceEntity, [
   'breakTimeList',
   'mainCategoryList',
   'moodCategoryList',
+  'typeList',
 ]) {
   constructor(data: PlaceOverviewEntity) {
     super();
@@ -44,6 +45,7 @@ export class PlaceOverviewEntity extends PickType(PlaceEntity, [
       breakTimeList: model.breakTimeList,
       mainCategoryList: model.mainCategoryList,
       moodCategoryList: model.moodCategoryList,
+      typeList: model.typeList,
     });
   }
 }

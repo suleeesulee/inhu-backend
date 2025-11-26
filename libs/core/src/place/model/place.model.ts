@@ -104,6 +104,8 @@ export class PlaceModel {
 
   public moodCategoryList: MoodCategory[];
 
+  public typeList: PlaceType[];
+
   constructor(data: PlaceModel) {
     Object.assign(this, data);
   }
@@ -140,6 +142,9 @@ export class PlaceModel {
       ),
       moodCategoryList: place.placeMoodCategoryMappingList.map(
         ({ moodCategoryIdx }) => moodCategoryIdx as MoodCategory,
+      ),
+      typeList: place.placeTypeMappingList.map(
+        ({ placeTypeIdx }) => placeTypeIdx as PlaceType,
       ),
     });
   }
