@@ -322,13 +322,15 @@ export class PlaceCoreRepository {
   }
 
   private getTypesFilterWhereClause(
-    types?: PlaceType[],
+    typeList?: PlaceType[],
   ): Prisma.PlaceWhereInput {
-    if (types === undefined || types.length === 0) {
+    if (typeList === undefined || typeList.length === 0) {
       return {};
     }
 
-    return { placeTypeMappingList: { some: { placeTypeIdx: { in: types } } } };
+    return {
+      placeTypeMappingList: { some: { placeTypeIdx: { in: typeList } } },
+    };
   }
 
   private getMainCategoryFilterWhereClause(

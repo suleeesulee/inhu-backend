@@ -36,6 +36,7 @@ export class PlaceOverviewModel extends PickType(PlaceModel, [
   'breakTimeList',
   'mainCategoryList',
   'moodCategoryList',
+  'typeList',
 ]) {
   constructor(data: PlaceOverviewModel) {
     super();
@@ -74,6 +75,9 @@ export class PlaceOverviewModel extends PickType(PlaceModel, [
       ),
       moodCategoryList: place.placeMoodCategoryMappingList.map(
         ({ moodCategoryIdx }) => moodCategoryIdx as MoodCategory,
+      ),
+      typeList: place.placeTypeMappingList.map(
+        ({ placeTypeIdx }) => placeTypeIdx as PlaceType,
       ),
     });
   }

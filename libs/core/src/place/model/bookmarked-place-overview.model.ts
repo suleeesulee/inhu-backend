@@ -36,6 +36,7 @@ export class BookmarkedPlaceOverviewModel extends PickType(PlaceOverviewModel, [
   'breakTimeList',
   'mainCategoryList',
   'moodCategoryList',
+  'typeList',
 ]) {
   public bookmarkAt: Date;
 
@@ -80,6 +81,9 @@ export class BookmarkedPlaceOverviewModel extends PickType(PlaceOverviewModel, [
       ),
       moodCategoryList: place.placeMoodCategoryMappingList.map(
         ({ moodCategoryIdx }) => moodCategoryIdx as MoodCategory,
+      ),
+      typeList: place.placeTypeMappingList.map(
+        ({ placeTypeIdx }) => placeTypeIdx as PlaceType,
       ),
     });
   }

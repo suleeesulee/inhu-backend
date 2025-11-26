@@ -28,11 +28,11 @@ export class PlaceMarkerModel extends PickType(PlaceModel, [
   'topKeywordList',
   'roadAddress',
   'type',
-
   'closedDayList',
   'operatingHourList',
   'weeklyClosedDayList',
   'breakTimeList',
+  'typeList',
 ]) {
   constructor(data: PlaceMarkerModel) {
     super();
@@ -66,6 +66,9 @@ export class PlaceMarkerModel extends PickType(PlaceModel, [
         PlaceWeeklyClosedDayModel.fromPrisma,
       ),
       breakTimeList: place.breakTimeList.map(PlaceBreakTimeModel.fromPrisma),
+      typeList: place.placeTypeMappingList.map(
+        ({ placeTypeIdx }) => placeTypeIdx as PlaceType,
+      ),
     });
   }
 }
