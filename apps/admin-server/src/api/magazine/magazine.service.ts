@@ -142,7 +142,7 @@ export class MagazineService {
       throw new NotFoundException(`Magazine not found for idx: ${idx}`);
     }
 
-    return await this.magazineCoreService.updateMagazineCategoryByIdx(idx, dto);
+    return await this.magazineCoreService.updateMagazineByIdx(idx, dto);
   }
 
   public async deleteMagazineByIdx(idx: number): Promise<void> {

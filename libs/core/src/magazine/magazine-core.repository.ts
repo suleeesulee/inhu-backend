@@ -18,7 +18,6 @@ import {
   SelectLikedMagazineOverview,
 } from './model/prisma-type/select-liked-magazine-overview';
 import { GetAllLikedMagazineInput } from './inputs/get-all-liked-magazine.input';
-import { UpdateMagazineCategoryInput } from './inputs/update-magazine-category.input';
 import { PlaceType } from '../place/constants/place-type.constant';
 import { MainCategory } from '../category/constants/main-category.constant';
 import { MoodCategory } from '../category/constants/mood-category.constant';
@@ -144,16 +143,6 @@ export class MagazineCoreRepository {
               },
             }
           : undefined,
-      },
-    });
-  }
-
-  public async updateMagazineCategoryByIdx(
-    idx: number,
-    input: UpdateMagazineCategoryInput,
-  ): Promise<void> {
-    await this.txHost.tx.magazine.update({
-      data: {
         placeTypeMagazineMappingList: input.typeList
           ? {
               deleteMany: {},
@@ -185,7 +174,6 @@ export class MagazineCoreRepository {
             }
           : undefined,
       },
-      where: { idx, deletedAt: null },
     });
   }
 
