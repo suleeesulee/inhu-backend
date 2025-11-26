@@ -35,6 +35,7 @@ export class PlaceService {
       bookmarkUserIdx: undefined,
       mainCategoryList: dto.mainCategoryList,
       moodCategoryList: dto.moodCategoryList,
+      searchKeyword: dto.searchKeyword,
     };
     let placeOverviewModelList: PlaceOverviewModel[];
 
