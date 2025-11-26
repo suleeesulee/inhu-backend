@@ -13,6 +13,7 @@ import {
   IsNotEmpty,
   IsNumber,
   IsOptional,
+  MaxLength,
   Min,
 } from 'class-validator';
 
@@ -114,4 +115,13 @@ export class GetAllPlaceOverviewDto {
   @IsEnumValue(MoodCategory, { each: true })
   @Type(() => Number)
   moodCategoryList?: MoodCategory[];
+
+  /**
+   * 검색 필터링
+   *
+   * - 장소 이름, 메뉴 이름, 메뉴 설명으로 검색 가능
+   */
+  @IsOptional()
+  @MaxLength(20)
+  searchKeyword?: string;
 }

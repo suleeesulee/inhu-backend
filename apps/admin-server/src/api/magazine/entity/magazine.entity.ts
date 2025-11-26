@@ -81,9 +81,9 @@ export class MagazineEntity {
   public placeList: MagazinePlaceEntity[];
 
   /**
-   * 특정 장소 유형
+   * 특정 장소 유형 목록
    */
-  public type: PlaceType;
+  public typeList: PlaceType[];
 
   /**
    * 메인 카테고리 리스트
@@ -120,7 +120,7 @@ export class MagazineEntity {
       activatedAt: model.activatedAt,
       placeList: model.placeList.map(MagazinePlaceEntity.fromModel),
       pinnedAt: model.pinnedAt,
-      type: model.type,
+      typeList: model.typeList,
       mainCategoryList: model.mainCategoryList,
       moodCategoryList: model.moodCategoryList,
     });

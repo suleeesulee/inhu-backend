@@ -84,7 +84,7 @@ CREATE TABLE magazine_tb
 CREATE TABLE main_category_tb
 (
   idx        int                      NOT NULL,
-  content    varchar                  NOT NULL UNIQUE,
+  content    varchar                  NOT NULL,
   created_at timestamp with time zone NOT NULL DEFAULT NOW(),
   deleted_at timestamp with time zone,
   PRIMARY KEY (idx)
@@ -115,7 +115,7 @@ CREATE TABLE menu_tb
 CREATE TABLE mood_category_tb
 (
   idx        int                      NOT NULL,
-  content    varchar                  NOT NULL UNIQUE,
+  content    varchar                  NOT NULL,
   created_at timestamp with time zone NOT NULL DEFAULT NOW(),
   deleted_at timestamp with time zone,
   PRIMARY KEY (idx)

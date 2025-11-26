@@ -153,7 +153,7 @@ export class PlaceService {
       throw new PlaceNotFoundException('Cannot find place with idx: ' + idx);
     }
 
-    return await this.placeCoreService.updatePlaceCategoryByIdx(idx, dto);
+    return await this.placeCoreService.updatePlaceByIdx(idx, dto);
   }
 
   public async deletePlaceByIdx(idx: number): Promise<void> {

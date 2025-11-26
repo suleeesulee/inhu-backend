@@ -66,9 +66,9 @@ export class MagazineModel {
   public pinnedAt: Date | null;
 
   /**
-   * 특정 장소 유형
+   * 특정 장소 유형 목록
    */
-  public type: PlaceType;
+  public typeList: PlaceType[];
 
   /**
    * 메인 카테고리 리스트
@@ -100,9 +100,9 @@ export class MagazineModel {
         MagazinePlaceModel.fromPrisma(mp),
       ),
       pinnedAt: magazine.pinnedMagazine?.createdAt || null,
-      type: magazine.placeTypeMagazineMappingList.map(
-        ({ placeTypeIdx }) => placeTypeIdx,
-      )[0] as PlaceType,
+      typeList: magazine.placeTypeMagazineMappingList.map(
+        ({ placeTypeIdx }) => placeTypeIdx as PlaceType,
+      ),
       mainCategoryList: magazine.magazineMainCategoryMappingList.map(
         ({ mainCategoryIdx }) => mainCategoryIdx as MainCategory,
       ),

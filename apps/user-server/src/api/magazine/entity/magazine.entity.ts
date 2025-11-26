@@ -81,9 +81,9 @@ export class MagazineEntity {
   public isLiked: boolean;
 
   /**
-   * 특정 장소 타입
+   * 특정 장소 타입 목록
    */
-  public type: PlaceType;
+  public typeList: PlaceType[];
 
   /**
    * 메인 카테고리 목록
@@ -118,7 +118,7 @@ export class MagazineEntity {
         MagazinePlaceEntity.fromModel(model, userBookmarkedPlaceList),
       ),
       isLiked,
-      type: model.type,
+      typeList: model.typeList,
       mainCategoryList: model.mainCategoryList,
       moodCategoryList: model.moodCategoryList,
     });

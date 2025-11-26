@@ -49,7 +49,7 @@ describe('Magazine e2e test', () => {
         activatedAt: new Date(),
         deletedAt: null,
         placeIdxList: [placeSeed.idx],
-        type: PlaceType.CAFE,
+        typeList: [PlaceType.CAFE],
         mainCategoryList: [MainCategory.BAKERY, MainCategory.SANDWICH],
         moodCategoryList: [
           MoodCategory.STUDY_FRIENDLY,
@@ -80,7 +80,7 @@ describe('Magazine e2e test', () => {
       expect(magazine.activatedAt).toEqual(
         magazineSeed.activatedAt?.toISOString(),
       );
-      expect(magazine.type).toBe(magazineSeed.type);
+      expect(magazine.typeList).toEqual(magazineSeed.typeList);
       expect(magazine.mainCategoryList).toEqual(magazineSeed.mainCategoryList);
       expect(magazine.moodCategoryList).toEqual(magazineSeed.moodCategoryList);
     });
@@ -311,7 +311,7 @@ describe('Magazine e2e test', () => {
         activatedAt: new Date(),
         deletedAt: null,
         placeIdxList: [placeSeed.idx],
-        type: PlaceType.CAFE,
+        typeList: [PlaceType.CAFE],
         mainCategoryList: [MainCategory.BAKERY, MainCategory.SANDWICH],
         moodCategoryList: [
           MoodCategory.STUDY_FRIENDLY,
@@ -353,7 +353,7 @@ describe('Magazine e2e test', () => {
       expect(magazine.placeList[0].imagePathList).toEqual(
         placeSeed.placeImgList,
       );
-      expect(magazine.type).toBe(magazineSeed.type);
+      expect(magazine.typeList).toEqual(magazineSeed.typeList);
       expect(magazine.mainCategoryList).toEqual(magazineSeed.mainCategoryList);
       expect(magazine.moodCategoryList).toEqual(magazineSeed.moodCategoryList);
     });
@@ -857,627 +857,11 @@ describe('Magazine e2e test', () => {
     });
   });
 
-  describe('POST /magazine/:idx/category', () => {
-    it('200 - successfully add single type to magazine', async () => {
-      const loginUser = testHelper.loginAdmin.admin1;
-      const magazine = await magazineSeedHelper.seed({});
-
-      const prisma = testHelper.getPrisma();
-      const beforeTypeList = await prisma.placeTypeMagazineMapping.findMany({
-        where: { magazineIdx: magazine.idx },
-      });
-
-      expect(beforeTypeList.length).toBe(0);
-
-      await testHelper
-        .test()
-        .post(`/magazine/${magazine.idx}/category`)
-        .set('Cookie', `token=Bearer ${loginUser.token}`)
-        .send({
-          typeList: [PlaceType.CAFE],
-          mainCategoryList: [],
-          moodCategoryList: [],
-        })
-        .expect(200);
-
-      const afterTypeList = await prisma.placeTypeMagazineMapping.findMany({
-        where: { magazineIdx: magazine.idx },
-      });
-
-      expect(afterTypeList.length).toBe(1);
-      expect(afterTypeList[0].placeTypeIdx).toBe(PlaceType.CAFE);
-    });
-
-    it('200 - successfully add multiple type to magazine', async () => {
-      const loginUser = testHelper.loginAdmin.admin1;
-      const magazine = await magazineSeedHelper.seed({});
-
-      const prisma = testHelper.getPrisma();
-      const beforeTypeList = await prisma.placeTypeMagazineMapping.findMany({
-        where: { magazineIdx: magazine.idx },
-      });
-
-      expect(beforeTypeList.length).toBe(0);
-
-      await testHelper
-        .test()
-        .post(`/magazine/${magazine.idx}/category`)
-        .set('Cookie', `token=Bearer ${loginUser.token}`)
-        .send({
-          typeList: [PlaceType.CAFE, PlaceType.RESTAURANT],
-          mainCategoryList: [],
-          moodCategoryList: [],
-        })
-        .expect(200);
-
-      const afterTypeList = await prisma.placeTypeMagazineMapping.findMany({
-        where: { magazineIdx: magazine.idx },
-        orderBy: { placeTypeIdx: 'asc' },
-      });
-
-      expect(afterTypeList.length).toBe(2);
-      expect(afterTypeList[0].placeTypeIdx).toBe(PlaceType.CAFE);
-      expect(afterTypeList[1].placeTypeIdx).toBe(PlaceType.RESTAURANT);
-    });
-
-    it('200 - successfully add single main category and no mood category to magazine', async () => {
-      const loginUser = testHelper.loginAdmin.admin1;
-      const magazine = await magazineSeedHelper.seed({});
-
-      const prisma = testHelper.getPrisma();
-      const beforeTypeList = await prisma.placeTypeMagazineMapping.findMany({
-        where: { magazineIdx: magazine.idx },
-      });
-      const beforeMainCategoryList =
-        await prisma.magazineMainCategoryMapping.findMany({
-          where: { magazineIdx: magazine.idx },
-        });
-      const beforeMoodCategoryList =
-        await prisma.magazineMoodCategoryMapping.findMany({
-          where: { magazineIdx: magazine.idx },
-        });
-
-      expect(beforeTypeList.length).toBe(0);
-      expect(beforeMainCategoryList.length).toBe(0);
-      expect(beforeMoodCategoryList.length).toBe(0);
-
-      await testHelper
-        .test()
-        .post(`/magazine/${magazine.idx}/category`)
-        .set('Cookie', `token=Bearer ${loginUser.token}`)
-        .send({
-          typeList: [PlaceType.CAFE],
-          mainCategoryList: [MainCategory.BAKERY],
-          moodCategoryList: [],
-        })
-        .expect(200);
-
-      const afterTypeList = await prisma.placeTypeMagazineMapping.findMany({
-        where: { magazineIdx: magazine.idx },
-      });
-      const afterMainCategoryList =
-        await prisma.magazineMainCategoryMapping.findMany({
-          where: { magazineIdx: magazine.idx },
-        });
-      const afterMoodCategoryList =
-        await prisma.magazineMoodCategoryMapping.findMany({
-          where: { magazineIdx: magazine.idx },
-        });
-
-      expect(afterTypeList.length).toBe(1);
-      expect(afterTypeList[0].placeTypeIdx).toBe(PlaceType.CAFE);
-      expect(afterMainCategoryList.length).toBe(1);
-      expect(afterMainCategoryList[0].mainCategoryIdx).toBe(
-        MainCategory.BAKERY,
-      );
-      expect(afterMoodCategoryList.length).toBe(0);
-    });
-
-    it('200 - successfully add no main category and single mood category to magazine', async () => {
-      const loginUser = testHelper.loginAdmin.admin1;
-      const magazine = await magazineSeedHelper.seed({
-        type: PlaceType.CAFE,
-      });
-
-      const prisma = testHelper.getPrisma();
-
-      const beforeTypeList = await prisma.placeTypeMagazineMapping.findMany({
-        where: { magazineIdx: magazine.idx },
-      });
-      const beforeMainCategoryList =
-        await prisma.magazineMainCategoryMapping.findMany({
-          where: { magazineIdx: magazine.idx },
-        });
-      const beforeMoodCategoryList =
-        await prisma.magazineMoodCategoryMapping.findMany({
-          where: { magazineIdx: magazine.idx },
-        });
-
-      expect(beforeTypeList.length).toBe(1);
-      expect(beforeTypeList[0].placeTypeIdx).toBe(PlaceType.CAFE);
-      expect(beforeMainCategoryList.length).toBe(0);
-      expect(beforeMoodCategoryList.length).toBe(0);
-
-      await testHelper
-        .test()
-        .post(`/magazine/${magazine.idx}/category`)
-        .set('Cookie', `token=Bearer ${loginUser.token}`)
-        .send({
-          typeList: [PlaceType.CAFE],
-          mainCategoryList: [],
-          moodCategoryList: [MoodCategory.DESSERT_HOTSPOT],
-        })
-        .expect(200);
-
-      const afterTypeList = await prisma.placeTypeMagazineMapping.findMany({
-        where: { magazineIdx: magazine.idx },
-      });
-      const afterMainCategoryList =
-        await prisma.magazineMainCategoryMapping.findMany({
-          where: { magazineIdx: magazine.idx },
-        });
-      const afterMoodCategoryList =
-        await prisma.magazineMoodCategoryMapping.findMany({
-          where: { magazineIdx: magazine.idx },
-        });
-
-      expect(afterTypeList.length).toBe(1);
-      expect(afterTypeList[0].placeTypeIdx).toBe(PlaceType.CAFE);
-      expect(afterMainCategoryList.length).toBe(0);
-      expect(afterMoodCategoryList.length).toBe(1);
-      expect(afterMoodCategoryList[0].moodCategoryIdx).toBe(
-        MoodCategory.DESSERT_HOTSPOT,
-      );
-    });
-
-    it('200 - successfully adds multiple main category and single mood category to magazine', async () => {
-      const loginUser = testHelper.loginAdmin.admin1;
-      const magazine = await magazineSeedHelper.seed({
-        type: PlaceType.CAFE,
-      });
-
-      const prisma = testHelper.getPrisma();
-      const beforeTypeList = await prisma.placeTypeMagazineMapping.findMany({
-        where: { magazineIdx: magazine.idx },
-      });
-      const beforeMainCategoryList =
-        await prisma.magazineMainCategoryMapping.findMany({
-          where: { magazineIdx: magazine.idx },
-        });
-      const beforeMoodCategoryList =
-        await prisma.magazineMoodCategoryMapping.findMany({
-          where: { magazineIdx: magazine.idx },
-        });
-
-      expect(beforeTypeList.length).toBe(1);
-      expect(beforeTypeList[0].placeTypeIdx).toBe(PlaceType.CAFE);
-      expect(beforeMainCategoryList.length).toBe(0);
-      expect(beforeMoodCategoryList.length).toBe(0);
-
-      await testHelper
-        .test()
-        .post(`/magazine/${magazine.idx}/category`)
-        .set('Cookie', `token=Bearer ${loginUser.token}`)
-        .send({
-          typeList: [PlaceType.CAFE],
-          mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
-          moodCategoryList: [
-            MoodCategory.STUDY_FRIENDLY,
-            MoodCategory.DESSERT_HOTSPOT,
-          ],
-        })
-        .expect(200);
-
-      const afterTypeList = await prisma.placeTypeMagazineMapping.findMany({
-        where: { magazineIdx: magazine.idx },
-      });
-      const afterMainCategoryList =
-        await prisma.magazineMainCategoryMapping.findMany({
-          where: { magazineIdx: magazine.idx },
-        });
-      const afterMoodCategoryList =
-        await prisma.magazineMoodCategoryMapping.findMany({
-          where: { magazineIdx: magazine.idx },
-        });
-
-      expect(afterTypeList.length).toBe(1);
-      expect(afterTypeList[0].placeTypeIdx).toBe(PlaceType.CAFE);
-      expect(afterMainCategoryList.length).toBe(2);
-      expect(
-        afterMainCategoryList
-          .map((category) => category.mainCategoryIdx)
-          .sort(),
-      ).toStrictEqual([MainCategory.BAKERY, MainCategory.BUNGEOPPANG].sort());
-      expect(afterMoodCategoryList.length).toBe(2);
-      expect(
-        afterMoodCategoryList
-          .map((category) => category.moodCategoryIdx)
-          .sort(),
-      ).toStrictEqual(
-        [MoodCategory.STUDY_FRIENDLY, MoodCategory.DESSERT_HOTSPOT].sort(),
-      );
-    });
-
-    it('200 - successfully adds single main category and multiple mood category to magazine', async () => {
-      const loginUser = testHelper.loginAdmin.admin1;
-      const magazine = await magazineSeedHelper.seed({
-        type: PlaceType.CAFE,
-      });
-
-      const prisma = testHelper.getPrisma();
-      const beforeTypeList = await prisma.placeTypeMagazineMapping.findMany({
-        where: { magazineIdx: magazine.idx },
-      });
-      const beforeMainCategoryList =
-        await prisma.magazineMainCategoryMapping.findMany({
-          where: { magazineIdx: magazine.idx },
-        });
-      const beforeMoodCategoryList =
-        await prisma.magazineMoodCategoryMapping.findMany({
-          where: { magazineIdx: magazine.idx },
-        });
-
-      expect(beforeTypeList.length).toBe(1);
-      expect(beforeTypeList[0].placeTypeIdx).toBe(PlaceType.CAFE);
-      expect(beforeMainCategoryList.length).toBe(0);
-      expect(beforeMoodCategoryList.length).toBe(0);
-
-      await testHelper
-        .test()
-        .post(`/magazine/${magazine.idx}/category`)
-        .set('Cookie', `token=Bearer ${loginUser.token}`)
-        .send({
-          typeList: [PlaceType.CAFE],
-          mainCategoryList: [MainCategory.BAKERY],
-          moodCategoryList: [
-            MoodCategory.STUDY_FRIENDLY,
-            MoodCategory.DESSERT_HOTSPOT,
-          ],
-        })
-        .expect(200);
-
-      const afterTypeList = await prisma.placeTypeMagazineMapping.findMany({
-        where: { magazineIdx: magazine.idx },
-      });
-      const afterMainCategoryList =
-        await prisma.magazineMainCategoryMapping.findMany({
-          where: { magazineIdx: magazine.idx },
-        });
-      const afterMoodCategoryList =
-        await prisma.magazineMoodCategoryMapping.findMany({
-          where: { magazineIdx: magazine.idx },
-        });
-
-      expect(afterTypeList.length).toBe(1);
-      expect(afterTypeList[0].placeTypeIdx).toBe(PlaceType.CAFE);
-      expect(afterMainCategoryList.length).toBe(1);
-      expect(afterMainCategoryList[0].mainCategoryIdx).toBe(
-        MainCategory.BAKERY,
-      );
-      expect(afterMoodCategoryList.length).toBe(2);
-      expect(
-        afterMoodCategoryList
-          .map((category) => category.moodCategoryIdx)
-          .sort(),
-      ).toStrictEqual(
-        [MoodCategory.STUDY_FRIENDLY, MoodCategory.DESSERT_HOTSPOT].sort(),
-      );
-    });
-
-    it('200 - successfully adds multiple main category and no mood category to magazine', async () => {
-      const loginUser = testHelper.loginAdmin.admin1;
-      const magazine = await magazineSeedHelper.seed({
-        type: PlaceType.CAFE,
-      });
-
-      const prisma = testHelper.getPrisma();
-      const beforeTypeList = await prisma.placeTypeMagazineMapping.findMany({
-        where: { magazineIdx: magazine.idx },
-      });
-      const beforeMainCategoryList =
-        await prisma.magazineMainCategoryMapping.findMany({
-          where: { magazineIdx: magazine.idx },
-        });
-      const beforeMoodCategoryList =
-        await prisma.magazineMoodCategoryMapping.findMany({
-          where: { magazineIdx: magazine.idx },
-        });
-
-      expect(beforeTypeList.length).toBe(1);
-      expect(beforeTypeList[0].placeTypeIdx).toBe(PlaceType.CAFE);
-      expect(beforeMainCategoryList.length).toBe(0);
-      expect(beforeMoodCategoryList.length).toBe(0);
-
-      await testHelper
-        .test()
-        .post(`/magazine/${magazine.idx}/category`)
-        .set('Cookie', `token=Bearer ${loginUser.token}`)
-        .send({
-          typeList: [PlaceType.CAFE],
-          mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
-          moodCategoryList: [],
-        })
-        .expect(200);
-
-      const afterTypeList = await prisma.placeTypeMagazineMapping.findMany({
-        where: { magazineIdx: magazine.idx },
-      });
-      const afterMainCategoryList =
-        await prisma.magazineMainCategoryMapping.findMany({
-          where: { magazineIdx: magazine.idx },
-        });
-      const afterMoodCategoryList =
-        await prisma.magazineMoodCategoryMapping.findMany({
-          where: { magazineIdx: magazine.idx },
-        });
-
-      expect(afterTypeList.length).toBe(1);
-      expect(afterTypeList[0].placeTypeIdx).toBe(PlaceType.CAFE);
-      expect(afterMainCategoryList.length).toBe(2);
-      expect(
-        afterMainCategoryList
-          .map((category) => category.mainCategoryIdx)
-          .sort(),
-      ).toStrictEqual([MainCategory.BAKERY, MainCategory.BUNGEOPPANG].sort());
-      expect(afterMoodCategoryList.length).toBe(0);
-    });
-
-    it('200 - successfully adds no main category and multiple mood category to magazine', async () => {
-      const loginUser = testHelper.loginAdmin.admin1;
-      const magazine = await magazineSeedHelper.seed({
-        type: PlaceType.CAFE,
-      });
-
-      const prisma = testHelper.getPrisma();
-      const beforeTypeList = await prisma.placeTypeMagazineMapping.findMany({
-        where: { magazineIdx: magazine.idx },
-      });
-      const beforeMainCategoryList =
-        await prisma.magazineMainCategoryMapping.findMany({
-          where: { magazineIdx: magazine.idx },
-        });
-      const beforeMoodCategoryList =
-        await prisma.magazineMoodCategoryMapping.findMany({
-          where: { magazineIdx: magazine.idx },
-        });
-
-      expect(beforeMainCategoryList.length).toBe(0);
-      expect(beforeMoodCategoryList.length).toBe(0);
-
-      await testHelper
-        .test()
-        .post(`/magazine/${magazine.idx}/category`)
-        .set('Cookie', `token=Bearer ${loginUser.token}`)
-        .send({
-          typeList: [PlaceType.CAFE],
-          mainCategoryList: [],
-          moodCategoryList: [
-            MoodCategory.STUDY_FRIENDLY,
-            MoodCategory.DESSERT_HOTSPOT,
-          ],
-        })
-        .expect(200);
-
-      const afterTypeList = await prisma.placeTypeMagazineMapping.findMany({
-        where: { magazineIdx: magazine.idx },
-      });
-      const afterMainCategoryList =
-        await prisma.magazineMainCategoryMapping.findMany({
-          where: { magazineIdx: magazine.idx },
-        });
-      const afterMoodCategoryList =
-        await prisma.magazineMoodCategoryMapping.findMany({
-          where: { magazineIdx: magazine.idx },
-        });
-
-      expect(afterTypeList.length).toBe(1);
-      expect(afterTypeList[0].placeTypeIdx).toBe(PlaceType.CAFE);
-      expect(afterMainCategoryList.length).toBe(0);
-      expect(afterMoodCategoryList.length).toBe(2);
-      expect(
-        afterMoodCategoryList
-          .map((category) => category.moodCategoryIdx)
-          .sort(),
-      ).toStrictEqual(
-        [MoodCategory.STUDY_FRIENDLY, MoodCategory.DESSERT_HOTSPOT].sort(),
-      );
-    });
-
-    it('200 - successfully adds duplicate category is ignored and unique categories are added to magazine', async () => {
-      const loginUser = testHelper.loginAdmin.admin1;
-      const magazine = await magazineSeedHelper.seed({
-        type: PlaceType.CAFE,
-      });
-
-      const prisma = testHelper.getPrisma();
-      const beforeTypeList = await prisma.placeTypeMagazineMapping.findMany({
-        where: { magazineIdx: magazine.idx },
-      });
-      const beforeMainCategoryList =
-        await prisma.magazineMainCategoryMapping.findMany({
-          where: { magazineIdx: magazine.idx },
-        });
-      const beforeMoodCategoryList =
-        await prisma.magazineMoodCategoryMapping.findMany({
-          where: { magazineIdx: magazine.idx },
-        });
-
-      expect(beforeTypeList.length).toBe(1);
-      expect(beforeTypeList[0].placeTypeIdx).toBe(PlaceType.CAFE);
-      expect(beforeMainCategoryList.length).toBe(0);
-      expect(beforeMoodCategoryList.length).toBe(0);
-
-      await testHelper
-        .test()
-        .post(`/magazine/${magazine.idx}/category`)
-        .set('Cookie', `token=Bearer ${loginUser.token}`)
-        .send({
-          typeList: [PlaceType.CAFE],
-          mainCategoryList: [
-            MainCategory.BAKERY,
-            MainCategory.BAKERY,
-            MainCategory.BUNGEOPPANG,
-          ],
-          moodCategoryList: [
-            MoodCategory.STUDY_FRIENDLY,
-            MoodCategory.DESSERT_HOTSPOT,
-            MoodCategory.DESSERT_HOTSPOT,
-          ],
-        })
-        .expect(200);
-
-      const afterTypeList = await prisma.placeTypeMagazineMapping.findMany({
-        where: { magazineIdx: magazine.idx },
-      });
-      const afterMainCategoryList =
-        await prisma.magazineMainCategoryMapping.findMany({
-          where: { magazineIdx: magazine.idx },
-        });
-      const afterMoodCategoryList =
-        await prisma.magazineMoodCategoryMapping.findMany({
-          where: { magazineIdx: magazine.idx },
-        });
-
-      expect(afterTypeList.length).toBe(1);
-      expect(afterTypeList[0].placeTypeIdx).toBe(PlaceType.CAFE);
-      expect(afterMainCategoryList.length).toBe(2);
-      expect(
-        afterMainCategoryList
-          .map((category) => category.mainCategoryIdx)
-          .sort(),
-      ).toStrictEqual([MainCategory.BAKERY, MainCategory.BUNGEOPPANG].sort());
-      expect(afterMoodCategoryList.length).toBe(2);
-      expect(
-        afterMoodCategoryList
-          .map((category) => category.moodCategoryIdx)
-          .sort(),
-      ).toStrictEqual(
-        [MoodCategory.STUDY_FRIENDLY, MoodCategory.DESSERT_HOTSPOT].sort(),
-      );
-    });
-
-    it('200 - successfully adds multiple types, main category and mood category to magazine', async () => {
-      const loginUser = testHelper.loginAdmin.admin1;
-      const magazine = await magazineSeedHelper.seed({
-        type: PlaceType.CAFE,
-      });
-
-      const prisma = testHelper.getPrisma();
-      const beforeTypeList = await prisma.placeTypeMagazineMapping.findMany({
-        where: { magazineIdx: magazine.idx },
-      });
-      const beforeMainCategoryList =
-        await prisma.magazineMainCategoryMapping.findMany({
-          where: { magazineIdx: magazine.idx },
-        });
-      const beforeMoodCategoryList =
-        await prisma.magazineMoodCategoryMapping.findMany({
-          where: { magazineIdx: magazine.idx },
-        });
-
-      expect(beforeTypeList.length).toBe(1);
-      expect(beforeTypeList[0].placeTypeIdx).toBe(PlaceType.CAFE);
-      expect(beforeMainCategoryList.length).toBe(0);
-      expect(beforeMoodCategoryList.length).toBe(0);
-
-      await testHelper
-        .test()
-        .post(`/magazine/${magazine.idx}/category`)
-        .set('Cookie', `token=Bearer ${loginUser.token}`)
-        .send({
-          typeList: [PlaceType.CAFE, PlaceType.RESTAURANT],
-          mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
-          moodCategoryList: [
-            MoodCategory.STUDY_FRIENDLY,
-            MoodCategory.DESSERT_HOTSPOT,
-          ],
-        })
-        .expect(200);
-
-      const afterTypeList = await prisma.placeTypeMagazineMapping.findMany({
-        where: { magazineIdx: magazine.idx },
-      });
-      const afterMainCategoryList =
-        await prisma.magazineMainCategoryMapping.findMany({
-          where: { magazineIdx: magazine.idx },
-        });
-      const afterMoodCategoryList =
-        await prisma.magazineMoodCategoryMapping.findMany({
-          where: { magazineIdx: magazine.idx },
-        });
-
-      expect(afterTypeList.length).toBe(2);
-      expect(
-        afterTypeList.map((type) => type.placeTypeIdx).sort(),
-      ).toStrictEqual([PlaceType.CAFE, PlaceType.RESTAURANT].sort());
-      expect(afterMainCategoryList.length).toBe(2);
-      expect(
-        afterMainCategoryList
-          .map((category) => category.mainCategoryIdx)
-          .sort(),
-      ).toStrictEqual([MainCategory.BAKERY, MainCategory.BUNGEOPPANG].sort());
-      expect(afterMoodCategoryList.length).toBe(2);
-      expect(
-        afterMoodCategoryList
-          .map((category) => category.moodCategoryIdx)
-          .sort(),
-      ).toStrictEqual(
-        [MoodCategory.STUDY_FRIENDLY, MoodCategory.DESSERT_HOTSPOT].sort(),
-      );
-    });
-
-    it('401 - no access token', async () => {
-      const magazine = await magazineSeedHelper.seed({});
-
-      await testHelper
-        .test()
-        .post(`/magazine/${magazine.idx}/category`)
-        .send({
-          typeList: [PlaceType.CAFE],
-          mainCategoryList: [MainCategory.BAKERY],
-          moodCategoryList: [MoodCategory.DESSERT_HOTSPOT],
-        })
-        .expect(401);
-    });
-
-    it('400 - invalid magazine idx', async () => {
-      const loginUser = testHelper.loginAdmin.admin1;
-      const invalidPlaceIdx = 'invalid-idx';
-
-      await testHelper
-        .test()
-        .post(`/magazine/${invalidPlaceIdx}/category`)
-        .set('Cookie', `token=Bearer ${loginUser.token}`)
-        .send({
-          typeList: [PlaceType.CAFE],
-          mainCategoryList: [MainCategory.BAKERY],
-          moodCategoryList: [MoodCategory.DESSERT_HOTSPOT],
-        })
-        .expect(400);
-    });
-
-    it('404 - magazine not found', async () => {
-      const loginUser = testHelper.loginAdmin.admin1;
-      const nonExistentPlaceIdx = 99999;
-
-      await testHelper
-        .test()
-        .post(`/magazine/${nonExistentPlaceIdx}/category`)
-        .set('Cookie', `token=Bearer ${loginUser.token}`)
-        .send({
-          typeList: [PlaceType.CAFE],
-          mainCategoryList: [MainCategory.BAKERY],
-          moodCategoryList: [MoodCategory.DESSERT_HOTSPOT],
-        })
-        .expect(404);
-    });
-  });
-
   describe('PUT /magazine/:idx/category', () => {
     it('200 - successfully update single type to magazine', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const magazine = await magazineSeedHelper.seed({
-        type: PlaceType.CAFE,
+        typeList: [PlaceType.CAFE],
       });
 
       const prisma = testHelper.getPrisma();
@@ -1510,7 +894,7 @@ describe('Magazine e2e test', () => {
     it('200 - successfully update multiple type to magazine', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const magazine = await magazineSeedHelper.seed({
-        type: PlaceType.CAFE,
+        typeList: [PlaceType.CAFE],
       });
 
       const prisma = testHelper.getPrisma();
@@ -1545,7 +929,7 @@ describe('Magazine e2e test', () => {
     it('200 - successfully updates single main category and no mood category to magazine', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const magazine = await magazineSeedHelper.seed({
-        type: PlaceType.CAFE,
+        typeList: [PlaceType.CAFE],
         mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
         moodCategoryList: [
           MoodCategory.STUDY_FRIENDLY,
@@ -1606,7 +990,7 @@ describe('Magazine e2e test', () => {
     it('200 - successfully updates no main category and single mood category to magazine', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const magazine = await magazineSeedHelper.seed({
-        type: PlaceType.CAFE,
+        typeList: [PlaceType.CAFE],
         mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
         moodCategoryList: [
           MoodCategory.STUDY_FRIENDLY,
@@ -1667,7 +1051,7 @@ describe('Magazine e2e test', () => {
     it('200 - successfully updates multiple main category and single mood category to magazine', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const magazine = await magazineSeedHelper.seed({
-        type: PlaceType.CAFE,
+        typeList: [PlaceType.CAFE],
         mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
         moodCategoryList: [
           MoodCategory.STUDY_FRIENDLY,
@@ -1731,7 +1115,7 @@ describe('Magazine e2e test', () => {
     it('200 successfully updates single main category and multiple mood category to magazine', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const magazine = await magazineSeedHelper.seed({
-        type: PlaceType.CAFE,
+        typeList: [PlaceType.CAFE],
         mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
         moodCategoryList: [
           MoodCategory.STUDY_FRIENDLY,
@@ -1762,7 +1146,10 @@ describe('Magazine e2e test', () => {
         .send({
           typeList: [PlaceType.CAFE],
           mainCategoryList: [MainCategory.DESSERT],
-          moodCategoryList: [MoodCategory.GOOD_ATMOSPHERE, MoodCategory.DATE],
+          moodCategoryList: [
+            MoodCategory.GOOD_ATMOSPHERE,
+            MoodCategory.BAR_DATE,
+          ],
         })
         .expect(200);
 
@@ -1789,13 +1176,15 @@ describe('Magazine e2e test', () => {
         afterMoodCategoryList
           .map((category) => category.moodCategoryIdx)
           .sort(),
-      ).toStrictEqual([MoodCategory.GOOD_ATMOSPHERE, MoodCategory.DATE].sort());
+      ).toStrictEqual(
+        [MoodCategory.GOOD_ATMOSPHERE, MoodCategory.BAR_DATE].sort(),
+      );
     });
 
     it('200 - successfully updates multiple main category and no mood category to magazine', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const magazine = await magazineSeedHelper.seed({
-        type: PlaceType.CAFE,
+        typeList: [PlaceType.CAFE],
         mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
         moodCategoryList: [
           MoodCategory.STUDY_FRIENDLY,
@@ -1856,7 +1245,7 @@ describe('Magazine e2e test', () => {
     it('200 - successfully updates no main category and multiple mood category to magazine', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const magazine = await magazineSeedHelper.seed({
-        type: PlaceType.CAFE,
+        typeList: [PlaceType.CAFE],
         mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
         moodCategoryList: [
           MoodCategory.STUDY_FRIENDLY,
@@ -1889,7 +1278,10 @@ describe('Magazine e2e test', () => {
         .send({
           typeList: [PlaceType.CAFE],
           mainCategoryList: [],
-          moodCategoryList: [MoodCategory.GOOD_ATMOSPHERE, MoodCategory.DATE],
+          moodCategoryList: [
+            MoodCategory.GOOD_ATMOSPHERE,
+            MoodCategory.BAR_DATE,
+          ],
         })
         .expect(200);
 
@@ -1913,13 +1305,15 @@ describe('Magazine e2e test', () => {
         afterMoodCategoryList
           .map((category) => category.moodCategoryIdx)
           .sort(),
-      ).toStrictEqual([MoodCategory.GOOD_ATMOSPHERE, MoodCategory.DATE].sort());
+      ).toStrictEqual(
+        [MoodCategory.GOOD_ATMOSPHERE, MoodCategory.BAR_DATE].sort(),
+      );
     });
 
     it('200 - successfully updates duplicate category is ignored and unique categories are added to magazine', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const magazine = await magazineSeedHelper.seed({
-        type: PlaceType.CAFE,
+        typeList: [PlaceType.CAFE],
         mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
         moodCategoryList: [
           MoodCategory.STUDY_FRIENDLY,
@@ -1958,8 +1352,8 @@ describe('Magazine e2e test', () => {
           ],
           moodCategoryList: [
             MoodCategory.GOOD_ATMOSPHERE,
-            MoodCategory.DATE,
-            MoodCategory.DATE,
+            MoodCategory.BAR_DATE,
+            MoodCategory.BAR_DATE,
           ],
         })
         .expect(200);
@@ -1989,13 +1383,15 @@ describe('Magazine e2e test', () => {
         afterMoodCategoryList
           .map((category) => category.moodCategoryIdx)
           .sort(),
-      ).toStrictEqual([MoodCategory.GOOD_ATMOSPHERE, MoodCategory.DATE].sort());
+      ).toStrictEqual(
+        [MoodCategory.GOOD_ATMOSPHERE, MoodCategory.BAR_DATE].sort(),
+      );
     });
 
     it('200 - successfully updates multiple types, main category and mood category to magazine', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const magazine = await magazineSeedHelper.seed({
-        type: PlaceType.CAFE,
+        typeList: [PlaceType.CAFE],
         mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
         moodCategoryList: [
           MoodCategory.STUDY_FRIENDLY,
@@ -2028,7 +1424,10 @@ describe('Magazine e2e test', () => {
         .send({
           typeList: [PlaceType.CAFE, PlaceType.RESTAURANT],
           mainCategoryList: [MainCategory.DESSERT, MainCategory.SANDWICH],
-          moodCategoryList: [MoodCategory.GOOD_ATMOSPHERE, MoodCategory.DATE],
+          moodCategoryList: [
+            MoodCategory.GOOD_ATMOSPHERE,
+            MoodCategory.BAR_DATE,
+          ],
         })
         .expect(200);
 
@@ -2059,12 +1458,14 @@ describe('Magazine e2e test', () => {
         afterMoodCategoryList
           .map((category) => category.moodCategoryIdx)
           .sort(),
-      ).toStrictEqual([MoodCategory.GOOD_ATMOSPHERE, MoodCategory.DATE].sort());
+      ).toStrictEqual(
+        [MoodCategory.GOOD_ATMOSPHERE, MoodCategory.BAR_DATE].sort(),
+      );
     });
 
     it('401 - no access token', async () => {
       const magazine = await magazineSeedHelper.seed({
-        type: PlaceType.CAFE,
+        typeList: [PlaceType.CAFE],
         mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
         moodCategoryList: [
           MoodCategory.STUDY_FRIENDLY,

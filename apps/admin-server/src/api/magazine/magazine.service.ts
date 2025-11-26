@@ -15,7 +15,6 @@ import { MagazineOverviewEntity } from './entity/magazine-overview.entity';
 import { GetAllMagazineInput } from '@libs/core/magazine/inputs/get-all-magazine.input';
 import { ActivateMagazineByIdxDto } from './dto/request/activate-magazine-by-idx.dto';
 import { UpdateMagazineByIdxDto } from './dto/request/update-magazine-by-idx.dto';
-import { CreateMagazineCategoryDto } from './dto/request/create-magazine-category.dto';
 import { UpdateMagazineCategoryDto } from './dto/request/update-magazine-category.dto';
 
 @Injectable()
@@ -102,18 +101,6 @@ export class MagazineService {
     });
   }
 
-  public async createMagazineCategoryByIdx(
-    idx: number,
-    dto: CreateMagazineCategoryDto,
-  ): Promise<void> {
-    const magazine = await this.magazineCoreService.getMagazineByIdx(idx);
-    if (!magazine) {
-      throw new NotFoundException(`Magazine not found for idx: ${idx}`);
-    }
-
-    return await this.magazineCoreService.updateMagazineCategoryByIdx(idx, dto);
-  }
-
   public async updateMagazineByIdx(
     idx: number,
     dto: UpdateMagazineByIdxDto,
@@ -155,7 +142,7 @@ export class MagazineService {
       throw new NotFoundException(`Magazine not found for idx: ${idx}`);
     }
 
-    return await this.magazineCoreService.updateMagazineCategoryByIdx(idx, dto);
+    return await this.magazineCoreService.updateMagazineByIdx(idx, dto);
   }
 
   public async deleteMagazineByIdx(idx: number): Promise<void> {

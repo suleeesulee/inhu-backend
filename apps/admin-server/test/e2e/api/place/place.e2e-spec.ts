@@ -1166,7 +1166,10 @@ describe('Place E2E test', () => {
         .send({
           typeList: [PlaceType.CAFE],
           mainCategoryList: [MainCategory.DESSERT],
-          moodCategoryList: [MoodCategory.GOOD_ATMOSPHERE, MoodCategory.DATE],
+          moodCategoryList: [
+            MoodCategory.GOOD_ATMOSPHERE,
+            MoodCategory.BAR_DATE,
+          ],
         })
         .expect(200);
 
@@ -1193,7 +1196,9 @@ describe('Place E2E test', () => {
         afterMoodCategoryList
           .map((category) => category.moodCategoryIdx)
           .sort(),
-      ).toStrictEqual([MoodCategory.GOOD_ATMOSPHERE, MoodCategory.DATE].sort());
+      ).toStrictEqual(
+        [MoodCategory.GOOD_ATMOSPHERE, MoodCategory.BAR_DATE].sort(),
+      );
     });
 
     it('200 - successfully updates multiple main category and no mood category to place', async () => {
@@ -1293,7 +1298,10 @@ describe('Place E2E test', () => {
         .send({
           typeList: [PlaceType.CAFE],
           mainCategoryList: [],
-          moodCategoryList: [MoodCategory.GOOD_ATMOSPHERE, MoodCategory.DATE],
+          moodCategoryList: [
+            MoodCategory.GOOD_ATMOSPHERE,
+            MoodCategory.BAR_DATE,
+          ],
         })
         .expect(200);
 
@@ -1317,7 +1325,9 @@ describe('Place E2E test', () => {
         afterMoodCategoryList
           .map((category) => category.moodCategoryIdx)
           .sort(),
-      ).toStrictEqual([MoodCategory.GOOD_ATMOSPHERE, MoodCategory.DATE].sort());
+      ).toStrictEqual(
+        [MoodCategory.GOOD_ATMOSPHERE, MoodCategory.BAR_DATE].sort(),
+      );
     });
 
     it('200 - successfully updates duplicate category is ignored and unique categories are added to place', async () => {
@@ -1362,8 +1372,8 @@ describe('Place E2E test', () => {
           ],
           moodCategoryList: [
             MoodCategory.GOOD_ATMOSPHERE,
-            MoodCategory.DATE,
-            MoodCategory.DATE,
+            MoodCategory.BAR_DATE,
+            MoodCategory.BAR_DATE,
           ],
         })
         .expect(200);
@@ -1393,7 +1403,9 @@ describe('Place E2E test', () => {
         afterMoodCategoryList
           .map((category) => category.moodCategoryIdx)
           .sort(),
-      ).toStrictEqual([MoodCategory.GOOD_ATMOSPHERE, MoodCategory.DATE].sort());
+      ).toStrictEqual(
+        [MoodCategory.GOOD_ATMOSPHERE, MoodCategory.BAR_DATE].sort(),
+      );
     });
 
     it('200 - successfully updates multiple types, main category and mood category to place', async () => {
@@ -1432,7 +1444,10 @@ describe('Place E2E test', () => {
         .send({
           typeList: [PlaceType.CAFE, PlaceType.RESTAURANT],
           mainCategoryList: [MainCategory.DESSERT, MainCategory.SANDWICH],
-          moodCategoryList: [MoodCategory.GOOD_ATMOSPHERE, MoodCategory.DATE],
+          moodCategoryList: [
+            MoodCategory.GOOD_ATMOSPHERE,
+            MoodCategory.BAR_DATE,
+          ],
         })
         .expect(200);
 
@@ -1463,7 +1478,9 @@ describe('Place E2E test', () => {
         afterMoodCategoryList
           .map((category) => category.moodCategoryIdx)
           .sort(),
-      ).toStrictEqual([MoodCategory.GOOD_ATMOSPHERE, MoodCategory.DATE].sort());
+      ).toStrictEqual(
+        [MoodCategory.GOOD_ATMOSPHERE, MoodCategory.BAR_DATE].sort(),
+      );
     });
 
     it('401 - no access token', async () => {

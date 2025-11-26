@@ -7,7 +7,6 @@ import { MagazineOverviewModel } from './model/magazine-overview.model';
 import { UpdateMagazineInput } from './inputs/update-magazine.input';
 import { LikedMagazineOverviewModel } from './model/liked-magazine-overview.model';
 import { GetAllLikedMagazineInput } from './inputs/get-all-liked-magazine.input';
-import { UpdateMagazineCategoryInput } from './inputs/update-magazine-category.input';
 
 /**
  * @publicApi
@@ -87,16 +86,6 @@ export class MagazineCoreService {
     input: UpdateMagazineInput,
   ): Promise<void> {
     await this.magazineCoreRepository.updateMagazineByIdx(idx, input);
-  }
-
-  /**
-   * 매거진 카테고리 수정
-   */
-  public async updateMagazineCategoryByIdx(
-    idx: number,
-    input: UpdateMagazineCategoryInput,
-  ): Promise<void> {
-    await this.magazineCoreRepository.updateMagazineCategoryByIdx(idx, input);
   }
 
   /**
