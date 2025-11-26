@@ -49,7 +49,7 @@ describe('Magazine e2e test', () => {
         activatedAt: new Date(),
         deletedAt: null,
         placeIdxList: [placeSeed.idx],
-        type: PlaceType.CAFE,
+        typeList: [PlaceType.CAFE],
         mainCategoryList: [MainCategory.BAKERY, MainCategory.SANDWICH],
         moodCategoryList: [
           MoodCategory.STUDY_FRIENDLY,
@@ -80,7 +80,7 @@ describe('Magazine e2e test', () => {
       expect(magazine.activatedAt).toEqual(
         magazineSeed.activatedAt?.toISOString(),
       );
-      expect(magazine.typeList).toEqual([magazineSeed.type]);
+      expect(magazine.typeList).toEqual(magazineSeed.typeList);
       expect(magazine.mainCategoryList).toEqual(magazineSeed.mainCategoryList);
       expect(magazine.moodCategoryList).toEqual(magazineSeed.moodCategoryList);
     });
@@ -311,7 +311,7 @@ describe('Magazine e2e test', () => {
         activatedAt: new Date(),
         deletedAt: null,
         placeIdxList: [placeSeed.idx],
-        type: PlaceType.CAFE,
+        typeList: [PlaceType.CAFE],
         mainCategoryList: [MainCategory.BAKERY, MainCategory.SANDWICH],
         moodCategoryList: [
           MoodCategory.STUDY_FRIENDLY,
@@ -353,7 +353,7 @@ describe('Magazine e2e test', () => {
       expect(magazine.placeList[0].imagePathList).toEqual(
         placeSeed.placeImgList,
       );
-      expect(magazine.typeList).toEqual([magazineSeed.type]);
+      expect(magazine.typeList).toEqual(magazineSeed.typeList);
       expect(magazine.mainCategoryList).toEqual(magazineSeed.mainCategoryList);
       expect(magazine.moodCategoryList).toEqual(magazineSeed.moodCategoryList);
     });
@@ -861,7 +861,7 @@ describe('Magazine e2e test', () => {
     it('200 - successfully update single type to magazine', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const magazine = await magazineSeedHelper.seed({
-        type: PlaceType.CAFE,
+        typeList: [PlaceType.CAFE],
       });
 
       const prisma = testHelper.getPrisma();
@@ -894,7 +894,7 @@ describe('Magazine e2e test', () => {
     it('200 - successfully update multiple type to magazine', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const magazine = await magazineSeedHelper.seed({
-        type: PlaceType.CAFE,
+        typeList: [PlaceType.CAFE],
       });
 
       const prisma = testHelper.getPrisma();
@@ -929,7 +929,7 @@ describe('Magazine e2e test', () => {
     it('200 - successfully updates single main category and no mood category to magazine', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const magazine = await magazineSeedHelper.seed({
-        type: PlaceType.CAFE,
+        typeList: [PlaceType.CAFE],
         mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
         moodCategoryList: [
           MoodCategory.STUDY_FRIENDLY,
@@ -990,7 +990,7 @@ describe('Magazine e2e test', () => {
     it('200 - successfully updates no main category and single mood category to magazine', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const magazine = await magazineSeedHelper.seed({
-        type: PlaceType.CAFE,
+        typeList: [PlaceType.CAFE],
         mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
         moodCategoryList: [
           MoodCategory.STUDY_FRIENDLY,
@@ -1051,7 +1051,7 @@ describe('Magazine e2e test', () => {
     it('200 - successfully updates multiple main category and single mood category to magazine', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const magazine = await magazineSeedHelper.seed({
-        type: PlaceType.CAFE,
+        typeList: [PlaceType.CAFE],
         mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
         moodCategoryList: [
           MoodCategory.STUDY_FRIENDLY,
@@ -1115,7 +1115,7 @@ describe('Magazine e2e test', () => {
     it('200 successfully updates single main category and multiple mood category to magazine', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const magazine = await magazineSeedHelper.seed({
-        type: PlaceType.CAFE,
+        typeList: [PlaceType.CAFE],
         mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
         moodCategoryList: [
           MoodCategory.STUDY_FRIENDLY,
@@ -1184,7 +1184,7 @@ describe('Magazine e2e test', () => {
     it('200 - successfully updates multiple main category and no mood category to magazine', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const magazine = await magazineSeedHelper.seed({
-        type: PlaceType.CAFE,
+        typeList: [PlaceType.CAFE],
         mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
         moodCategoryList: [
           MoodCategory.STUDY_FRIENDLY,
@@ -1245,7 +1245,7 @@ describe('Magazine e2e test', () => {
     it('200 - successfully updates no main category and multiple mood category to magazine', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const magazine = await magazineSeedHelper.seed({
-        type: PlaceType.CAFE,
+        typeList: [PlaceType.CAFE],
         mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
         moodCategoryList: [
           MoodCategory.STUDY_FRIENDLY,
@@ -1313,7 +1313,7 @@ describe('Magazine e2e test', () => {
     it('200 - successfully updates duplicate category is ignored and unique categories are added to magazine', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const magazine = await magazineSeedHelper.seed({
-        type: PlaceType.CAFE,
+        typeList: [PlaceType.CAFE],
         mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
         moodCategoryList: [
           MoodCategory.STUDY_FRIENDLY,
@@ -1391,7 +1391,7 @@ describe('Magazine e2e test', () => {
     it('200 - successfully updates multiple types, main category and mood category to magazine', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const magazine = await magazineSeedHelper.seed({
-        type: PlaceType.CAFE,
+        typeList: [PlaceType.CAFE],
         mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
         moodCategoryList: [
           MoodCategory.STUDY_FRIENDLY,
@@ -1465,7 +1465,7 @@ describe('Magazine e2e test', () => {
 
     it('401 - no access token', async () => {
       const magazine = await magazineSeedHelper.seed({
-        type: PlaceType.CAFE,
+        typeList: [PlaceType.CAFE],
         mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
         moodCategoryList: [
           MoodCategory.STUDY_FRIENDLY,

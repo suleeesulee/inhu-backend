@@ -53,7 +53,7 @@ describe('Menu E2E test', () => {
         activatedAt: new Date(),
         deletedAt: null,
         placeIdxList: [placeSeed.idx],
-        type: PlaceType.CAFE,
+        typeList: [PlaceType.CAFE],
         mainCategoryList: [MainCategory.BAKERY, MainCategory.SANDWICH],
         moodCategoryList: [
           MoodCategory.STUDY_FRIENDLY,
@@ -97,7 +97,7 @@ describe('Menu E2E test', () => {
       );
       expect(magazine.placeList[0].bookmark).toBe(true);
       expect(magazine.isLiked).toBe(true);
-      expect(magazine.type).toBe(magazineSeed.type);
+      expect(magazine.typeList).toEqual(magazineSeed.typeList);
       expect(magazine.mainCategoryList).toEqual(magazineSeed.mainCategoryList);
       expect(magazine.moodCategoryList).toEqual(magazineSeed.moodCategoryList);
     });
@@ -264,7 +264,7 @@ describe('Menu E2E test', () => {
         isTitleVisible: true,
         activatedAt: new Date(),
         deletedAt: null,
-        type: PlaceType.CAFE,
+        typeList: [PlaceType.CAFE],
         mainCategoryList: [MainCategory.BAKERY, MainCategory.SANDWICH],
         moodCategoryList: [
           MoodCategory.STUDY_FRIENDLY,
@@ -301,7 +301,7 @@ describe('Menu E2E test', () => {
       expect(magazine.viewCount).toBe(0);
       expect(magazine.thumbnailImagePath).toBe(magazineSeed.thumbnailPath);
       expect(magazine.isLiked).toBe(true);
-      expect(magazine.type).toBe(magazineSeed.type);
+      expect(magazine.typeList).toEqual(magazineSeed.typeList);
       expect(magazine.mainCategoryList[0]).toBe(MainCategory.BAKERY);
       expect(magazine.mainCategoryList[1]).toBe(MainCategory.SANDWICH);
       expect(magazine.moodCategoryList[0]).toBe(MoodCategory.STUDY_FRIENDLY);
@@ -525,15 +525,15 @@ describe('Menu E2E test', () => {
         await magazineSeedHelper.seedAll([
           {
             activatedAt: new Date(),
-            type: PlaceType.CAFE,
+            typeList: [PlaceType.CAFE],
           },
           {
             activatedAt: new Date(),
-            type: PlaceType.RESTAURANT,
+            typeList: [PlaceType.RESTAURANT],
           },
           {
             activatedAt: new Date(),
-            type: PlaceType.BAR,
+            typeList: [PlaceType.BAR],
           },
         ]);
 
@@ -992,7 +992,7 @@ describe('Menu E2E test', () => {
             likeCount: 5,
             activatedAt: new Date(),
             deletedAt: null,
-            type: PlaceType.CAFE,
+            typeList: [PlaceType.CAFE],
             mainCategoryList: [MainCategory.BAKERY, MainCategory.SANDWICH],
             moodCategoryList: [
               MoodCategory.STUDY_FRIENDLY,
@@ -1003,7 +1003,7 @@ describe('Menu E2E test', () => {
             likeCount: 10,
             activatedAt: new Date(),
             deletedAt: null,
-            type: PlaceType.RESTAURANT,
+            typeList: [PlaceType.RESTAURANT],
             mainCategoryList: [MainCategory.FAST_FOOD, MainCategory.DESSERT],
             moodCategoryList: [
               MoodCategory.COST_EFFECTIVE,
@@ -1014,7 +1014,7 @@ describe('Menu E2E test', () => {
             likeCount: 3,
             activatedAt: new Date(),
             deletedAt: null,
-            type: PlaceType.BAR,
+            typeList: [PlaceType.BAR],
             mainCategoryList: [MainCategory.BUNGEOPPANG, MainCategory.DESSERT],
             moodCategoryList: [
               MoodCategory.BAR_DATE,
@@ -1064,7 +1064,7 @@ describe('Menu E2E test', () => {
       expect(magazineList[1].viewCount).toBe(magazine1.viewCount);
       expect(magazineList[1].isLiked).toBe(true);
 
-      expect(magazineList[0].type).toBe(magazine2.type);
+      expect(magazineList[0].typeList).toEqual(magazine2.typeList);
       expect(magazineList[0].mainCategoryList[0]).toBe(MainCategory.FAST_FOOD);
       expect(magazineList[0].mainCategoryList[1]).toBe(MainCategory.DESSERT);
       expect(magazineList[0].moodCategoryList[0]).toBe(

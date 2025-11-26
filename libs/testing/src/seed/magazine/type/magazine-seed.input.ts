@@ -27,7 +27,7 @@ export type MagazineSeedInput = {
   activatedAt?: Date | null;
   deletedAt?: Date | null;
   placeIdxList?: [number, ...number[]] | null;
-  type?: PlaceType | null;
+  typeList?: PlaceType[] | null;
   mainCategoryList?: MainCategory[] | null;
   moodCategoryList?: MoodCategory[] | null;
 };

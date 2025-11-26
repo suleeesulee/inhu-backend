@@ -28,7 +28,7 @@ export class MagazineSeedHelper extends ISeedHelper<
       activatedAt: defaultValue(input.activatedAt, null),
       deletedAt: defaultValue(input.deletedAt, null),
       placeIdxList: defaultValue(input.placeIdxList, null),
-      type: defaultValue(input.type, null),
+      typeList: defaultValue(input.typeList, null),
       mainCategoryList: defaultValue(input.mainCategoryList, null),
       moodCategoryList: defaultValue(input.moodCategoryList, null),
     };
@@ -58,10 +58,12 @@ export class MagazineSeedHelper extends ISeedHelper<
               },
             }
           : undefined,
-        placeTypeMagazineMappingList: filledInput.type
+        placeTypeMagazineMappingList: filledInput.typeList
           ? {
-              create: {
-                placeTypeIdx: filledInput.type,
+              createMany: {
+                data: filledInput.typeList.map((typeIdx) => ({
+                  placeTypeIdx: typeIdx,
+                })),
               },
             }
           : undefined,

@@ -61,6 +61,7 @@ export class PlaceSeedHelper extends ISeedHelper<
       keywordCountList: defaultValue(input.keywordCountList, null),
       mainCategoryList: defaultValue(input.mainCategoryList, null),
       moodCategoryList: defaultValue(input.moodCategoryList, null),
+      typeList: defaultValue(input.typeList, null),
     };
   }
 
@@ -94,11 +95,21 @@ export class PlaceSeedHelper extends ISeedHelper<
             })),
           },
         },
-        placeTypeMappingList: {
-          create: {
-            placeTypeIdx: filledInput.type,
-          },
-        },
+        placeTypeMappingList: filledInput.type
+          ? {
+              create: {
+                placeTypeIdx: filledInput.type,
+              },
+            }
+          : filledInput.typeList
+            ? {
+                createMany: {
+                  data: filledInput.typeList.map((typeIdx) => ({
+                    placeTypeIdx: typeIdx,
+                  })),
+                },
+              }
+            : undefined,
         roadAddressIdx: location.idx,
         closedDayList: filledInput.closedDayList
           ? {
