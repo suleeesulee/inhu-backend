@@ -10,7 +10,7 @@
     "show": 511,
     "database": 16,
     "databaseName": "inhu",
-    "canvasType": "@dineug/erd-editor/builtin-schema-sql",
+    "canvasType": "ERD",
     "language": 1,
     "tableNameCase": 4,
     "columnNameCase": 2,
@@ -5788,7 +5788,7 @@
         "comment": "",
         "dataType": "varchar",
         "default": "",
-        "options": 12,
+        "options": 8,
         "ui": {
           "keys": 0,
           "widthName": 60,
@@ -5797,7 +5797,7 @@
           "widthDefault": 60
         },
         "meta": {
-          "updateAt": 1763958369838,
+          "updateAt": 1764156473405,
           "createAt": 1763958360810
         }
       },
@@ -5868,7 +5868,7 @@
         "comment": "",
         "dataType": "varchar",
         "default": "",
-        "options": 12,
+        "options": 8,
         "ui": {
           "keys": 0,
           "widthName": 60,
@@ -5877,7 +5877,7 @@
           "widthDefault": 60
         },
         "meta": {
-          "updateAt": 1763958429650,
+          "updateAt": 1764156475644,
           "createAt": 1763958424647
         }
       },
