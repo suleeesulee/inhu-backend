@@ -25,7 +25,6 @@ import { GetPlaceMarkerInput } from './inputs/get-place-overview-marker.input';
 import { SelectPlaceWeeklyClosedDay } from './model/prisma-type/select-place-weekly-closed-day';
 import { MainCategory } from '../category/constants/main-category.constant';
 import { MoodCategory } from '../category/constants/mood-category.constant';
-import { UpdatePlaceCategoryInput } from './inputs/update-place-category.input';
 
 @Injectable()
 export class PlaceCoreRepository {
@@ -512,12 +511,12 @@ export class PlaceCoreRepository {
               },
             }
           : undefined,
-        placeTypeMappingList: input.type
-          ? {
-              deleteMany: {},
-              create: { placeTypeIdx: input.type },
-            }
-          : undefined,
+        // placeTypeMappingList: input.type
+        //   ? {
+        //       deleteMany: {},
+        //       create: { placeTypeIdx: input.type },
+        //     }
+        //   : undefined,
 
         // ! 주의: Date 관련한 필드들은 insertPlace 메서드 주석을 참고하여 변환해야합니다.
         closedDayList: input.closedDayList
@@ -579,27 +578,22 @@ export class PlaceCoreRepository {
               },
             }
           : undefined,
-      },
-      where: { idx, deletedAt: null },
-    });
-  }
 
-  public async updatePlaceCategoryByIdx(
-    idx: number,
-    input: UpdatePlaceCategoryInput,
-  ): Promise<void> {
-    await this.txHost.tx.place.update({
-      data: {
-        placeTypeMappingList: input.typeList
+        placeTypeMappingList: input.type
           ? {
               deleteMany: {},
-              createMany: {
-                data: input.typeList.map((typeIdx) => ({
-                  placeTypeIdx: typeIdx,
-                })),
-              },
+              create: { placeTypeIdx: input.type },
             }
-          : undefined,
+          : input.typeList
+            ? {
+                deleteMany: {},
+                createMany: {
+                  data: input.typeList.map((typeIdx) => ({
+                    placeTypeIdx: typeIdx,
+                  })),
+                },
+              }
+            : undefined,
         placeMainCategoryMappingList: input.mainCategoryList
           ? {
               deleteMany: {},
