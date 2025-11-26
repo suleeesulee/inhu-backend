@@ -12,7 +12,7 @@ export class MagazineOverviewEntity extends PickType(MagazineEntity, [
   'viewCount',
   'createdAt',
   'isLiked',
-  'type',
+  'typeList',
   'mainCategoryList',
   'moodCategoryList',
 ]) {
@@ -35,7 +35,7 @@ export class MagazineOverviewEntity extends PickType(MagazineEntity, [
       viewCount: model.viewCount,
       createdAt: model.createdAt,
       isLiked,
-      type: model.type,
+      typeList: model.typeList,
       mainCategoryList: model.mainCategoryList,
       moodCategoryList: model.moodCategoryList,
     });

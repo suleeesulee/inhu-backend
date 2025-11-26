@@ -9,7 +9,7 @@ export class MagazineOverviewEntity extends PickType(MagazineEntity, [
   'createdAt',
   'activatedAt',
   'pinnedAt',
-  'type',
+  'typeList',
   'mainCategoryList',
   'moodCategoryList',
 ]) {
@@ -28,7 +28,7 @@ export class MagazineOverviewEntity extends PickType(MagazineEntity, [
       createdAt: model.createdAt,
       activatedAt: model.activatedAt,
       pinnedAt: model.pinnedAt,
-      type: model.type,
+      typeList: model.typeList,
       mainCategoryList: model.mainCategoryList,
       moodCategoryList: model.moodCategoryList,
     });

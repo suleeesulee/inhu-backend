@@ -18,7 +18,7 @@ export class LikedMagazineOverviewModel extends PickType(
     'createdAt',
     'activatedAt',
     'pinnedAt',
-    'type',
+    'typeList',
     'mainCategoryList',
     'moodCategoryList',
   ],
@@ -42,9 +42,9 @@ export class LikedMagazineOverviewModel extends PickType(
       createdAt: likedMagazine.magazine.createdAt,
       activatedAt: likedMagazine.magazine.activatedAt,
       pinnedAt: likedMagazine.magazine.pinnedMagazine?.createdAt || null,
-      type: likedMagazine.magazine.placeTypeMagazineMappingList.map(
-        ({ placeTypeIdx }) => placeTypeIdx,
-      )[0] as PlaceType,
+      typeList: likedMagazine.magazine.placeTypeMagazineMappingList.map(
+        ({ placeTypeIdx }) => placeTypeIdx as PlaceType,
+      ),
       mainCategoryList:
         likedMagazine.magazine.magazineMainCategoryMappingList.map(
           ({ mainCategoryIdx }) => mainCategoryIdx as MainCategory,
