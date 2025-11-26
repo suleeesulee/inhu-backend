@@ -23,7 +23,6 @@ import { ApiTags } from '@nestjs/swagger';
 import { CreateBiWeeklyClosedDayDto } from './dto/request/create-bi-weekly-closed-day.dto';
 import { RunBiWeeklyClosedDayCronJobDto } from './dto/request/run-bi-weekly-closed-day-cron-job.dto';
 import { RunBiWeeklyClosedDayCronJobResponseDto } from './dto/response/run-bi-weekly-closed-day-cron-job.response.dto';
-import { CreatePlaceCategoryDto } from './dto/request/create-place-category.dto';
 import { UpdatePlaceCategoryDto } from './dto/request/update-place-category.dto';
 
 @Controller('place')
@@ -69,21 +68,6 @@ export class PlaceController {
   @AdminAuth()
   public async createPlace(@Body() dto: CreatePlaceDto): Promise<PlaceEntity> {
     return await this.placeService.createPlace(dto);
-  }
-
-  /**
-   * 특정 장소 카테고리 생성하기 Endpoint
-   */
-  @Post('/:idx/category')
-  @Exception(400, 'Invalid place idx or category data')
-  @Exception(404, 'Place not found')
-  @HttpCode(200)
-  @AdminAuth()
-  public async createPlaceCategoryByIdx(
-    @Param('idx', ParseIntPipe) idx: number,
-    @Body() dto: CreatePlaceCategoryDto,
-  ) {
-    return await this.placeService.createPlaceCategoryByIdx(idx, dto);
   }
 
   /**
