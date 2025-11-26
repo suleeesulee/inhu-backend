@@ -1077,13 +1077,19 @@ describe('Place E2E test', () => {
           activatedAt: new Date(),
           name: 'place1: 베이커리, 붕어빵',
           mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
-          moodCategoryList: [MoodCategory.COST_EFFECTIVE, MoodCategory.DATE],
+          moodCategoryList: [
+            MoodCategory.COST_EFFECTIVE,
+            MoodCategory.BAR_DATE,
+          ],
         },
         {
           activatedAt: new Date(),
           name: 'place2: 붕어빵, 샌드위치',
           mainCategoryList: [MainCategory.BUNGEOPPANG, MainCategory.SANDWICH],
-          moodCategoryList: [MoodCategory.DATE, MoodCategory.DESSERT_HOTSPOT],
+          moodCategoryList: [
+            MoodCategory.BAR_DATE,
+            MoodCategory.DESSERT_HOTSPOT,
+          ],
         },
         {
           activatedAt: new Date(),
@@ -1119,13 +1125,19 @@ describe('Place E2E test', () => {
           activatedAt: new Date(),
           name: 'place1: 베이커리, 붕어빵',
           mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
-          moodCategoryList: [MoodCategory.COST_EFFECTIVE, MoodCategory.DATE],
+          moodCategoryList: [
+            MoodCategory.COST_EFFECTIVE,
+            MoodCategory.BAR_DATE,
+          ],
         },
         {
           activatedAt: new Date(),
           name: 'place2: 붕어빵, 샌드위치',
           mainCategoryList: [MainCategory.BUNGEOPPANG, MainCategory.SANDWICH],
-          moodCategoryList: [MoodCategory.DATE, MoodCategory.DESSERT_HOTSPOT],
+          moodCategoryList: [
+            MoodCategory.BAR_DATE,
+            MoodCategory.DESSERT_HOTSPOT,
+          ],
         },
         {
           activatedAt: new Date(),
@@ -1144,7 +1156,7 @@ describe('Place E2E test', () => {
         .query({
           page: 1,
           mainCategoryList: [MainCategory.BUNGEOPPANG],
-          moodCategoryList: [MoodCategory.DATE],
+          moodCategoryList: [MoodCategory.BAR_DATE],
         })
         .expect(200);
 
@@ -1161,13 +1173,19 @@ describe('Place E2E test', () => {
           activatedAt: new Date(),
           name: 'place1: 베이커리, 붕어빵',
           mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
-          moodCategoryList: [MoodCategory.COST_EFFECTIVE, MoodCategory.DATE],
+          moodCategoryList: [
+            MoodCategory.COST_EFFECTIVE,
+            MoodCategory.BAR_DATE,
+          ],
         },
         {
           activatedAt: new Date(),
           name: 'place2: 붕어빵, 샌드위치',
           mainCategoryList: [MainCategory.BUNGEOPPANG, MainCategory.SANDWICH],
-          moodCategoryList: [MoodCategory.DATE, MoodCategory.DESSERT_HOTSPOT],
+          moodCategoryList: [
+            MoodCategory.BAR_DATE,
+            MoodCategory.DESSERT_HOTSPOT,
+          ],
         },
         {
           activatedAt: new Date(),
@@ -1186,7 +1204,10 @@ describe('Place E2E test', () => {
         .query({
           page: 1,
           mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
-          moodCategoryList: [MoodCategory.COST_EFFECTIVE, MoodCategory.DATE],
+          moodCategoryList: [
+            MoodCategory.COST_EFFECTIVE,
+            MoodCategory.BAR_DATE,
+          ],
         })
         .expect(200);
 
@@ -1203,13 +1224,19 @@ describe('Place E2E test', () => {
           activatedAt: new Date(),
           name: 'place1: 베이커리, 붕어빵',
           mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
-          moodCategoryList: [MoodCategory.COST_EFFECTIVE, MoodCategory.DATE],
+          moodCategoryList: [
+            MoodCategory.COST_EFFECTIVE,
+            MoodCategory.BAR_DATE,
+          ],
         },
         {
           activatedAt: new Date(),
           name: 'place2: 붕어빵, 샌드위치',
           mainCategoryList: [MainCategory.BUNGEOPPANG, MainCategory.SANDWICH],
-          moodCategoryList: [MoodCategory.DATE, MoodCategory.DESSERT_HOTSPOT],
+          moodCategoryList: [
+            MoodCategory.BAR_DATE,
+            MoodCategory.DESSERT_HOTSPOT,
+          ],
         },
         {
           activatedAt: new Date(),
@@ -1244,13 +1271,19 @@ describe('Place E2E test', () => {
           activatedAt: new Date(),
           name: 'place1: 베이커리, 붕어빵',
           mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
-          moodCategoryList: [MoodCategory.COST_EFFECTIVE, MoodCategory.DATE],
+          moodCategoryList: [
+            MoodCategory.COST_EFFECTIVE,
+            MoodCategory.BAR_DATE,
+          ],
         },
         {
           activatedAt: new Date(),
           name: 'place2: 붕어빵, 샌드위치',
           mainCategoryList: [MainCategory.BUNGEOPPANG, MainCategory.SANDWICH],
-          moodCategoryList: [MoodCategory.DATE, MoodCategory.DESSERT_HOTSPOT],
+          moodCategoryList: [
+            MoodCategory.BAR_DATE,
+            MoodCategory.DESSERT_HOTSPOT,
+          ],
         },
         {
           activatedAt: new Date(),

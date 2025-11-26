@@ -754,12 +754,18 @@ describe('Menu E2E test', () => {
           {
             activatedAt: new Date(),
             mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
-            moodCategoryList: [MoodCategory.COST_EFFECTIVE, MoodCategory.DATE],
+            moodCategoryList: [
+              MoodCategory.COST_EFFECTIVE,
+              MoodCategory.BAR_DATE,
+            ],
           },
           {
             activatedAt: new Date(),
             mainCategoryList: [MainCategory.BUNGEOPPANG, MainCategory.SANDWICH],
-            moodCategoryList: [MoodCategory.DATE, MoodCategory.DESSERT_HOTSPOT],
+            moodCategoryList: [
+              MoodCategory.BAR_DATE,
+              MoodCategory.DESSERT_HOTSPOT,
+            ],
           },
           {
             activatedAt: new Date(),
@@ -794,12 +800,18 @@ describe('Menu E2E test', () => {
           {
             activatedAt: new Date(),
             mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
-            moodCategoryList: [MoodCategory.COST_EFFECTIVE, MoodCategory.DATE],
+            moodCategoryList: [
+              MoodCategory.COST_EFFECTIVE,
+              MoodCategory.BAR_DATE,
+            ],
           },
           {
             activatedAt: new Date(),
             mainCategoryList: [MainCategory.BUNGEOPPANG, MainCategory.SANDWICH],
-            moodCategoryList: [MoodCategory.DATE, MoodCategory.DESSERT_HOTSPOT],
+            moodCategoryList: [
+              MoodCategory.BAR_DATE,
+              MoodCategory.DESSERT_HOTSPOT,
+            ],
           },
           {
             activatedAt: new Date(),
@@ -817,7 +829,7 @@ describe('Menu E2E test', () => {
         .query({
           page: 1,
           mainCategoryList: [MainCategory.BUNGEOPPANG],
-          moodCategoryList: [MoodCategory.DATE],
+          moodCategoryList: [MoodCategory.BAR_DATE],
         })
         .expect(200);
 
@@ -834,12 +846,18 @@ describe('Menu E2E test', () => {
           {
             activatedAt: new Date(),
             mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
-            moodCategoryList: [MoodCategory.COST_EFFECTIVE, MoodCategory.DATE],
+            moodCategoryList: [
+              MoodCategory.COST_EFFECTIVE,
+              MoodCategory.BAR_DATE,
+            ],
           },
           {
             activatedAt: new Date(),
             mainCategoryList: [MainCategory.BUNGEOPPANG, MainCategory.SANDWICH],
-            moodCategoryList: [MoodCategory.DATE, MoodCategory.DESSERT_HOTSPOT],
+            moodCategoryList: [
+              MoodCategory.BAR_DATE,
+              MoodCategory.DESSERT_HOTSPOT,
+            ],
           },
           {
             activatedAt: new Date(),
@@ -857,7 +875,10 @@ describe('Menu E2E test', () => {
         .query({
           page: 1,
           mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
-          moodCategoryList: [MoodCategory.COST_EFFECTIVE, MoodCategory.DATE],
+          moodCategoryList: [
+            MoodCategory.COST_EFFECTIVE,
+            MoodCategory.BAR_DATE,
+          ],
         })
         .expect(200);
 
@@ -874,12 +895,18 @@ describe('Menu E2E test', () => {
           {
             activatedAt: new Date(),
             mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
-            moodCategoryList: [MoodCategory.COST_EFFECTIVE, MoodCategory.DATE],
+            moodCategoryList: [
+              MoodCategory.COST_EFFECTIVE,
+              MoodCategory.BAR_DATE,
+            ],
           },
           {
             activatedAt: new Date(),
             mainCategoryList: [MainCategory.BUNGEOPPANG, MainCategory.SANDWICH],
-            moodCategoryList: [MoodCategory.DATE, MoodCategory.DESSERT_HOTSPOT],
+            moodCategoryList: [
+              MoodCategory.BAR_DATE,
+              MoodCategory.DESSERT_HOTSPOT,
+            ],
           },
           {
             activatedAt: new Date(),
@@ -913,12 +940,18 @@ describe('Menu E2E test', () => {
           {
             activatedAt: new Date(),
             mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
-            moodCategoryList: [MoodCategory.COST_EFFECTIVE, MoodCategory.DATE],
+            moodCategoryList: [
+              MoodCategory.COST_EFFECTIVE,
+              MoodCategory.BAR_DATE,
+            ],
           },
           {
             activatedAt: new Date(),
             mainCategoryList: [MainCategory.BUNGEOPPANG, MainCategory.SANDWICH],
-            moodCategoryList: [MoodCategory.DATE, MoodCategory.DESSERT_HOTSPOT],
+            moodCategoryList: [
+              MoodCategory.BAR_DATE,
+              MoodCategory.DESSERT_HOTSPOT,
+            ],
           },
           {
             activatedAt: new Date(),
@@ -983,7 +1016,10 @@ describe('Menu E2E test', () => {
             deletedAt: null,
             type: PlaceType.BAR,
             mainCategoryList: [MainCategory.BUNGEOPPANG, MainCategory.DESSERT],
-            moodCategoryList: [MoodCategory.DATE, MoodCategory.SOLO_DRINKING],
+            moodCategoryList: [
+              MoodCategory.BAR_DATE,
+              MoodCategory.SOLO_DRINKING,
+            ],
           },
         ]);
 
