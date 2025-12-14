@@ -35,7 +35,6 @@ export class PlaceService {
       bookmarkUserIdx: undefined,
       mainCategoryList: dto.mainCategoryList,
       moodCategoryList: dto.moodCategoryList,
-      searchKeyword: dto.searchKeyword,
     };
     let placeOverviewModelList: PlaceOverviewModel[];
 
@@ -78,6 +77,62 @@ export class PlaceService {
         operating: dto.operating,
       });
     }
+
+    const paginatedList = placeOverviewModelList.slice(0, pageSize);
+    const hasNext = placeOverviewModelList.length > pageSize;
+
+    if (!readUserIdx) {
+      return {
+        hasNext: hasNext,
+        placeOverviewList: paginatedList.map((place) =>
+          PlaceOverviewEntity.fromModel(place, false),
+        ),
+      };
+    }
+
+    const bookmarkedPlaceList = await this.bookmarkCoreService
+      .getBookmarkStateByUserIdx({
+        userIdx: readUserIdx,
+        placeIdxList: paginatedList.map(({ idx }) => idx),
+      })
+      .then((bookmarks) => bookmarks.map(({ placeIdx }) => placeIdx));
+
+    return {
+      hasNext: hasNext,
+      placeOverviewList: paginatedList.map((place) =>
+        PlaceOverviewEntity.fromModel(
+          place,
+          bookmarkedPlaceList.includes(place.idx),
+        ),
+      ),
+    };
+  }
+
+  public async getPlaceOverviewAllV2(
+    dto: GetAllPlaceOverviewDto,
+    readUserIdx?: number,
+  ): Promise<{
+    placeOverviewList: PlaceOverviewEntity[];
+    hasNext: boolean;
+  }> {
+    const pageSize = 10;
+    const skip = (dto.page - 1) * pageSize;
+    const baseFilter = {
+      activated: true,
+      permanentlyClosed: false,
+      order: dto.order,
+      types: dto.type ? [dto.type] : undefined,
+      orderBy: dto.orderby,
+      bookmarkUserIdx: undefined,
+      mainCategoryList: dto.mainCategoryList,
+      moodCategoryList: dto.moodCategoryList,
+    };
+    const placeOverviewModelList = await this.placeCoreService.getPlaceAll({
+      ...baseFilter,
+      take: pageSize + 1,
+      skip: skip,
+      operating: dto.operating,
+    });
 
     const paginatedList = placeOverviewModelList.slice(0, pageSize);
     const hasNext = placeOverviewModelList.length > pageSize;
