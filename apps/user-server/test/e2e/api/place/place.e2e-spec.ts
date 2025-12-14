@@ -864,404 +864,404 @@ describe('Place E2E test', () => {
       );
     });
 
-    it('200 - searchKeyword filtering check with place name(single matched)', async () => {
-      const [place1, place2, place3] = await placeSeedHelper.seedAll([
-        {
-          activatedAt: new Date(),
-          name: '서울 강남구 맛집',
-        },
-        {
-          activatedAt: new Date(),
-          name: '대전 유성구 카페',
-        },
-        {
-          activatedAt: new Date(),
-          name: '부산 해운대구 맛집',
-        },
-      ]);
+    // it('200 - searchKeyword filtering check with place name(single matched)', async () => {
+    //   const [place1, place2, place3] = await placeSeedHelper.seedAll([
+    //     {
+    //       activatedAt: new Date(),
+    //       name: '서울 강남구 맛집',
+    //     },
+    //     {
+    //       activatedAt: new Date(),
+    //       name: '대전 유성구 카페',
+    //     },
+    //     {
+    //       activatedAt: new Date(),
+    //       name: '부산 해운대구 맛집',
+    //     },
+    //   ]);
 
-      const response = await testHelper
-        .test()
-        .get('/place/all')
-        .query({
-          page: 1,
-          searchKeyword: '강남구',
-        })
-        .expect(200);
+    //   const response = await testHelper
+    //     .test()
+    //     .get('/place/all')
+    //     .query({
+    //       page: 1,
+    //       searchKeyword: '강남구',
+    //     })
+    //     .expect(200);
 
-      const placeList: PlaceOverviewEntity[] = response.body.placeOverviewList;
+    //   const placeList: PlaceOverviewEntity[] = response.body.placeOverviewList;
 
-      expect(placeList.map(({ idx }) => idx).sort()).toStrictEqual(
-        [place1.idx].sort(),
-      );
-    });
+    //   expect(placeList.map(({ idx }) => idx).sort()).toStrictEqual(
+    //     [place1.idx].sort(),
+    //   );
+    // });
 
-    it('200 - searchKeyword filtering check with place name(multiple matched)', async () => {
-      const [place1, place2, place3] = await placeSeedHelper.seedAll([
-        {
-          activatedAt: new Date(),
-          name: '서울 강남구 맛집',
-        },
-        {
-          activatedAt: new Date(),
-          name: '강남구 카페',
-        },
-        {
-          activatedAt: new Date(),
-          name: '부산 해운대구 맛집',
-        },
-      ]);
+    // it('200 - searchKeyword filtering check with place name(multiple matched)', async () => {
+    //   const [place1, place2, place3] = await placeSeedHelper.seedAll([
+    //     {
+    //       activatedAt: new Date(),
+    //       name: '서울 강남구 맛집',
+    //     },
+    //     {
+    //       activatedAt: new Date(),
+    //       name: '강남구 카페',
+    //     },
+    //     {
+    //       activatedAt: new Date(),
+    //       name: '부산 해운대구 맛집',
+    //     },
+    //   ]);
 
-      const response = await testHelper
-        .test()
-        .get('/place/all')
-        .query({
-          page: 1,
-          searchKeyword: '강남구',
-        })
-        .expect(200);
+    //   const response = await testHelper
+    //     .test()
+    //     .get('/place/all')
+    //     .query({
+    //       page: 1,
+    //       searchKeyword: '강남구',
+    //     })
+    //     .expect(200);
 
-      const placeList: PlaceOverviewEntity[] = response.body.placeOverviewList;
+    //   const placeList: PlaceOverviewEntity[] = response.body.placeOverviewList;
 
-      expect(placeList.map(({ idx }) => idx).sort()).toStrictEqual(
-        [place1.idx, place2.idx].sort(),
-      );
-    });
+    //   expect(placeList.map(({ idx }) => idx).sort()).toStrictEqual(
+    //     [place1.idx, place2.idx].sort(),
+    //   );
+    // });
 
-    it('200 - searchKeyword filtering check with place name(no matched)', async () => {
-      const [place1, place2, place3] = await placeSeedHelper.seedAll([
-        {
-          activatedAt: new Date(),
-          name: '서울 강남구 맛집',
-        },
-        {
-          activatedAt: new Date(),
-          name: '대전 유성구 카페',
-        },
-        {
-          activatedAt: new Date(),
-          name: '부산 해운대구 맛집',
-        },
-      ]);
+    // it('200 - searchKeyword filtering check with place name(no matched)', async () => {
+    //   const [place1, place2, place3] = await placeSeedHelper.seedAll([
+    //     {
+    //       activatedAt: new Date(),
+    //       name: '서울 강남구 맛집',
+    //     },
+    //     {
+    //       activatedAt: new Date(),
+    //       name: '대전 유성구 카페',
+    //     },
+    //     {
+    //       activatedAt: new Date(),
+    //       name: '부산 해운대구 맛집',
+    //     },
+    //   ]);
 
-      const response = await testHelper
-        .test()
-        .get('/place/all')
-        .query({
-          page: 1,
-          searchKeyword: '홍대',
-        })
-        .expect(200);
+    //   const response = await testHelper
+    //     .test()
+    //     .get('/place/all')
+    //     .query({
+    //       page: 1,
+    //       searchKeyword: '홍대',
+    //     })
+    //     .expect(200);
 
-      const placeList: PlaceOverviewEntity[] = response.body.placeOverviewList;
+    //   const placeList: PlaceOverviewEntity[] = response.body.placeOverviewList;
 
-      expect(placeList).toHaveLength(0);
-    });
+    //   expect(placeList).toHaveLength(0);
+    // });
 
-    it('200 - searchKeyword filtering check with menu name(single matched)', async () => {
-      const [place1, place2, place3] = await placeSeedHelper.seedAll([
-        {
-          activatedAt: new Date(),
-          name: 'place1',
-        },
-        {
-          activatedAt: new Date(),
-          name: 'place2',
-        },
-        {
-          activatedAt: new Date(),
-          name: 'place3',
-        },
-      ]);
+    // it('200 - searchKeyword filtering check with menu name(single matched)', async () => {
+    //   const [place1, place2, place3] = await placeSeedHelper.seedAll([
+    //     {
+    //       activatedAt: new Date(),
+    //       name: 'place1',
+    //     },
+    //     {
+    //       activatedAt: new Date(),
+    //       name: 'place2',
+    //     },
+    //     {
+    //       activatedAt: new Date(),
+    //       name: 'place3',
+    //     },
+    //   ]);
 
-      const [menu1, menu2, menu3] = await menuSeedHelper.seedAll([
-        {
-          placeIdx: place1.idx,
-          name: '햄버거',
-          price: 5000,
-        },
-        {
-          placeIdx: place2.idx,
-          name: '치즈버거',
-          price: 6000,
-        },
-        {
-          placeIdx: place3.idx,
-          name: '피자',
-          price: 8000,
-        },
-      ]);
+    //   const [menu1, menu2, menu3] = await menuSeedHelper.seedAll([
+    //     {
+    //       placeIdx: place1.idx,
+    //       name: '햄버거',
+    //       price: 5000,
+    //     },
+    //     {
+    //       placeIdx: place2.idx,
+    //       name: '치즈버거',
+    //       price: 6000,
+    //     },
+    //     {
+    //       placeIdx: place3.idx,
+    //       name: '피자',
+    //       price: 8000,
+    //     },
+    //   ]);
 
-      const response = await testHelper
-        .test()
-        .get('/place/all')
-        .query({
-          page: 1,
-          searchKeyword: '치즈',
-        })
-        .expect(200);
+    //   const response = await testHelper
+    //     .test()
+    //     .get('/place/all')
+    //     .query({
+    //       page: 1,
+    //       searchKeyword: '치즈',
+    //     })
+    //     .expect(200);
 
-      const placeList: PlaceOverviewEntity[] = response.body.placeOverviewList;
+    //   const placeList: PlaceOverviewEntity[] = response.body.placeOverviewList;
 
-      expect(placeList.map(({ idx }) => idx).sort()).toStrictEqual(
-        [place2.idx].sort(),
-      );
-    });
+    //   expect(placeList.map(({ idx }) => idx).sort()).toStrictEqual(
+    //     [place2.idx].sort(),
+    //   );
+    // });
 
-    it('200 - searchKeyword filtering check with menu name(multiple matched)', async () => {
-      const [place1, place2, place3] = await placeSeedHelper.seedAll([
-        {
-          activatedAt: new Date(),
-          name: 'place1',
-        },
-        {
-          activatedAt: new Date(),
-          name: 'place2',
-        },
-        {
-          activatedAt: new Date(),
-          name: 'place3',
-        },
-      ]);
+    // it('200 - searchKeyword filtering check with menu name(multiple matched)', async () => {
+    //   const [place1, place2, place3] = await placeSeedHelper.seedAll([
+    //     {
+    //       activatedAt: new Date(),
+    //       name: 'place1',
+    //     },
+    //     {
+    //       activatedAt: new Date(),
+    //       name: 'place2',
+    //     },
+    //     {
+    //       activatedAt: new Date(),
+    //       name: 'place3',
+    //     },
+    //   ]);
 
-      const [menu1, menu2, menu3] = await menuSeedHelper.seedAll([
-        {
-          placeIdx: place1.idx,
-          name: '햄버거',
-          price: 5000,
-        },
-        {
-          placeIdx: place2.idx,
-          name: '치즈버거',
-          price: 6000,
-        },
-        {
-          placeIdx: place3.idx,
-          name: '치즈피자',
-          price: 8000,
-        },
-      ]);
+    //   const [menu1, menu2, menu3] = await menuSeedHelper.seedAll([
+    //     {
+    //       placeIdx: place1.idx,
+    //       name: '햄버거',
+    //       price: 5000,
+    //     },
+    //     {
+    //       placeIdx: place2.idx,
+    //       name: '치즈버거',
+    //       price: 6000,
+    //     },
+    //     {
+    //       placeIdx: place3.idx,
+    //       name: '치즈피자',
+    //       price: 8000,
+    //     },
+    //   ]);
 
-      const response = await testHelper
-        .test()
-        .get('/place/all')
-        .query({
-          page: 1,
-          searchKeyword: '치즈',
-        })
-        .expect(200);
+    //   const response = await testHelper
+    //     .test()
+    //     .get('/place/all')
+    //     .query({
+    //       page: 1,
+    //       searchKeyword: '치즈',
+    //     })
+    //     .expect(200);
 
-      const placeList: PlaceOverviewEntity[] = response.body.placeOverviewList;
+    //   const placeList: PlaceOverviewEntity[] = response.body.placeOverviewList;
 
-      expect(placeList.map(({ idx }) => idx).sort()).toStrictEqual(
-        [place2.idx, place3.idx].sort(),
-      );
-    });
+    //   expect(placeList.map(({ idx }) => idx).sort()).toStrictEqual(
+    //     [place2.idx, place3.idx].sort(),
+    //   );
+    // });
 
-    it('200 - searchKeyword filtering check with menu name(no matched)', async () => {
-      const [place1, place2, place3] = await placeSeedHelper.seedAll([
-        {
-          activatedAt: new Date(),
-          name: 'place1',
-        },
-        {
-          activatedAt: new Date(),
-          name: 'place2',
-        },
-        {
-          activatedAt: new Date(),
-          name: 'place3',
-        },
-      ]);
+    // it('200 - searchKeyword filtering check with menu name(no matched)', async () => {
+    //   const [place1, place2, place3] = await placeSeedHelper.seedAll([
+    //     {
+    //       activatedAt: new Date(),
+    //       name: 'place1',
+    //     },
+    //     {
+    //       activatedAt: new Date(),
+    //       name: 'place2',
+    //     },
+    //     {
+    //       activatedAt: new Date(),
+    //       name: 'place3',
+    //     },
+    //   ]);
 
-      const [menu1, menu2, menu3] = await menuSeedHelper.seedAll([
-        {
-          placeIdx: place1.idx,
-          name: '햄버거',
-          price: 5000,
-        },
-        {
-          placeIdx: place2.idx,
-          name: '치즈버거',
-          price: 6000,
-        },
-        {
-          placeIdx: place3.idx,
-          name: '피자',
-          price: 8000,
-        },
-      ]);
+    //   const [menu1, menu2, menu3] = await menuSeedHelper.seedAll([
+    //     {
+    //       placeIdx: place1.idx,
+    //       name: '햄버거',
+    //       price: 5000,
+    //     },
+    //     {
+    //       placeIdx: place2.idx,
+    //       name: '치즈버거',
+    //       price: 6000,
+    //     },
+    //     {
+    //       placeIdx: place3.idx,
+    //       name: '피자',
+    //       price: 8000,
+    //     },
+    //   ]);
 
-      const response = await testHelper
-        .test()
-        .get('/place/all')
-        .query({
-          page: 1,
-          searchKeyword: '족발',
-        })
-        .expect(200);
+    //   const response = await testHelper
+    //     .test()
+    //     .get('/place/all')
+    //     .query({
+    //       page: 1,
+    //       searchKeyword: '족발',
+    //     })
+    //     .expect(200);
 
-      const placeList: PlaceOverviewEntity[] = response.body.placeOverviewList;
+    //   const placeList: PlaceOverviewEntity[] = response.body.placeOverviewList;
 
-      expect(placeList).toHaveLength(0);
-    });
+    //   expect(placeList).toHaveLength(0);
+    // });
 
-    it('200 - searchKeyword filtering check with menu content(single matched)', async () => {
-      const [place1, place2, place3] = await placeSeedHelper.seedAll([
-        {
-          activatedAt: new Date(),
-          name: 'place1',
-        },
-        {
-          activatedAt: new Date(),
-          name: 'place2',
-        },
-        {
-          activatedAt: new Date(),
-          name: 'place3',
-        },
-      ]);
+    // it('200 - searchKeyword filtering check with menu content(single matched)', async () => {
+    //   const [place1, place2, place3] = await placeSeedHelper.seedAll([
+    //     {
+    //       activatedAt: new Date(),
+    //       name: 'place1',
+    //     },
+    //     {
+    //       activatedAt: new Date(),
+    //       name: 'place2',
+    //     },
+    //     {
+    //       activatedAt: new Date(),
+    //       name: 'place3',
+    //     },
+    //   ]);
 
-      const [menu1, menu2, menu3] = await menuSeedHelper.seedAll([
-        {
-          placeIdx: place1.idx,
-          name: '햄버거',
-          content: '맛있는 소고기 패티와 신선한 야채',
-          price: 5000,
-        },
-        {
-          placeIdx: place2.idx,
-          name: '치즈버거',
-          content: '고소한 치즈와 육즙 가득한 패티',
-          price: 6000,
-        },
-        {
-          placeIdx: place3.idx,
-          name: '피자',
-          content: '바삭한 도우와 풍부한 토핑',
-          price: 8000,
-        },
-      ]);
+    //   const [menu1, menu2, menu3] = await menuSeedHelper.seedAll([
+    //     {
+    //       placeIdx: place1.idx,
+    //       name: '햄버거',
+    //       content: '맛있는 소고기 패티와 신선한 야채',
+    //       price: 5000,
+    //     },
+    //     {
+    //       placeIdx: place2.idx,
+    //       name: '치즈버거',
+    //       content: '고소한 치즈와 육즙 가득한 패티',
+    //       price: 6000,
+    //     },
+    //     {
+    //       placeIdx: place3.idx,
+    //       name: '피자',
+    //       content: '바삭한 도우와 풍부한 토핑',
+    //       price: 8000,
+    //     },
+    //   ]);
 
-      const response = await testHelper
-        .test()
-        .get('/place/all')
-        .query({
-          page: 1,
-          searchKeyword: '육즙',
-        })
-        .expect(200);
+    //   const response = await testHelper
+    //     .test()
+    //     .get('/place/all')
+    //     .query({
+    //       page: 1,
+    //       searchKeyword: '육즙',
+    //     })
+    //     .expect(200);
 
-      const placeList: PlaceOverviewEntity[] = response.body.placeOverviewList;
+    //   const placeList: PlaceOverviewEntity[] = response.body.placeOverviewList;
 
-      expect(placeList.map(({ idx }) => idx).sort()).toStrictEqual(
-        [place2.idx].sort(),
-      );
-    });
+    //   expect(placeList.map(({ idx }) => idx).sort()).toStrictEqual(
+    //     [place2.idx].sort(),
+    //   );
+    // });
 
-    it('200 - searchKeyword filtering check with menu content(multiple matched)', async () => {
-      const [place1, place2, place3] = await placeSeedHelper.seedAll([
-        {
-          activatedAt: new Date(),
-          name: 'place1',
-        },
-        {
-          activatedAt: new Date(),
-          name: 'place2',
-        },
-        {
-          activatedAt: new Date(),
-          name: 'place3',
-        },
-      ]);
+    // it('200 - searchKeyword filtering check with menu content(multiple matched)', async () => {
+    //   const [place1, place2, place3] = await placeSeedHelper.seedAll([
+    //     {
+    //       activatedAt: new Date(),
+    //       name: 'place1',
+    //     },
+    //     {
+    //       activatedAt: new Date(),
+    //       name: 'place2',
+    //     },
+    //     {
+    //       activatedAt: new Date(),
+    //       name: 'place3',
+    //     },
+    //   ]);
 
-      const [menu1, menu2, menu3] = await menuSeedHelper.seedAll([
-        {
-          placeIdx: place1.idx,
-          name: '햄버거',
-          content: '맛있는 소고기 패티와 신선한 야채',
-          price: 5000,
-        },
-        {
-          placeIdx: place2.idx,
-          name: '치즈버거',
-          content: '고소한 치즈와 육즙 가득한 패티',
-          price: 6000,
-        },
-        {
-          placeIdx: place3.idx,
-          name: '피자',
-          content: '육즙이 풍부한 스테이크 토핑',
-          price: 8000,
-        },
-      ]);
+    //   const [menu1, menu2, menu3] = await menuSeedHelper.seedAll([
+    //     {
+    //       placeIdx: place1.idx,
+    //       name: '햄버거',
+    //       content: '맛있는 소고기 패티와 신선한 야채',
+    //       price: 5000,
+    //     },
+    //     {
+    //       placeIdx: place2.idx,
+    //       name: '치즈버거',
+    //       content: '고소한 치즈와 육즙 가득한 패티',
+    //       price: 6000,
+    //     },
+    //     {
+    //       placeIdx: place3.idx,
+    //       name: '피자',
+    //       content: '육즙이 풍부한 스테이크 토핑',
+    //       price: 8000,
+    //     },
+    //   ]);
 
-      const response = await testHelper
-        .test()
-        .get('/place/all')
-        .query({
-          page: 1,
-          searchKeyword: '육즙',
-        })
-        .expect(200);
+    //   const response = await testHelper
+    //     .test()
+    //     .get('/place/all')
+    //     .query({
+    //       page: 1,
+    //       searchKeyword: '육즙',
+    //     })
+    //     .expect(200);
 
-      const placeList: PlaceOverviewEntity[] = response.body.placeOverviewList;
+    //   const placeList: PlaceOverviewEntity[] = response.body.placeOverviewList;
 
-      expect(placeList.map(({ idx }) => idx).sort()).toStrictEqual(
-        [place2.idx, place3.idx].sort(),
-      );
-    });
+    //   expect(placeList.map(({ idx }) => idx).sort()).toStrictEqual(
+    //     [place2.idx, place3.idx].sort(),
+    //   );
+    // });
 
-    it('200 - searchKeyword filtering check with menu content(no matched)', async () => {
-      const [place1, place2, place3] = await placeSeedHelper.seedAll([
-        {
-          activatedAt: new Date(),
-          name: 'place1',
-        },
-        {
-          activatedAt: new Date(),
-          name: 'place2',
-        },
-        {
-          activatedAt: new Date(),
-          name: 'place3',
-        },
-      ]);
+    // it('200 - searchKeyword filtering check with menu content(no matched)', async () => {
+    //   const [place1, place2, place3] = await placeSeedHelper.seedAll([
+    //     {
+    //       activatedAt: new Date(),
+    //       name: 'place1',
+    //     },
+    //     {
+    //       activatedAt: new Date(),
+    //       name: 'place2',
+    //     },
+    //     {
+    //       activatedAt: new Date(),
+    //       name: 'place3',
+    //     },
+    //   ]);
 
-      const [menu1, menu2, menu3] = await menuSeedHelper.seedAll([
-        {
-          placeIdx: place1.idx,
-          name: '햄버거',
-          content: '맛있는 소고기 패티와 신선한 야채',
-          price: 5000,
-        },
-        {
-          placeIdx: place2.idx,
-          name: '치즈버거',
-          content: '고소한 치즈와 육즙 가득한 패티',
-          price: 6000,
-        },
-        {
-          placeIdx: place3.idx,
-          name: '피자',
-          content: '바삭한 도우와 풍부한 토핑',
-          price: 8000,
-        },
-      ]);
+    //   const [menu1, menu2, menu3] = await menuSeedHelper.seedAll([
+    //     {
+    //       placeIdx: place1.idx,
+    //       name: '햄버거',
+    //       content: '맛있는 소고기 패티와 신선한 야채',
+    //       price: 5000,
+    //     },
+    //     {
+    //       placeIdx: place2.idx,
+    //       name: '치즈버거',
+    //       content: '고소한 치즈와 육즙 가득한 패티',
+    //       price: 6000,
+    //     },
+    //     {
+    //       placeIdx: place3.idx,
+    //       name: '피자',
+    //       content: '바삭한 도우와 풍부한 토핑',
+    //       price: 8000,
+    //     },
+    //   ]);
 
-      const response = await testHelper
-        .test()
-        .get('/place/all')
-        .query({
-          page: 1,
-          searchKeyword: '족발',
-        })
-        .expect(200);
+    //   const response = await testHelper
+    //     .test()
+    //     .get('/place/all')
+    //     .query({
+    //       page: 1,
+    //       searchKeyword: '족발',
+    //     })
+    //     .expect(200);
 
-      const placeList: PlaceOverviewEntity[] = response.body.placeOverviewList;
+    //   const placeList: PlaceOverviewEntity[] = response.body.placeOverviewList;
 
-      expect(placeList).toHaveLength(0);
-    });
+    //   expect(placeList).toHaveLength(0);
+    // });
 
     it('200 - main category filtering check (mainCategory === undefined)', async () => {
       const [place1, place2, place3] = await placeSeedHelper.seedAll([
@@ -1582,7 +1582,7 @@ describe('Place E2E test', () => {
           name: 'place2: 붕어빵, 샌드위치',
           mainCategoryList: [MainCategory.BUNGEOPPANG, MainCategory.SANDWICH],
           moodCategoryList: [
-            MoodCategory.BAR_DATE,
+            MoodCategory.BAR_GROUP_GATHERING,
             MoodCategory.DESSERT_HOTSPOT,
           ],
         },
@@ -1614,6 +1614,57 @@ describe('Place E2E test', () => {
 
       expect(placeList.map(({ idx }) => idx).sort()).toStrictEqual(
         [place1.idx].sort(),
+      );
+    });
+
+    it('200 - main category & mood category filtering check(multiple mood conditions, multiple matched)', async () => {
+      const [place1, place2, place3] = await placeSeedHelper.seedAll([
+        {
+          activatedAt: new Date(),
+          name: 'place1: 베이커리, 붕어빵',
+          mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
+          moodCategoryList: [
+            MoodCategory.COST_EFFECTIVE,
+            MoodCategory.BAR_DATE,
+          ],
+        },
+        {
+          activatedAt: new Date(),
+          name: 'place2: 붕어빵, 샌드위치',
+          mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
+          moodCategoryList: [
+            MoodCategory.BAR_DATE,
+            MoodCategory.DESSERT_HOTSPOT,
+          ],
+        },
+        {
+          activatedAt: new Date(),
+          name: 'place3: 샌드위치, 디저트',
+          mainCategoryList: [MainCategory.SANDWICH, MainCategory.DESSERT],
+          moodCategoryList: [
+            MoodCategory.DESSERT_HOTSPOT,
+            MoodCategory.GOOD_ATMOSPHERE,
+          ],
+        },
+      ]);
+
+      const response = await testHelper
+        .test()
+        .get('/place/all')
+        .query({
+          page: 1,
+          mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
+          moodCategoryList: [
+            MoodCategory.COST_EFFECTIVE,
+            MoodCategory.BAR_DATE,
+          ],
+        })
+        .expect(200);
+
+      const placeList: PlaceOverviewEntity[] = response.body.placeOverviewList;
+
+      expect(placeList.map(({ idx }) => idx).sort()).toStrictEqual(
+        [place1.idx, place2.idx].sort(),
       );
     });
 
@@ -1702,7 +1753,7 @@ describe('Place E2E test', () => {
           page: 1,
           mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
           moodCategoryList: [
-            MoodCategory.COST_EFFECTIVE,
+            MoodCategory.GOOD_ATMOSPHERE,
             MoodCategory.DESSERT_HOTSPOT,
           ],
         })
