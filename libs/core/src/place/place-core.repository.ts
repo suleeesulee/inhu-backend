@@ -356,7 +356,7 @@ export class PlaceCoreRepository {
     }
 
     return {
-      AND: moodCategoryList.map((category) => ({
+      OR: moodCategoryList.map((category) => ({
         placeMoodCategoryMappingList: {
           some: { moodCategoryIdx: category },
         },
