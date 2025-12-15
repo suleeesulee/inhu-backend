@@ -12,6 +12,7 @@ import { LoginUser } from '@user/common/types/LoginUser';
 import { GetAllPlaceMarkerDto } from './dto/request/get-all-place-marker.dto';
 import { GetAllPlaceMarkerResponseDto } from './dto/response/get-all-place-marker-response.dto';
 import { GetAllSearchedPlaceOverviewDto } from './dto/request/get-all-searched-place-overview.dto';
+import { GetAllSearchedPlaceOverviewResponseDto } from './dto/response/get-all-searched-place-overview-response.dto';
 
 @Controller()
 export class PlaceController {
@@ -37,7 +38,7 @@ export class PlaceController {
   async getAllPlaceOverviewForSearch(
     @Query() dto: GetAllSearchedPlaceOverviewDto,
     @User() loginUser?: LoginUser,
-  ): Promise<GetAllPlaceOverviewResponseDto> {
+  ): Promise<GetAllSearchedPlaceOverviewResponseDto> {
     return await this.placeService.getSearchedPlaceOverviewAll(
       dto,
       loginUser?.idx,

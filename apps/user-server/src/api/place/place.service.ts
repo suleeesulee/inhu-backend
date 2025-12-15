@@ -11,6 +11,8 @@ import { PlaceMarkerEntity } from './entity/place-marker.entity';
 import { PlaceOverviewModel } from '@libs/core/place/model/place-overview.model';
 import { GetAllSearchedPlaceOverviewDto } from './dto/request/get-all-searched-place-overview.dto';
 import { GetAllPlaceOverviewV2Dto } from './dto/request/get-all-place-overview-v2.dto';
+import { SearchedPlaceOverviewEntity } from './entity/searched-place-overview.entity';
+import { GetAllSearchedPlaceOverviewResponseDto } from './dto/response/get-all-searched-place-overview-response.dto';
 
 @Injectable()
 export class PlaceService {
@@ -113,10 +115,7 @@ export class PlaceService {
   public async getSearchedPlaceOverviewAll(
     dto: GetAllSearchedPlaceOverviewDto,
     readUserIdx?: number,
-  ): Promise<{
-    placeOverviewList: PlaceOverviewEntity[];
-    hasNext: boolean;
-  }> {
+  ): Promise<GetAllSearchedPlaceOverviewResponseDto> {
     const pageSize = 10;
     const skip = (dto.page - 1) * pageSize;
     const baseFilter = {
@@ -178,8 +177,8 @@ export class PlaceService {
     if (!readUserIdx) {
       return {
         hasNext: hasNext,
-        placeOverviewList: paginatedList.map((place) =>
-          PlaceOverviewEntity.fromModel(place, false),
+        searchedPlaceOverviewList: paginatedList.map((place) =>
+          SearchedPlaceOverviewEntity.fromModel(place, false),
         ),
       };
     }
@@ -193,8 +192,8 @@ export class PlaceService {
 
     return {
       hasNext: hasNext,
-      placeOverviewList: paginatedList.map((place) =>
-        PlaceOverviewEntity.fromModel(
+      searchedPlaceOverviewList: paginatedList.map((place) =>
+        SearchedPlaceOverviewEntity.fromModel(
           place,
           bookmarkedPlaceList.includes(place.idx),
         ),
