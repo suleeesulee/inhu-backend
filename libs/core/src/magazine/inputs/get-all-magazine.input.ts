@@ -83,4 +83,11 @@ export class GetAllMagazineInput {
    * 8: 갓성비안주
    */
   moodCategoryList?: MoodCategory[];
+
+  /**
+   * 검색 필터링
+   *
+   * - 매거진 제목, 매거진 설명, 매거진 내용으로 검색 가능
+   */
+  searchKeyword?: string;
 }
