@@ -10,6 +10,7 @@ import { GetAllPlaceMarkerDto } from './dto/request/get-all-place-marker.dto';
 import { PlaceMarkerEntity } from './entity/place-marker.entity';
 import { PlaceOverviewModel } from '@libs/core/place/model/place-overview.model';
 import { GetAllSearchedPlaceOverviewDto } from './dto/request/get-all-searched-place-overview.dto';
+import { GetAllPlaceOverviewV2Dto } from './dto/request/get-all-place-overview-v2.dto';
 
 @Injectable()
 export class PlaceService {
@@ -202,7 +203,7 @@ export class PlaceService {
   }
 
   public async getPlaceOverviewAllV2(
-    dto: GetAllPlaceOverviewDto,
+    dto: GetAllPlaceOverviewV2Dto,
     readUserIdx?: number,
   ): Promise<{
     placeOverviewList: PlaceOverviewEntity[];
@@ -220,12 +221,47 @@ export class PlaceService {
       mainCategoryList: dto.mainCategoryList,
       moodCategoryList: dto.moodCategoryList,
     };
-    const placeOverviewModelList = await this.placeCoreService.getPlaceAll({
-      ...baseFilter,
-      take: pageSize + 1,
-      skip: skip,
-      operating: dto.operating,
-    });
+    let placeOverviewModelList: PlaceOverviewModel[];
+
+    if (dto.operating === undefined && dto.operatingOrderby === true) {
+      const operatingPlaceCount =
+        await this.placeCoreService.getOperatingPlaceCount();
+
+      const operatingRemain = Math.max(0, operatingPlaceCount - skip); // 운영중인 장소에서 남은 수
+      const operatingTake = Math.max(0, Math.min(pageSize, operatingRemain)); // 실제로 가져올 운영중인 장소 수
+
+      const closedSkip =
+        skip <= operatingPlaceCount ? 0 : skip - operatingPlaceCount; // 폐점된 장소에서 건너뛸 수
+      const closedTake = Math.max(0, pageSize - operatingTake); // 실제로 가져올 폐점된 장소 수
+
+      const [operatingList, closedList] = await Promise.all([
+        operatingTake > 0
+          ? this.placeCoreService.getPlaceAll({
+              ...baseFilter,
+              take: operatingTake + 1,
+              skip: skip,
+              operating: true,
+            })
+          : Promise.resolve([]),
+        closedTake > 0
+          ? this.placeCoreService.getPlaceAll({
+              ...baseFilter,
+              take: closedTake + 1,
+              skip: closedSkip,
+              operating: false,
+            })
+          : Promise.resolve([]),
+      ]);
+
+      placeOverviewModelList = [...operatingList, ...closedList];
+    } else {
+      placeOverviewModelList = await this.placeCoreService.getPlaceAll({
+        ...baseFilter,
+        take: pageSize + 1,
+        skip: skip,
+        operating: dto.operating,
+      });
+    }
 
     const paginatedList = placeOverviewModelList.slice(0, pageSize);
     const hasNext = placeOverviewModelList.length > pageSize;
