@@ -12,11 +12,10 @@ import {
   IsInt,
   IsNotEmpty,
   IsOptional,
-  MaxLength,
   Min,
 } from 'class-validator';
 
-export class GetAllMatchedPlaceOverviewDto {
+export class GetAllPlaceOverviewV2Dto {
   /**
    * page number
    *
@@ -57,6 +56,17 @@ export class GetAllMatchedPlaceOverviewDto {
   @ToBoolean()
   @IsBoolean()
   operating?: boolean;
+
+  /**
+   * 운영 중인 장소와 운영 중이지 않은 장소를 구분하여 정렬할지 여부
+   *
+   * true: 운영 중인 장소를 우선으로 정렬
+   * undefined: 운영 중이지 않은 장소와 구분 없이 정렬
+   */
+  @IsOptional()
+  @ToBoolean()
+  @IsBoolean()
+  operatingOrderby?: boolean;
 
   /**
    * 1: 카페
@@ -114,13 +124,4 @@ export class GetAllMatchedPlaceOverviewDto {
   @IsEnumValue(MoodCategory, { each: true })
   @Type(() => Number)
   moodCategoryList?: MoodCategory[];
-
-  /**
-   * 검색 필터링
-   *
-   * - 장소 이름, 메뉴 이름, 메뉴 설명으로 검색 가능
-   */
-  @IsOptional()
-  @MaxLength(20)
-  searchKeyword?: string;
 }
