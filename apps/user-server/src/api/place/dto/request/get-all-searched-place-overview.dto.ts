@@ -16,7 +16,7 @@ import {
   Min,
 } from 'class-validator';
 
-export class GetAllMatchedPlaceOverviewDto {
+export class GetAllSearchedPlaceOverviewDto {
   /**
    * page number
    *

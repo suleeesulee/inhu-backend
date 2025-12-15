@@ -9,7 +9,7 @@ import { BookmarkCoreService } from '@libs/core/bookmark/bookmark-core.service';
 import { GetAllPlaceMarkerDto } from './dto/request/get-all-place-marker.dto';
 import { PlaceMarkerEntity } from './entity/place-marker.entity';
 import { PlaceOverviewModel } from '@libs/core/place/model/place-overview.model';
-import { GetAllMatchedPlaceOverviewDto } from './dto/request/get-all-matched-place-overview.dto';
+import { GetAllSearchedPlaceOverviewDto } from './dto/request/get-all-searched-place-overview.dto';
 
 @Injectable()
 export class PlaceService {
@@ -109,8 +109,8 @@ export class PlaceService {
     };
   }
 
-  public async getMatchedPlaceOverviewAll(
-    dto: GetAllMatchedPlaceOverviewDto,
+  public async getSearchedPlaceOverviewAll(
+    dto: GetAllSearchedPlaceOverviewDto,
     readUserIdx?: number,
   ): Promise<{
     placeOverviewList: PlaceOverviewEntity[];
