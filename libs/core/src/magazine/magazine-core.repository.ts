@@ -53,6 +53,7 @@ export class MagazineCoreRepository {
           this.getTypesFilterWhereClause(input.typeList), // 타입 필터링
           this.getMainCategoryFilterWhereClause(input.mainCategoryList), // 메인 카테고리 필터링
           this.getMoodCategoryFilterWhereClause(input.moodCategoryList), // 분위기 카테고리 필터링
+          this.getSearchKeywordWhereClause(input.searchKeyword), // 검색 키워드 필터링
         ],
       },
       orderBy: this.getOrderByClause(input),
@@ -310,6 +311,27 @@ export class MagazineCoreRepository {
           some: { moodCategoryIdx: category },
         },
       })),
+    };
+  }
+
+  /**
+   * 검색 키워드
+   */
+  private getSearchKeywordWhereClause(
+    searchKeyword?: string,
+  ): Prisma.MagazineWhereInput {
+    if (!searchKeyword) {
+      return {};
+    }
+
+    const trimmedSearchKeyword = searchKeyword.trim();
+
+    return {
+      OR: [
+        { title: { contains: trimmedSearchKeyword } },
+        { description: { contains: trimmedSearchKeyword } },
+        { content: { contains: trimmedSearchKeyword } },
+      ],
     };
   }
 }
