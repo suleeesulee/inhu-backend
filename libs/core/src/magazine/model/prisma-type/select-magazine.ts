@@ -15,6 +15,21 @@ export const SELECT_MAGAZINE = Prisma.validator<Prisma.MagazineDefaultArgs>()({
     activatedAt: true,
     placeList: SELECT_MAGAZINE_PLACE,
     pinnedMagazine: true,
+    placeTypeMagazineMappingList: {
+      select: {
+        placeTypeIdx: true,
+      },
+    },
+    magazineMainCategoryMappingList: {
+      select: {
+        mainCategoryIdx: true,
+      },
+    },
+    magazineMoodCategoryMappingList: {
+      select: {
+        moodCategoryIdx: true,
+      },
+    },
   },
 });
 

@@ -7,13 +7,13 @@ import { MoodCategory } from '@libs/core/category/constants/mood-category.consta
 import { PlaceType } from '@libs/core/place/constants/place-type.constant';
 import { Transform, Type } from 'class-transformer';
 import {
-  IsArray,
   IsBoolean,
   IsIn,
   IsInt,
   IsNotEmpty,
   IsNumber,
   IsOptional,
+  MaxLength,
   Min,
 } from 'class-validator';
 
@@ -92,7 +92,6 @@ export class GetAllPlaceOverviewDto {
    */
   @IsOptional()
   @ToArray()
-  @IsArray()
   @UniqueArray()
   @IsEnumValue(MainCategory, { each: true })
   @Type(() => Number)
@@ -112,7 +111,6 @@ export class GetAllPlaceOverviewDto {
    */
   @IsOptional()
   @ToArray()
-  @IsArray()
   @UniqueArray()
   @IsEnumValue(MoodCategory, { each: true })
   @Type(() => Number)

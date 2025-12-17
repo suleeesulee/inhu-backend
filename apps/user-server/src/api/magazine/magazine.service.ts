@@ -11,6 +11,9 @@ import { GetAllLikedMagazineDto } from './dto/request/get-all-liked-magazine.dto
 import { GetAllLikedMagazineResponseDto } from './dto/response/get-all-liked-magazine-response.dto';
 import { MagazineLikeCoreService } from '@libs/core/magazine-like/magazine-like-core.service';
 import { MagazineLikeEntity } from './entity/magazine-like.entity';
+import { GetAllSearchedMagazineDto } from './dto/request/get-all-searched-magazine.dto';
+import { GetAllSearchedMagazineResponseDto } from './dto/response/get-all-searched-magazine-response.dto';
+import { SearchedMagazineOverviewEntity } from './entity/searched-magazine-overview.entity';
 
 @Injectable()
 export class MagazineService {
@@ -71,6 +74,9 @@ export class MagazineService {
         skip: SKIP,
         activated: true,
         orderBy: dto.orderBy,
+        typeList: dto.type ? [dto.type] : undefined,
+        mainCategoryList: dto.mainCategoryList,
+        moodCategoryList: dto.moodCategoryList,
       });
 
     const paginatedList = magazineOverviewModelList.slice(0, TAKE);
@@ -97,6 +103,53 @@ export class MagazineService {
         .slice(0, TAKE)
         .map((magazine) =>
           MagazineOverviewEntity.fromModel(
+            magazine,
+            magazineLikeIdxList.includes(magazine.idx),
+          ),
+        ),
+      hasNext: hasNext,
+    };
+  }
+
+  public async getSearchedMagazineAll(
+    dto: GetAllSearchedMagazineDto,
+    loginUser?: LoginUser,
+  ): Promise<GetAllSearchedMagazineResponseDto> {
+    const TAKE = 10;
+    const SKIP = (dto.page - 1) * TAKE;
+
+    const magazineOverviewModelList =
+      await this.magazineCoreService.getMagazineAll({
+        take: TAKE + 1,
+        skip: SKIP,
+        activated: true,
+        searchKeyword: dto.searchKeyword,
+      });
+
+    const paginatedList = magazineOverviewModelList.slice(0, TAKE);
+    const hasNext = magazineOverviewModelList.length > TAKE;
+
+    if (!loginUser?.idx) {
+      return {
+        searchedMagazineList: paginatedList.map((magazine) =>
+          SearchedMagazineOverviewEntity.fromModel(magazine, false),
+        ),
+        hasNext,
+      };
+    }
+
+    const magazineLikeIdxList = await this.magazineLikeCoreService
+      .getMagazineLikeAllByUserIdxAndMagazineIdxList(
+        loginUser.idx,
+        paginatedList.map((magazine) => magazine.idx),
+      )
+      .then((likes) => likes.map((like) => like.magazineIdx));
+
+    return {
+      searchedMagazineList: magazineOverviewModelList
+        .slice(0, TAKE)
+        .map((magazine) =>
+          SearchedMagazineOverviewEntity.fromModel(
             magazine,
             magazineLikeIdxList.includes(magazine.idx),
           ),

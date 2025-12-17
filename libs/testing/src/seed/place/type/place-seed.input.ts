@@ -68,4 +68,5 @@ export type PlaceSeedInput = {
     | null;
   mainCategoryList?: MainCategory[] | null;
   moodCategoryList?: MoodCategory[] | null;
+  typeList?: PlaceType[] | null;
 };

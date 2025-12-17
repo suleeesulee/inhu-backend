@@ -109,6 +109,11 @@ export class PlaceEntity {
    */
   public moodCategoryList: MoodCategory[];
 
+  /**
+   * 특정 장소 타입 목록
+   */
+  public typeList: PlaceType[];
+
   constructor(data: PlaceEntity) {
     Object.assign(this, data);
   }
@@ -136,6 +141,7 @@ export class PlaceEntity {
       breakTimeList: model.breakTimeList.map(PlaceBreakTimeEntity.fromModel),
       mainCategoryList: model.mainCategoryList,
       moodCategoryList: model.moodCategoryList,
+      typeList: model.typeList,
     });
   }
 }

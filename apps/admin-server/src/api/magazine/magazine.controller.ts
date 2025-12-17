@@ -22,6 +22,7 @@ import { UpdateMagazineByIdxDto } from './dto/request/update-magazine-by-idx.dto
 import { OpenAIService } from '@libs/common/modules/openAI/openAI.service';
 import { RecommendDescriptionDto } from './dto/request/recommend-description.dto';
 import { DescriptionRecommendResponseDto } from './dto/response/description-recommend.response.dto';
+import { UpdateMagazineCategoryDto } from './dto/request/update-magazine-category.dto';
 
 @Controller('magazine')
 export class MagazineController {
@@ -126,6 +127,21 @@ export class MagazineController {
     @Body() dto: UpdateMagazineByIdxDto,
   ): Promise<void> {
     return await this.magazineService.updateMagazineByIdx(idx, dto);
+  }
+
+  /**
+   * 특정 매거진 카테고리 수정
+   */
+  @AdminAuth()
+  @Put('/:idx/category')
+  @Exception(400, 'Invalid category idx')
+  @Exception(404, 'Category not found')
+  @HttpCode(200)
+  public async updateMagazineCategoryByIdx(
+    @Param('idx', ParseIntPipe) idx: number,
+    @Body() dto: UpdateMagazineCategoryDto,
+  ): Promise<void> {
+    return await this.magazineService.updateMagazineCategoryByIdx(idx, dto);
   }
 
   /**

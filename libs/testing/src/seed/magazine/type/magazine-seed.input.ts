@@ -1,3 +1,7 @@
+import { MainCategory } from '@libs/core/category/constants/main-category.constant';
+import { MoodCategory } from '@libs/core/category/constants/mood-category.constant';
+import { PlaceType } from '@libs/core/place/constants/place-type.constant';
+
 /**
  * magazine 시드 입력 타입 정의
  *
@@ -23,4 +27,7 @@ export type MagazineSeedInput = {
   activatedAt?: Date | null;
   deletedAt?: Date | null;
   placeIdxList?: [number, ...number[]] | null;
+  typeList?: PlaceType[] | null;
+  mainCategoryList?: MainCategory[] | null;
+  moodCategoryList?: MoodCategory[] | null;
 };

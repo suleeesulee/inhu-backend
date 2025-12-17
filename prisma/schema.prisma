@@ -140,11 +140,12 @@ model PlaceTypeMapping {
 }
 
 model PlaceType {
-  idx                  Int                @id
-  content              String             @unique @db.VarChar
-  createdAt            DateTime           @default(now()) @map("created_at") @db.Timestamptz(6)
-  deletedAt            DateTime?          @map("deleted_at") @db.Timestamptz(6)
-  placeTypeMappingList PlaceTypeMapping[]
+  idx                          Int                          @id
+  content                      String                       @unique @db.VarChar
+  createdAt                    DateTime                     @default(now()) @map("created_at") @db.Timestamptz(6)
+  deletedAt                    DateTime?                    @map("deleted_at") @db.Timestamptz(6)
+  placeTypeMagazineMappingList PlaceTypeMagazineMapping[]
+  placeTypeMappingList         PlaceTypeMapping[]
 
   @@map("place_type_tb")
 }
@@ -372,20 +373,23 @@ model MagazinePlace {
 }
 
 model Magazine {
-  idx                Int             @id @default(autoincrement())
-  title              String          @db.VarChar
-  description        String?         @db.VarChar
-  content            String          @db.VarChar
-  thumbnailImagePath String?         @map("thumbnail_image_path") @db.VarChar
-  isTitleVisible     Boolean         @default(false) @map("is_title_visible")
-  likeCount          Int             @default(0) @map("like_count")
-  viewCount          Int             @default(0) @map("view_count")
-  createdAt          DateTime        @default(now()) @map("created_at") @db.Timestamptz(6)
-  activatedAt        DateTime?       @map("activated_at") @db.Timestamptz(6)
-  deletedAt          DateTime?       @map("deleted_at") @db.Timestamptz(6)
-  magazineLike       MagazineLike[]
-  placeList          MagazinePlace[]
-  pinnedMagazine     PinnedMagazine?
+  idx                             Int                             @id @default(autoincrement())
+  title                           String                          @db.VarChar
+  description                     String?                         @db.VarChar
+  content                         String                          @db.VarChar
+  thumbnailImagePath              String?                         @map("thumbnail_image_path") @db.VarChar
+  isTitleVisible                  Boolean                         @default(false) @map("is_title_visible")
+  likeCount                       Int                             @default(0) @map("like_count")
+  viewCount                       Int                             @default(0) @map("view_count")
+  createdAt                       DateTime                        @default(now()) @map("created_at") @db.Timestamptz(6)
+  activatedAt                     DateTime?                       @map("activated_at") @db.Timestamptz(6)
+  deletedAt                       DateTime?                       @map("deleted_at") @db.Timestamptz(6)
+  magazineLike                    MagazineLike[]
+  magazineMainCategoryMappingList MagazineMainCategoryMapping[]
+  magazineMoodCategoryMappingList MagazineMoodCategoryMapping[]
+  placeList                       MagazinePlace[]
+  pinnedMagazine                  PinnedMagazine?
+  placeTypeMagazineMappingList    PlaceTypeMagazineMapping[]
 
   @@map("magazine_tb")
 }
@@ -430,21 +434,53 @@ model PlaceMoodCategoryMapping {
 }
 
 model MainCategory {
-  idx                          Int                        @id
-  content                      String                     @unique @db.VarChar
-  createdAt                    DateTime                   @default(now()) @map("created_at") @db.Timestamptz(6)
-  deletedAt                    DateTime?                  @map("deleted_at") @db.Timestamptz(6)
-  placeMainCategoryMappingList PlaceMainCategoryMapping[]
+  idx                             Int                             @id
+  content                         String                          @db.VarChar
+  createdAt                       DateTime                        @default(now()) @map("created_at") @db.Timestamptz(6)
+  deletedAt                       DateTime?                       @map("deleted_at") @db.Timestamptz(6)
+  magazineMainCategoryMappingList MagazineMainCategoryMapping[]
+  placeMainCategoryMappingList    PlaceMainCategoryMapping[]
 
   @@map("main_category_tb")
 }
 
 model MoodCategory {
-  idx                          Int                        @id
-  content                      String                     @unique @db.VarChar
-  createdAt                    DateTime                   @default(now()) @map("created_at") @db.Timestamptz(6)
-  deletedAt                    DateTime?                  @map("deleted_at") @db.Timestamptz(6)
-  placeMoodCategoryMappingList PlaceMoodCategoryMapping[]
+  idx                             Int                             @id
+  content                         String                          @db.VarChar
+  createdAt                       DateTime                        @default(now()) @map("created_at") @db.Timestamptz(6)
+  deletedAt                       DateTime?                       @map("deleted_at") @db.Timestamptz(6)
+  magazineMoodCategoryMappingList MagazineMoodCategoryMapping[]
+  placeMoodCategoryMappingList    PlaceMoodCategoryMapping[]
 
   @@map("mood_category_tb")
+}
+
+model MagazineMainCategoryMapping {
+  mainCategoryIdx Int          @map("main_category_idx")
+  magazineIdx     Int          @map("magazine_idx")
+  magazine        Magazine     @relation(fields: [magazineIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_magazine_tb_to_magazine_main_category_mapping_tb")
+  mainCategory    MainCategory @relation(fields: [mainCategoryIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_main_category_tb_to_magazine_main_category_mapping_tb")
+
+  @@id([mainCategoryIdx, magazineIdx])
+  @@map("magazine_main_category_mapping_tb")
+}
+
+model MagazineMoodCategoryMapping {
+  moodCategoryIdx Int          @map("mood_category_idx")
+  magazineIdx     Int          @map("magazine_idx")
+  magazine        Magazine     @relation(fields: [magazineIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_magazine_tb_to_magazine_mood_category_mapping_tb")
+  moodCategory    MoodCategory @relation(fields: [moodCategoryIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_mood_category_tb_to_magazine_mood_category_mapping_tb")
+
+  @@id([moodCategoryIdx, magazineIdx])
+  @@map("magazine_mood_category_mapping_tb")
+}
+
+model PlaceTypeMagazineMapping {
+  placeTypeIdx Int       @map("place_type_idx")
+  magazineIdx  Int       @map("magazine_idx")
+  magazine     Magazine  @relation(fields: [magazineIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_magazine_tb_to_place_type_magazine_mapping_tb")
+  placeType    PlaceType @relation(fields: [placeTypeIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_place_type_tb_to_place_type_magazine_mapping_tb")
+
+  @@id([placeTypeIdx, magazineIdx])
+  @@map("place_type_magazine_mapping_tb")
 }

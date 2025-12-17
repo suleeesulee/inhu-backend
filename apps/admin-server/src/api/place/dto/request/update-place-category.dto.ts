@@ -1,7 +1,7 @@
 import { PickType } from '@nestjs/swagger';
-import { CreatePlaceCategoryDto } from './create-place-category.dto';
+import { PlaceEntity } from '../../entity/place.entity';
 
-export class UpdatePlaceCategoryDto extends PickType(CreatePlaceCategoryDto, [
+export class UpdatePlaceCategoryDto extends PickType(PlaceEntity, [
   'typeList',
   'mainCategoryList',
   'moodCategoryList',

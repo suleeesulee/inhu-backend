@@ -19,12 +19,14 @@ import { GetAllLikedMagazineDto } from './dto/request/get-all-liked-magazine.dto
 import { LoginAuth } from '@user/common/decorator/login-auth.decorator';
 import { GetAllLikedMagazineResponseDto } from './dto/response/get-all-liked-magazine-response.dto';
 import { MagazineLikeEntity } from './entity/magazine-like.entity';
+import { GetAllSearchedMagazineDto } from './dto/request/get-all-searched-magazine.dto';
+import { GetAllSearchedMagazineResponseDto } from './dto/response/get-all-searched-magazine-response.dto';
 
-@Controller('magazine')
+@Controller('')
 export class MagazineController {
   constructor(private readonly magazineService: MagazineService) {}
 
-  @Get('/all')
+  @Get('/magazine/all')
   public async getMagazineAll(
     @Query() dto: GetAllMagazineDto,
     @User() loginUser?: LoginUser,
@@ -32,7 +34,15 @@ export class MagazineController {
     return await this.magazineService.getMagazineAll(dto, loginUser);
   }
 
-  @Get('/:idx')
+  @Get('/searched-magazine/all')
+  public async getSearchedMagazineAll(
+    @Query() dto: GetAllSearchedMagazineDto,
+    @User() loginUser?: LoginUser,
+  ): Promise<GetAllSearchedMagazineResponseDto> {
+    return await this.magazineService.getSearchedMagazineAll(dto, loginUser);
+  }
+
+  @Get('/magazine/:idx')
   @Exception(400, 'Invalid magazine idx')
   @Exception(404, 'Magazine not found for idx: {idx}')
   public async getMagazineByIdx(
@@ -42,7 +52,7 @@ export class MagazineController {
     return await this.magazineService.getMagazineByIdx(idx, loginUser);
   }
 
-  @Get('/liked/all')
+  @Get('/magazine/liked/all')
   @Exception(400, 'Invalid querystring')
   @LoginAuth()
   public async getLikedMagazineAll(
@@ -55,7 +65,7 @@ export class MagazineController {
     );
   }
 
-  @Post('/:idx/like')
+  @Post('/magazine/:idx/like')
   @Exception(400, 'Invalid magazine idx')
   @Exception(404, 'Magazine not found for idx: {idx}')
   @Exception(409, 'Magazine like already exists')
@@ -68,7 +78,7 @@ export class MagazineController {
     return await this.magazineService.likeMagazineByIdx(loginUser, idx);
   }
 
-  @Delete('/:idx/like')
+  @Delete('/magazine/:idx/like')
   @Exception(400, 'Invalid magazine idx')
   @Exception(404, 'Magazine not found for idx: {idx}')
   @Exception(409, 'Magazine like does not exist')

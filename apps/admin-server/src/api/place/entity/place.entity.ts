@@ -141,6 +141,14 @@ export class PlaceEntity {
   @IsEnumValue(MoodCategory, { each: true })
   public moodCategoryList: MoodCategory[];
 
+  /**
+   * 특정 장소 타입 목록
+   */
+  @ToArray()
+  @UniqueArray()
+  @IsEnumValue(PlaceType, { each: true })
+  public typeList: PlaceType[];
+
   constructor(data: PlaceEntity) {
     Object.assign(this, data);
   }
@@ -169,6 +177,7 @@ export class PlaceEntity {
       permanentlyClosedAt: model.permanentlyClosedAt,
       mainCategoryList: model.mainCategoryList,
       moodCategoryList: model.moodCategoryList,
+      typeList: model.typeList,
     });
   }
 }

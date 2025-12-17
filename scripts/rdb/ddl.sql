@@ -44,6 +44,20 @@ CREATE TABLE magazine_like_tb
   PRIMARY KEY (magazine_idx, user_idx)
 );
 
+CREATE TABLE magazine_main_category_mapping_tb
+(
+  main_category_idx int NOT NULL,
+  magazine_idx      int NOT NULL,
+  PRIMARY KEY (main_category_idx, magazine_idx)
+);
+
+CREATE TABLE magazine_mood_category_mapping_tb
+(
+  mood_category_idx int NOT NULL,
+  magazine_idx      int NOT NULL,
+  PRIMARY KEY (mood_category_idx, magazine_idx)
+);
+
 CREATE TABLE magazine_place_tb
 (
   magazine_idx int NOT NULL,
@@ -70,7 +84,7 @@ CREATE TABLE magazine_tb
 CREATE TABLE main_category_tb
 (
   idx        int                      NOT NULL,
-  content    varchar                  NOT NULL UNIQUE,
+  content    varchar                  NOT NULL,
   created_at timestamp with time zone NOT NULL DEFAULT NOW(),
   deleted_at timestamp with time zone,
   PRIMARY KEY (idx)
@@ -101,7 +115,7 @@ CREATE TABLE menu_tb
 CREATE TABLE mood_category_tb
 (
   idx        int                      NOT NULL,
-  content    varchar                  NOT NULL UNIQUE,
+  content    varchar                  NOT NULL,
   created_at timestamp with time zone NOT NULL DEFAULT NOW(),
   deleted_at timestamp with time zone,
   PRIMARY KEY (idx)
@@ -181,6 +195,13 @@ CREATE TABLE pinned_magazine_tb
   idx        int                      NOT NULL,
   created_at timestamp with time zone NOT NULL DEFAULT NOW(),
   PRIMARY KEY (idx)
+);
+
+CREATE TABLE place_type_magazine_mapping_tb
+(
+  place_type_idx int NOT NULL,
+  magazine_idx   int NOT NULL,
+  PRIMARY KEY (place_type_idx, magazine_idx)
 );
 
 CREATE TABLE place_type_mapping_tb
@@ -555,3 +576,33 @@ ALTER TABLE place_mood_category_mapping_tb
   ADD CONSTRAINT FK_place_tb_TO_place_mood_category_mapping_tb
     FOREIGN KEY (place_idx)
     REFERENCES place_tb (idx);
+
+ALTER TABLE place_type_magazine_mapping_tb
+  ADD CONSTRAINT FK_place_type_tb_TO_place_type_magazine_mapping_tb
+    FOREIGN KEY (place_type_idx)
+    REFERENCES place_type_tb (idx);
+
+ALTER TABLE place_type_magazine_mapping_tb
+  ADD CONSTRAINT FK_magazine_tb_TO_place_type_magazine_mapping_tb
+    FOREIGN KEY (magazine_idx)
+    REFERENCES magazine_tb (idx);
+
+ALTER TABLE magazine_main_category_mapping_tb
+  ADD CONSTRAINT FK_main_category_tb_TO_magazine_main_category_mapping_tb
+    FOREIGN KEY (main_category_idx)
+    REFERENCES main_category_tb (idx);
+
+ALTER TABLE magazine_main_category_mapping_tb
+  ADD CONSTRAINT FK_magazine_tb_TO_magazine_main_category_mapping_tb
+    FOREIGN KEY (magazine_idx)
+    REFERENCES magazine_tb (idx);
+
+ALTER TABLE magazine_mood_category_mapping_tb
+  ADD CONSTRAINT FK_mood_category_tb_TO_magazine_mood_category_mapping_tb
+    FOREIGN KEY (mood_category_idx)
+    REFERENCES mood_category_tb (idx);
+
+ALTER TABLE magazine_mood_category_mapping_tb
+  ADD CONSTRAINT FK_magazine_tb_TO_magazine_mood_category_mapping_tb
+    FOREIGN KEY (magazine_idx)
+    REFERENCES magazine_tb (idx);

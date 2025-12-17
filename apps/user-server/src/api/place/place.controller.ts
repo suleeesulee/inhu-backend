@@ -11,6 +11,8 @@ import { LoginAuth } from '@user/common/decorator/login-auth.decorator';
 import { LoginUser } from '@user/common/types/LoginUser';
 import { GetAllPlaceMarkerDto } from './dto/request/get-all-place-marker.dto';
 import { GetAllPlaceMarkerResponseDto } from './dto/response/get-all-place-marker-response.dto';
+import { GetAllSearchedPlaceOverviewDto } from './dto/request/get-all-searched-place-overview.dto';
+import { GetAllSearchedPlaceOverviewResponseDto } from './dto/response/get-all-searched-place-overview-response.dto';
 
 @Controller()
 export class PlaceController {
@@ -26,6 +28,21 @@ export class PlaceController {
     @User() loginUser?: LoginUser,
   ): Promise<GetAllPlaceOverviewResponseDto> {
     return await this.placeService.getPlaceOverviewAll(dto, loginUser?.idx);
+  }
+
+  /**
+   * 모든 place 개요 가져오기
+   */
+  @Get('/searched-place/all')
+  @Exception(400, 'Invalid page number or orderBy')
+  async getAllPlaceOverviewForSearch(
+    @Query() dto: GetAllSearchedPlaceOverviewDto,
+    @User() loginUser?: LoginUser,
+  ): Promise<GetAllSearchedPlaceOverviewResponseDto> {
+    return await this.placeService.getSearchedPlaceOverviewAll(
+      dto,
+      loginUser?.idx,
+    );
   }
 
   /**

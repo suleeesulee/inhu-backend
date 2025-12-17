@@ -28,6 +28,9 @@ export class MagazineSeedHelper extends ISeedHelper<
       activatedAt: defaultValue(input.activatedAt, null),
       deletedAt: defaultValue(input.deletedAt, null),
       placeIdxList: defaultValue(input.placeIdxList, null),
+      typeList: defaultValue(input.typeList, null),
+      mainCategoryList: defaultValue(input.mainCategoryList, null),
+      moodCategoryList: defaultValue(input.moodCategoryList, null),
     };
   }
 
@@ -51,6 +54,33 @@ export class MagazineSeedHelper extends ISeedHelper<
               createMany: {
                 data: filledInput.placeIdxList.map((placeIdx) => ({
                   placeIdx,
+                })),
+              },
+            }
+          : undefined,
+        placeTypeMagazineMappingList: filledInput.typeList
+          ? {
+              createMany: {
+                data: filledInput.typeList.map((typeIdx) => ({
+                  placeTypeIdx: typeIdx,
+                })),
+              },
+            }
+          : undefined,
+        magazineMainCategoryMappingList: filledInput.mainCategoryList
+          ? {
+              createMany: {
+                data: filledInput.mainCategoryList.map((categoryIdx) => ({
+                  mainCategoryIdx: categoryIdx,
+                })),
+              },
+            }
+          : undefined,
+        magazineMoodCategoryMappingList: filledInput.moodCategoryList
+          ? {
+              createMany: {
+                data: filledInput.moodCategoryList.map((categoryIdx) => ({
+                  moodCategoryIdx: categoryIdx,
                 })),
               },
             }

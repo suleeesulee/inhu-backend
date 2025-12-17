@@ -18,6 +18,9 @@ import {
   SelectLikedMagazineOverview,
 } from './model/prisma-type/select-liked-magazine-overview';
 import { GetAllLikedMagazineInput } from './inputs/get-all-liked-magazine.input';
+import { PlaceType } from '../place/constants/place-type.constant';
+import { MainCategory } from '../category/constants/main-category.constant';
+import { MoodCategory } from '../category/constants/mood-category.constant';
 
 @Injectable()
 export class MagazineCoreRepository {
@@ -47,6 +50,10 @@ export class MagazineCoreRepository {
           { deletedAt: null },
           this.getActivatedAtFilterWhereClause(input.activated),
           this.getPinnedAtFilterWhereClause(input.pinned),
+          this.getTypesFilterWhereClause(input.typeList), // 타입 필터링
+          this.getMainCategoryFilterWhereClause(input.mainCategoryList), // 메인 카테고리 필터링
+          this.getMoodCategoryFilterWhereClause(input.moodCategoryList), // 분위기 카테고리 필터링
+          this.getSearchKeywordWhereClause(input.searchKeyword), // 검색 키워드 필터링
         ],
       },
       orderBy: this.getOrderByClause(input),
@@ -133,6 +140,36 @@ export class MagazineCoreRepository {
               createMany: {
                 data: input.placeIdxList.map((placeIdx) => ({
                   placeIdx,
+                })),
+              },
+            }
+          : undefined,
+        placeTypeMagazineMappingList: input.typeList
+          ? {
+              deleteMany: {},
+              createMany: {
+                data: input.typeList.map((typeIdx) => ({
+                  placeTypeIdx: typeIdx,
+                })),
+              },
+            }
+          : undefined,
+        magazineMainCategoryMappingList: input.mainCategoryList
+          ? {
+              deleteMany: {},
+              createMany: {
+                data: input.mainCategoryList.map((mainCategoryIdx) => ({
+                  mainCategoryIdx,
+                })),
+              },
+            }
+          : undefined,
+        magazineMoodCategoryMappingList: input.moodCategoryList
+          ? {
+              deleteMany: {},
+              createMany: {
+                data: input.moodCategoryList.map((moodCategoryIdx) => ({
+                  moodCategoryIdx,
                 })),
               },
             }
@@ -229,5 +266,72 @@ export class MagazineCoreRepository {
     //   return [{ pinnedMagazine: { createdAt: 'desc' } }, orderByClause];
     // }
     return orderByClause;
+  }
+
+  private getTypesFilterWhereClause(
+    typeList?: PlaceType[],
+  ): Prisma.MagazineWhereInput {
+    if (typeList === undefined || typeList.length === 0) {
+      return {};
+    }
+
+    return {
+      placeTypeMagazineMappingList: {
+        some: { placeTypeIdx: { in: typeList } },
+      },
+    };
+  }
+
+  private getMainCategoryFilterWhereClause(
+    mainCategoryList?: MainCategory[],
+  ): Prisma.MagazineWhereInput {
+    if (mainCategoryList === undefined || mainCategoryList.length === 0) {
+      return {};
+    }
+
+    return {
+      AND: mainCategoryList.map((category) => ({
+        magazineMainCategoryMappingList: {
+          some: { mainCategoryIdx: category },
+        },
+      })),
+    };
+  }
+
+  private getMoodCategoryFilterWhereClause(
+    moodCategoryList?: MoodCategory[],
+  ): Prisma.MagazineWhereInput {
+    if (moodCategoryList === undefined || moodCategoryList.length === 0) {
+      return {};
+    }
+
+    return {
+      AND: moodCategoryList.map((category) => ({
+        magazineMoodCategoryMappingList: {
+          some: { moodCategoryIdx: category },
+        },
+      })),
+    };
+  }
+
+  /**
+   * 검색 키워드
+   */
+  private getSearchKeywordWhereClause(
+    searchKeyword?: string,
+  ): Prisma.MagazineWhereInput {
+    if (!searchKeyword) {
+      return {};
+    }
+
+    const trimmedSearchKeyword = searchKeyword.trim();
+
+    return {
+      OR: [
+        { title: { contains: trimmedSearchKeyword } },
+        { description: { contains: trimmedSearchKeyword } },
+        { content: { contains: trimmedSearchKeyword } },
+      ],
+    };
   }
 }

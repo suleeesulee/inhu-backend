@@ -1,5 +1,8 @@
 import { MagazineModel } from '@libs/core/magazine/model/magazine.model';
 import { MagazinePlaceEntity } from './magazine-place.entity';
+import { PlaceType } from '@libs/core/place/constants/place-type.constant';
+import { MainCategory } from '@libs/core/category/constants/main-category.constant';
+import { MoodCategory } from '@libs/core/category/constants/mood-category.constant';
 
 export class MagazineEntity {
   /**
@@ -78,6 +81,21 @@ export class MagazineEntity {
   public placeList: MagazinePlaceEntity[];
 
   /**
+   * 특정 장소 유형 목록
+   */
+  public typeList: PlaceType[];
+
+  /**
+   * 메인 카테고리 리스트
+   */
+  public mainCategoryList: MainCategory[];
+
+  /**
+   * 분위기 카테고리 리스트
+   */
+  public moodCategoryList: MoodCategory[];
+
+  /**
    * 고정한 시간
    *
    * @example "2025-10-09T12:00:00Z"
@@ -102,6 +120,9 @@ export class MagazineEntity {
       activatedAt: model.activatedAt,
       placeList: model.placeList.map(MagazinePlaceEntity.fromModel),
       pinnedAt: model.pinnedAt,
+      typeList: model.typeList,
+      mainCategoryList: model.mainCategoryList,
+      moodCategoryList: model.moodCategoryList,
     });
   }
 }
