@@ -123,10 +123,6 @@ export class MagazineService {
         take: TAKE + 1,
         skip: SKIP,
         activated: true,
-        orderBy: dto.orderBy,
-        typeList: dto.type ? [dto.type] : undefined,
-        mainCategoryList: dto.mainCategoryList,
-        moodCategoryList: dto.moodCategoryList,
         searchKeyword: dto.searchKeyword,
       });
 
