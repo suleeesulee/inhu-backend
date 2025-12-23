@@ -5,6 +5,8 @@ import { ReviewSeedHelper } from '@libs/testing/seed/review/review.seed';
 import { PickedPlaceSeedHelper } from '@libs/testing/seed/picked-place/picked-place.seed';
 import { MenuSeedHelper } from '@libs/testing/seed/menu/menu.seed';
 import { PlaceSeedDataList } from './data/place.seed';
+import { MagazineSeedHelper } from '@libs/testing/seed/magazine/magazine.seed';
+import { magazineSeedDataList } from './data/magazine.seed';
 
 const prisma = new PrismaService();
 
@@ -16,6 +18,7 @@ async function main() {
   const reviewSeedHelper = new ReviewSeedHelper(prisma);
   const pickedPlaceSeedHelper = new PickedPlaceSeedHelper(prisma);
   const menuSeedHelper = new MenuSeedHelper(prisma);
+  const magazineSeedHelper = new MagazineSeedHelper(prisma);
 
   /**
    * 사용자 생성
@@ -64,6 +67,13 @@ async function main() {
         });
       }
     }
+  }
+
+  /**
+   * 매거진 생성
+   */
+  for (const magazineData of magazineSeedDataList) {
+    await magazineSeedHelper.seed(magazineData);
   }
 }
 
