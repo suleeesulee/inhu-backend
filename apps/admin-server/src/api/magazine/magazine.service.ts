@@ -130,6 +130,7 @@ export class MagazineService {
       thumbnailImagePath: dto.thumbnailImagePath,
       isTitleVisible: dto.isTitleVisible,
       placeIdxList: validPlaceList,
+      activate: magazine.activatedAt ? true : false,
     });
   }
 

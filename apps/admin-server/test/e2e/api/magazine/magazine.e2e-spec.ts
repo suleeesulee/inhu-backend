@@ -1574,6 +1574,7 @@ describe('Magazine e2e test', () => {
       );
       expect(updatedMagazine.placeList.length).toBe(1);
       expect(updatedMagazine.placeList[0].placeIdx).toBe(place2.idx);
+      expect(updatedMagazine.activatedAt).not.toBeNull();
     });
 
     it('200 - update magazine with no place in content (placeIdxList becomes empty)', async () => {
@@ -1625,6 +1626,7 @@ describe('Magazine e2e test', () => {
         updateMagazineDto.isTitleVisible,
       );
       expect(updatedMagazine.placeList.length).toBe(0);
+      expect(updatedMagazine.activatedAt).not.toBeNull();
     });
 
     it('200 - update magazine with multiple places in content', async () => {
@@ -1686,6 +1688,7 @@ describe('Magazine e2e test', () => {
         updateMagazineDto.isTitleVisible,
       );
       expect(updatedMagazine.placeList.length).toBe(3);
+      expect(updatedMagazine.activatedAt).not.toBeNull();
       const placeIdxList = updatedMagazine.placeList.map((p) => p.placeIdx);
       expect(placeIdxList).toContain(place1.idx);
       expect(placeIdxList).toContain(place2.idx);
@@ -1742,6 +1745,7 @@ describe('Magazine e2e test', () => {
       );
       expect(updatedMagazine.placeList.length).toBe(1);
       expect(updatedMagazine.placeList[0].placeIdx).toBe(placeSeed.idx);
+      expect(updatedMagazine.activatedAt).not.toBeNull();
     });
 
     it('200 - update magazine with invalid and valid place idx in content', async () => {
@@ -1794,6 +1798,7 @@ describe('Magazine e2e test', () => {
       );
       expect(updatedMagazine.placeList.length).toBe(1);
       expect(updatedMagazine.placeList[0].placeIdx).toBe(placeSeed.idx);
+      expect(updatedMagazine.activatedAt).not.toBeNull();
     });
 
     it('200 - update magazine with no changes', async () => {
@@ -1846,6 +1851,7 @@ describe('Magazine e2e test', () => {
       );
       expect(updatedMagazine.placeList.length).toBe(1);
       expect(updatedMagazine.placeList[0].placeIdx).toBe(placeSeed.idx);
+      expect(updatedMagazine.activatedAt).not.toBeNull();
     });
 
     it('400 - invalid magazine idx', async () => {
