@@ -7,8 +7,8 @@ if [ "$DEPENDENCY_CHANGED" = "true" ]; then
 fi
 
 if [ "$DB_DOWN_FLAG" = "true" ]; then
-    npm run dev-infra:down
-    npm run dev-infra:up
+    npm run dev-infra:psql:down
+    npm run dev-infra:psql:up
     until docker exec inhu-dev-postgres psql -U inhu_admin -d inhu -c "SELECT 1;" >/dev/null 2>&1; do
         sleep 1
     done
