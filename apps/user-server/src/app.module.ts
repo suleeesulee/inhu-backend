@@ -21,6 +21,7 @@ import { AopModule } from '@toss/nestjs-aop';
 import { BlogReviewModule } from '@user/api/blog-review/blog-review.module';
 import { MagazineModule } from './api/magazine/magazine.module';
 import { PinnedMagazineModule } from './api/pinned-magazine/pinned-magazine.module';
+import { ServerExceptionsFilter } from '@libs/common/filters/server-exception.filter';
 
 @Module({
   imports: [
@@ -54,7 +55,12 @@ import { PinnedMagazineModule } from './api/pinned-magazine/pinned-magazine.modu
     PinnedMagazineModule,
   ],
   controllers: [],
-  providers: [],
+  providers: [
+    {
+      provide: 'APP_FILTER',
+      useClass: ServerExceptionsFilter,
+    },
+  ],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

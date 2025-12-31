@@ -19,6 +19,7 @@ import { MagazineModule } from './api/magazine/magazine.module';
 import { OpenAIModule } from '@libs/common/modules/openAI/openAI.module';
 import { PinnedMagazineModule } from './api/pinned-magazine/pinned-magazine.module';
 import { NaverMenuModule } from '@libs/common/modules/naver-menu/naver-menu.module';
+import { ServerExceptionsFilter } from '@libs/common/filters/server-exception.filter';
 
 @Module({
   imports: [
@@ -46,6 +47,12 @@ import { NaverMenuModule } from '@libs/common/modules/naver-menu/naver-menu.modu
     OpenAIModule,
     PinnedMagazineModule,
     NaverMenuModule,
+  ],
+  providers: [
+    {
+      provide: 'APP_FILTER',
+      useClass: ServerExceptionsFilter,
+    },
   ],
 })
 export class AdminServerModule implements NestModule {
