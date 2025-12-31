@@ -1,3 +1,4 @@
+import { DiscordWebhookService } from '@libs/common/modules/discord-webhook/discord-webhook.service';
 import { UserType } from '@libs/core/user/constants/user-type.enum';
 import { UserCoreService } from '@libs/core/user/user-core.service';
 import { PlaceOwnerSeedHelper } from '@libs/testing/seed/place-owner/place-owner.seed';
@@ -112,6 +113,7 @@ describe('User E2E test', () => {
       const spy = jest
         .spyOn(testHelper.get(UserCoreService), 'getUserByIdx')
         .mockResolvedValueOnce(null);
+      testHelper.mockDiscordWebhookSendErrorMessage();
 
       await testHelper
         .test()
@@ -223,6 +225,7 @@ describe('User E2E test', () => {
         .mockRejectedValueOnce(
           new Error('Authenticate User not found in database'),
         );
+      testHelper.mockDiscordWebhookSendErrorMessage();
 
       await testHelper
         .test()
