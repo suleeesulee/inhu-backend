@@ -9,6 +9,7 @@ import * as uuid from 'uuid';
 import { Type } from '@libs/common/types/Type';
 import { DateUtilService } from '@libs/common/modules/date-util/date-util.service';
 import { DateUtil } from '../utils/date.util';
+import { DiscordWebhookService } from '@libs/common/modules/discord-webhook/discord-webhook.service';
 
 /**
  * 테스트 헬퍼 인터페이스입니다.
@@ -154,5 +155,15 @@ export abstract class ITestHelper {
     jest.spyOn(dateUtilService, 'getNow').mockReturnValue(date);
 
     return new DateUtil(date);
+  }
+
+  public mockDiscordWebhookSendErrorMessage() {
+    const discordWebhookService = this.app.get(DiscordWebhookService);
+
+    jest
+      .spyOn(discordWebhookService, 'sendErrorMessage')
+      .mockImplementation(async () => {
+        return;
+      });
   }
 }

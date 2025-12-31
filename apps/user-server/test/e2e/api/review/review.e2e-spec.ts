@@ -781,6 +781,7 @@ describe('Review E2E test', () => {
         deletedAt: null,
         activatedAt: new Date(),
       });
+      testHelper.mockDiscordWebhookSendErrorMessage();
 
       // 존재하지 않는 keywordIdx를 포함시켜 의도적으로 에러 유발
       const createReviewDto = {
@@ -1534,6 +1535,7 @@ describe('Review E2E test', () => {
 
     it('500 - transaction failure', async () => {
       const loginUser = testHelper.loginUsers.user1;
+      testHelper.mockDiscordWebhookSendErrorMessage();
 
       const place = await placeSeedHelper.seed({
         deletedAt: null,
@@ -1769,6 +1771,7 @@ describe('Review E2E test', () => {
 
     it('500 - transaction failure', async () => {
       const loginUser = testHelper.loginUsers.user1;
+      testHelper.mockDiscordWebhookSendErrorMessage();
 
       const place = await placeSeedHelper.seed({
         deletedAt: null,

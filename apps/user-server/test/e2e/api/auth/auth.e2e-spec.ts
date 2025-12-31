@@ -162,6 +162,7 @@ describe('Auth E2E test', () => {
 
     it('500 - invalid provider', async () => {
       const invalidProvider = 'invalid provider';
+      testHelper.mockDiscordWebhookSendErrorMessage();
       await testHelper.test().get(`/auth/${invalidProvider}/login`).expect(500);
     });
   });
@@ -184,6 +185,7 @@ describe('Auth E2E test', () => {
 
     it('500 - invalid provider', async () => {
       const invalidProvider = 'invalid provider';
+      testHelper.mockDiscordWebhookSendErrorMessage();
       await testHelper.test().get(`/auth/${invalidProvider}/login`).expect(500);
     });
   });
@@ -570,6 +572,7 @@ describe('Auth E2E test', () => {
 
     it('500 - invalid provider', async () => {
       const invalidProvider = 'invalid provider';
+      testHelper.mockDiscordWebhookSendErrorMessage();
       await testHelper
         .test()
         .get(`/auth/${invalidProvider}/callback/app`)
@@ -962,6 +965,7 @@ describe('Auth E2E test', () => {
 
     it('500 - invalid provider', async () => {
       const invalidProvider = 'invalid provider';
+      testHelper.mockDiscordWebhookSendErrorMessage();
       await testHelper
         .test()
         .post(`/auth/${invalidProvider}/callback/app`)
