@@ -207,6 +207,7 @@ describe('Place cron e2e', () => {
     const dateUtilService = testHelper.get<DateUtilService>(DateUtilService);
     const placeCoreService = testHelper.get<PlaceCoreService>(PlaceCoreService);
     const placeCronService = testHelper.get<PlaceCronService>(PlaceCronService);
+    testHelper.mockDiscordWebhookSendErrorMessage();
 
     const originalCreateMethod = placeCoreService.createWeeklyClosedDay;
 
