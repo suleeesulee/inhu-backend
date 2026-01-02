@@ -63,6 +63,7 @@
     "redlock": "^5.0.0-beta.2",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.2",
+    "swagger-stats": "^0.99.7",
     "uuid": "^11.1.0"
   },
   "devDependencies": {
@@ -77,6 +78,7 @@
     "@types/jest": "^30.0.0",
     "@types/node": "^24.0.15",
     "@types/supertest": "^6.0.3",
+    "@types/swagger-stats": "^0.95.11",
     "@typescript-eslint/eslint-plugin": "^8.37.0",
     "@typescript-eslint/parser": "^8.37.0",
     "dotenv-cli": "^8.0.0",

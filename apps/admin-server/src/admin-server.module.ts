@@ -20,6 +20,8 @@ import { OpenAIModule } from '@libs/common/modules/openAI/openAI.module';
 import { PinnedMagazineModule } from './api/pinned-magazine/pinned-magazine.module';
 import { NaverMenuModule } from '@libs/common/modules/naver-menu/naver-menu.module';
 import { ServerExceptionsFilter } from '@libs/common/filters/server-exception.filter';
+import { AdminAccountModule } from '@libs/core/admin-account/admin-account-core.module';
+import { HashModule } from '@libs/common/modules/hash/hash.module';
 
 @Module({
   imports: [
@@ -47,6 +49,8 @@ import { ServerExceptionsFilter } from '@libs/common/filters/server-exception.fi
     OpenAIModule,
     PinnedMagazineModule,
     NaverMenuModule,
+    AdminAccountModule,
+    HashModule,
   ],
   providers: [
     {
