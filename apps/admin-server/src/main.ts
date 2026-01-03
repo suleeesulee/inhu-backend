@@ -18,6 +18,8 @@ import { HashService } from '@libs/common/modules/hash/hash.service';
 async function bootstrap() {
   const app = await NestFactory.create(AdminServerModule);
 
+  app.enableShutdownHooks();
+
   app.enableCors({
     origin: process.env.CORS_ORIGIN?.split(' '),
     credentials: true,
@@ -87,5 +89,9 @@ async function bootstrap() {
   }
 
   await app.listen(process.env.ADMIN_SERVER_PORT ?? 3000);
+
+  if (process.send) {
+    process.send('ready');
+  }
 }
 bootstrap();
