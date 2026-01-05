@@ -58,7 +58,6 @@ import { HashModule } from '@libs/common/modules/hash/hash.module';
     AdminAccountModule,
     HashModule,
   ],
-  controllers: [],
   providers: [
     {
       provide: 'APP_FILTER',
