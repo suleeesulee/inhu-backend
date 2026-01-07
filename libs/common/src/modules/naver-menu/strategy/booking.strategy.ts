@@ -5,6 +5,7 @@ import { NotFoundException } from '@nestjs/common';
 
 export class BookingStrategy extends NaverCrawlingStrategy {
   private readonly selectors = {
+    rootDivSelector: 'div.user_app',
     liSelector: 'li[class^="MenuContent__order_list_item"]',
     nameSelector: 'div[class^="MenuContent__tit"]',
     priceSelector: 'div[class^="MenuContent__price"] strong',
@@ -17,15 +18,18 @@ export class BookingStrategy extends NaverCrawlingStrategy {
   public async crawl(page: Page, timeout: number): Promise<NaverMenu[]> {
     await this.showSoldOutMenus(page, timeout);
 
-    let hasTabs = false;
     try {
-      await page.waitForSelector(this.selectors.tabBoxSelector, {
+      await page.waitForSelector(this.selectors.rootDivSelector, {
         timeout,
       });
-      hasTabs = true;
     } catch (error) {
-      hasTabs = false;
+      throw new NotFoundException(
+        `크롤링 타임아웃: 셀렉터('${this.selectors.rootDivSelector}')를 찾지 못했습니다.`,
+      );
     }
+
+    const tabBox = await page.$(`${this.selectors.tabBoxSelector}`);
+    const hasTabs = tabBox !== null;
 
     const menuList: NaverMenu[] = [];
     if (hasTabs) {
@@ -40,7 +44,6 @@ export class BookingStrategy extends NaverCrawlingStrategy {
         }
 
         await tab.click();
-        await this.autoScroll(page);
 
         const liSelector = this.selectors.liSelector;
         try {
@@ -96,6 +99,7 @@ export class BookingStrategy extends NaverCrawlingStrategy {
 
   private async extractMenusFromCurrentTabs(page: Page): Promise<NaverMenu[]> {
     const selectors = this.selectors;
+    await this.autoScroll(page);
 
     return await page.$$eval(
       selectors.liSelector,
