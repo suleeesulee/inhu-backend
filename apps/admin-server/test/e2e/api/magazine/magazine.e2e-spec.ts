@@ -862,6 +862,7 @@ describe('Magazine e2e test', () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const magazine = await magazineSeedHelper.seed({
         typeList: [PlaceType.CAFE],
+        activatedAt: new Date(),
       });
 
       const prisma = testHelper.getPrisma();
@@ -886,15 +887,20 @@ describe('Magazine e2e test', () => {
       const afterTypeList = await prisma.placeTypeMagazineMapping.findMany({
         where: { magazineIdx: magazine.idx },
       });
+      const afterMagazine = await prisma.magazine.findUniqueOrThrow({
+        where: { idx: magazine.idx },
+      });
 
       expect(afterTypeList.length).toBe(1);
       expect(afterTypeList[0].placeTypeIdx).toBe(PlaceType.RESTAURANT);
+      expect(afterMagazine.activatedAt).not.toBeNull();
     });
 
     it('200 - successfully update multiple type to magazine', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const magazine = await magazineSeedHelper.seed({
         typeList: [PlaceType.CAFE],
+        activatedAt: new Date(),
       });
 
       const prisma = testHelper.getPrisma();
@@ -920,10 +926,14 @@ describe('Magazine e2e test', () => {
         where: { magazineIdx: magazine.idx },
         orderBy: { placeTypeIdx: 'asc' },
       });
+      const afterMagazine = await prisma.magazine.findUniqueOrThrow({
+        where: { idx: magazine.idx },
+      });
 
       expect(afterTypeList.length).toBe(2);
       expect(afterTypeList[0].placeTypeIdx).toBe(PlaceType.CAFE);
       expect(afterTypeList[1].placeTypeIdx).toBe(PlaceType.RESTAURANT);
+      expect(afterMagazine.activatedAt).not.toBeNull();
     });
 
     it('200 - successfully updates single main category and no mood category to magazine', async () => {
@@ -935,6 +945,7 @@ describe('Magazine e2e test', () => {
           MoodCategory.STUDY_FRIENDLY,
           MoodCategory.DESSERT_HOTSPOT,
         ],
+        activatedAt: new Date(),
       });
 
       const prisma = testHelper.getPrisma();
@@ -977,6 +988,9 @@ describe('Magazine e2e test', () => {
         await prisma.magazineMoodCategoryMapping.findMany({
           where: { magazineIdx: magazine.idx },
         });
+      const afterMagazine = await prisma.magazine.findUniqueOrThrow({
+        where: { idx: magazine.idx },
+      });
 
       expect(afterTypeList.length).toBe(1);
       expect(afterTypeList[0].placeTypeIdx).toBe(PlaceType.CAFE);
@@ -985,6 +999,7 @@ describe('Magazine e2e test', () => {
         MainCategory.DESSERT,
       );
       expect(afterMoodCategoryList.length).toBe(0);
+      expect(afterMagazine.activatedAt).not.toBeNull();
     });
 
     it('200 - successfully updates no main category and single mood category to magazine', async () => {
@@ -996,6 +1011,7 @@ describe('Magazine e2e test', () => {
           MoodCategory.STUDY_FRIENDLY,
           MoodCategory.DESSERT_HOTSPOT,
         ],
+        activatedAt: new Date(),
       });
 
       const prisma = testHelper.getPrisma();
@@ -1038,6 +1054,9 @@ describe('Magazine e2e test', () => {
         await prisma.magazineMoodCategoryMapping.findMany({
           where: { magazineIdx: magazine.idx },
         });
+      const afterMagazine = await prisma.magazine.findUniqueOrThrow({
+        where: { idx: magazine.idx },
+      });
 
       expect(afterTypeList.length).toBe(1);
       expect(afterTypeList[0].placeTypeIdx).toBe(PlaceType.CAFE);
@@ -1046,6 +1065,7 @@ describe('Magazine e2e test', () => {
       expect(afterMoodCategoryList[0].moodCategoryIdx).toBe(
         MoodCategory.GOOD_ATMOSPHERE,
       );
+      expect(afterMagazine.activatedAt).not.toBeNull();
     });
 
     it('200 - successfully updates multiple main category and single mood category to magazine', async () => {
@@ -1057,6 +1077,7 @@ describe('Magazine e2e test', () => {
           MoodCategory.STUDY_FRIENDLY,
           MoodCategory.DESSERT_HOTSPOT,
         ],
+        activatedAt: new Date(),
       });
 
       const prisma = testHelper.getPrisma();
@@ -1097,6 +1118,9 @@ describe('Magazine e2e test', () => {
         await prisma.magazineMoodCategoryMapping.findMany({
           where: { magazineIdx: magazine.idx },
         });
+      const afterMagazine = await prisma.magazine.findUniqueOrThrow({
+        where: { idx: magazine.idx },
+      });
 
       expect(afterTypeList.length).toBe(1);
       expect(afterTypeList[0].placeTypeIdx).toBe(PlaceType.CAFE);
@@ -1110,6 +1134,7 @@ describe('Magazine e2e test', () => {
       expect(afterMoodCategoryList[0].moodCategoryIdx).toBe(
         MoodCategory.GOOD_ATMOSPHERE,
       );
+      expect(afterMagazine.activatedAt).not.toBeNull();
     });
 
     it('200 successfully updates single main category and multiple mood category to magazine', async () => {
@@ -1121,6 +1146,7 @@ describe('Magazine e2e test', () => {
           MoodCategory.STUDY_FRIENDLY,
           MoodCategory.DESSERT_HOTSPOT,
         ],
+        activatedAt: new Date(),
       });
 
       const prisma = testHelper.getPrisma();
@@ -1164,6 +1190,9 @@ describe('Magazine e2e test', () => {
         await prisma.magazineMoodCategoryMapping.findMany({
           where: { magazineIdx: magazine.idx },
         });
+      const afterMagazine = await prisma.magazine.findUniqueOrThrow({
+        where: { idx: magazine.idx },
+      });
 
       expect(afterTypeList.length).toBe(1);
       expect(afterTypeList[0].placeTypeIdx).toBe(PlaceType.CAFE);
@@ -1179,6 +1208,7 @@ describe('Magazine e2e test', () => {
       ).toStrictEqual(
         [MoodCategory.GOOD_ATMOSPHERE, MoodCategory.BAR_DATE].sort(),
       );
+      expect(afterMagazine.activatedAt).not.toBeNull();
     });
 
     it('200 - successfully updates multiple main category and no mood category to magazine', async () => {
@@ -1190,6 +1220,7 @@ describe('Magazine e2e test', () => {
           MoodCategory.STUDY_FRIENDLY,
           MoodCategory.DESSERT_HOTSPOT,
         ],
+        activatedAt: new Date(),
       });
 
       const prisma = testHelper.getPrisma();
@@ -1230,6 +1261,9 @@ describe('Magazine e2e test', () => {
         await prisma.magazineMoodCategoryMapping.findMany({
           where: { magazineIdx: magazine.idx },
         });
+      const afterMagazine = await prisma.magazine.findUniqueOrThrow({
+        where: { idx: magazine.idx },
+      });
 
       expect(afterTypeList.length).toBe(1);
       expect(afterTypeList[0].placeTypeIdx).toBe(PlaceType.CAFE);
@@ -1240,6 +1274,7 @@ describe('Magazine e2e test', () => {
           .sort(),
       ).toStrictEqual([MainCategory.DESSERT, MainCategory.SANDWICH].sort());
       expect(afterMoodCategoryList.length).toBe(0);
+      expect(afterMagazine.activatedAt).not.toBeNull();
     });
 
     it('200 - successfully updates no main category and multiple mood category to magazine', async () => {
@@ -1251,6 +1286,7 @@ describe('Magazine e2e test', () => {
           MoodCategory.STUDY_FRIENDLY,
           MoodCategory.DESSERT_HOTSPOT,
         ],
+        activatedAt: new Date(),
       });
 
       const prisma = testHelper.getPrisma();
@@ -1296,6 +1332,9 @@ describe('Magazine e2e test', () => {
         await prisma.magazineMoodCategoryMapping.findMany({
           where: { magazineIdx: magazine.idx },
         });
+      const afterMagazine = await prisma.magazine.findUniqueOrThrow({
+        where: { idx: magazine.idx },
+      });
 
       expect(afterTypeList.length).toBe(1);
       expect(afterTypeList[0].placeTypeIdx).toBe(PlaceType.CAFE);
@@ -1308,6 +1347,7 @@ describe('Magazine e2e test', () => {
       ).toStrictEqual(
         [MoodCategory.GOOD_ATMOSPHERE, MoodCategory.BAR_DATE].sort(),
       );
+      expect(afterMagazine.activatedAt).not.toBeNull();
     });
 
     it('200 - successfully updates duplicate category is ignored and unique categories are added to magazine', async () => {
@@ -1319,6 +1359,7 @@ describe('Magazine e2e test', () => {
           MoodCategory.STUDY_FRIENDLY,
           MoodCategory.DESSERT_HOTSPOT,
         ],
+        activatedAt: new Date(),
       });
 
       const prisma = testHelper.getPrisma();
@@ -1369,6 +1410,9 @@ describe('Magazine e2e test', () => {
         await prisma.magazineMoodCategoryMapping.findMany({
           where: { magazineIdx: magazine.idx },
         });
+      const afterMagazine = await prisma.magazine.findUniqueOrThrow({
+        where: { idx: magazine.idx },
+      });
 
       expect(afterTypeList.length).toBe(1);
       expect(afterTypeList[0].placeTypeIdx).toBe(PlaceType.CAFE);
@@ -1386,6 +1430,7 @@ describe('Magazine e2e test', () => {
       ).toStrictEqual(
         [MoodCategory.GOOD_ATMOSPHERE, MoodCategory.BAR_DATE].sort(),
       );
+      expect(afterMagazine.activatedAt).not.toBeNull();
     });
 
     it('200 - successfully updates multiple types, main category and mood category to magazine', async () => {
@@ -1397,6 +1442,7 @@ describe('Magazine e2e test', () => {
           MoodCategory.STUDY_FRIENDLY,
           MoodCategory.DESSERT_HOTSPOT,
         ],
+        activatedAt: new Date(),
       });
 
       const prisma = testHelper.getPrisma();
@@ -1442,6 +1488,9 @@ describe('Magazine e2e test', () => {
         await prisma.magazineMoodCategoryMapping.findMany({
           where: { magazineIdx: magazine.idx },
         });
+      const afterMagazine = await prisma.magazine.findUniqueOrThrow({
+        where: { idx: magazine.idx },
+      });
 
       expect(afterTypeList.length).toBe(2);
       expect(
@@ -1461,6 +1510,7 @@ describe('Magazine e2e test', () => {
       ).toStrictEqual(
         [MoodCategory.GOOD_ATMOSPHERE, MoodCategory.BAR_DATE].sort(),
       );
+      expect(afterMagazine.activatedAt).not.toBeNull();
     });
 
     it('401 - no access token', async () => {
@@ -1574,6 +1624,7 @@ describe('Magazine e2e test', () => {
       );
       expect(updatedMagazine.placeList.length).toBe(1);
       expect(updatedMagazine.placeList[0].placeIdx).toBe(place2.idx);
+      expect(updatedMagazine.activatedAt).not.toBeNull();
     });
 
     it('200 - update magazine with no place in content (placeIdxList becomes empty)', async () => {
@@ -1625,6 +1676,7 @@ describe('Magazine e2e test', () => {
         updateMagazineDto.isTitleVisible,
       );
       expect(updatedMagazine.placeList.length).toBe(0);
+      expect(updatedMagazine.activatedAt).not.toBeNull();
     });
 
     it('200 - update magazine with multiple places in content', async () => {
@@ -1686,6 +1738,7 @@ describe('Magazine e2e test', () => {
         updateMagazineDto.isTitleVisible,
       );
       expect(updatedMagazine.placeList.length).toBe(3);
+      expect(updatedMagazine.activatedAt).not.toBeNull();
       const placeIdxList = updatedMagazine.placeList.map((p) => p.placeIdx);
       expect(placeIdxList).toContain(place1.idx);
       expect(placeIdxList).toContain(place2.idx);
@@ -1742,6 +1795,7 @@ describe('Magazine e2e test', () => {
       );
       expect(updatedMagazine.placeList.length).toBe(1);
       expect(updatedMagazine.placeList[0].placeIdx).toBe(placeSeed.idx);
+      expect(updatedMagazine.activatedAt).not.toBeNull();
     });
 
     it('200 - update magazine with invalid and valid place idx in content', async () => {
@@ -1794,6 +1848,7 @@ describe('Magazine e2e test', () => {
       );
       expect(updatedMagazine.placeList.length).toBe(1);
       expect(updatedMagazine.placeList[0].placeIdx).toBe(placeSeed.idx);
+      expect(updatedMagazine.activatedAt).not.toBeNull();
     });
 
     it('200 - update magazine with no changes', async () => {
@@ -1846,6 +1901,7 @@ describe('Magazine e2e test', () => {
       );
       expect(updatedMagazine.placeList.length).toBe(1);
       expect(updatedMagazine.placeList[0].placeIdx).toBe(placeSeed.idx);
+      expect(updatedMagazine.activatedAt).not.toBeNull();
     });
 
     it('400 - invalid magazine idx', async () => {

@@ -169,6 +169,7 @@ describe('Admin Review E2E Tests', () => {
 
     it('500 - transaction failure', async () => {
       const adminUser = testHelper.loginAdmin.admin1;
+      testHelper.mockDiscordWebhookSendErrorMessage();
 
       const user = await userSeedHelper.seed({
         nickname: 'testUser',

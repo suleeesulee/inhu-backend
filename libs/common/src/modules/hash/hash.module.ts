@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { HashService } from 'apps/admin-server/src/common/modules/hash/hash.service';
+import { HashService } from './hash.service';
 
 @Module({
   providers: [HashService],

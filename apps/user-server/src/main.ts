@@ -10,9 +10,14 @@ import * as cookieParser from 'cookie-parser';
 import { getMode } from '@libs/common/utils/get-mode.util';
 import { DiscordWebhookService } from '@libs/common/modules/discord-webhook/discord-webhook.service';
 import { DiscordWebhookContext } from '@libs/common/modules/discord-webhook/constants/discord-webhook-context.enum';
+import * as swStats from 'swagger-stats';
+import { AdminAccountCoreService } from '@libs/core/admin-account/admin-account-core.service';
+import { HashService } from '@libs/common/modules/hash/hash.service';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  app.enableShutdownHooks();
 
   app.enableCors({
     origin: process.env.CORS_ORIGIN?.split(' '),
@@ -56,6 +61,34 @@ async function bootstrap() {
   const documentFactory = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, documentFactory, customOptions);
 
+  app.use(
+    swStats.getMiddleware({
+      swaggerSpec: documentFactory,
+      authentication: true,
+      onAuthenticate: async (req, username, password) => {
+        const admin = await app
+          .get(AdminAccountCoreService)
+          .getAdminAccountById(username);
+        if (!admin) {
+          return false;
+        }
+
+        const isPasswordValid = await app
+          .get(HashService)
+          .compare(password, admin.pw);
+        if (isPasswordValid) {
+          return true;
+        }
+
+        return false;
+      },
+    }),
+  );
+
   await app.listen(process.env.PORT ?? 3000);
+
+  if (process.send) {
+    process.send('ready');
+  }
 }
 bootstrap();

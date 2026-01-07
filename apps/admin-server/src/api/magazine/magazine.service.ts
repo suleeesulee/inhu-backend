@@ -130,6 +130,7 @@ export class MagazineService {
       thumbnailImagePath: dto.thumbnailImagePath,
       isTitleVisible: dto.isTitleVisible,
       placeIdxList: validPlaceList,
+      activate: magazine.activatedAt ? true : false,
     });
   }
 
@@ -142,7 +143,10 @@ export class MagazineService {
       throw new NotFoundException(`Magazine not found for idx: ${idx}`);
     }
 
-    return await this.magazineCoreService.updateMagazineByIdx(idx, dto);
+    return await this.magazineCoreService.updateMagazineByIdx(idx, {
+      ...dto,
+      activate: magazine.activatedAt ? true : false,
+    });
   }
 
   public async deleteMagazineByIdx(idx: number): Promise<void> {
