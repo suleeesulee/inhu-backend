@@ -83,7 +83,7 @@ async function bootstrap() {
         return false;
       },
       timelineBucketDuration:
-        Number(process.env.TIME_LINE_BUCKET_DURATIONS) ?? 60000,
+        Number(process.env.TIME_LINE_BUCKET_DURATION) ?? 60000,
     }),
   );
 
