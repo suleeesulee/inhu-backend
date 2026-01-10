@@ -13,6 +13,7 @@ import { Transactional } from '@nestjs-cls/transactional';
 import { DateUtilService } from '@libs/common/modules/date-util/date-util.service';
 import { WeeklyCloseType } from './constants/weekly-close-type.constant';
 import { PlaceWeeklyClosedDayModel } from './model/place-weekly-closed-day.model';
+import { PlaceType } from './constants/place-type.constant';
 
 /**
  * 장소 관련 핵심 서비스
@@ -51,8 +52,10 @@ export class PlaceCoreService {
       .then((result) => result.map(BookmarkedPlaceOverviewModel.fromPrisma));
   }
 
-  public async getOperatingPlaceOverviewCount(): Promise<number> {
-    return await this.placeCoreRepository.selectOperatingPlaceCount();
+  public async getOperatingPlaceOverviewCount(
+    types: PlaceType[],
+  ): Promise<number> {
+    return await this.placeCoreRepository.selectOperatingPlaceCount(types);
   }
 
   @Transactional()
@@ -72,8 +75,8 @@ export class PlaceCoreService {
     );
   }
 
-  public async getOperatingPlaceCount(): Promise<number> {
-    return await this.placeCoreRepository.selectOperatingPlaceCount();
+  public async getOperatingPlaceCount(types: PlaceType[]): Promise<number> {
+    return await this.placeCoreRepository.selectOperatingPlaceCount(types);
   }
 
   public async getOwnerPlaceAllByUserIdx(

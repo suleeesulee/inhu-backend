@@ -164,10 +164,16 @@ export class PlaceCoreRepository {
     });
   }
 
-  public async selectOperatingPlaceCount(): Promise<number> {
+  public async selectOperatingPlaceCount(types: PlaceType[]): Promise<number> {
     return await this.txHost.tx.place.count({
       where: {
-        AND: [{ deletedAt: null }, this.getOperatingFilterWhereClause(true)],
+        AND: [
+          { deletedAt: null },
+          this.getOperatingFilterWhereClause(true),
+          this.getTypesFilterWhereClause(types),
+          this.getActivatedAtFilterWhereClause(true),
+          this.getPermanentlyClosedFilterWhereClause(false),
+        ],
       },
     });
   }
