@@ -10,4 +10,5 @@ export class CreateUserInput {
     snsId: string;
     provider: string;
   };
+  platform?: 'unknown' | 'ios' | 'android' | 'web';
 }
