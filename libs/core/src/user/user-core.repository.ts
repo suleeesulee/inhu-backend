@@ -84,6 +84,7 @@ export class UserCoreRepository {
       data: {
         nickname: input.nickname,
         profileImagePath: input.profileImagePath,
+        platform: input.platform,
         userProvider: input.social
           ? {
               create: {
