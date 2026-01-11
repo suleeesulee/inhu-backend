@@ -75,7 +75,11 @@ export class AuthService {
 
     const oauthInfo = await strategy.socialLogin(provider, req);
 
-    const userModel = await this.upsertUserByOauthInfo(oauthInfo);
+    const platform =
+      issuedBy === TokenIssuedBy.WEB
+        ? 'web'
+        : this.extractPlatformFromHeader(req);
+    const userModel = await this.upsertUserByOauthInfo(oauthInfo, platform);
 
     // 해당 사용자가 정지되었는지 판단하거나 등등
 
@@ -88,6 +92,7 @@ export class AuthService {
 
   private async upsertUserByOauthInfo(
     oauthInfo: OAuthInfo,
+    platform: 'unknown' | 'web' | 'android' | 'ios',
   ): Promise<UserModel> {
     const user = await this.userCoreService.getUserBySocialId(
       oauthInfo.snsId,
@@ -101,6 +106,7 @@ export class AuthService {
     return await this.userCoreService.createUser({
       nickname: '새로운 인후러',
       profileImagePath: null,
+      platform,
       social: {
         provider: oauthInfo.provider,
         snsId: oauthInfo.snsId,
@@ -136,5 +142,23 @@ export class AuthService {
     } catch (err) {
       return;
     }
+  }
+
+  private extractPlatformFromHeader(
+    req: Request,
+  ): 'unknown' | 'web' | 'android' | 'ios' {
+    const platform: string | string[] = req.headers.platform || '';
+
+    if (platform === 'web') {
+      return 'web';
+    }
+    if (platform === 'android') {
+      return 'android';
+    }
+    if (platform === 'ios') {
+      return 'ios';
+    }
+
+    return 'unknown';
   }
 }
