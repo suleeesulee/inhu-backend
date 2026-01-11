@@ -75,7 +75,10 @@ export class AuthService {
 
     const oauthInfo = await strategy.socialLogin(provider, req);
 
-    const platform = this.extractPlatformFromHeader(req);
+    const platform =
+      issuedBy === TokenIssuedBy.WEB
+        ? 'web'
+        : this.extractPlatformFromHeader(req);
     const userModel = await this.upsertUserByOauthInfo(oauthInfo, platform);
 
     // 해당 사용자가 정지되었는지 판단하거나 등등
