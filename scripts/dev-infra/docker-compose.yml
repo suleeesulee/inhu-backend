@@ -4,15 +4,18 @@ services:
   postgres:
     image: postgres:15.4
     container_name: inhu-dev-postgres
+    command: postgres -c config_file=/etc/postgresql/postgresql.conf -c hba_file=/etc/postgresql/pg_hba.conf
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: 1234
     ports:
-      - '5462:5432'
+      - "5462:5432"
     volumes:
       - inhu-dev-data:/var/lib/postgresql/data
       - ./init:/docker-entrypoint-initdb.d
       - ../rdb:/rdb
+      - ./postgresql.conf:/etc/postgresql/postgresql.conf
+      - ./pg_hba.conf:/etc/postgresql/pg_hba.conf
     networks:
       - inhu-dev-network
 
@@ -20,12 +23,101 @@ services:
     image: redis:7.4.0
     container_name: inhu-dev-redis
     ports:
-      - '6384:6379'
+      - "6384:6379"
     networks:
       - inhu-dev-network
     volumes:
       - inhu-dev-redis-data:/data
 
+  kafka:
+    image: apache/kafka:4.1.1
+    container_name: inhu-dev-kafka
+    ports:
+      - "9092:9092"
+    networks:
+      - inhu-dev-network
+    environment:
+      # KRaft (ZK 없이)
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+
+      # 컨테이너 내부에서 바인딩은 0.0.0.0 로
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+
+      # 다른 컨테이너가 접근할 주소(=서비스명:포트)
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+
+      # quorum voters도 컨테이너 주소로
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_NUM_PARTITIONS: 3
+
+  connect:
+    image: debezium/connect:2.7.3.Final
+    platform: linux/amd64
+    container_name: inhu-dev-connect
+    depends_on:
+      - kafka
+      - postgres
+    ports:
+      - "8083:8083"
+    networks:
+      - inhu-dev-network
+    environment:
+      BOOTSTRAP_SERVERS: "kafka:9092"
+      GROUP_ID: "connect-cluster"
+      CONFIG_STORAGE_TOPIC: "connect_configs"
+      OFFSET_STORAGE_TOPIC: "connect_offsets"
+      STATUS_STORAGE_TOPIC: "connect_status"
+      CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR: 1
+      CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR: 1
+      CONNECT_STATUS_STORAGE_REPLICATION_FACTOR: 1
+      KEY_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+      VALUE_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+      KEY_CONVERTER_SCHEMAS_ENABLE: "false"
+      VALUE_CONVERTER_SCHEMAS_ENABLE: "false"
+
+  connect-init:
+    image: curlimages/curl:8.5.0
+    container_name: inhu-dev-connect-init
+    depends_on:
+      - connect
+    networks:
+      - inhu-dev-network
+    volumes:
+      - ./connectors:/connectors:ro
+    entrypoint: ["/bin/sh", "-c"]
+    command: >
+      '
+      echo "Waiting for Kafka Connect...";
+      until curl -s http://connect:8083/connectors >/dev/null; do sleep 1; done;
+
+      echo "Registering connector...";
+      curl -s -X PUT http://connect:8083/connectors/inhu-postgres-connector/config
+      -H "Content-Type: application/json"
+      --data @/connectors/inhu-postgres.json;
+
+      echo "Done.";
+      '
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    container_name: inhu-dev-kafka-ui
+    depends_on:
+      - kafka
+    ports:
+      - "8080:8080"
+    networks:
+      - inhu-dev-network
+    environment:
+      KAFKA_CLUSTERS_0_NAME: local
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: "kafka:9092"
 volumes:
   inhu-dev-data:
   inhu-dev-redis-data:

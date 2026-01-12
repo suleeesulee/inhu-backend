@@ -1,5 +1,8 @@
 CREATE USER inhu_admin WITH PASSWORD '1234';
 
+-- Debezium CDC 유저 생성
+CREATE USER debezium WITH PASSWORD 'debezium' REPLICATION;
+
 CREATE DATABASE inhu OWNER inhu_admin;
 
 \c inhu inhu_admin;
@@ -7,6 +10,13 @@ CREATE DATABASE inhu OWNER inhu_admin;
 \i /rdb/ddl.sql
 
 \i /rdb/default-seed.sql
+
+-- Debezium 권한 설정
+GRANT CONNECT ON DATABASE inhu TO debezium;
+GRANT CREATE ON DATABASE inhu TO debezium;
+GRANT USAGE, CREATE ON SCHEMA public TO debezium;
+GRANT SELECT ON ALL TABLES IN SCHEMA public TO debezium;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT ON TABLES TO debezium;
 
 INSERT INTO user_tb (nickname) VALUES ('nickname1');
 
