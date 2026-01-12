@@ -11,8 +11,10 @@
   "topic.prefix": "inhu",
   "plugin.name": "pgoutput",
   "slot.name": "inhu_slot",
-  "publication.name": "inhu_pub",
+  "publication.name": "debezium_pub",
 
   "schema.include.list": "public",
-  "table.include.list": "public.*"
+  "table.include.list": "public.*",
+
+  "publication.autocreate.mode": "disabled"
 }

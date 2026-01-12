@@ -98,10 +98,14 @@ services:
       echo "Waiting for Kafka Connect...";
       until curl -s http://connect:8083/connectors >/dev/null; do sleep 1; done;
 
-      echo "Registering connector...";
-      curl -s -X PUT http://connect:8083/connectors/inhu-postgres-connector/config
-      -H "Content-Type: application/json"
-      --data @/connectors/inhu-postgres.json;
+      echo "Checking if connector exists...";
+      if curl -s http://connect:8083/connectors/inhu-postgres-connector >/dev/null 2>&1; then
+        echo "Updating existing connector...";
+        curl -s -X PUT http://connect:8083/connectors/inhu-postgres-connector/config -H "Content-Type: application/json" --data @/connectors/inhu-postgres.json;
+      else
+        echo "Creating new connector...";
+        curl -s -X POST http://connect:8083/connectors -H "Content-Type: application/json" --data "{\"name\":\"inhu-postgres-connector\",\"config\":$(cat /connectors/inhu-postgres.json)}";
+      fi;
 
       echo "Done.";
       '
