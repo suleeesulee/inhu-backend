@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { LogPrismaService } from './log-prisma.service';
 
 /**
  * Log Prisma 모듈
@@ -6,7 +7,7 @@ import { Module } from '@nestjs/common';
  * @publicApi
  */
 @Module({
-  providers: [],
-  exports: [],
+  providers: [LogPrismaService],
+  exports: [LogPrismaService],
 })
 export class LogPrismaModule {}

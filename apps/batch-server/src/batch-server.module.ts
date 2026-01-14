@@ -10,6 +10,7 @@ import { DiscordWebhookModule } from '@libs/common/modules/discord-webhook/disco
 import { ScheduleModule } from '@nestjs/schedule';
 import { LogPrismaModule } from '@libs/common/modules/log-prisma/log-prisma.module';
 import { LogPrismaService } from '@libs/common/modules/log-prisma/log-prisma.service';
+import { CdcModule } from './cdc/cdc.module';
 
 @Module({
   imports: [
@@ -18,17 +19,12 @@ import { LogPrismaService } from '@libs/common/modules/log-prisma/log-prisma.ser
     ClsModule.forRoot({
       plugins: [
         new ClsPluginTransactional({
-          connectionName: 'main-prisma',
           imports: [PrismaModule],
           adapter: new TransactionalAdapterPrisma({
             prismaInjectionToken: PrismaService,
             sqlFlavor: 'postgresql',
           }),
         }),
-      ],
-    }),
-    ClsModule.forRoot({
-      plugins: [
         new ClsPluginTransactional({
           connectionName: 'log-prisma',
           imports: [LogPrismaModule],
@@ -39,6 +35,7 @@ import { LogPrismaService } from '@libs/common/modules/log-prisma/log-prisma.ser
         }),
       ],
     }),
+    CdcModule,
     DiscordWebhookModule,
     ScheduleModule.forRoot(),
   ],
