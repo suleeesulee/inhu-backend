@@ -12,10 +12,25 @@ services:
       - "5462:5432"
     volumes:
       - inhu-dev-data:/var/lib/postgresql/data
-      - ./init:/docker-entrypoint-initdb.d
-      - ../rdb:/rdb
-      - ./postgresql.conf:/etc/postgresql/postgresql.conf
-      - ./pg_hba.conf:/etc/postgresql/pg_hba.conf
+      - ./main-rdb/init:/docker-entrypoint-initdb.d
+      - ../main-rdb:/rdb
+      - ./main-rdb/postgresql.conf:/etc/postgresql/postgresql.conf
+      - ./main-rdb/pg_hba.conf:/etc/postgresql/pg_hba.conf
+    networks:
+      - inhu-dev-network
+
+  log-postgres:
+    image: postgres:15.14
+    container_name: inhu-dev-log-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1234
+    ports:
+      - "5463:5432"
+    volumes:
+      - inhu-dev-log-data:/var/lib/postgresql/data
+      - ./log-rdb/init:/docker-entrypoint-initdb.d
+      - ../log-rdb:/rdb
     networks:
       - inhu-dev-network
 
@@ -128,6 +143,7 @@ services:
 volumes:
   inhu-dev-data:
   inhu-dev-redis-data:
+  inhu-dev-log-data:
 
 networks:
   inhu-dev-network:

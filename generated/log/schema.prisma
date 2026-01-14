@@ -1,0 +1,20 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/log"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model EventTypes {
+  idx  Int    @id @default(autoincrement())
+  name String @db.VarChar
+}
+
+model FactEvents {
+  id String @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+
+  @@map("fact_events")
+}
