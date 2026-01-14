@@ -23,13 +23,6 @@ CREATE TABLE event_types
   PRIMARY KEY (idx)
 );
 
-CREATE TABLE fact_event_properties
-(
-  event_id uuid    NOT NULL,
-  key      varchar NOT NULL,
-  value    varchar NOT NULL
-);
-
 CREATE TABLE fact_events
 (
   id          uuid                     NOT NULL DEFAULT uuid_generate_v4(),
@@ -42,8 +35,21 @@ CREATE TABLE fact_events
   PRIMARY KEY (id)
 );
 
+CREATE INDEX index_type_idx ON fact_events(type_idx);
 CREATE INDEX index_event_time ON fact_events(event_time);
 CREATE INDEX index_user_idx ON fact_events(user_idx);
+
+CREATE TABLE fact_event_properties
+(
+  id       uuid    NOT NULL DEFAULT uuid_generate_v4(),
+  event_id uuid    NOT NULL,
+  property_key      varchar NOT NULL,
+  property_value    varchar NOT NULL,
+  PRIMARY KEY (id),
+
+  CONSTRAINT fact_event_properties_event_id_key_uk
+    UNIQUE (event_id, property_key)
+);
 
 ALTER TABLE fact_events
   ADD CONSTRAINT FK_event_types_TO_fact_events
