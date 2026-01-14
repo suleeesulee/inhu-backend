@@ -8,6 +8,8 @@ import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-pr
 import { PrismaService } from '@libs/common/modules/prisma/prisma.service';
 import { DiscordWebhookModule } from '@libs/common/modules/discord-webhook/discord-webhook.module';
 import { ScheduleModule } from '@nestjs/schedule';
+import { LogPrismaModule } from '@libs/common/modules/log-prisma/log-prisma.module';
+import { LogPrismaService } from '@libs/common/modules/log-prisma/log-prisma.service';
 
 @Module({
   imports: [
@@ -16,9 +18,22 @@ import { ScheduleModule } from '@nestjs/schedule';
     ClsModule.forRoot({
       plugins: [
         new ClsPluginTransactional({
+          connectionName: 'main-prisma',
           imports: [PrismaModule],
           adapter: new TransactionalAdapterPrisma({
             prismaInjectionToken: PrismaService,
+            sqlFlavor: 'postgresql',
+          }),
+        }),
+      ],
+    }),
+    ClsModule.forRoot({
+      plugins: [
+        new ClsPluginTransactional({
+          connectionName: 'log-prisma',
+          imports: [LogPrismaModule],
+          adapter: new TransactionalAdapterPrisma({
+            prismaInjectionToken: LogPrismaService,
             sqlFlavor: 'postgresql',
           }),
         }),
