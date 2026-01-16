@@ -19,6 +19,9 @@ async function bootstrap() {
         consumer: {
           groupId: 'batch-server-consumer',
         },
+        subscribe: {
+          fromBeginning: getMode() !== 'production',
+        },
       },
     },
   );
