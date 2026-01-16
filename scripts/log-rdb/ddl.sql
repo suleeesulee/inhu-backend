@@ -5,16 +5,31 @@ CREATE TABLE dim_users
   id         uuid                     NOT NULL DEFAULT uuid_generate_v4(),
   idx        int                      NOT NULL,
   signup_at  timestamp with time zone NOT NULL,
-  updated_at timestamp with time zone NOT NULL,
-  created_at timestamp with time zone NOT NULL DEFAULT NOW(),
-  provider   varchar                 ,
   platform   varchar                  NOT NULL,
+  deleted_at timestamp with time zone,
+  created_at timestamp with time zone NOT NULL DEFAULT NOW(),
+  valid_from timestamp with time zone NOT NULL,
+  valid_to   timestamp with time zone,
   PRIMARY KEY (id)
 );
-
-CREATE INDEX index_updated_at ON dim_users(updated_at);
-
+CREATE INDEX index_dim_users_idx_valid_to ON dim_users(idx, valid_to);
+CREATE INDEX index_dim_users_idx_valid_from ON dim_users(idx, valid_from);
 COMMENT ON COLUMN dim_users.platform IS 'web, iOS, android, unknown';
+
+
+CREATE TABLE dim_user_providers
+(
+  id         uuid                     NOT NULL DEFAULT uuid_generate_v4(),
+  idx        int                      NOT NULL,
+  provider   varchar                  NOT NULL,
+  created_at timestamp with time zone NOT NULL DEFAULT NOW(),
+  valid_from timestamp with time zone NOT NULL,
+  valid_to   timestamp with time zone,
+  PRIMARY KEY (id)
+);
+CREATE INDEX index_dim_user_providers_idx_valid_to ON dim_user_providers(idx, valid_to);
+CREATE INDEX index_dim_user_providers_idx_valid_from ON dim_user_providers(idx, valid_from);
+
 
 CREATE TABLE event_types
 (
@@ -22,6 +37,7 @@ CREATE TABLE event_types
   name varchar NOT NULL,
   PRIMARY KEY (idx)
 );
+
 
 CREATE TABLE fact_events
 (
@@ -34,10 +50,10 @@ CREATE TABLE fact_events
   platform    int                      NOT NULL,
   PRIMARY KEY (id)
 );
+CREATE INDEX index_fact_type_idx ON fact_events(type_idx);
+CREATE INDEX index_fact_event_time ON fact_events(event_time);
+CREATE INDEX index_fact_user_idx ON fact_events(user_idx);
 
-CREATE INDEX index_type_idx ON fact_events(type_idx);
-CREATE INDEX index_event_time ON fact_events(event_time);
-CREATE INDEX index_user_idx ON fact_events(user_idx);
 
 CREATE TABLE fact_event_properties
 (
@@ -50,6 +66,7 @@ CREATE TABLE fact_event_properties
   CONSTRAINT fact_event_properties_event_id_key_uk
     UNIQUE (event_id, property_key)
 );
+
 
 ALTER TABLE fact_events
   ADD CONSTRAINT FK_event_types_TO_fact_events
