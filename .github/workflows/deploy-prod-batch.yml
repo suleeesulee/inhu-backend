@@ -151,19 +151,19 @@ jobs:
 
       - name: Deploy to EC2
         env:
-          HOST: ${{ secrets.BATCH_EC2_HOST }}
-          KEY: ${{ secrets.BATCH_EC2_KEY }}
+          HOST: ${{ secrets.EC2_HOST }}
+          KEY: ${{ secrets.EC2_KEY }}
           USER: ubuntu
         run: |
           echo "$KEY" > key.pem
           chmod 400 key.pem
-          scp -o StrictHostKeyChecking=no -i key.pem deploy-batch.tar.gz $USER@$HOST:~/inhu-batch-server/
-          scp -o StrictHostKeyChecking=no -i key.pem ./.github/workflows/scripts/load-nvm-script.sh $USER@$HOST:~/inhu-batch-server/bash-scripts/
+          scp -o StrictHostKeyChecking=no -i key.pem deploy-batch.tar.gz $USER@$HOST:~/inhu-backend/
+          scp -o StrictHostKeyChecking=no -i key.pem ./.github/workflows/scripts/load-nvm-script.sh $USER@$HOST:~/inhu-backend/bash-scripts/
           ssh -o StrictHostKeyChecking=no -i key.pem $USER@$HOST << 'EOF'
-            cd ~/inhu-batch-server
-            . ~/inhu-batch-server/bash-scripts/load-nvm-script.sh
+            cd ~/inhu-backend
+            . ~/inhu-backend/bash-scripts/load-nvm-script.sh
             tar -xzf deploy-batch.tar.gz
             rm deploy-batch.tar.gz
             npm ci
-            pm2 restart inhu-batch-server
+            pm2 restart inhu-backend-batch
           EOF
