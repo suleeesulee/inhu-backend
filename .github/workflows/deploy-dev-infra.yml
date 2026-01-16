@@ -225,9 +225,9 @@ jobs:
     uses: ./.github/workflows/deploy-dev-admin.yml
     secrets: inherit
 
-  call-batch-workflow:
-    name: Trigger Batch workflow
-    needs: [check-changes, run-common-tasks]
-    if: github.event_name == 'push' && needs.check-changes.outputs.batch_changed == 'true'
-    uses: ./.github/workflows/deploy-dev-batch.yml
-    secrets: inherit
+  # call-batch-workflow:
+  #   name: Trigger Batch workflow
+  #   needs: [check-changes, run-common-tasks]
+  #   if: github.event_name == 'push' && needs.check-changes.outputs.batch_changed == 'true'
+  #   uses: ./.github/workflows/deploy-dev-batch.yml
+  #   secrets: inherit
