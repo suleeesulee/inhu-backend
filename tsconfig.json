@@ -18,6 +18,8 @@
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
     "paths": {
+      "@libs/log-core": ["libs/log-core/src"],
+      "@libs/log-core/*": ["libs/log-core/src/*"],
       "@libs/common": ["libs/common/src"],
       "@libs/common/*": ["libs/common/src/*"],
       "@libs/core": ["libs/core/src"],

@@ -24,7 +24,6 @@
     "admin-server:dev:infra:up": "docker compose -f ./scripts/apps/admin-server/dev/docker-compose.yml up -d",
     "admin-server:dev:infra:down": "docker compose -f ./scripts/apps/admin-server/dev/docker-compose.yml down -v",
     "admin-server:dev:infra:connect": "docker exec -it inhu-admin-server-dev-postgres psql -d inhu -U inhu_admin",
-
     "prisma:generate": "npm run prisma:generate:main && npm run prisma:generate:log",
     "prisma:generate:main": "prisma generate --schema=prisma/schema.prisma",
     "prisma:generate:log": "prisma generate --schema=prisma/log.schema.prisma",
@@ -132,6 +131,7 @@
     "moduleNameMapper": {
       "^@app/common(|/.*)$": "<rootDir>/libs/common/src/$1",
       "^@app/core(|/.*)$": "<rootDir>/libs/core/src/$1",
+      "^@app/log-core(|/.*)$": "<rootDir>/libs/log-core/src/$1",
       "^libs/testing(|/.*)$": "<rootDir>/libs/testing/src/$1"
     }
   }

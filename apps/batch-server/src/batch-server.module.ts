@@ -11,6 +11,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { LogPrismaModule } from '@libs/common/modules/log-prisma/log-prisma.module';
 import { LogPrismaService } from '@libs/common/modules/log-prisma/log-prisma.service';
 import { CdcModule } from './cdc/cdc.module';
+import { LOG_PRISMA_KEY } from '@libs/common/modules/log-prisma/LOG_PRISMA_KEY';
 
 @Module({
   imports: [
@@ -26,7 +27,7 @@ import { CdcModule } from './cdc/cdc.module';
           }),
         }),
         new ClsPluginTransactional({
-          connectionName: 'log-prisma',
+          connectionName: LOG_PRISMA_KEY,
           imports: [LogPrismaModule],
           adapter: new TransactionalAdapterPrisma({
             prismaInjectionToken: LogPrismaService,
