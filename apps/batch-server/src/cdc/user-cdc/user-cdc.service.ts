@@ -1,0 +1,20 @@
+import { UserLogCoreService } from '@libs/log-core/user-log-core/user-log-core.service';
+import { Injectable } from '@nestjs/common';
+import { UserTb } from './events/user-tb.event';
+
+@Injectable()
+export class UserCdcService {
+  constructor(private readonly userLogCoreService: UserLogCoreService) {}
+
+  public async createDimUser(user: UserTb) {
+    await this.userLogCoreService.createDimUser(
+      {
+        idx: user.idx,
+        signupAt: new Date(user.created_at),
+        deletedAt: user.deleted_at ? new Date(user.deleted_at) : null,
+        platform: user.platform,
+      },
+      new Date(),
+    );
+  }
+}
