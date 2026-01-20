@@ -2,17 +2,17 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 CREATE TABLE dim_users
 (
-  id         uuid                     NOT NULL DEFAULT uuid_generate_v4(),
-  idx        int                      NOT NULL,
-  signup_at  timestamp with time zone NOT NULL,
-  platform   varchar                  NOT NULL,
-  deleted_at timestamp with time zone,
-  created_at timestamp with time zone NOT NULL DEFAULT NOW(),
-  valid_from timestamp with time zone NOT NULL,
-  valid_to   timestamp with time zone,
+  id                 uuid                     NOT NULL DEFAULT uuid_generate_v4(),
+  idx                int                      NOT NULL,
+  nickname           varchar                  NOT NULL,
+  profile_image_path varchar                 ,
+  signup_at          timestamp with time zone NOT NULL,
+  platform           varchar                  NOT NULL,
+  deleted_at         timestamp with time zone,
+  created_at         timestamp with time zone NOT NULL DEFAULT NOW(),
+  valid_from         timestamp with time zone NOT NULL,
   PRIMARY KEY (id)
 );
-CREATE INDEX index_dim_users_idx_valid_to ON dim_users(idx, valid_to);
 CREATE INDEX index_dim_users_idx_valid_from ON dim_users(idx, valid_from);
 COMMENT ON COLUMN dim_users.platform IS 'web, iOS, android, unknown';
 
@@ -24,10 +24,8 @@ CREATE TABLE dim_user_providers
   provider   varchar                  NOT NULL,
   created_at timestamp with time zone NOT NULL DEFAULT NOW(),
   valid_from timestamp with time zone NOT NULL,
-  valid_to   timestamp with time zone,
   PRIMARY KEY (id)
 );
-CREATE INDEX index_dim_user_providers_idx_valid_to ON dim_user_providers(idx, valid_to);
 CREATE INDEX index_dim_user_providers_idx_valid_from ON dim_user_providers(idx, valid_from);
 
 

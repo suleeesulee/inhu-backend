@@ -14,7 +14,6 @@ export class UserLogCoreService {
       ...input,
       validFrom: updatedAt,
     });
-    await this.userLogCoreRepository.updateDimUser(input.idx, updatedAt);
   }
 
   @Transactional()
@@ -26,9 +25,5 @@ export class UserLogCoreService {
       ...input,
       validFrom: updatedAt,
     });
-    await this.userLogCoreRepository.updateDimUserProvider(
-      input.idx,
-      updatedAt,
-    );
   }
 }

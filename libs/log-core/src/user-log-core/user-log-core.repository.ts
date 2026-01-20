@@ -24,19 +24,11 @@ export class UserLogCoreRepository {
       data: {
         idx: input.idx,
         platform: input.platform,
+        nickname: input.nickname,
+        profileImagePath: input.profileImgPath,
         signupAt: input.signupAt,
         validFrom: input.validFrom,
         deletedAt: input.deletedAt,
-      },
-    });
-  }
-
-  public async updateDimUser(idx: number, validTo: Date) {
-    await this.txHost.tx.dimUsers.updateMany({
-      data: { validTo },
-      where: {
-        idx,
-        validTo: null,
       },
     });
   }
@@ -49,16 +41,6 @@ export class UserLogCoreRepository {
         idx: input.idx,
         provider: input.provider,
         validFrom: input.validFrom,
-      },
-    });
-  }
-
-  public async updateDimUserProvider(idx: number, validTo: Date) {
-    await this.txHost.tx.dimUserProviders.updateMany({
-      data: { validTo },
-      where: {
-        idx,
-        validTo: null,
       },
     });
   }

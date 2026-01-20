@@ -45,29 +45,27 @@ model FactEventProperties {
 }
 
 model DimUsers {
-    id        String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
-    idx       Int
-    signupAt  DateTime  @map("signup_at") @db.Timestamptz
-    platform  String    @db.VarChar
-    deletedAt DateTime? @map("deleted_at") @db.Timestamptz
-    createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz
-    validFrom DateTime  @map("valid_from") @db.Timestamptz
-    validTo   DateTime? @map("valid_to") @db.Timestamptz
+    id               String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+    idx              Int
+    signupAt         DateTime  @map("signup_at") @db.Timestamptz
+    nickname         String    @db.VarChar
+    platform         String    @db.VarChar
+    profileImagePath String?   @map("profile_image_path") @db.VarChar
+    deletedAt        DateTime? @map("deleted_at") @db.Timestamptz
+    createdAt        DateTime  @default(now()) @map("created_at") @db.Timestamptz
+    validFrom        DateTime  @map("valid_from") @db.Timestamptz
 
-    @@index([idx, validTo], map: "index_dim_users_idx_valid_to")
     @@index([idx, validFrom], map: "index_dim_users_idx_valid_from")
     @@map("dim_users")
 }
 
 model DimUserProviders {
-    id        String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+    id        String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
     idx       Int
-    provider  String    @db.VarChar
-    createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz
-    validFrom DateTime  @map("valid_from") @db.Timestamptz
-    validTo   DateTime? @map("valid_to") @db.Timestamptz
+    provider  String   @db.VarChar
+    createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+    validFrom DateTime @map("valid_from") @db.Timestamptz
 
-    @@index([idx, validTo], map: "index_dim_user_providers_idx_valid_to")
     @@index([idx, validFrom], map: "index_dim_user_providers_idx_valid_from")
     @@map("dim_user_providers")
 }

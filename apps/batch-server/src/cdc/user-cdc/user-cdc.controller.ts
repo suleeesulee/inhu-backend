@@ -12,6 +12,15 @@ export class UserCdcController {
   public async userTbEvent(@Payload() message: DebeziumEvent<UserTb>) {
     if (message.op === 'd' || !message.after) return;
 
-    await this.userCdcService.createDimUser(message.after);
+    const time = new Date(message.source.ts_ms || message.ts_ms || new Date());
+
+    console.log(`message.source.ts_ms = ` + message.source.ts_ms);
+    console.log(
+      `new Date(message.source.ts_ms) = ` +
+        new Date(message.source.ts_ms || ''),
+    );
+    console.log(message);
+
+    await this.userCdcService.createDimUser(message.after, time);
   }
 }

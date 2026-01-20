@@ -4,7 +4,6 @@ import { getMode } from '@libs/common/utils/get-mode.util';
 import { DiscordWebhookService } from '@libs/common/modules/discord-webhook/discord-webhook.service';
 import { DiscordWebhookContext } from '@libs/common/modules/discord-webhook/constants/discord-webhook-context.enum';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
-import { PrismaClient } from 'generated/log';
 
 async function bootstrap() {
   const app = await NestFactory.createMicroservice<MicroserviceOptions>(
