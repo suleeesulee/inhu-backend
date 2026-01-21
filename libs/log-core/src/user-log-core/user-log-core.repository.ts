@@ -20,6 +20,7 @@ export class UserLogCoreRepository {
   ) {}
 
   public async insertDimUser(input: CreateInputWrapper<CreateDimUserInput>) {
+    console.log(input);
     return await this.txHost.tx.dimUsers.upsert({
       where: {
         idx_validFrom: {
@@ -36,7 +37,15 @@ export class UserLogCoreRepository {
         validFrom: input.validFrom,
         deletedAt: input.deletedAt,
       },
-      update: {},
+      update: {
+        idx: input.idx,
+        platform: input.platform,
+        nickname: input.nickname,
+        profileImagePath: input.profileImgPath,
+        signupAt: input.signupAt,
+        validFrom: input.validFrom,
+        deletedAt: input.deletedAt,
+      },
     });
   }
 
@@ -55,7 +64,11 @@ export class UserLogCoreRepository {
         provider: input.provider,
         validFrom: input.validFrom,
       },
-      update: {},
+      update: {
+        idx: input.idx,
+        provider: input.provider,
+        validFrom: input.validFrom,
+      },
     });
   }
 }
