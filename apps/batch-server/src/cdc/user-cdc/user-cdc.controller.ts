@@ -1,4 +1,4 @@
-import { Controller } from '@nestjs/common';
+import { BadRequestException, Controller } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { DebeziumEvent } from '../types/debezium';
 import { UserTb } from './events/user-tb.event';
@@ -13,14 +13,6 @@ export class UserCdcController {
     if (message.op === 'd' || !message.after) return;
 
     const time = new Date(message.source.ts_ms || message.ts_ms || new Date());
-
-    console.log(`message.source.ts_ms = ` + message.source.ts_ms);
-    console.log(
-      `new Date(message.source.ts_ms) = ` +
-        new Date(message.source.ts_ms || ''),
-    );
-    console.log(message);
-
     await this.userCdcService.createDimUser(message.after, time);
   }
 }

@@ -55,7 +55,8 @@ model DimUsers {
     createdAt        DateTime  @default(now()) @map("created_at") @db.Timestamptz
     validFrom        DateTime  @map("valid_from") @db.Timestamptz
 
-    @@index([idx, validFrom], map: "index_dim_users_idx_valid_from")
+    @@unique([idx, validFrom], map: "uq_dim_users_idx_valid_from")
+    @@index([validFrom], map: "index_dim_users_valid_from_index")
     @@map("dim_users")
 }
 
@@ -66,6 +67,7 @@ model DimUserProviders {
     createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
     validFrom DateTime @map("valid_from") @db.Timestamptz
 
+    @@unique([idx, validFrom], map: "uq_dim_user_providers_idx_valid_from")
     @@index([idx, validFrom], map: "index_dim_user_providers_idx_valid_from")
     @@map("dim_user_providers")
 }

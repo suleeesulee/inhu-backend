@@ -20,8 +20,14 @@ export class UserLogCoreRepository {
   ) {}
 
   public async insertDimUser(input: CreateInputWrapper<CreateDimUserInput>) {
-    return await this.txHost.tx.dimUsers.create({
-      data: {
+    return await this.txHost.tx.dimUsers.upsert({
+      where: {
+        idx_validFrom: {
+          idx: input.idx,
+          validFrom: input.validFrom,
+        },
+      },
+      create: {
         idx: input.idx,
         platform: input.platform,
         nickname: input.nickname,
@@ -30,18 +36,26 @@ export class UserLogCoreRepository {
         validFrom: input.validFrom,
         deletedAt: input.deletedAt,
       },
+      update: {},
     });
   }
 
   public async insertDimUserProvider(
     input: CreateInputWrapper<CreateDimUserProviderInput>,
   ) {
-    await this.txHost.tx.dimUserProviders.create({
-      data: {
+    return await this.txHost.tx.dimUserProviders.upsert({
+      where: {
+        idx_validFrom: {
+          idx: input.idx,
+          validFrom: input.validFrom,
+        },
+      },
+      create: {
         idx: input.idx,
         provider: input.provider,
         validFrom: input.validFrom,
       },
+      update: {},
     });
   }
 }

@@ -13,7 +13,8 @@ CREATE TABLE dim_users
   valid_from         timestamp with time zone NOT NULL,
   PRIMARY KEY (id)
 );
-CREATE INDEX index_dim_users_idx_valid_from ON dim_users(idx, valid_from);
+CREATE INDEX index_dim_users_valid_from_index ON dim_users(valid_from);
+ALTER TABLE dim_users ADD CONSTRAINT uq_dim_users_idx_valid_from UNIQUE (idx, valid_from);
 COMMENT ON COLUMN dim_users.platform IS 'web, iOS, android, unknown';
 
 
@@ -26,6 +27,7 @@ CREATE TABLE dim_user_providers
   valid_from timestamp with time zone NOT NULL,
   PRIMARY KEY (id)
 );
+ALTER TABLE dim_user_providers ADD CONSTRAINT uq_dim_user_providers_idx_valid_from UNIQUE (idx, valid_from);
 CREATE INDEX index_dim_user_providers_idx_valid_from ON dim_user_providers(idx, valid_from);
 
 
