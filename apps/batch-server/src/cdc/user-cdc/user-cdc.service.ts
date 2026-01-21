@@ -1,6 +1,7 @@
 import { UserLogCoreService } from '@libs/log-core/user-log-core/user-log-core.service';
 import { Injectable } from '@nestjs/common';
 import { UserTb } from './events/user-tb.event';
+import { UserProviderTb } from './events/user-provider-tb.event';
 
 @Injectable()
 export class UserCdcService {
@@ -15,6 +16,16 @@ export class UserCdcService {
         platform: user.platform,
         nickname: user.nickname,
         profileImgPath: user.profile_image_path,
+      },
+      time,
+    );
+  }
+
+  public async createDimUserProvider(provider: UserProviderTb, time: Date) {
+    await this.userLogCoreService.createDimUserProvider(
+      {
+        idx: provider.idx,
+        provider: provider.name,
       },
       time,
     );
