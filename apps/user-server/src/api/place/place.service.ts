@@ -44,9 +44,11 @@ export class PlaceService {
 
     if (dto.operating === undefined) {
       const operatingPlaceCount =
-        await this.placeCoreService.getOperatingPlaceCount(
-          dto.type ? [dto.type] : [],
-        );
+        await this.placeCoreService.getOperatingPlaceCount({
+          types: dto.type ? [dto.type] : [],
+          mainCategoryList: dto.mainCategoryList,
+          moodCategoryList: dto.moodCategoryList,
+        });
 
       const operatingRemain = Math.max(0, operatingPlaceCount - skip); // 운영중인 장소에서 남은 수
       const operatingTake = Math.max(0, Math.min(pageSize, operatingRemain)); // 실제로 가져올 운영중인 장소 수
@@ -182,9 +184,11 @@ export class PlaceService {
 
     if (dto.operating === undefined && dto.operatingOrderby === true) {
       const operatingPlaceCount =
-        await this.placeCoreService.getOperatingPlaceCount(
-          dto.type ? [dto.type] : [],
-        );
+        await this.placeCoreService.getOperatingPlaceCount({
+          types: dto.type ? [dto.type] : [],
+          mainCategoryList: dto.mainCategoryList,
+          moodCategoryList: dto.moodCategoryList,
+        });
 
       const operatingRemain = Math.max(0, operatingPlaceCount - skip); // 운영중인 장소에서 남은 수
       const operatingTake = Math.max(0, Math.min(pageSize, operatingRemain)); // 실제로 가져올 운영중인 장소 수

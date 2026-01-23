@@ -25,6 +25,7 @@ import { GetPlaceMarkerInput } from './inputs/get-place-overview-marker.input';
 import { SelectPlaceWeeklyClosedDay } from './model/prisma-type/select-place-weekly-closed-day';
 import { MainCategory } from '../category/constants/main-category.constant';
 import { MoodCategory } from '../category/constants/mood-category.constant';
+import { GetOperatingPlaceCountInput } from './inputs/get-operating-place-count.input';
 
 @Injectable()
 export class PlaceCoreRepository {
@@ -164,15 +165,19 @@ export class PlaceCoreRepository {
     });
   }
 
-  public async selectOperatingPlaceCount(types: PlaceType[]): Promise<number> {
+  public async selectOperatingPlaceCount(
+    input: GetOperatingPlaceCountInput,
+  ): Promise<number> {
     return await this.txHost.tx.place.count({
       where: {
         AND: [
           { deletedAt: null },
           this.getOperatingFilterWhereClause(true),
-          this.getTypesFilterWhereClause(types),
+          this.getTypesFilterWhereClause(input.types),
           this.getActivatedAtFilterWhereClause(true),
           this.getPermanentlyClosedFilterWhereClause(false),
+          this.getMainCategoryFilterWhereClause(input.mainCategoryList),
+          this.getMoodCategoryFilterWhereClause(input.moodCategoryList),
         ],
       },
     });
