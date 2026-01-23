@@ -42,16 +42,16 @@ export class ServerExceptionsFilter extends BaseExceptionFilter {
 
       const message = `Path: [${request.method}] ${request.url}`;
 
-      try {
-        this.discordWebhookService.sendErrorMessage(
+      this.discordWebhookService
+        .sendErrorMessage(
           `[${status}] 서버 에러 발생`,
           message,
           errorObj,
           webhookContext,
-        );
-      } catch (err) {
-        console.log('Discord Webhook Error Sending Failed:', err);
-      }
+        )
+        .catch((err) => {
+          console.log('Discord Webhook Error:', err.message);
+        });
     }
 
     super.catch(exception, host);
