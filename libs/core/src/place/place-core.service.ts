@@ -14,6 +14,7 @@ import { DateUtilService } from '@libs/common/modules/date-util/date-util.servic
 import { WeeklyCloseType } from './constants/weekly-close-type.constant';
 import { PlaceWeeklyClosedDayModel } from './model/place-weekly-closed-day.model';
 import { PlaceType } from './constants/place-type.constant';
+import { GetOperatingPlaceCountInput } from './inputs/get-operating-place-count.input';
 
 /**
  * 장소 관련 핵심 서비스
@@ -53,9 +54,9 @@ export class PlaceCoreService {
   }
 
   public async getOperatingPlaceOverviewCount(
-    types: PlaceType[],
+    input: GetOperatingPlaceCountInput,
   ): Promise<number> {
-    return await this.placeCoreRepository.selectOperatingPlaceCount(types);
+    return await this.placeCoreRepository.selectOperatingPlaceCount(input);
   }
 
   @Transactional()
@@ -75,8 +76,10 @@ export class PlaceCoreService {
     );
   }
 
-  public async getOperatingPlaceCount(types: PlaceType[]): Promise<number> {
-    return await this.placeCoreRepository.selectOperatingPlaceCount(types);
+  public async getOperatingPlaceCount(
+    input: GetOperatingPlaceCountInput,
+  ): Promise<number> {
+    return await this.placeCoreRepository.selectOperatingPlaceCount(input);
   }
 
   public async getOwnerPlaceAllByUserIdx(
