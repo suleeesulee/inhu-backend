@@ -32,7 +32,9 @@ export class NaverBlogService {
       .filter(Boolean);
 
     // 작성일
-    const uploadedAt = this.getUploadedAt($('span.se_publishDate').text());
+    const publishStr =
+      $('span.se_publishDate').text() || $('p._postAddDate').text();
+    const uploadedAt = this.getUploadedAt(publishStr);
 
     // 메타 데이터
     const metadataList = result.map((v) => v.attribs);
