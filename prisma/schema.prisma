@@ -140,10 +140,10 @@ model PlaceTypeMapping {
 }
 
 model PlaceType {
-  idx                          Int                          @id
-  content                      String                       @unique @db.VarChar
-  createdAt                    DateTime                     @default(now()) @map("created_at") @db.Timestamptz(6)
-  deletedAt                    DateTime?                    @map("deleted_at") @db.Timestamptz(6)
+  idx                          Int                        @id
+  content                      String                     @unique @db.VarChar
+  createdAt                    DateTime                   @default(now()) @map("created_at") @db.Timestamptz(6)
+  deletedAt                    DateTime?                  @map("deleted_at") @db.Timestamptz(6)
   placeTypeMagazineMappingList PlaceTypeMagazineMapping[]
   placeTypeMappingList         PlaceTypeMapping[]
 
@@ -374,17 +374,17 @@ model MagazinePlace {
 }
 
 model Magazine {
-  idx                             Int                             @id @default(autoincrement())
-  title                           String                          @db.VarChar
-  description                     String?                         @db.VarChar
-  content                         String                          @db.VarChar
-  thumbnailImagePath              String?                         @map("thumbnail_image_path") @db.VarChar
-  isTitleVisible                  Boolean                         @default(false) @map("is_title_visible")
-  likeCount                       Int                             @default(0) @map("like_count")
-  viewCount                       Int                             @default(0) @map("view_count")
-  createdAt                       DateTime                        @default(now()) @map("created_at") @db.Timestamptz(6)
-  activatedAt                     DateTime?                       @map("activated_at") @db.Timestamptz(6)
-  deletedAt                       DateTime?                       @map("deleted_at") @db.Timestamptz(6)
+  idx                             Int                           @id @default(autoincrement())
+  title                           String                        @db.VarChar
+  description                     String?                       @db.VarChar
+  content                         String                        @db.VarChar
+  thumbnailImagePath              String?                       @map("thumbnail_image_path") @db.VarChar
+  isTitleVisible                  Boolean                       @default(false) @map("is_title_visible")
+  likeCount                       Int                           @default(0) @map("like_count")
+  viewCount                       Int                           @default(0) @map("view_count")
+  createdAt                       DateTime                      @default(now()) @map("created_at") @db.Timestamptz(6)
+  activatedAt                     DateTime?                     @map("activated_at") @db.Timestamptz(6)
+  deletedAt                       DateTime?                     @map("deleted_at") @db.Timestamptz(6)
   magazineLike                    MagazineLike[]
   magazineMainCategoryMappingList MagazineMainCategoryMapping[]
   magazineMoodCategoryMappingList MagazineMoodCategoryMapping[]
@@ -435,10 +435,10 @@ model PlaceMoodCategoryMapping {
 }
 
 model MainCategory {
-  idx                             Int                             @id
-  content                         String                          @db.VarChar
-  createdAt                       DateTime                        @default(now()) @map("created_at") @db.Timestamptz(6)
-  deletedAt                       DateTime?                       @map("deleted_at") @db.Timestamptz(6)
+  idx                             Int                           @id
+  content                         String                        @db.VarChar
+  createdAt                       DateTime                      @default(now()) @map("created_at") @db.Timestamptz(6)
+  deletedAt                       DateTime?                     @map("deleted_at") @db.Timestamptz(6)
   magazineMainCategoryMappingList MagazineMainCategoryMapping[]
   placeMainCategoryMappingList    PlaceMainCategoryMapping[]
 
@@ -446,10 +446,10 @@ model MainCategory {
 }
 
 model MoodCategory {
-  idx                             Int                             @id
-  content                         String                          @db.VarChar
-  createdAt                       DateTime                        @default(now()) @map("created_at") @db.Timestamptz(6)
-  deletedAt                       DateTime?                       @map("deleted_at") @db.Timestamptz(6)
+  idx                             Int                           @id
+  content                         String                        @db.VarChar
+  createdAt                       DateTime                      @default(now()) @map("created_at") @db.Timestamptz(6)
+  deletedAt                       DateTime?                     @map("deleted_at") @db.Timestamptz(6)
   magazineMoodCategoryMappingList MagazineMoodCategoryMapping[]
   placeMoodCategoryMappingList    PlaceMoodCategoryMapping[]
 

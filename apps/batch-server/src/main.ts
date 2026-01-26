@@ -3,9 +3,27 @@ import { BatchServerModule } from './batch-server.module';
 import { getMode } from '@libs/common/utils/get-mode.util';
 import { DiscordWebhookService } from '@libs/common/modules/discord-webhook/discord-webhook.service';
 import { DiscordWebhookContext } from '@libs/common/modules/discord-webhook/constants/discord-webhook-context.enum';
+import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 
 async function bootstrap() {
-  const app = await NestFactory.create(BatchServerModule);
+  const app = await NestFactory.createMicroservice<MicroserviceOptions>(
+    BatchServerModule,
+    {
+      transport: Transport.KAFKA,
+      options: {
+        client: {
+          clientId: 'batch-server',
+          brokers: [process.env.KAFKA_HOST || ''],
+        },
+        consumer: {
+          groupId: 'batch-server-consumer',
+        },
+        subscribe: {
+          fromBeginning: true,
+        },
+      },
+    },
+  );
 
   if (getMode() === 'production') {
     try {
@@ -19,6 +37,6 @@ async function bootstrap() {
       console.log(err);
     }
   }
-  await app.listen(process.env.PORT ?? 3000);
+  await app.listen();
 }
 bootstrap();

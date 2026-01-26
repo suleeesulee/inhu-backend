@@ -8,11 +8,11 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: 1234
     ports:
-      - '5450:5432'
+      - "5450:5432"
     volumes:
       - inhu-user-server-e2e-test-data:/var/lib/postgresql/data
       - ./init:/docker-entrypoint-initdb.d
-      - ../../../rdb:/rdb
+      - ../../../main-rdb:/rdb
     networks:
       - inhu-user-server-test-network
 
@@ -20,7 +20,7 @@ services:
     image: redis:7.4.0
     container_name: inhu-user-server-test-redis
     ports:
-      - '6380:6379'
+      - "6380:6379"
     networks:
       - inhu-user-server-test-network
     volumes:

@@ -24,6 +24,9 @@
     "admin-server:dev:infra:up": "docker compose -f ./scripts/apps/admin-server/dev/docker-compose.yml up -d",
     "admin-server:dev:infra:down": "docker compose -f ./scripts/apps/admin-server/dev/docker-compose.yml down -v",
     "admin-server:dev:infra:connect": "docker exec -it inhu-admin-server-dev-postgres psql -d inhu -U inhu_admin",
+    "prisma:generate": "npm run prisma:generate:main && npm run prisma:generate:log",
+    "prisma:generate:main": "prisma generate --schema=prisma/schema.prisma",
+    "prisma:generate:log": "prisma generate --schema=prisma/log.schema.prisma",
     "dev-infra:up": "docker compose -f ./scripts/dev-infra/docker-compose.yml up -d",
     "dev-infra:down": "docker compose -f ./scripts/dev-infra/docker-compose.yml down -v",
     "dev-infra:connect": "docker exec -it inhu-dev-postgres psql -d inhu -U postgres",
@@ -44,6 +47,7 @@
     "@nestjs/config": "^4.0.2",
     "@nestjs/core": "^11.1.5",
     "@nestjs/jwt": "^11.0.0",
+    "@nestjs/microservices": "^11.1.11",
     "@nestjs/platform-express": "^11.1.5",
     "@nestjs/schedule": "^6.0.0",
     "@nestjs/swagger": "^11.2.0",
@@ -57,6 +61,7 @@
     "cookie-parser": "^1.4.7",
     "ioredis": "^5.6.1",
     "jwks-rsa": "^3.2.0",
+    "kafkajs": "^2.2.4",
     "nestjs-cls": "^6.0.1",
     "openai": "^6.7.0",
     "puppeteer": "^24.29.1",
@@ -126,6 +131,7 @@
     "moduleNameMapper": {
       "^@app/common(|/.*)$": "<rootDir>/libs/common/src/$1",
       "^@app/core(|/.*)$": "<rootDir>/libs/core/src/$1",
+      "^@app/log-core(|/.*)$": "<rootDir>/libs/log-core/src/$1",
       "^libs/testing(|/.*)$": "<rootDir>/libs/testing/src/$1"
     }
   }
