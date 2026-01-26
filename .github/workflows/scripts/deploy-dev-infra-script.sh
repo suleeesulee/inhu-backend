@@ -12,7 +12,7 @@ if [ "$DB_DOWN_FLAG" = "true" ]; then
     until docker exec inhu-dev-postgres psql -U inhu_admin -d inhu -c "SELECT 1;" >/dev/null 2>&1; do
         sleep 1
     done
-    npx prisma generate
+    npm run prisma:generate
     npm run seed
 fi
 
