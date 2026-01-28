@@ -11,8 +11,10 @@
     "^@libs/common(.*)": "<rootDir>/libs/common/src/$1",
     "^@libs/testing(.*)": "<rootDir>/libs/testing/src/$1",
     "^@libs/core(.*)": "<rootDir>/libs/core/src/$1",
+    "^@libs/log-core(.*)": "<rootDir>/libs/log-core/src/$1",
     "^@batch(.*)": "<rootDir>/apps/batch-server/src/$1",
-    "^apps(.*)": "<rootDir>/apps/$1"
+    "^apps(.*)": "<rootDir>/apps/$1",
+    "^generated/log$": "<rootDir>/generated/log"
   },
   "verbose": true
 }
