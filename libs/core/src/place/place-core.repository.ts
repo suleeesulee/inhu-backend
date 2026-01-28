@@ -26,6 +26,7 @@ import { SelectPlaceWeeklyClosedDay } from './model/prisma-type/select-place-wee
 import { MainCategory } from '../category/constants/main-category.constant';
 import { MoodCategory } from '../category/constants/mood-category.constant';
 import { GetOperatingPlaceCountInput } from './inputs/get-operating-place-count.input';
+import { GetRouletteItemInput } from './inputs/get-roulette-item-all.input';
 
 @Injectable()
 export class PlaceCoreRepository {

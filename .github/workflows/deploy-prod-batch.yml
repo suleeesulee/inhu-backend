@@ -111,7 +111,7 @@ jobs:
       # push 시 Batch 서버 빌드 실행 (배포가 필요한 경우에만)
       - name: Build Batch Server for production
         run: |
-          npx prisma generate
+          npm run prisma:generate
           npm run build batch-server
 
       # push 시 아티팩트 업로드 (배포가 필요한 경우에만)

@@ -127,4 +127,28 @@ export class DiscordWebhookService {
       },
     );
   }
+
+  /**
+   * async 하게 처리되지 않으며 에러를 던지지도 않습니다.
+   */
+  public async alertError(
+    title: string,
+    message: string,
+    error: Error,
+    context: DiscordWebhookContext,
+  ) {
+    return new Promise(async (res) => {
+      res(undefined);
+      try {
+        await this.sendErrorMessage(title, message, error, context);
+      } catch (err) {
+        console.error(`[Fatal-Error] ${context} - ${title}
+failed to connect discord server
+
+${message}
+
+${inspect(error)}`);
+      }
+    });
+  }
 }

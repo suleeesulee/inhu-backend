@@ -60,6 +60,15 @@
         "tsConfigPath": "libs/core/tsconfig.lib.json"
       }
     },
+    "log-core": {
+      "type": "library",
+      "root": "libs/log-core",
+      "entryFile": "index",
+      "sourceRoot": "libs/log-core/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/log-core/tsconfig.lib.json"
+      }
+    },
     "testing": {
       "type": "library",
       "root": "libs/testing",
