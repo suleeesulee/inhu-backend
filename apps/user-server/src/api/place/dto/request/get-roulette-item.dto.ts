@@ -21,11 +21,12 @@ export class GetRouletteItemDto {
   /**
    * 메인 카테고리 리스트
    */
+  @IsOptional()
   @ToArray()
   @UniqueArray()
   @IsEnumValue(MainCategory, { each: true })
   @Type(() => Number)
-  mainCategoryList: MainCategory[];
+  mainCategoryList?: MainCategory[];
 
   /**
    * 분위기 카테고리 리스트
