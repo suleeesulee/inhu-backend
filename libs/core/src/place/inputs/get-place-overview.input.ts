@@ -11,7 +11,7 @@ export class GetPlaceOverviewInput {
   /**
    * 한 번에 가져올 개수
    */
-  take: number;
+  take?: number;
 
   /**
    * 스킵할 데이터의 개수

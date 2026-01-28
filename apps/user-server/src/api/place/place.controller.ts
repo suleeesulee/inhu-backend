@@ -13,6 +13,8 @@ import { GetAllPlaceMarkerDto } from './dto/request/get-all-place-marker.dto';
 import { GetAllPlaceMarkerResponseDto } from './dto/response/get-all-place-marker-response.dto';
 import { GetAllSearchedPlaceOverviewDto } from './dto/request/get-all-searched-place-overview.dto';
 import { GetAllSearchedPlaceOverviewResponseDto } from './dto/response/get-all-searched-place-overview-response.dto';
+import { GetRouletteItemDto } from './dto/request/get-roulette-item.dto';
+import { GetRouletteItemResponseDto } from './dto/response/get-roulette-item.request.dto';
 
 @Controller()
 export class PlaceController {
@@ -83,6 +85,13 @@ export class PlaceController {
     @User() loginUser?: LoginUser,
   ): Promise<PlaceEntity> {
     return await this.placeService.getPlaceByIdx(placeIdx, loginUser?.idx);
+  }
+
+  @Get('roulette-item')
+  public async getRouletteItem(
+    @Query() dto: GetRouletteItemDto,
+  ): Promise<GetRouletteItemResponseDto> {
+    return await this.placeService.getRouletteItem(dto);
   }
 
   /**

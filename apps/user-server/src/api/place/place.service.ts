@@ -13,13 +13,26 @@ import { GetAllSearchedPlaceOverviewDto } from './dto/request/get-all-searched-p
 import { GetAllPlaceOverviewV2Dto } from './dto/request/get-all-place-overview-v2.dto';
 import { SearchedPlaceOverviewEntity } from './entity/searched-place-overview.entity';
 import { GetAllSearchedPlaceOverviewResponseDto } from './dto/response/get-all-searched-place-overview-response.dto';
+import { GetRouletteItemDto } from './dto/request/get-roulette-item.dto';
+import { GetRouletteItemResponseDto } from './dto/response/get-roulette-item.request.dto';
+import { ConfigService } from '@nestjs/config';
+import { RouletteItemEntity } from './entity/roulette-item.entity';
 
 @Injectable()
 export class PlaceService {
+  private readonly TARGET_PLACE_IDX_LIST: number[];
+  private readonly MULTIPLIER: number;
+
   constructor(
     private readonly placeCoreService: PlaceCoreService,
     private readonly bookmarkCoreService: BookmarkCoreService,
-  ) {}
+    private readonly configService: ConfigService,
+  ) {
+    this.TARGET_PLACE_IDX_LIST =
+      this.configService.get<number[]>('roulette.TARGET_PLACE_IDX_LIST') || [];
+    this.MULTIPLIER =
+      this.configService.get<number>('roulette.MULTIPLIER') || 1;
+  }
 
   public async getPlaceOverviewAll(
     dto: GetAllPlaceOverviewDto,
@@ -356,6 +369,32 @@ export class PlaceService {
       placeOverviewList: placeList
         .slice(0, 10)
         .map((place) => PlaceOverviewEntity.fromModel(place, true)),
+    };
+  }
+
+  public async getRouletteItem(
+    dto: GetRouletteItemDto,
+  ): Promise<GetRouletteItemResponseDto> {
+    const placeOverviewModel = await this.placeCoreService.getPlaceAll({
+      skip: 0,
+      operating: dto.operating,
+      types: dto.type ? [dto.type] : undefined,
+      activated: true,
+      permanentlyClosed: false,
+      mainCategoryList: dto.mainCategoryList,
+      moodCategoryList: dto.moodCategoryList,
+    });
+
+    const targetSet = new Set(this.TARGET_PLACE_IDX_LIST);
+    const weightedPlaceOverviewModelList = placeOverviewModel.map((item) => ({
+      item,
+      weight: targetSet.has(item.idx) ? this.MULTIPLIER : 1,
+    }));
+
+    return {
+      rouletteItemList: weightedPlaceOverviewModelList.map(({ item, weight }) =>
+        RouletteItemEntity.fromModel(item, weight),
+      ),
     };
   }
 
