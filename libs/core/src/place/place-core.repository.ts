@@ -112,42 +112,6 @@ export class PlaceCoreRepository {
     });
   }
 
-  public async selectRouletteItemAll({
-    operating,
-    types,
-    activated,
-    permanentlyClosed,
-    mainCategoryList,
-    moodCategoryList,
-  }: GetRouletteItemInput): Promise<SelectPlaceOverview[]> {
-    const now = this.dateUtilService.getNow();
-    const todayKst = this.dateUtilService.transformKoreanDate(now);
-    const today = new Date(`${todayKst}T00:00:00Z`);
-
-    return await this.txHost.tx.place.findMany({
-      ...SELECT_PLACE_OVERVIEW,
-      select: {
-        ...SELECT_PLACE_OVERVIEW.select,
-        weeklyClosedDayList: {
-          ...SELECT_PLACE_OVERVIEW.select.weeklyClosedDayList,
-          where: { closedDate: { gte: today } },
-        },
-      },
-      where: {
-        AND: [
-          { deletedAt: null },
-          this.getOperatingFilterWhereClause(operating), // 영업중 필터링
-          this.getTypesFilterWhereClause(types), // 타입 필터링
-          this.getActivatedAtFilterWhereClause(activated), // 활성화 필터링
-          this.getPermanentlyClosedFilterWhereClause(permanentlyClosed), // 폐점 여부 필터링
-          this.getMainCategoryFilterWhereClause(mainCategoryList), // 메인 카테고리 필터링
-          this.getMoodCategoryFilterWhereClause(moodCategoryList), // 분위기 카테고리 필터링
-        ],
-      },
-      orderBy: { idx: 'asc' },
-    });
-  }
-
   public async selectPlaceMarkerAll({
     orderBy,
     order,

@@ -69,14 +69,6 @@ export class PlaceCoreService {
     );
   }
 
-  public async getRouletteItemAll(
-    input: GetRouletteItemInput,
-  ): Promise<PlaceOverviewModel[]> {
-    return (await this.placeCoreRepository.selectRouletteItemAll(input)).map(
-      PlaceOverviewModel.fromPrisma,
-    );
-  }
-
   public async getPlaceMarkerAll(
     input: GetPlaceMarkerInput,
   ): Promise<PlaceMarkerModel[]> {
