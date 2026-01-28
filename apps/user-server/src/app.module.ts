@@ -24,6 +24,7 @@ import { PinnedMagazineModule } from './api/pinned-magazine/pinned-magazine.modu
 import { ServerExceptionsFilter } from '@libs/common/filters/server-exception.filter';
 import { AdminAccountModule } from '@libs/core/admin-account/admin-account-core.module';
 import { HashModule } from '@libs/common/modules/hash/hash.module';
+import { RouletteModule } from './api/roulette/roulette.module';
 
 @Module({
   imports: [
@@ -57,6 +58,7 @@ import { HashModule } from '@libs/common/modules/hash/hash.module';
     PinnedMagazineModule,
     AdminAccountModule,
     HashModule,
+    RouletteModule,
   ],
   providers: [
     {

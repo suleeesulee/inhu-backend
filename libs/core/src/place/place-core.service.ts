@@ -15,6 +15,7 @@ import { WeeklyCloseType } from './constants/weekly-close-type.constant';
 import { PlaceWeeklyClosedDayModel } from './model/place-weekly-closed-day.model';
 import { PlaceType } from './constants/place-type.constant';
 import { GetOperatingPlaceCountInput } from './inputs/get-operating-place-count.input';
+import { GetRouletteItemInput } from './inputs/get-roulette-item-all.input';
 
 /**
  * 장소 관련 핵심 서비스
@@ -64,6 +65,14 @@ export class PlaceCoreService {
     input: GetPlaceOverviewInput,
   ): Promise<PlaceOverviewModel[]> {
     return (await this.placeCoreRepository.selectPlaceAll(input)).map(
+      PlaceOverviewModel.fromPrisma,
+    );
+  }
+
+  public async getRouletteItemAll(
+    input: GetRouletteItemInput,
+  ): Promise<PlaceOverviewModel[]> {
+    return (await this.placeCoreRepository.selectRouletteItemAll(input)).map(
       PlaceOverviewModel.fromPrisma,
     );
   }
