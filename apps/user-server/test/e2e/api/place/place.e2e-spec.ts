@@ -1937,6 +1937,12 @@ describe('Place E2E test', () => {
             count: 8,
           },
         ],
+        typeList: [PlaceType.RESTAURANT, PlaceType.CAFE],
+        mainCategoryList: [MainCategory.KOREAN, MainCategory.BAKERY],
+        moodCategoryList: [
+          MoodCategory.GOOD_ATMOSPHERE,
+          MoodCategory.DESSERT_HOTSPOT,
+        ],
       });
 
       const response = await testHelper
@@ -1961,6 +1967,8 @@ describe('Place E2E test', () => {
       expect(place.bookmark).toBe(false);
       expect(place.imagePathList.sort()).toEqual(place.imagePathList.sort());
       expect(place.type).toBe(placeSeed.type);
+      expect(place.mainCategoryList).toEqual(placeSeed.mainCategoryList);
+      expect(place.moodCategoryList).toEqual(placeSeed.moodCategoryList);
     });
 
     it('200 - orderby time check', async () => {
