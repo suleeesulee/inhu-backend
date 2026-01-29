@@ -59,7 +59,10 @@ describe('Place E2E test', () => {
           },
         ],
         type: PlaceType.CAFE,
-        mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
+        mainCategoryList: [
+          MainCategory.BAKERY,
+          MainCategory.BUNGEOPPANG_WAFFLE,
+        ],
         moodCategoryList: [
           MoodCategory.STUDY_FRIENDLY,
           MoodCategory.DESSERT_HOTSPOT,
@@ -92,7 +95,7 @@ describe('Place E2E test', () => {
       expect(place.imagePathList.sort()).toEqual(place.imagePathList.sort());
       expect(place.type).toBe(placeSeed.type);
       expect(place.mainCategoryList[0]).toBe(MainCategory.BAKERY);
-      expect(place.mainCategoryList[1]).toBe(MainCategory.BUNGEOPPANG);
+      expect(place.mainCategoryList[1]).toBe(MainCategory.BUNGEOPPANG_WAFFLE);
       expect(place.moodCategoryList[0]).toBe(MoodCategory.STUDY_FRIENDLY);
       expect(place.moodCategoryList[1]).toBe(MoodCategory.DESSERT_HOTSPOT);
     });
@@ -1270,17 +1273,23 @@ describe('Place E2E test', () => {
         {
           activatedAt: new Date(),
           name: 'place1: 베이커리, 붕어빵',
-          mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
+          mainCategoryList: [
+            MainCategory.BAKERY,
+            MainCategory.BUNGEOPPANG_WAFFLE,
+          ],
         },
         {
           activatedAt: new Date(),
           name: 'place2: 붕어빵, 샌드위치',
-          mainCategoryList: [MainCategory.BUNGEOPPANG, MainCategory.SANDWICH],
+          mainCategoryList: [
+            MainCategory.BUNGEOPPANG_WAFFLE,
+            MainCategory.SANDWICH_SALAD,
+          ],
         },
         {
           activatedAt: new Date(),
           name: 'place3: 샌드위치, 디저트',
-          mainCategoryList: [MainCategory.SANDWICH, MainCategory.DESSERT],
+          mainCategoryList: [MainCategory.SANDWICH_SALAD, MainCategory.DESSERT],
         },
       ]);
 
@@ -1304,17 +1313,23 @@ describe('Place E2E test', () => {
         {
           activatedAt: new Date(),
           name: 'place1: 베이커리, 붕어빵',
-          mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
+          mainCategoryList: [
+            MainCategory.BAKERY,
+            MainCategory.BUNGEOPPANG_WAFFLE,
+          ],
         },
         {
           activatedAt: new Date(),
           name: 'place2: 붕어빵, 샌드위치',
-          mainCategoryList: [MainCategory.BUNGEOPPANG, MainCategory.SANDWICH],
+          mainCategoryList: [
+            MainCategory.BUNGEOPPANG_WAFFLE,
+            MainCategory.SANDWICH_SALAD,
+          ],
         },
         {
           activatedAt: new Date(),
           name: 'place3: 샌드위치, 디저트',
-          mainCategoryList: [MainCategory.SANDWICH, MainCategory.DESSERT],
+          mainCategoryList: [MainCategory.SANDWICH_SALAD, MainCategory.DESSERT],
         },
       ]);
 
@@ -1323,7 +1338,7 @@ describe('Place E2E test', () => {
         .get('/place/all')
         .query({
           page: 1,
-          mainCategoryList: [MainCategory.BUNGEOPPANG],
+          mainCategoryList: [MainCategory.BUNGEOPPANG_WAFFLE],
         })
         .expect(200);
 
@@ -1339,17 +1354,23 @@ describe('Place E2E test', () => {
         {
           activatedAt: new Date(),
           name: 'place1: 베이커리, 붕어빵',
-          mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
+          mainCategoryList: [
+            MainCategory.BAKERY,
+            MainCategory.BUNGEOPPANG_WAFFLE,
+          ],
         },
         {
           activatedAt: new Date(),
           name: 'place2: 붕어빵, 샌드위치',
-          mainCategoryList: [MainCategory.BUNGEOPPANG, MainCategory.SANDWICH],
+          mainCategoryList: [
+            MainCategory.BUNGEOPPANG_WAFFLE,
+            MainCategory.SANDWICH_SALAD,
+          ],
         },
         {
           activatedAt: new Date(),
           name: 'place3: 샌드위치, 디저트',
-          mainCategoryList: [MainCategory.SANDWICH, MainCategory.DESSERT],
+          mainCategoryList: [MainCategory.SANDWICH_SALAD, MainCategory.DESSERT],
         },
       ]);
 
@@ -1358,7 +1379,10 @@ describe('Place E2E test', () => {
         .get('/place/all')
         .query({
           page: 1,
-          mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
+          mainCategoryList: [
+            MainCategory.BAKERY,
+            MainCategory.BUNGEOPPANG_WAFFLE,
+          ],
         })
         .expect(200);
 
@@ -1374,17 +1398,23 @@ describe('Place E2E test', () => {
         {
           activatedAt: new Date(),
           name: 'place1: 베이커리, 붕어빵',
-          mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
+          mainCategoryList: [
+            MainCategory.BAKERY,
+            MainCategory.BUNGEOPPANG_WAFFLE,
+          ],
         },
         {
           activatedAt: new Date(),
           name: 'place2: 붕어빵, 샌드위치',
-          mainCategoryList: [MainCategory.BUNGEOPPANG, MainCategory.SANDWICH],
+          mainCategoryList: [
+            MainCategory.BUNGEOPPANG_WAFFLE,
+            MainCategory.SANDWICH_SALAD,
+          ],
         },
         {
           activatedAt: new Date(),
           name: 'place3: 샌드위치, 디저트',
-          mainCategoryList: [MainCategory.SANDWICH, MainCategory.DESSERT],
+          mainCategoryList: [MainCategory.SANDWICH_SALAD, MainCategory.DESSERT],
         },
       ]);
 
@@ -1409,17 +1439,23 @@ describe('Place E2E test', () => {
         {
           activatedAt: new Date(),
           name: 'place1: 베이커리, 붕어빵',
-          mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
+          mainCategoryList: [
+            MainCategory.BAKERY,
+            MainCategory.BUNGEOPPANG_WAFFLE,
+          ],
         },
         {
           activatedAt: new Date(),
           name: 'place2: 붕어빵, 샌드위치',
-          mainCategoryList: [MainCategory.BUNGEOPPANG, MainCategory.SANDWICH],
+          mainCategoryList: [
+            MainCategory.BUNGEOPPANG_WAFFLE,
+            MainCategory.SANDWICH_SALAD,
+          ],
         },
         {
           activatedAt: new Date(),
           name: 'place3: 샌드위치, 디저트',
-          mainCategoryList: [MainCategory.SANDWICH, MainCategory.DESSERT],
+          mainCategoryList: [MainCategory.SANDWICH_SALAD, MainCategory.DESSERT],
         },
       ]);
 
@@ -1443,17 +1479,23 @@ describe('Place E2E test', () => {
         {
           activatedAt: new Date(),
           name: 'place1: 베이커리, 붕어빵',
-          mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
+          mainCategoryList: [
+            MainCategory.BAKERY,
+            MainCategory.BUNGEOPPANG_WAFFLE,
+          ],
         },
         {
           activatedAt: new Date(),
           name: 'place2: 붕어빵, 샌드위치',
-          mainCategoryList: [MainCategory.BUNGEOPPANG, MainCategory.SANDWICH],
+          mainCategoryList: [
+            MainCategory.BUNGEOPPANG_WAFFLE,
+            MainCategory.SANDWICH_SALAD,
+          ],
         },
         {
           activatedAt: new Date(),
           name: 'place3: 샌드위치, 디저트',
-          mainCategoryList: [MainCategory.SANDWICH, MainCategory.DESSERT],
+          mainCategoryList: [MainCategory.SANDWICH_SALAD, MainCategory.DESSERT],
         },
       ]);
 
@@ -1477,7 +1519,10 @@ describe('Place E2E test', () => {
         {
           activatedAt: new Date(),
           name: 'place1: 베이커리, 붕어빵',
-          mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
+          mainCategoryList: [
+            MainCategory.BAKERY,
+            MainCategory.BUNGEOPPANG_WAFFLE,
+          ],
           moodCategoryList: [
             MoodCategory.COST_EFFECTIVE,
             MoodCategory.BAR_DATE,
@@ -1486,7 +1531,10 @@ describe('Place E2E test', () => {
         {
           activatedAt: new Date(),
           name: 'place2: 붕어빵, 샌드위치',
-          mainCategoryList: [MainCategory.BUNGEOPPANG, MainCategory.SANDWICH],
+          mainCategoryList: [
+            MainCategory.BUNGEOPPANG_WAFFLE,
+            MainCategory.SANDWICH_SALAD,
+          ],
           moodCategoryList: [
             MoodCategory.BAR_DATE,
             MoodCategory.DESSERT_HOTSPOT,
@@ -1495,7 +1543,7 @@ describe('Place E2E test', () => {
         {
           activatedAt: new Date(),
           name: 'place3: 샌드위치, 디저트',
-          mainCategoryList: [MainCategory.SANDWICH, MainCategory.DESSERT],
+          mainCategoryList: [MainCategory.SANDWICH_SALAD, MainCategory.DESSERT],
           moodCategoryList: [
             MoodCategory.DESSERT_HOTSPOT,
             MoodCategory.GOOD_ATMOSPHERE,
@@ -1525,7 +1573,10 @@ describe('Place E2E test', () => {
         {
           activatedAt: new Date(),
           name: 'place1: 베이커리, 붕어빵',
-          mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
+          mainCategoryList: [
+            MainCategory.BAKERY,
+            MainCategory.BUNGEOPPANG_WAFFLE,
+          ],
           moodCategoryList: [
             MoodCategory.COST_EFFECTIVE,
             MoodCategory.BAR_DATE,
@@ -1534,7 +1585,10 @@ describe('Place E2E test', () => {
         {
           activatedAt: new Date(),
           name: 'place2: 붕어빵, 샌드위치',
-          mainCategoryList: [MainCategory.BUNGEOPPANG, MainCategory.SANDWICH],
+          mainCategoryList: [
+            MainCategory.BUNGEOPPANG_WAFFLE,
+            MainCategory.SANDWICH_SALAD,
+          ],
           moodCategoryList: [
             MoodCategory.BAR_DATE,
             MoodCategory.DESSERT_HOTSPOT,
@@ -1543,7 +1597,7 @@ describe('Place E2E test', () => {
         {
           activatedAt: new Date(),
           name: 'place3: 샌드위치, 디저트',
-          mainCategoryList: [MainCategory.SANDWICH, MainCategory.DESSERT],
+          mainCategoryList: [MainCategory.SANDWICH_SALAD, MainCategory.DESSERT],
           moodCategoryList: [
             MoodCategory.DESSERT_HOTSPOT,
             MoodCategory.GOOD_ATMOSPHERE,
@@ -1556,7 +1610,7 @@ describe('Place E2E test', () => {
         .get('/place/all')
         .query({
           page: 1,
-          mainCategoryList: [MainCategory.BUNGEOPPANG],
+          mainCategoryList: [MainCategory.BUNGEOPPANG_WAFFLE],
           moodCategoryList: [MoodCategory.BAR_DATE],
         })
         .expect(200);
@@ -1573,7 +1627,10 @@ describe('Place E2E test', () => {
         {
           activatedAt: new Date(),
           name: 'place1: 베이커리, 붕어빵',
-          mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
+          mainCategoryList: [
+            MainCategory.BAKERY,
+            MainCategory.BUNGEOPPANG_WAFFLE,
+          ],
           moodCategoryList: [
             MoodCategory.COST_EFFECTIVE,
             MoodCategory.BAR_DATE,
@@ -1582,7 +1639,10 @@ describe('Place E2E test', () => {
         {
           activatedAt: new Date(),
           name: 'place2: 붕어빵, 샌드위치',
-          mainCategoryList: [MainCategory.BUNGEOPPANG, MainCategory.SANDWICH],
+          mainCategoryList: [
+            MainCategory.BUNGEOPPANG_WAFFLE,
+            MainCategory.SANDWICH_SALAD,
+          ],
           moodCategoryList: [
             MoodCategory.BAR_GROUP_GATHERING,
             MoodCategory.DESSERT_HOTSPOT,
@@ -1591,7 +1651,7 @@ describe('Place E2E test', () => {
         {
           activatedAt: new Date(),
           name: 'place3: 샌드위치, 디저트',
-          mainCategoryList: [MainCategory.SANDWICH, MainCategory.DESSERT],
+          mainCategoryList: [MainCategory.SANDWICH_SALAD, MainCategory.DESSERT],
           moodCategoryList: [
             MoodCategory.DESSERT_HOTSPOT,
             MoodCategory.GOOD_ATMOSPHERE,
@@ -1604,7 +1664,10 @@ describe('Place E2E test', () => {
         .get('/place/all')
         .query({
           page: 1,
-          mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
+          mainCategoryList: [
+            MainCategory.BAKERY,
+            MainCategory.BUNGEOPPANG_WAFFLE,
+          ],
           moodCategoryList: [
             MoodCategory.COST_EFFECTIVE,
             MoodCategory.BAR_DATE,
@@ -1624,7 +1687,10 @@ describe('Place E2E test', () => {
         {
           activatedAt: new Date(),
           name: 'place1: 베이커리, 붕어빵',
-          mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
+          mainCategoryList: [
+            MainCategory.BAKERY,
+            MainCategory.BUNGEOPPANG_WAFFLE,
+          ],
           moodCategoryList: [
             MoodCategory.COST_EFFECTIVE,
             MoodCategory.BAR_DATE,
@@ -1633,7 +1699,10 @@ describe('Place E2E test', () => {
         {
           activatedAt: new Date(),
           name: 'place2: 붕어빵, 샌드위치',
-          mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
+          mainCategoryList: [
+            MainCategory.BAKERY,
+            MainCategory.BUNGEOPPANG_WAFFLE,
+          ],
           moodCategoryList: [
             MoodCategory.BAR_DATE,
             MoodCategory.DESSERT_HOTSPOT,
@@ -1642,7 +1711,7 @@ describe('Place E2E test', () => {
         {
           activatedAt: new Date(),
           name: 'place3: 샌드위치, 디저트',
-          mainCategoryList: [MainCategory.SANDWICH, MainCategory.DESSERT],
+          mainCategoryList: [MainCategory.SANDWICH_SALAD, MainCategory.DESSERT],
           moodCategoryList: [
             MoodCategory.DESSERT_HOTSPOT,
             MoodCategory.GOOD_ATMOSPHERE,
@@ -1655,7 +1724,10 @@ describe('Place E2E test', () => {
         .get('/place/all')
         .query({
           page: 1,
-          mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
+          mainCategoryList: [
+            MainCategory.BAKERY,
+            MainCategory.BUNGEOPPANG_WAFFLE,
+          ],
           moodCategoryList: [
             MoodCategory.COST_EFFECTIVE,
             MoodCategory.BAR_DATE,
@@ -1675,7 +1747,10 @@ describe('Place E2E test', () => {
         {
           activatedAt: new Date(),
           name: 'place1: 베이커리, 붕어빵',
-          mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
+          mainCategoryList: [
+            MainCategory.BAKERY,
+            MainCategory.BUNGEOPPANG_WAFFLE,
+          ],
           moodCategoryList: [
             MoodCategory.COST_EFFECTIVE,
             MoodCategory.BAR_DATE,
@@ -1684,7 +1759,10 @@ describe('Place E2E test', () => {
         {
           activatedAt: new Date(),
           name: 'place2: 붕어빵, 샌드위치',
-          mainCategoryList: [MainCategory.BUNGEOPPANG, MainCategory.SANDWICH],
+          mainCategoryList: [
+            MainCategory.BUNGEOPPANG_WAFFLE,
+            MainCategory.SANDWICH_SALAD,
+          ],
           moodCategoryList: [
             MoodCategory.BAR_DATE,
             MoodCategory.DESSERT_HOTSPOT,
@@ -1693,7 +1771,7 @@ describe('Place E2E test', () => {
         {
           activatedAt: new Date(),
           name: 'place3: 샌드위치, 디저트',
-          mainCategoryList: [MainCategory.SANDWICH, MainCategory.DESSERT],
+          mainCategoryList: [MainCategory.SANDWICH_SALAD, MainCategory.DESSERT],
           moodCategoryList: [
             MoodCategory.DESSERT_HOTSPOT,
             MoodCategory.GOOD_ATMOSPHERE,
@@ -1722,7 +1800,10 @@ describe('Place E2E test', () => {
         {
           activatedAt: new Date(),
           name: 'place1: 베이커리, 붕어빵',
-          mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
+          mainCategoryList: [
+            MainCategory.BAKERY,
+            MainCategory.BUNGEOPPANG_WAFFLE,
+          ],
           moodCategoryList: [
             MoodCategory.COST_EFFECTIVE,
             MoodCategory.BAR_DATE,
@@ -1731,7 +1812,10 @@ describe('Place E2E test', () => {
         {
           activatedAt: new Date(),
           name: 'place2: 붕어빵, 샌드위치',
-          mainCategoryList: [MainCategory.BUNGEOPPANG, MainCategory.SANDWICH],
+          mainCategoryList: [
+            MainCategory.BUNGEOPPANG_WAFFLE,
+            MainCategory.SANDWICH_SALAD,
+          ],
           moodCategoryList: [
             MoodCategory.BAR_DATE,
             MoodCategory.DESSERT_HOTSPOT,
@@ -1740,7 +1824,7 @@ describe('Place E2E test', () => {
         {
           activatedAt: new Date(),
           name: 'place3: 샌드위치, 디저트',
-          mainCategoryList: [MainCategory.SANDWICH, MainCategory.DESSERT],
+          mainCategoryList: [MainCategory.SANDWICH_SALAD, MainCategory.DESSERT],
           moodCategoryList: [
             MoodCategory.DESSERT_HOTSPOT,
             MoodCategory.GOOD_ATMOSPHERE,
@@ -1753,7 +1837,10 @@ describe('Place E2E test', () => {
         .get('/place/all')
         .query({
           page: 1,
-          mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
+          mainCategoryList: [
+            MainCategory.BAKERY,
+            MainCategory.BUNGEOPPANG_WAFFLE,
+          ],
           moodCategoryList: [
             MoodCategory.GOOD_ATMOSPHERE,
             MoodCategory.DESSERT_HOTSPOT,
@@ -2775,7 +2862,10 @@ describe('Place E2E test', () => {
             count: 8,
           },
         ],
-        mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
+        mainCategoryList: [
+          MainCategory.BAKERY,
+          MainCategory.BUNGEOPPANG_WAFFLE,
+        ],
         moodCategoryList: [
           MoodCategory.STUDY_FRIENDLY,
           MoodCategory.DESSERT_HOTSPOT,
@@ -2813,7 +2903,7 @@ describe('Place E2E test', () => {
       expect(place.bookmark).toBe(true);
       expect(place.imagePathList.sort()).toEqual(place.imagePathList.sort());
       expect(place.mainCategoryList[0]).toBe(MainCategory.BAKERY);
-      expect(place.mainCategoryList[1]).toBe(MainCategory.BUNGEOPPANG);
+      expect(place.mainCategoryList[1]).toBe(MainCategory.BUNGEOPPANG_WAFFLE);
       expect(place.moodCategoryList[0]).toBe(MoodCategory.STUDY_FRIENDLY);
       expect(place.moodCategoryList[1]).toBe(MoodCategory.DESSERT_HOTSPOT);
     });
@@ -2945,7 +3035,10 @@ describe('Place E2E test', () => {
             week: 2,
           },
         ],
-        mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
+        mainCategoryList: [
+          MainCategory.BAKERY,
+          MainCategory.BUNGEOPPANG_WAFFLE,
+        ],
         moodCategoryList: [
           MoodCategory.STUDY_FRIENDLY,
           MoodCategory.DESSERT_HOTSPOT,
@@ -2997,7 +3090,7 @@ describe('Place E2E test', () => {
       expect(place.closedDayList[1].day).toBe(DayOfWeek.SAT);
       expect(place.closedDayList[1].week).toBe(2);
       expect(place.mainCategoryList[0]).toBe(MainCategory.BAKERY);
-      expect(place.mainCategoryList[1]).toBe(MainCategory.BUNGEOPPANG);
+      expect(place.mainCategoryList[1]).toBe(MainCategory.BUNGEOPPANG_WAFFLE);
       expect(place.moodCategoryList[0]).toBe(MoodCategory.STUDY_FRIENDLY);
       expect(place.moodCategoryList[1]).toBe(MoodCategory.DESSERT_HOTSPOT);
     });
@@ -3089,7 +3182,10 @@ describe('Place E2E test', () => {
         },
         placeImgList: ['/place/test-image1.png', '/place/test-image2.png'],
         type: PlaceType.CAFE,
-        mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
+        mainCategoryList: [
+          MainCategory.BAKERY,
+          MainCategory.BUNGEOPPANG_WAFFLE,
+        ],
         moodCategoryList: [
           MoodCategory.STUDY_FRIENDLY,
           MoodCategory.DESSERT_HOTSPOT,
@@ -3433,7 +3529,7 @@ describe('Place E2E test', () => {
           name: 'place 3',
           activatedAt: new Date(),
           type: PlaceType.CAFE,
-          mainCategoryList: [MainCategory.ICE_CREAM],
+          mainCategoryList: [MainCategory.ICE_CREAM_BINGSU],
         },
       ]);
 
