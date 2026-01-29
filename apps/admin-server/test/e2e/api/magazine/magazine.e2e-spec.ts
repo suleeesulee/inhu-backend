@@ -50,7 +50,7 @@ describe('Magazine e2e test', () => {
         deletedAt: null,
         placeIdxList: [placeSeed.idx],
         typeList: [PlaceType.CAFE],
-        mainCategoryList: [MainCategory.BAKERY, MainCategory.SANDWICH],
+        mainCategoryList: [MainCategory.BAKERY, MainCategory.SANDWICH_SALAD],
         moodCategoryList: [
           MoodCategory.STUDY_FRIENDLY,
           MoodCategory.DESSERT_HOTSPOT,
@@ -312,7 +312,7 @@ describe('Magazine e2e test', () => {
         deletedAt: null,
         placeIdxList: [placeSeed.idx],
         typeList: [PlaceType.CAFE],
-        mainCategoryList: [MainCategory.BAKERY, MainCategory.SANDWICH],
+        mainCategoryList: [MainCategory.BAKERY, MainCategory.SANDWICH_SALAD],
         moodCategoryList: [
           MoodCategory.STUDY_FRIENDLY,
           MoodCategory.DESSERT_HOTSPOT,
@@ -940,7 +940,10 @@ describe('Magazine e2e test', () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const magazine = await magazineSeedHelper.seed({
         typeList: [PlaceType.CAFE],
-        mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
+        mainCategoryList: [
+          MainCategory.BAKERY,
+          MainCategory.BUNGEOPPANG_WAFFLE,
+        ],
         moodCategoryList: [
           MoodCategory.STUDY_FRIENDLY,
           MoodCategory.DESSERT_HOTSPOT,
@@ -1006,7 +1009,10 @@ describe('Magazine e2e test', () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const magazine = await magazineSeedHelper.seed({
         typeList: [PlaceType.CAFE],
-        mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
+        mainCategoryList: [
+          MainCategory.BAKERY,
+          MainCategory.BUNGEOPPANG_WAFFLE,
+        ],
         moodCategoryList: [
           MoodCategory.STUDY_FRIENDLY,
           MoodCategory.DESSERT_HOTSPOT,
@@ -1072,7 +1078,10 @@ describe('Magazine e2e test', () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const magazine = await magazineSeedHelper.seed({
         typeList: [PlaceType.CAFE],
-        mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
+        mainCategoryList: [
+          MainCategory.BAKERY,
+          MainCategory.BUNGEOPPANG_WAFFLE,
+        ],
         moodCategoryList: [
           MoodCategory.STUDY_FRIENDLY,
           MoodCategory.DESSERT_HOTSPOT,
@@ -1102,7 +1111,7 @@ describe('Magazine e2e test', () => {
         .set('Cookie', `token=Bearer ${loginUser.token}`)
         .send({
           typeList: [PlaceType.CAFE],
-          mainCategoryList: [MainCategory.DESSERT, MainCategory.SANDWICH],
+          mainCategoryList: [MainCategory.DESSERT, MainCategory.SANDWICH_SALAD],
           moodCategoryList: [MoodCategory.GOOD_ATMOSPHERE],
         })
         .expect(200);
@@ -1129,7 +1138,9 @@ describe('Magazine e2e test', () => {
         afterMainCategoryList
           .map((category) => category.mainCategoryIdx)
           .sort(),
-      ).toStrictEqual([MainCategory.DESSERT, MainCategory.SANDWICH].sort());
+      ).toStrictEqual(
+        [MainCategory.DESSERT, MainCategory.SANDWICH_SALAD].sort(),
+      );
       expect(afterMoodCategoryList.length).toBe(1);
       expect(afterMoodCategoryList[0].moodCategoryIdx).toBe(
         MoodCategory.GOOD_ATMOSPHERE,
@@ -1141,7 +1152,10 @@ describe('Magazine e2e test', () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const magazine = await magazineSeedHelper.seed({
         typeList: [PlaceType.CAFE],
-        mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
+        mainCategoryList: [
+          MainCategory.BAKERY,
+          MainCategory.BUNGEOPPANG_WAFFLE,
+        ],
         moodCategoryList: [
           MoodCategory.STUDY_FRIENDLY,
           MoodCategory.DESSERT_HOTSPOT,
@@ -1215,7 +1229,10 @@ describe('Magazine e2e test', () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const magazine = await magazineSeedHelper.seed({
         typeList: [PlaceType.CAFE],
-        mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
+        mainCategoryList: [
+          MainCategory.BAKERY,
+          MainCategory.BUNGEOPPANG_WAFFLE,
+        ],
         moodCategoryList: [
           MoodCategory.STUDY_FRIENDLY,
           MoodCategory.DESSERT_HOTSPOT,
@@ -1245,7 +1262,7 @@ describe('Magazine e2e test', () => {
         .set('Cookie', `token=Bearer ${loginUser.token}`)
         .send({
           typeList: [PlaceType.CAFE],
-          mainCategoryList: [MainCategory.DESSERT, MainCategory.SANDWICH],
+          mainCategoryList: [MainCategory.DESSERT, MainCategory.SANDWICH_SALAD],
           moodCategoryList: [],
         })
         .expect(200);
@@ -1272,7 +1289,9 @@ describe('Magazine e2e test', () => {
         afterMainCategoryList
           .map((category) => category.mainCategoryIdx)
           .sort(),
-      ).toStrictEqual([MainCategory.DESSERT, MainCategory.SANDWICH].sort());
+      ).toStrictEqual(
+        [MainCategory.DESSERT, MainCategory.SANDWICH_SALAD].sort(),
+      );
       expect(afterMoodCategoryList.length).toBe(0);
       expect(afterMagazine.activatedAt).not.toBeNull();
     });
@@ -1281,7 +1300,10 @@ describe('Magazine e2e test', () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const magazine = await magazineSeedHelper.seed({
         typeList: [PlaceType.CAFE],
-        mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
+        mainCategoryList: [
+          MainCategory.BAKERY,
+          MainCategory.BUNGEOPPANG_WAFFLE,
+        ],
         moodCategoryList: [
           MoodCategory.STUDY_FRIENDLY,
           MoodCategory.DESSERT_HOTSPOT,
@@ -1354,7 +1376,10 @@ describe('Magazine e2e test', () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const magazine = await magazineSeedHelper.seed({
         typeList: [PlaceType.CAFE],
-        mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
+        mainCategoryList: [
+          MainCategory.BAKERY,
+          MainCategory.BUNGEOPPANG_WAFFLE,
+        ],
         moodCategoryList: [
           MoodCategory.STUDY_FRIENDLY,
           MoodCategory.DESSERT_HOTSPOT,
@@ -1389,7 +1414,7 @@ describe('Magazine e2e test', () => {
           mainCategoryList: [
             MainCategory.DESSERT,
             MainCategory.DESSERT,
-            MainCategory.SANDWICH,
+            MainCategory.SANDWICH_SALAD,
           ],
           moodCategoryList: [
             MoodCategory.GOOD_ATMOSPHERE,
@@ -1421,7 +1446,9 @@ describe('Magazine e2e test', () => {
         afterMainCategoryList
           .map((category) => category.mainCategoryIdx)
           .sort(),
-      ).toStrictEqual([MainCategory.DESSERT, MainCategory.SANDWICH].sort());
+      ).toStrictEqual(
+        [MainCategory.DESSERT, MainCategory.SANDWICH_SALAD].sort(),
+      );
       expect(afterMoodCategoryList.length).toBe(2);
       expect(
         afterMoodCategoryList
@@ -1437,7 +1464,10 @@ describe('Magazine e2e test', () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const magazine = await magazineSeedHelper.seed({
         typeList: [PlaceType.CAFE],
-        mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
+        mainCategoryList: [
+          MainCategory.BAKERY,
+          MainCategory.BUNGEOPPANG_WAFFLE,
+        ],
         moodCategoryList: [
           MoodCategory.STUDY_FRIENDLY,
           MoodCategory.DESSERT_HOTSPOT,
@@ -1469,7 +1499,7 @@ describe('Magazine e2e test', () => {
         .set('Cookie', `token=Bearer ${loginUser.token}`)
         .send({
           typeList: [PlaceType.CAFE, PlaceType.RESTAURANT],
-          mainCategoryList: [MainCategory.DESSERT, MainCategory.SANDWICH],
+          mainCategoryList: [MainCategory.DESSERT, MainCategory.SANDWICH_SALAD],
           moodCategoryList: [
             MoodCategory.GOOD_ATMOSPHERE,
             MoodCategory.BAR_DATE,
@@ -1501,7 +1531,9 @@ describe('Magazine e2e test', () => {
         afterMainCategoryList
           .map((category) => category.mainCategoryIdx)
           .sort(),
-      ).toStrictEqual([MainCategory.DESSERT, MainCategory.SANDWICH].sort());
+      ).toStrictEqual(
+        [MainCategory.DESSERT, MainCategory.SANDWICH_SALAD].sort(),
+      );
       expect(afterMoodCategoryList.length).toBe(2);
       expect(
         afterMoodCategoryList
@@ -1516,7 +1548,10 @@ describe('Magazine e2e test', () => {
     it('401 - no access token', async () => {
       const magazine = await magazineSeedHelper.seed({
         typeList: [PlaceType.CAFE],
-        mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
+        mainCategoryList: [
+          MainCategory.BAKERY,
+          MainCategory.BUNGEOPPANG_WAFFLE,
+        ],
         moodCategoryList: [
           MoodCategory.STUDY_FRIENDLY,
           MoodCategory.DESSERT_HOTSPOT,
