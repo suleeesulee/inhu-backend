@@ -32,7 +32,7 @@
     "dev-infra:connect": "docker exec -it inhu-dev-postgres psql -d inhu -U postgres",
     "dev-infra:psql:up": "docker compose -f ./scripts/dev-infra/docker-compose.yml up -d postgres",
     "dev-infra:psql:down": "docker compose -f ./scripts/dev-infra/docker-compose.yml rm -s -f -v postgres && docker volume rm inhu-dev_inhu-dev-data",
-    "batch-server:test:infra:up": "docker compose -f ./scripts/apps/batch-server/e2e-test/docker-compose.yml up -d",
+    "batch-server:test:infra:up": "docker compose -f ./scripts/apps/batch-server/e2e-test/docker-compose.yml up -d && npm run prisma:generate",
     "batch-server:test:infra:down": "docker compose -f ./scripts/apps/batch-server/e2e-test/docker-compose.yml down -v",
     "batch-server:test:e2e": "dotenv -e ./scripts/apps/batch-server/e2e-test/.env.e2e-test -- jest --config ./apps/batch-server/test/jest-e2e.json ./apps/batch-server"
   },

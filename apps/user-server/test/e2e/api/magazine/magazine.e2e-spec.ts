@@ -54,7 +54,7 @@ describe('Menu E2E test', () => {
         deletedAt: null,
         placeIdxList: [placeSeed.idx],
         typeList: [PlaceType.CAFE],
-        mainCategoryList: [MainCategory.BAKERY, MainCategory.SANDWICH],
+        mainCategoryList: [MainCategory.BAKERY, MainCategory.SANDWICH_SALAD],
         moodCategoryList: [
           MoodCategory.STUDY_FRIENDLY,
           MoodCategory.DESSERT_HOTSPOT,
@@ -265,7 +265,7 @@ describe('Menu E2E test', () => {
         activatedAt: new Date(),
         deletedAt: null,
         typeList: [PlaceType.CAFE],
-        mainCategoryList: [MainCategory.BAKERY, MainCategory.SANDWICH],
+        mainCategoryList: [MainCategory.BAKERY, MainCategory.SANDWICH_SALAD],
         moodCategoryList: [
           MoodCategory.STUDY_FRIENDLY,
           MoodCategory.DESSERT_HOTSPOT,
@@ -303,7 +303,7 @@ describe('Menu E2E test', () => {
       expect(magazine.isLiked).toBe(true);
       expect(magazine.typeList).toEqual(magazineSeed.typeList);
       expect(magazine.mainCategoryList[0]).toBe(MainCategory.BAKERY);
-      expect(magazine.mainCategoryList[1]).toBe(MainCategory.SANDWICH);
+      expect(magazine.mainCategoryList[1]).toBe(MainCategory.SANDWICH_SALAD);
       expect(magazine.moodCategoryList[0]).toBe(MoodCategory.STUDY_FRIENDLY);
       expect(magazine.moodCategoryList[1]).toBe(MoodCategory.DESSERT_HOTSPOT);
     });
@@ -558,15 +558,24 @@ describe('Menu E2E test', () => {
         await magazineSeedHelper.seedAll([
           {
             activatedAt: new Date(),
-            mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
+            mainCategoryList: [
+              MainCategory.BAKERY,
+              MainCategory.BUNGEOPPANG_WAFFLE,
+            ],
           },
           {
             activatedAt: new Date(),
-            mainCategoryList: [MainCategory.BUNGEOPPANG, MainCategory.SANDWICH],
+            mainCategoryList: [
+              MainCategory.BUNGEOPPANG_WAFFLE,
+              MainCategory.SANDWICH_SALAD,
+            ],
           },
           {
             activatedAt: new Date(),
-            mainCategoryList: [MainCategory.SANDWICH, MainCategory.DESSERT],
+            mainCategoryList: [
+              MainCategory.SANDWICH_SALAD,
+              MainCategory.DESSERT,
+            ],
           },
         ]);
 
@@ -590,15 +599,24 @@ describe('Menu E2E test', () => {
         await magazineSeedHelper.seedAll([
           {
             activatedAt: new Date(),
-            mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
+            mainCategoryList: [
+              MainCategory.BAKERY,
+              MainCategory.BUNGEOPPANG_WAFFLE,
+            ],
           },
           {
             activatedAt: new Date(),
-            mainCategoryList: [MainCategory.BUNGEOPPANG, MainCategory.SANDWICH],
+            mainCategoryList: [
+              MainCategory.BUNGEOPPANG_WAFFLE,
+              MainCategory.SANDWICH_SALAD,
+            ],
           },
           {
             activatedAt: new Date(),
-            mainCategoryList: [MainCategory.SANDWICH, MainCategory.DESSERT],
+            mainCategoryList: [
+              MainCategory.SANDWICH_SALAD,
+              MainCategory.DESSERT,
+            ],
           },
         ]);
 
@@ -607,7 +625,7 @@ describe('Menu E2E test', () => {
         .get('/magazine/all')
         .query({
           page: 1,
-          mainCategoryList: [MainCategory.BUNGEOPPANG],
+          mainCategoryList: [MainCategory.BUNGEOPPANG_WAFFLE],
         })
         .expect(200);
 
@@ -623,15 +641,24 @@ describe('Menu E2E test', () => {
         await magazineSeedHelper.seedAll([
           {
             activatedAt: new Date(),
-            mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
+            mainCategoryList: [
+              MainCategory.BAKERY,
+              MainCategory.BUNGEOPPANG_WAFFLE,
+            ],
           },
           {
             activatedAt: new Date(),
-            mainCategoryList: [MainCategory.BUNGEOPPANG, MainCategory.SANDWICH],
+            mainCategoryList: [
+              MainCategory.BUNGEOPPANG_WAFFLE,
+              MainCategory.SANDWICH_SALAD,
+            ],
           },
           {
             activatedAt: new Date(),
-            mainCategoryList: [MainCategory.SANDWICH, MainCategory.DESSERT],
+            mainCategoryList: [
+              MainCategory.SANDWICH_SALAD,
+              MainCategory.DESSERT,
+            ],
           },
         ]);
 
@@ -640,7 +667,10 @@ describe('Menu E2E test', () => {
         .get('/magazine/all')
         .query({
           page: 1,
-          mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
+          mainCategoryList: [
+            MainCategory.BAKERY,
+            MainCategory.BUNGEOPPANG_WAFFLE,
+          ],
         })
         .expect(200);
 
@@ -656,15 +686,24 @@ describe('Menu E2E test', () => {
         await magazineSeedHelper.seedAll([
           {
             activatedAt: new Date(),
-            mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
+            mainCategoryList: [
+              MainCategory.BAKERY,
+              MainCategory.BUNGEOPPANG_WAFFLE,
+            ],
           },
           {
             activatedAt: new Date(),
-            mainCategoryList: [MainCategory.BUNGEOPPANG, MainCategory.SANDWICH],
+            mainCategoryList: [
+              MainCategory.BUNGEOPPANG_WAFFLE,
+              MainCategory.SANDWICH_SALAD,
+            ],
           },
           {
             activatedAt: new Date(),
-            mainCategoryList: [MainCategory.SANDWICH, MainCategory.DESSERT],
+            mainCategoryList: [
+              MainCategory.SANDWICH_SALAD,
+              MainCategory.DESSERT,
+            ],
           },
         ]);
 
@@ -689,15 +728,24 @@ describe('Menu E2E test', () => {
         await magazineSeedHelper.seedAll([
           {
             activatedAt: new Date(),
-            mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
+            mainCategoryList: [
+              MainCategory.BAKERY,
+              MainCategory.BUNGEOPPANG_WAFFLE,
+            ],
           },
           {
             activatedAt: new Date(),
-            mainCategoryList: [MainCategory.BUNGEOPPANG, MainCategory.SANDWICH],
+            mainCategoryList: [
+              MainCategory.BUNGEOPPANG_WAFFLE,
+              MainCategory.SANDWICH_SALAD,
+            ],
           },
           {
             activatedAt: new Date(),
-            mainCategoryList: [MainCategory.SANDWICH, MainCategory.DESSERT],
+            mainCategoryList: [
+              MainCategory.SANDWICH_SALAD,
+              MainCategory.DESSERT,
+            ],
           },
         ]);
 
@@ -721,15 +769,24 @@ describe('Menu E2E test', () => {
         await magazineSeedHelper.seedAll([
           {
             activatedAt: new Date(),
-            mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
+            mainCategoryList: [
+              MainCategory.BAKERY,
+              MainCategory.BUNGEOPPANG_WAFFLE,
+            ],
           },
           {
             activatedAt: new Date(),
-            mainCategoryList: [MainCategory.BUNGEOPPANG, MainCategory.SANDWICH],
+            mainCategoryList: [
+              MainCategory.BUNGEOPPANG_WAFFLE,
+              MainCategory.SANDWICH_SALAD,
+            ],
           },
           {
             activatedAt: new Date(),
-            mainCategoryList: [MainCategory.SANDWICH, MainCategory.DESSERT],
+            mainCategoryList: [
+              MainCategory.SANDWICH_SALAD,
+              MainCategory.DESSERT,
+            ],
           },
         ]);
 
@@ -753,7 +810,10 @@ describe('Menu E2E test', () => {
         await magazineSeedHelper.seedAll([
           {
             activatedAt: new Date(),
-            mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
+            mainCategoryList: [
+              MainCategory.BAKERY,
+              MainCategory.BUNGEOPPANG_WAFFLE,
+            ],
             moodCategoryList: [
               MoodCategory.COST_EFFECTIVE,
               MoodCategory.BAR_DATE,
@@ -761,7 +821,10 @@ describe('Menu E2E test', () => {
           },
           {
             activatedAt: new Date(),
-            mainCategoryList: [MainCategory.BUNGEOPPANG, MainCategory.SANDWICH],
+            mainCategoryList: [
+              MainCategory.BUNGEOPPANG_WAFFLE,
+              MainCategory.SANDWICH_SALAD,
+            ],
             moodCategoryList: [
               MoodCategory.BAR_DATE,
               MoodCategory.DESSERT_HOTSPOT,
@@ -769,7 +832,10 @@ describe('Menu E2E test', () => {
           },
           {
             activatedAt: new Date(),
-            mainCategoryList: [MainCategory.SANDWICH, MainCategory.DESSERT],
+            mainCategoryList: [
+              MainCategory.SANDWICH_SALAD,
+              MainCategory.DESSERT,
+            ],
             moodCategoryList: [
               MoodCategory.DESSERT_HOTSPOT,
               MoodCategory.GOOD_ATMOSPHERE,
@@ -799,7 +865,10 @@ describe('Menu E2E test', () => {
         await magazineSeedHelper.seedAll([
           {
             activatedAt: new Date(),
-            mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
+            mainCategoryList: [
+              MainCategory.BAKERY,
+              MainCategory.BUNGEOPPANG_WAFFLE,
+            ],
             moodCategoryList: [
               MoodCategory.COST_EFFECTIVE,
               MoodCategory.BAR_DATE,
@@ -807,7 +876,10 @@ describe('Menu E2E test', () => {
           },
           {
             activatedAt: new Date(),
-            mainCategoryList: [MainCategory.BUNGEOPPANG, MainCategory.SANDWICH],
+            mainCategoryList: [
+              MainCategory.BUNGEOPPANG_WAFFLE,
+              MainCategory.SANDWICH_SALAD,
+            ],
             moodCategoryList: [
               MoodCategory.BAR_DATE,
               MoodCategory.DESSERT_HOTSPOT,
@@ -815,7 +887,10 @@ describe('Menu E2E test', () => {
           },
           {
             activatedAt: new Date(),
-            mainCategoryList: [MainCategory.SANDWICH, MainCategory.DESSERT],
+            mainCategoryList: [
+              MainCategory.SANDWICH_SALAD,
+              MainCategory.DESSERT,
+            ],
             moodCategoryList: [
               MoodCategory.DESSERT_HOTSPOT,
               MoodCategory.GOOD_ATMOSPHERE,
@@ -828,7 +903,7 @@ describe('Menu E2E test', () => {
         .get('/magazine/all')
         .query({
           page: 1,
-          mainCategoryList: [MainCategory.BUNGEOPPANG],
+          mainCategoryList: [MainCategory.BUNGEOPPANG_WAFFLE],
           moodCategoryList: [MoodCategory.BAR_DATE],
         })
         .expect(200);
@@ -845,7 +920,10 @@ describe('Menu E2E test', () => {
         await magazineSeedHelper.seedAll([
           {
             activatedAt: new Date(),
-            mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
+            mainCategoryList: [
+              MainCategory.BAKERY,
+              MainCategory.BUNGEOPPANG_WAFFLE,
+            ],
             moodCategoryList: [
               MoodCategory.COST_EFFECTIVE,
               MoodCategory.BAR_DATE,
@@ -853,7 +931,10 @@ describe('Menu E2E test', () => {
           },
           {
             activatedAt: new Date(),
-            mainCategoryList: [MainCategory.BUNGEOPPANG, MainCategory.SANDWICH],
+            mainCategoryList: [
+              MainCategory.BUNGEOPPANG_WAFFLE,
+              MainCategory.SANDWICH_SALAD,
+            ],
             moodCategoryList: [
               MoodCategory.BAR_DATE,
               MoodCategory.DESSERT_HOTSPOT,
@@ -861,7 +942,10 @@ describe('Menu E2E test', () => {
           },
           {
             activatedAt: new Date(),
-            mainCategoryList: [MainCategory.SANDWICH, MainCategory.DESSERT],
+            mainCategoryList: [
+              MainCategory.SANDWICH_SALAD,
+              MainCategory.DESSERT,
+            ],
             moodCategoryList: [
               MoodCategory.DESSERT_HOTSPOT,
               MoodCategory.GOOD_ATMOSPHERE,
@@ -874,7 +958,10 @@ describe('Menu E2E test', () => {
         .get('/magazine/all')
         .query({
           page: 1,
-          mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
+          mainCategoryList: [
+            MainCategory.BAKERY,
+            MainCategory.BUNGEOPPANG_WAFFLE,
+          ],
           moodCategoryList: [
             MoodCategory.COST_EFFECTIVE,
             MoodCategory.BAR_DATE,
@@ -894,7 +981,10 @@ describe('Menu E2E test', () => {
         await magazineSeedHelper.seedAll([
           {
             activatedAt: new Date(),
-            mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
+            mainCategoryList: [
+              MainCategory.BAKERY,
+              MainCategory.BUNGEOPPANG_WAFFLE,
+            ],
             moodCategoryList: [
               MoodCategory.COST_EFFECTIVE,
               MoodCategory.BAR_DATE,
@@ -902,7 +992,10 @@ describe('Menu E2E test', () => {
           },
           {
             activatedAt: new Date(),
-            mainCategoryList: [MainCategory.BUNGEOPPANG, MainCategory.SANDWICH],
+            mainCategoryList: [
+              MainCategory.BUNGEOPPANG_WAFFLE,
+              MainCategory.SANDWICH_SALAD,
+            ],
             moodCategoryList: [
               MoodCategory.BAR_DATE,
               MoodCategory.DESSERT_HOTSPOT,
@@ -910,7 +1003,10 @@ describe('Menu E2E test', () => {
           },
           {
             activatedAt: new Date(),
-            mainCategoryList: [MainCategory.SANDWICH, MainCategory.DESSERT],
+            mainCategoryList: [
+              MainCategory.SANDWICH_SALAD,
+              MainCategory.DESSERT,
+            ],
             moodCategoryList: [
               MoodCategory.DESSERT_HOTSPOT,
               MoodCategory.GOOD_ATMOSPHERE,
@@ -939,7 +1035,10 @@ describe('Menu E2E test', () => {
         await magazineSeedHelper.seedAll([
           {
             activatedAt: new Date(),
-            mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
+            mainCategoryList: [
+              MainCategory.BAKERY,
+              MainCategory.BUNGEOPPANG_WAFFLE,
+            ],
             moodCategoryList: [
               MoodCategory.COST_EFFECTIVE,
               MoodCategory.BAR_DATE,
@@ -947,7 +1046,10 @@ describe('Menu E2E test', () => {
           },
           {
             activatedAt: new Date(),
-            mainCategoryList: [MainCategory.BUNGEOPPANG, MainCategory.SANDWICH],
+            mainCategoryList: [
+              MainCategory.BUNGEOPPANG_WAFFLE,
+              MainCategory.SANDWICH_SALAD,
+            ],
             moodCategoryList: [
               MoodCategory.BAR_DATE,
               MoodCategory.DESSERT_HOTSPOT,
@@ -955,7 +1057,10 @@ describe('Menu E2E test', () => {
           },
           {
             activatedAt: new Date(),
-            mainCategoryList: [MainCategory.SANDWICH, MainCategory.DESSERT],
+            mainCategoryList: [
+              MainCategory.SANDWICH_SALAD,
+              MainCategory.DESSERT,
+            ],
             moodCategoryList: [
               MoodCategory.DESSERT_HOTSPOT,
               MoodCategory.GOOD_ATMOSPHERE,
@@ -968,7 +1073,10 @@ describe('Menu E2E test', () => {
         .get('/magazine/all')
         .query({
           page: 1,
-          mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
+          mainCategoryList: [
+            MainCategory.BAKERY,
+            MainCategory.BUNGEOPPANG_WAFFLE,
+          ],
           moodCategoryList: [
             MoodCategory.COST_EFFECTIVE,
             MoodCategory.DESSERT_HOTSPOT,
@@ -993,7 +1101,10 @@ describe('Menu E2E test', () => {
             activatedAt: new Date(),
             deletedAt: null,
             typeList: [PlaceType.CAFE],
-            mainCategoryList: [MainCategory.BAKERY, MainCategory.SANDWICH],
+            mainCategoryList: [
+              MainCategory.BAKERY,
+              MainCategory.SANDWICH_SALAD,
+            ],
             moodCategoryList: [
               MoodCategory.STUDY_FRIENDLY,
               MoodCategory.DESSERT_HOTSPOT,
@@ -1015,7 +1126,10 @@ describe('Menu E2E test', () => {
             activatedAt: new Date(),
             deletedAt: null,
             typeList: [PlaceType.BAR],
-            mainCategoryList: [MainCategory.BUNGEOPPANG, MainCategory.DESSERT],
+            mainCategoryList: [
+              MainCategory.BUNGEOPPANG_WAFFLE,
+              MainCategory.DESSERT,
+            ],
             moodCategoryList: [
               MoodCategory.BAR_DATE,
               MoodCategory.SOLO_DRINKING,

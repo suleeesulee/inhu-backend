@@ -650,7 +650,10 @@ describe('Place E2E test', () => {
             week: 2,
           },
         ],
-        mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
+        mainCategoryList: [
+          MainCategory.BAKERY,
+          MainCategory.BUNGEOPPANG_WAFFLE,
+        ],
         moodCategoryList: [
           MoodCategory.STUDY_FRIENDLY,
           MoodCategory.DESSERT_HOTSPOT,
@@ -701,7 +704,7 @@ describe('Place E2E test', () => {
       expect(place.closedDayList[1].day).toBe(DayOfWeek.SAT);
       expect(place.closedDayList[1].week).toBe(2);
       expect(place.mainCategoryList[0]).toBe(MainCategory.BAKERY);
-      expect(place.mainCategoryList[1]).toBe(MainCategory.BUNGEOPPANG);
+      expect(place.mainCategoryList[1]).toBe(MainCategory.BUNGEOPPANG_WAFFLE);
       expect(place.moodCategoryList[0]).toBe(MoodCategory.STUDY_FRIENDLY);
       expect(place.moodCategoryList[1]).toBe(MoodCategory.DESSERT_HOTSPOT);
     });
@@ -950,7 +953,10 @@ describe('Place E2E test', () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const place = await placeSeedHelper.seed({
         type: PlaceType.CAFE,
-        mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
+        mainCategoryList: [
+          MainCategory.BAKERY,
+          MainCategory.BUNGEOPPANG_WAFFLE,
+        ],
         moodCategoryList: [
           MoodCategory.STUDY_FRIENDLY,
           MoodCategory.DESSERT_HOTSPOT,
@@ -1011,7 +1017,10 @@ describe('Place E2E test', () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const place = await placeSeedHelper.seed({
         type: PlaceType.CAFE,
-        mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
+        mainCategoryList: [
+          MainCategory.BAKERY,
+          MainCategory.BUNGEOPPANG_WAFFLE,
+        ],
         moodCategoryList: [
           MoodCategory.STUDY_FRIENDLY,
           MoodCategory.DESSERT_HOTSPOT,
@@ -1072,7 +1081,10 @@ describe('Place E2E test', () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const place = await placeSeedHelper.seed({
         type: PlaceType.CAFE,
-        mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
+        mainCategoryList: [
+          MainCategory.BAKERY,
+          MainCategory.BUNGEOPPANG_WAFFLE,
+        ],
         moodCategoryList: [
           MoodCategory.STUDY_FRIENDLY,
           MoodCategory.DESSERT_HOTSPOT,
@@ -1101,7 +1113,7 @@ describe('Place E2E test', () => {
         .set('Cookie', `token=Bearer ${loginUser.token}`)
         .send({
           typeList: [PlaceType.CAFE],
-          mainCategoryList: [MainCategory.DESSERT, MainCategory.SANDWICH],
+          mainCategoryList: [MainCategory.DESSERT, MainCategory.SANDWICH_SALAD],
           moodCategoryList: [MoodCategory.GOOD_ATMOSPHERE],
         })
         .expect(200);
@@ -1125,7 +1137,9 @@ describe('Place E2E test', () => {
         afterMainCategoryList
           .map((category) => category.mainCategoryIdx)
           .sort(),
-      ).toStrictEqual([MainCategory.DESSERT, MainCategory.SANDWICH].sort());
+      ).toStrictEqual(
+        [MainCategory.DESSERT, MainCategory.SANDWICH_SALAD].sort(),
+      );
       expect(afterMoodCategoryList.length).toBe(1);
       expect(afterMoodCategoryList[0].moodCategoryIdx).toBe(
         MoodCategory.GOOD_ATMOSPHERE,
@@ -1136,7 +1150,10 @@ describe('Place E2E test', () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const place = await placeSeedHelper.seed({
         type: PlaceType.CAFE,
-        mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
+        mainCategoryList: [
+          MainCategory.BAKERY,
+          MainCategory.BUNGEOPPANG_WAFFLE,
+        ],
         moodCategoryList: [
           MoodCategory.STUDY_FRIENDLY,
           MoodCategory.DESSERT_HOTSPOT,
@@ -1205,7 +1222,10 @@ describe('Place E2E test', () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const place = await placeSeedHelper.seed({
         type: PlaceType.CAFE,
-        mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
+        mainCategoryList: [
+          MainCategory.BAKERY,
+          MainCategory.BUNGEOPPANG_WAFFLE,
+        ],
         moodCategoryList: [
           MoodCategory.STUDY_FRIENDLY,
           MoodCategory.DESSERT_HOTSPOT,
@@ -1234,7 +1254,7 @@ describe('Place E2E test', () => {
         .set('Cookie', `token=Bearer ${loginUser.token}`)
         .send({
           typeList: [PlaceType.CAFE],
-          mainCategoryList: [MainCategory.DESSERT, MainCategory.SANDWICH],
+          mainCategoryList: [MainCategory.DESSERT, MainCategory.SANDWICH_SALAD],
           moodCategoryList: [],
         })
         .expect(200);
@@ -1258,7 +1278,9 @@ describe('Place E2E test', () => {
         afterMainCategoryList
           .map((category) => category.mainCategoryIdx)
           .sort(),
-      ).toStrictEqual([MainCategory.DESSERT, MainCategory.SANDWICH].sort());
+      ).toStrictEqual(
+        [MainCategory.DESSERT, MainCategory.SANDWICH_SALAD].sort(),
+      );
       expect(afterMoodCategoryList.length).toBe(0);
     });
 
@@ -1266,7 +1288,10 @@ describe('Place E2E test', () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const place = await placeSeedHelper.seed({
         type: PlaceType.CAFE,
-        mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
+        mainCategoryList: [
+          MainCategory.BAKERY,
+          MainCategory.BUNGEOPPANG_WAFFLE,
+        ],
         moodCategoryList: [
           MoodCategory.STUDY_FRIENDLY,
           MoodCategory.DESSERT_HOTSPOT,
@@ -1334,7 +1359,10 @@ describe('Place E2E test', () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const place = await placeSeedHelper.seed({
         type: PlaceType.CAFE,
-        mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
+        mainCategoryList: [
+          MainCategory.BAKERY,
+          MainCategory.BUNGEOPPANG_WAFFLE,
+        ],
         moodCategoryList: [
           MoodCategory.STUDY_FRIENDLY,
           MoodCategory.DESSERT_HOTSPOT,
@@ -1368,7 +1396,7 @@ describe('Place E2E test', () => {
           mainCategoryList: [
             MainCategory.DESSERT,
             MainCategory.DESSERT,
-            MainCategory.SANDWICH,
+            MainCategory.SANDWICH_SALAD,
           ],
           moodCategoryList: [
             MoodCategory.GOOD_ATMOSPHERE,
@@ -1397,7 +1425,9 @@ describe('Place E2E test', () => {
         afterMainCategoryList
           .map((category) => category.mainCategoryIdx)
           .sort(),
-      ).toStrictEqual([MainCategory.DESSERT, MainCategory.SANDWICH].sort());
+      ).toStrictEqual(
+        [MainCategory.DESSERT, MainCategory.SANDWICH_SALAD].sort(),
+      );
       expect(afterMoodCategoryList.length).toBe(2);
       expect(
         afterMoodCategoryList
@@ -1412,7 +1442,10 @@ describe('Place E2E test', () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const place = await placeSeedHelper.seed({
         type: PlaceType.CAFE,
-        mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
+        mainCategoryList: [
+          MainCategory.BAKERY,
+          MainCategory.BUNGEOPPANG_WAFFLE,
+        ],
         moodCategoryList: [
           MoodCategory.STUDY_FRIENDLY,
           MoodCategory.DESSERT_HOTSPOT,
@@ -1443,7 +1476,7 @@ describe('Place E2E test', () => {
         .set('Cookie', `token=Bearer ${loginUser.token}`)
         .send({
           typeList: [PlaceType.CAFE, PlaceType.RESTAURANT],
-          mainCategoryList: [MainCategory.DESSERT, MainCategory.SANDWICH],
+          mainCategoryList: [MainCategory.DESSERT, MainCategory.SANDWICH_SALAD],
           moodCategoryList: [
             MoodCategory.GOOD_ATMOSPHERE,
             MoodCategory.BAR_DATE,
@@ -1472,7 +1505,9 @@ describe('Place E2E test', () => {
         afterMainCategoryList
           .map((category) => category.mainCategoryIdx)
           .sort(),
-      ).toStrictEqual([MainCategory.DESSERT, MainCategory.SANDWICH].sort());
+      ).toStrictEqual(
+        [MainCategory.DESSERT, MainCategory.SANDWICH_SALAD].sort(),
+      );
       expect(afterMoodCategoryList.length).toBe(2);
       expect(
         afterMoodCategoryList
@@ -1486,7 +1521,10 @@ describe('Place E2E test', () => {
     it('401 - no access token', async () => {
       const place = await placeSeedHelper.seed({
         type: PlaceType.CAFE,
-        mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
+        mainCategoryList: [
+          MainCategory.BAKERY,
+          MainCategory.BUNGEOPPANG_WAFFLE,
+        ],
         moodCategoryList: [
           MoodCategory.STUDY_FRIENDLY,
           MoodCategory.DESSERT_HOTSPOT,
