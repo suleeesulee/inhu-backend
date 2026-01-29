@@ -21,6 +21,8 @@ export class PlaceMarkerEntity extends PickType(PlaceEntity, [
   'operatingHourList',
   'weeklyClosedDayList',
   'breakTimeList',
+  'mainCategoryList',
+  'moodCategoryList',
   'typeList',
 ]) {
   constructor(data: PlaceMarkerEntity) {
@@ -49,6 +51,8 @@ export class PlaceMarkerEntity extends PickType(PlaceEntity, [
         PlaceWeeklyClosedDayEntity.fromModel,
       ),
       breakTimeList: model.breakTimeList.map(PlaceBreakTimeEntity.fromModel),
+      mainCategoryList: model.mainCategoryList,
+      moodCategoryList: model.moodCategoryList,
       typeList: model.typeList,
     });
   }
