@@ -19,6 +19,11 @@ export type MenuSeedInput = {
    */
   isFlexible?: boolean;
 
+  /**
+   * @default false
+   */
+  isMain?: boolean;
+
   deletedAt?: Date | null;
 
   reviewIdxList?: [number, ...number[]] | null;

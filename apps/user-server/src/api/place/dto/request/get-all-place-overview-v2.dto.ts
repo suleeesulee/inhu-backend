@@ -97,4 +97,15 @@ export class GetAllPlaceOverviewV2Dto {
   @IsEnumValue(MoodCategory, { each: true })
   @Type(() => Number)
   moodCategoryList?: MoodCategory[];
+
+  /**
+   * 만원 이하 여부
+   *
+   * true: 만원 이하 메뉴가 있는 장소만
+   * undefined: 만원 이하 여부 상관없이 모두 가져오기
+   */
+  @IsOptional()
+  @ToBoolean()
+  @IsBoolean()
+  lowPrice?: boolean;
 }
