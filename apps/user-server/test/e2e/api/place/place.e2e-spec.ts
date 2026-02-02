@@ -584,6 +584,392 @@ describe('Place E2E test', () => {
       expect(names2.sort()).toStrictEqual(remaining.sort());
     });
 
+    it('200 - lowPrice filtering check', async () => {
+      const [
+        place1,
+        place2,
+        place3,
+        place4,
+        place5,
+        place6,
+        place7,
+        place8,
+        place9,
+        place10,
+        place11,
+        place12,
+      ] = await placeSeedHelper.seedAll([
+        {
+          // place1:
+          name: '만원 이하 메뉴가 있는 가게1 + 만원 초과 메뉴도 있는 가게',
+          activatedAt: new Date(),
+        },
+        {
+          // place2
+          name: '만원 이하 메뉴가 있는 가게2',
+          activatedAt: new Date(),
+        },
+        {
+          // place3
+          name: '만원 이하 메뉴가 있는 가게3 + 만원 초과 메뉴도 있는 가게',
+          activatedAt: new Date(),
+        },
+        {
+          // place4
+          name: '만원 이하 메뉴가 있는 가게4',
+          activatedAt: new Date(),
+        },
+        {
+          // place5
+          name: '만원 이하 메뉴가 없는 가게1',
+          activatedAt: new Date(),
+        },
+        {
+          // place6
+          name: '만원 이하 메뉴가 없는 가게2',
+          activatedAt: new Date(),
+        },
+        {
+          // place7
+          name: '만원 이하 메뉴가 없는 가게3',
+          activatedAt: new Date(),
+        },
+        {
+          // place8
+          name: '만원 이하 메뉴가 없는 가게4',
+          activatedAt: new Date(),
+        },
+        {
+          // place9
+          name: '메뉴가 없는 가게1',
+          activatedAt: new Date(),
+        },
+        {
+          // place10
+          name: '메뉴가 없는 가게2',
+          activatedAt: new Date(),
+        },
+        {
+          // place11
+          name: '메뉴가 없는 가게3',
+          activatedAt: new Date(),
+        },
+        {
+          // place12
+          name: '메뉴가 없는 가게4',
+          activatedAt: new Date(),
+        },
+      ]);
+
+      await menuSeedHelper.seedAll([
+        {
+          placeIdx: place1.idx,
+          price: 9000,
+          isMain: true,
+        },
+        {
+          placeIdx: place1.idx,
+          price: 15000,
+          isMain: true,
+        },
+        {
+          placeIdx: place2.idx,
+          price: 8000,
+          isMain: true,
+        },
+        {
+          placeIdx: place3.idx,
+          price: 7000,
+          isMain: true,
+        },
+        {
+          placeIdx: place3.idx,
+          price: 20000,
+          isMain: true,
+        },
+        {
+          placeIdx: place4.idx,
+          price: 6000,
+          isMain: true,
+        },
+        {
+          placeIdx: place5.idx,
+          price: 11000,
+          isMain: true,
+        },
+        {
+          placeIdx: place6.idx,
+          price: 12000,
+          isMain: true,
+        },
+        {
+          placeIdx: place7.idx,
+          price: 13000,
+          isMain: true,
+        },
+        {
+          placeIdx: place8.idx,
+          price: 14000,
+          isMain: true,
+        },
+      ]);
+
+      const response = await testHelper
+        .test()
+        .get('/place/all')
+        .query({
+          page: 1,
+          lowPrice: true,
+        })
+        .expect(200);
+
+      const placeList: PlaceOverviewEntity[] = response.body.placeOverviewList;
+
+      expect(response.body.hasNext).toBe(false);
+      expect(placeList.map(({ name }) => name).sort()).toStrictEqual(
+        [place1.name, place2.name, place3.name, place4.name].sort(),
+      );
+    });
+
+    it('200 - lowPrice && operating === true filtering check', async () => {
+      const now = testHelper.mockTodayTime('10:00');
+
+      const [
+        place1,
+        place2,
+        place3,
+        place4,
+        place5,
+        place6,
+        place7,
+        place8,
+        place9,
+        place10,
+        place11,
+        place12,
+      ] = await placeSeedHelper.seedAll([
+        {
+          // place1:
+          name: '만원 이하 메뉴가 있는 가게1 + 만원 초과 메뉴도 있는 가게 + 운영 중',
+          activatedAt: new Date(),
+          operatingHourList: [
+            {
+              day: now.day(),
+              startAt: now.before('4h'),
+              endAt: now.after('1h'),
+            },
+          ],
+        },
+        {
+          // place2
+          name: '만원 이하 메뉴가 있는 가게2 + 만원 초과 메뉴도 있는 가게',
+          activatedAt: new Date(),
+          operatingHourList: [
+            {
+              day: now.day(),
+              startAt: now.before('4h'),
+              endAt: now.before('1h'),
+            },
+          ],
+        },
+        {
+          // place3
+          name: '만원 이하 메뉴가 있는 가게3 + 만원 초과 메뉴도 있는 가게 + 운영 중',
+          activatedAt: new Date(),
+          operatingHourList: [
+            {
+              day: now.day(),
+              startAt: now.before('4h'),
+              endAt: now.after('1h'),
+            },
+          ],
+        },
+        {
+          // place4
+          name: '만원 이하 메뉴가 있는 가게4',
+          activatedAt: new Date(),
+          operatingHourList: [
+            {
+              day: now.day(),
+              startAt: now.before('4h'),
+              endAt: now.before('1h'),
+            },
+          ],
+        },
+        {
+          // place5
+          name: '만원 이하 메뉴가 없는 가게1 + 운영 중',
+          activatedAt: new Date(),
+          operatingHourList: [
+            {
+              day: now.day(),
+              startAt: now.before('4h'),
+              endAt: now.after('1h'),
+            },
+          ],
+        },
+        {
+          // place6
+          name: '만원 이하 메뉴가 없는 가게2 + 운영 중',
+          activatedAt: new Date(),
+          operatingHourList: [
+            {
+              day: now.day(),
+              startAt: now.before('4h'),
+              endAt: now.after('1h'),
+            },
+          ],
+        },
+        {
+          // place7
+          name: '만원 이하 메뉴가 없는 가게3',
+          activatedAt: new Date(),
+          operatingHourList: [
+            {
+              day: now.day(),
+              startAt: now.before('4h'),
+              endAt: now.before('1h'),
+            },
+          ],
+        },
+        {
+          // place8
+          name: '만원 이하 메뉴가 없는 가게4',
+          activatedAt: new Date(),
+          operatingHourList: [
+            {
+              day: now.day(),
+              startAt: now.before('4h'),
+              endAt: now.before('1h'),
+            },
+          ],
+        },
+        {
+          // place9
+          name: '메뉴가 없는 가게1 + 운영 중',
+          activatedAt: new Date(),
+          operatingHourList: [
+            {
+              day: now.day(),
+              startAt: now.before('4h'),
+              endAt: now.after('1h'),
+            },
+          ],
+        },
+        {
+          // place10
+          name: '메뉴가 없는 가게2 + 운영 중',
+          activatedAt: new Date(),
+          operatingHourList: [
+            {
+              day: now.day(),
+              startAt: now.before('4h'),
+              endAt: now.after('1h'),
+            },
+          ],
+        },
+        {
+          // place11
+          name: '메뉴가 없는 가게3',
+          activatedAt: new Date(),
+          operatingHourList: [
+            {
+              day: now.day(),
+              startAt: now.before('4h'),
+              endAt: now.before('1h'),
+            },
+          ],
+        },
+        {
+          // place12
+          name: '메뉴가 없는 가게4',
+          activatedAt: new Date(),
+          operatingHourList: [
+            {
+              day: now.day(),
+              startAt: now.before('4h'),
+              endAt: now.before('1h'),
+            },
+          ],
+        },
+      ]);
+
+      await menuSeedHelper.seedAll([
+        {
+          placeIdx: place1.idx,
+          price: 9000,
+          isMain: true,
+        },
+        {
+          placeIdx: place1.idx,
+          price: 15000,
+          isMain: true,
+        },
+        {
+          placeIdx: place2.idx,
+          price: 8000,
+          isMain: true,
+        },
+        {
+          placeIdx: place2.idx,
+          price: 15000,
+          isMain: true,
+        },
+        {
+          placeIdx: place3.idx,
+          price: 7000,
+          isMain: true,
+        },
+        {
+          placeIdx: place3.idx,
+          price: 20000,
+          isMain: true,
+        },
+        {
+          placeIdx: place4.idx,
+          price: 6000,
+          isMain: true,
+        },
+        {
+          placeIdx: place5.idx,
+          price: 11000,
+          isMain: true,
+        },
+        {
+          placeIdx: place6.idx,
+          price: 12000,
+          isMain: true,
+        },
+        {
+          placeIdx: place7.idx,
+          price: 13000,
+          isMain: true,
+        },
+        {
+          placeIdx: place8.idx,
+          price: 14000,
+          isMain: true,
+        },
+      ]);
+
+      const response = await testHelper
+        .test()
+        .get('/place/all')
+        .query({
+          page: 1,
+          lowPrice: true,
+          operating: true,
+        })
+        .expect(200);
+
+      const placeList: PlaceOverviewEntity[] = response.body.placeOverviewList;
+
+      expect(response.body.hasNext).toBe(false);
+      expect(placeList.map(({ name }) => name).sort()).toStrictEqual(
+        [place1.name, place3.name].sort(),
+      );
+    });
+
     it('200 - break time filtering check', async () => {
       const now = testHelper.mockTodayTime('10:00');
 

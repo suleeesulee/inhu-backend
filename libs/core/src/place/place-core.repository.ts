@@ -181,6 +181,7 @@ export class PlaceCoreRepository {
           this.getPermanentlyClosedFilterWhereClause(false),
           this.getMainCategoryFilterWhereClause(input.mainCategoryList),
           this.getMoodCategoryFilterWhereClause(input.moodCategoryList),
+          this.getPriceFilterWhereClause(input.lowPrice),
         ],
       },
     });
