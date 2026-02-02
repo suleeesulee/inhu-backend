@@ -34,8 +34,9 @@ INSERT INTO mood_category_tb (idx, content) VALUES
 (6, '디저트 맛집'),
 (7, '혼술'),
 (8, '갓성비 안주'),
-(9, '단체'),
-(10, '데이트');
+(9, '간단한 식사'),
+(10, '포장만 가능'),
+(11, '테이크 아웃');
 
 
 INSERT INTO keyword_tb (idx, content) VALUES

@@ -1525,7 +1525,7 @@ describe('Place E2E test', () => {
           ],
           moodCategoryList: [
             MoodCategory.COST_EFFECTIVE,
-            MoodCategory.BAR_DATE,
+            MoodCategory.SOLO_DRINKING,
           ],
         },
         {
@@ -1536,7 +1536,7 @@ describe('Place E2E test', () => {
             MainCategory.SANDWICH_SALAD,
           ],
           moodCategoryList: [
-            MoodCategory.BAR_DATE,
+            MoodCategory.SOLO_DRINKING,
             MoodCategory.DESSERT_HOTSPOT,
           ],
         },
@@ -1579,7 +1579,7 @@ describe('Place E2E test', () => {
           ],
           moodCategoryList: [
             MoodCategory.COST_EFFECTIVE,
-            MoodCategory.BAR_DATE,
+            MoodCategory.SOLO_DRINKING,
           ],
         },
         {
@@ -1590,7 +1590,7 @@ describe('Place E2E test', () => {
             MainCategory.SANDWICH_SALAD,
           ],
           moodCategoryList: [
-            MoodCategory.BAR_DATE,
+            MoodCategory.SOLO_DRINKING,
             MoodCategory.DESSERT_HOTSPOT,
           ],
         },
@@ -1611,7 +1611,7 @@ describe('Place E2E test', () => {
         .query({
           page: 1,
           mainCategoryList: [MainCategory.BUNGEOPPANG_WAFFLE],
-          moodCategoryList: [MoodCategory.BAR_DATE],
+          moodCategoryList: [MoodCategory.SOLO_DRINKING],
         })
         .expect(200);
 
@@ -1633,7 +1633,7 @@ describe('Place E2E test', () => {
           ],
           moodCategoryList: [
             MoodCategory.COST_EFFECTIVE,
-            MoodCategory.BAR_DATE,
+            MoodCategory.SOLO_DRINKING,
           ],
         },
         {
@@ -1644,7 +1644,7 @@ describe('Place E2E test', () => {
             MainCategory.SANDWICH_SALAD,
           ],
           moodCategoryList: [
-            MoodCategory.BAR_GROUP_GATHERING,
+            MoodCategory.SOLO_DRINKING,
             MoodCategory.DESSERT_HOTSPOT,
           ],
         },
@@ -1670,7 +1670,7 @@ describe('Place E2E test', () => {
           ],
           moodCategoryList: [
             MoodCategory.COST_EFFECTIVE,
-            MoodCategory.BAR_DATE,
+            MoodCategory.SOLO_DRINKING,
           ],
         })
         .expect(200);
@@ -1693,7 +1693,7 @@ describe('Place E2E test', () => {
           ],
           moodCategoryList: [
             MoodCategory.COST_EFFECTIVE,
-            MoodCategory.BAR_DATE,
+            MoodCategory.SOLO_DRINKING,
           ],
         },
         {
@@ -1704,7 +1704,7 @@ describe('Place E2E test', () => {
             MainCategory.BUNGEOPPANG_WAFFLE,
           ],
           moodCategoryList: [
-            MoodCategory.BAR_DATE,
+            MoodCategory.SOLO_DRINKING,
             MoodCategory.DESSERT_HOTSPOT,
           ],
         },
@@ -1730,7 +1730,7 @@ describe('Place E2E test', () => {
           ],
           moodCategoryList: [
             MoodCategory.COST_EFFECTIVE,
-            MoodCategory.BAR_DATE,
+            MoodCategory.SOLO_DRINKING,
           ],
         })
         .expect(200);
@@ -1753,7 +1753,7 @@ describe('Place E2E test', () => {
           ],
           moodCategoryList: [
             MoodCategory.COST_EFFECTIVE,
-            MoodCategory.BAR_DATE,
+            MoodCategory.SOLO_DRINKING,
           ],
         },
         {
@@ -1764,7 +1764,7 @@ describe('Place E2E test', () => {
             MainCategory.SANDWICH_SALAD,
           ],
           moodCategoryList: [
-            MoodCategory.BAR_DATE,
+            MoodCategory.SOLO_DRINKING,
             MoodCategory.DESSERT_HOTSPOT,
           ],
         },
@@ -1806,7 +1806,7 @@ describe('Place E2E test', () => {
           ],
           moodCategoryList: [
             MoodCategory.COST_EFFECTIVE,
-            MoodCategory.BAR_DATE,
+            MoodCategory.SOLO_DRINKING,
           ],
         },
         {
@@ -1817,7 +1817,7 @@ describe('Place E2E test', () => {
             MainCategory.SANDWICH_SALAD,
           ],
           moodCategoryList: [
-            MoodCategory.BAR_DATE,
+            MoodCategory.SOLO_DRINKING,
             MoodCategory.DESSERT_HOTSPOT,
           ],
         },

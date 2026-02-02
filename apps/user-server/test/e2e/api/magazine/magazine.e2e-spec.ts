@@ -816,7 +816,7 @@ describe('Menu E2E test', () => {
             ],
             moodCategoryList: [
               MoodCategory.COST_EFFECTIVE,
-              MoodCategory.BAR_DATE,
+              MoodCategory.SOLO_DRINKING,
             ],
           },
           {
@@ -826,7 +826,7 @@ describe('Menu E2E test', () => {
               MainCategory.SANDWICH_SALAD,
             ],
             moodCategoryList: [
-              MoodCategory.BAR_DATE,
+              MoodCategory.SOLO_DRINKING,
               MoodCategory.DESSERT_HOTSPOT,
             ],
           },
@@ -871,7 +871,7 @@ describe('Menu E2E test', () => {
             ],
             moodCategoryList: [
               MoodCategory.COST_EFFECTIVE,
-              MoodCategory.BAR_DATE,
+              MoodCategory.SOLO_DRINKING,
             ],
           },
           {
@@ -881,7 +881,7 @@ describe('Menu E2E test', () => {
               MainCategory.SANDWICH_SALAD,
             ],
             moodCategoryList: [
-              MoodCategory.BAR_DATE,
+              MoodCategory.SOLO_DRINKING,
               MoodCategory.DESSERT_HOTSPOT,
             ],
           },
@@ -904,7 +904,7 @@ describe('Menu E2E test', () => {
         .query({
           page: 1,
           mainCategoryList: [MainCategory.BUNGEOPPANG_WAFFLE],
-          moodCategoryList: [MoodCategory.BAR_DATE],
+          moodCategoryList: [MoodCategory.SOLO_DRINKING],
         })
         .expect(200);
 
@@ -926,7 +926,7 @@ describe('Menu E2E test', () => {
             ],
             moodCategoryList: [
               MoodCategory.COST_EFFECTIVE,
-              MoodCategory.BAR_DATE,
+              MoodCategory.SOLO_DRINKING,
             ],
           },
           {
@@ -936,7 +936,7 @@ describe('Menu E2E test', () => {
               MainCategory.SANDWICH_SALAD,
             ],
             moodCategoryList: [
-              MoodCategory.BAR_DATE,
+              MoodCategory.SOLO_DRINKING,
               MoodCategory.DESSERT_HOTSPOT,
             ],
           },
@@ -964,7 +964,7 @@ describe('Menu E2E test', () => {
           ],
           moodCategoryList: [
             MoodCategory.COST_EFFECTIVE,
-            MoodCategory.BAR_DATE,
+            MoodCategory.SOLO_DRINKING,
           ],
         })
         .expect(200);
@@ -987,7 +987,7 @@ describe('Menu E2E test', () => {
             ],
             moodCategoryList: [
               MoodCategory.COST_EFFECTIVE,
-              MoodCategory.BAR_DATE,
+              MoodCategory.SOLO_DRINKING,
             ],
           },
           {
@@ -997,7 +997,7 @@ describe('Menu E2E test', () => {
               MainCategory.SANDWICH_SALAD,
             ],
             moodCategoryList: [
-              MoodCategory.BAR_DATE,
+              MoodCategory.SOLO_DRINKING,
               MoodCategory.DESSERT_HOTSPOT,
             ],
           },
@@ -1041,7 +1041,7 @@ describe('Menu E2E test', () => {
             ],
             moodCategoryList: [
               MoodCategory.COST_EFFECTIVE,
-              MoodCategory.BAR_DATE,
+              MoodCategory.SOLO_DRINKING,
             ],
           },
           {
@@ -1051,7 +1051,7 @@ describe('Menu E2E test', () => {
               MainCategory.SANDWICH_SALAD,
             ],
             moodCategoryList: [
-              MoodCategory.BAR_DATE,
+              MoodCategory.SOLO_DRINKING,
               MoodCategory.DESSERT_HOTSPOT,
             ],
           },
@@ -1131,7 +1131,7 @@ describe('Menu E2E test', () => {
               MainCategory.DESSERT,
             ],
             moodCategoryList: [
-              MoodCategory.BAR_DATE,
+              MoodCategory.COST_EFFECTIVE,
               MoodCategory.SOLO_DRINKING,
             ],
           },
