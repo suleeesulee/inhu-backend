@@ -59,6 +59,11 @@ export class MenuEntity {
   public sortOrder: number;
 
   /**
+   * 대표 메뉴 여부
+   */
+  public isMain: boolean;
+
+  /**
    * 생성 시간
    */
   public createdAt: Date;
@@ -87,6 +92,7 @@ export class MenuEntity {
       imagePath: model.imagePath,
       isFlexible: model.isFlexible,
       sortOrder: model.sortOrder,
+      isMain: model.isMain,
       createdAt: model.createdAt,
       reviewList: model.reviewList.map(ReviewEntity.fromModel),
       reviewCount: model.reviewCount,
