@@ -1185,7 +1185,7 @@ describe('Place E2E test', () => {
           mainCategoryList: [MainCategory.DESSERT],
           moodCategoryList: [
             MoodCategory.GOOD_ATMOSPHERE,
-            MoodCategory.BAR_DATE,
+            MoodCategory.COST_EFFECTIVE,
           ],
         })
         .expect(200);
@@ -1214,7 +1214,7 @@ describe('Place E2E test', () => {
           .map((category) => category.moodCategoryIdx)
           .sort(),
       ).toStrictEqual(
-        [MoodCategory.GOOD_ATMOSPHERE, MoodCategory.BAR_DATE].sort(),
+        [MoodCategory.GOOD_ATMOSPHERE, MoodCategory.COST_EFFECTIVE].sort(),
       );
     });
 
@@ -1325,7 +1325,7 @@ describe('Place E2E test', () => {
           mainCategoryList: [],
           moodCategoryList: [
             MoodCategory.GOOD_ATMOSPHERE,
-            MoodCategory.BAR_DATE,
+            MoodCategory.COST_EFFECTIVE,
           ],
         })
         .expect(200);
@@ -1351,7 +1351,7 @@ describe('Place E2E test', () => {
           .map((category) => category.moodCategoryIdx)
           .sort(),
       ).toStrictEqual(
-        [MoodCategory.GOOD_ATMOSPHERE, MoodCategory.BAR_DATE].sort(),
+        [MoodCategory.GOOD_ATMOSPHERE, MoodCategory.COST_EFFECTIVE].sort(),
       );
     });
 
@@ -1400,8 +1400,8 @@ describe('Place E2E test', () => {
           ],
           moodCategoryList: [
             MoodCategory.GOOD_ATMOSPHERE,
-            MoodCategory.BAR_DATE,
-            MoodCategory.BAR_DATE,
+            MoodCategory.COST_EFFECTIVE,
+            MoodCategory.COST_EFFECTIVE,
           ],
         })
         .expect(200);
@@ -1434,7 +1434,7 @@ describe('Place E2E test', () => {
           .map((category) => category.moodCategoryIdx)
           .sort(),
       ).toStrictEqual(
-        [MoodCategory.GOOD_ATMOSPHERE, MoodCategory.BAR_DATE].sort(),
+        [MoodCategory.GOOD_ATMOSPHERE, MoodCategory.COST_EFFECTIVE].sort(),
       );
     });
 
@@ -1479,7 +1479,7 @@ describe('Place E2E test', () => {
           mainCategoryList: [MainCategory.DESSERT, MainCategory.SANDWICH_SALAD],
           moodCategoryList: [
             MoodCategory.GOOD_ATMOSPHERE,
-            MoodCategory.BAR_DATE,
+            MoodCategory.COST_EFFECTIVE,
           ],
         })
         .expect(200);
@@ -1514,7 +1514,7 @@ describe('Place E2E test', () => {
           .map((category) => category.moodCategoryIdx)
           .sort(),
       ).toStrictEqual(
-        [MoodCategory.GOOD_ATMOSPHERE, MoodCategory.BAR_DATE].sort(),
+        [MoodCategory.GOOD_ATMOSPHERE, MoodCategory.COST_EFFECTIVE].sort(),
       );
     });
 

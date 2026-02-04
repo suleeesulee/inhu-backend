@@ -79,6 +79,7 @@ export class PlaceCoreRepository {
     searchKeyword,
     mainCategoryList,
     moodCategoryList,
+    lowPrice,
   }: GetPlaceOverviewInput): Promise<SelectPlaceOverview[]> {
     const now = this.dateUtilService.getNow();
     const todayKst = this.dateUtilService.transformKoreanDate(now);
@@ -104,6 +105,7 @@ export class PlaceCoreRepository {
           this.getSearchKeywordWhereClause(searchKeyword), // 검색 키워드 필터링
           this.getMainCategoryFilterWhereClause(mainCategoryList), // 메인 카테고리 필터링
           this.getMoodCategoryFilterWhereClause(moodCategoryList), // 분위기 카테고리 필터링
+          this.getPriceFilterWhereClause(lowPrice), // 저렴한 메뉴 필터링
         ],
       },
       orderBy: this.getOrderByClause({ order, orderBy }),
@@ -179,6 +181,7 @@ export class PlaceCoreRepository {
           this.getPermanentlyClosedFilterWhereClause(false),
           this.getMainCategoryFilterWhereClause(input.mainCategoryList),
           this.getMoodCategoryFilterWhereClause(input.moodCategoryList),
+          this.getPriceFilterWhereClause(input.lowPrice),
         ],
       },
     });
@@ -410,6 +413,23 @@ export class PlaceCoreRepository {
         idx: 'desc',
       },
     ];
+  }
+
+  private getPriceFilterWhereClause(
+    lowPrice?: boolean,
+  ): Prisma.PlaceWhereInput {
+    if (lowPrice === undefined || !lowPrice) {
+      return {};
+    }
+
+    return {
+      menuList: {
+        some: {
+          price: { lte: 10000 },
+          isMain: true,
+        },
+      },
+    };
   }
 
   public async insertPlace(input: CreatePlaceInput): Promise<SelectPlace> {

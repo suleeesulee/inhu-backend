@@ -50,6 +50,11 @@ export class MenuModel {
   public sortOrder: number;
 
   /**
+   * 대표 메뉴 여부
+   */
+  public isMain: boolean;
+
+  /**
    * 생성 시간
    */
   public createdAt: Date;
@@ -78,6 +83,7 @@ export class MenuModel {
       imagePath: menu.imagePath,
       isFlexible: menu.isFlexible,
       sortOrder: menu.sortOrder,
+      isMain: menu.isMain,
       createdAt: menu.createdAt,
       reviewList: menu.reviewList.map((menuReview) =>
         ReviewModel.fromPrisma(menuReview.review),

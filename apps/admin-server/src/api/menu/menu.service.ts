@@ -60,6 +60,7 @@ export class MenuService {
       content: dto.content,
       imagePath: dto.imagePath,
       isFlexible: dto.isFlexible,
+      isMain: dto.isMain,
     });
 
     return MenuEntity.fromModel(menuModel);
@@ -118,6 +119,7 @@ export class MenuService {
       content: dto.content,
       imagePath: dto.imagePath,
       isFlexible: dto.isFlexible,
+      isMain: dto.isMain,
     });
   }
 

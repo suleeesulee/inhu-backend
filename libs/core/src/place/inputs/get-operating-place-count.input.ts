@@ -6,4 +6,5 @@ export class GetOperatingPlaceCountInput {
   types: PlaceType[];
   mainCategoryList?: MainCategory[];
   moodCategoryList?: MoodCategory[];
+  lowPrice?: boolean;
 }

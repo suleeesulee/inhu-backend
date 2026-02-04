@@ -159,6 +159,7 @@ model Menu {
   imagePath  String?      @map("image_path") @db.VarChar
   isFlexible Boolean      @default(false) @map("is_flexible")
   sortOrder  Int          @map("sort_order") @db.SmallInt
+  isMain     Boolean      @default(false) @map("is_main")
   createdAt  DateTime     @default(now()) @map("created_at") @db.Timestamptz(6)
   deletedAt  DateTime?    @map("deleted_at") @db.Timestamptz(6)
   reviewList MenuReview[]

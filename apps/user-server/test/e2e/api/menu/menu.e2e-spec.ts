@@ -37,6 +37,7 @@ describe('Menu E2E test', () => {
         content: 'Test Content',
         price: 10000,
         isFlexible: false,
+        isMain: false,
         imagePath: '/test-image.png',
         deletedAt: null,
         reviewIdxList: [reviewSeed.idx],
@@ -62,6 +63,7 @@ describe('Menu E2E test', () => {
       expect(menu.content).toBe(menuSeed.content);
       expect(menu.price).toBe(menuSeed.price);
       expect(menu.isFlexible).toBe(menuSeed.isFlexible);
+      expect(menu.isMain).toBe(menuSeed.isMain);
       expect(menu.imagePath).toBe(menuSeed.imagePath);
       expect(menu.reviewList[0].idx).toBe(reviewSeed.idx);
       expect(menu.reviewList[0].place.idx).toBe(placeSeed.idx);
