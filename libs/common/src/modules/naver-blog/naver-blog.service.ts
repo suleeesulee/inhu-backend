@@ -34,6 +34,9 @@ export class NaverBlogService {
     // 작성일
     const publishStr =
       $('span.se_publishDate').text() || $('p._postAddDate').text();
+    if (!publishStr) {
+      throw new NaverBlogNotFoundException('Cannot find publish date');
+    }
     const uploadedAt = this.getUploadedAt(publishStr);
 
     // 메타 데이터
@@ -126,6 +129,26 @@ export class NaverBlogService {
   }
 
   private getUploadedAt(publishStr: string) {
+    const now = new Date();
+    const nowKst = new Date(now.getTime() + 9 * 60 * 60 * 1000);
+    const cleanStr = publishStr.trim();
+
+    if (cleanStr.includes('전')) {
+      const numMatch = cleanStr.match(/\d+/);
+      const value = parseInt(numMatch ? numMatch[0] : '0', 10);
+      let resultTime = nowKst.getTime();
+
+      if (cleanStr.includes('분')) {
+        resultTime -= value * 60 * 1000;
+      } else if (cleanStr.includes('시간')) {
+        resultTime -= value * 60 * 60 * 1000;
+      } else if (cleanStr.includes('일')) {
+        resultTime -= value * 24 * 60 * 60 * 1000;
+      }
+
+      return new Date(resultTime);
+    }
+
     const dateArr = publishStr.split('.').map((d) => d.trim());
 
     const year = dateArr[0];
