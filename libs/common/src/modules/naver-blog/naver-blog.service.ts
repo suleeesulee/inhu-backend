@@ -62,7 +62,15 @@ export class NaverBlogService {
 
       const $ = cheerio.load(data);
 
-      return 'https://blog.naver.com' + $('iframe').attr('src');
+      const iframeSrc = $('iframe').attr('src');
+
+      if (!iframeSrc) {
+        throw new NaverBlogNotFoundException(
+          'Cannot find iframe src in naver blog',
+        );
+      }
+
+      return 'https://blog.naver.com' + iframeSrc;
     } catch (err) {
       if (isAxiosError(err)) {
         if (err.response?.status === 404) {
