@@ -8,6 +8,6 @@ export class CreateMenuInput {
   content: string | null;
   price: number | null;
   imagePath: string | null;
-  isFlexible: boolean;
-  isMain: boolean;
+  isFlexible?: boolean;
+  isMain?: boolean;
 }

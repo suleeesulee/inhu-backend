@@ -42,13 +42,14 @@ export class CreateMenuDto {
    */
   @IsOptional()
   @ToBoolean()
-  isFlexible: boolean;
+  isFlexible?: boolean;
 
   /**
    * 대표 메뉴 여부
    * @example true
+   * @default true
    */
   @IsOptional()
   @ToBoolean()
-  isMain: boolean;
+  isMain?: boolean = true;
 }
