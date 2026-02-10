@@ -116,6 +116,7 @@ export class MenuController {
    * 메인 메뉴 설정/해제
    */
   @AdminAuth()
+  @Exception(400, 'Invalid menuIdx')
   @Exception(404, 'Menu does not exist')
   @Put('/menu/:menuIdx/main-menu')
   public async updateMenuIsMain(
