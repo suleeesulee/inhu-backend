@@ -18,19 +18,13 @@ import { UpdateMenuIsMainDto } from './dto/request/update-menu-is-main.dto';
 
 @Injectable()
 export class MenuService {
-  private readonly NAVER_MENU_BATCH_SIZE: number;
-
   constructor(
     private readonly menuCoreService: MenuCoreService,
     private readonly placeCoreService: PlaceCoreService,
     private readonly reviewCoreService: ReviewCoreService,
     private readonly naverMenuService: NaverMenuService,
     private readonly s3Service: S3Service,
-    private readonly configService: ConfigService,
-  ) {
-    this.NAVER_MENU_BATCH_SIZE =
-      this.configService.get<number>('menu.naverMenuBatchSize') || 20;
-  }
+  ) {}
 
   public async getAllMenuByPlaceIdx(
     placeIdx: number,
@@ -81,27 +75,17 @@ export class MenuService {
       dto.naverPlaceId,
     );
 
-    const results: NaverMenuEntity[] = [];
-
-    for (let i = 0; i < naverMenuList.length; i += this.NAVER_MENU_BATCH_SIZE) {
-      const batchList = naverMenuList.slice(i, i + this.NAVER_MENU_BATCH_SIZE);
-
-      const batchResults = await Promise.all(
-        batchList.map(async (menu) => {
-          return NaverMenuEntity.fromModel({
-            name: menu.name,
-            content: menu.content,
-            price: menu.price,
-            imagePath: await this.uploadImage(menu.imagePath),
-            isFlexible: menu.isFlexible,
-          });
+    return await Promise.all(
+      naverMenuList.map(async (menu) =>
+        NaverMenuEntity.fromModel({
+          name: menu.name,
+          content: menu.content,
+          price: menu.price,
+          imagePath: await this.uploadImage(menu.imagePath),
+          isFlexible: menu.isFlexible,
         }),
-      );
-
-      results.push(...batchResults);
-    }
-
-    return results;
+      ),
+    );
   }
 
   public async createMenuReview(
