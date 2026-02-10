@@ -20,6 +20,7 @@ import { Exception } from '@libs/common/decorator/exception.decorator';
 import { UpdateMenuSortOrderDto } from './dto/request/update-menu-sort-order.dto';
 import { NaverMenuEntity } from './entity/naver-menu.entity';
 import { MenuCrawlingDto } from './dto/request/menu-crawling.dto';
+import { UpdateMenuIsMainDto } from './dto/request/update-menu-is-main.dto';
 
 @Controller()
 export class MenuController {
@@ -109,6 +110,19 @@ export class MenuController {
     @Body() dto: UpdateMenuSortOrderDto,
   ): Promise<void> {
     return await this.menuService.updateMenuSortOrderByPlaceIdx(menuIdx, dto);
+  }
+
+  /**
+   * 메인 메뉴 설정/해제
+   */
+  @AdminAuth()
+  @Exception(404, 'Menu does not exist')
+  @Put('/menu/:menuIdx/main-menu')
+  public async updateMenuIsMain(
+    @Param('menuIdx', ParseIntPipe) menuIdx: number,
+    @Body() dto: UpdateMenuIsMainDto,
+  ): Promise<void> {
+    return await this.menuService.updateMenuIsMainByMenuIdx(menuIdx, dto);
   }
 
   /**
