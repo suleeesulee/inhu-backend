@@ -107,7 +107,7 @@ CREATE TABLE menu_tb
   image_path  varchar                 ,
   is_flexible boolean                  NOT NULL DEFAULT false,
   sort_order  smallint                 NOT NULL,
-  is_main     boolean                  NOT NULL DEFAULT false,
+  is_main     boolean                  NOT NULL DEFAULT true,
   created_at  timestamp with time zone NOT NULL DEFAULT NOW(),
   deleted_at  timestamp with time zone,
   PRIMARY KEY (idx)

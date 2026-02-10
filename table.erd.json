@@ -6231,7 +6231,7 @@
         "name": "is_main",
         "comment": "",
         "dataType": "boolean",
-        "default": "false",
+        "default": "true",
         "options": 8,
         "ui": {
           "keys": 0,
@@ -6241,7 +6241,7 @@
           "widthDefault": 60
         },
         "meta": {
-          "updateAt": 1770050094971,
+          "updateAt": 1770726001494,
           "createAt": 1770049927802
         }
       }
