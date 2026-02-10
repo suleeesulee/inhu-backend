@@ -636,7 +636,6 @@ describe('Menu e2e test', () => {
         content: 'Old Content',
         price: 5000,
         isFlexible: false,
-        isMain: false,
         imagePath: 'menu/old-image.png',
       });
 
@@ -645,7 +644,6 @@ describe('Menu e2e test', () => {
         content: 'Updated Content',
         price: 10000,
         isFlexible: true,
-        isMain: true,
         imagePath: 'menu/updated-image.png',
       };
 
@@ -664,7 +662,6 @@ describe('Menu e2e test', () => {
       expect(updatedMenu.content).toBe(updateMenuDto.content);
       expect(updatedMenu.price).toBe(updateMenuDto.price);
       expect(updatedMenu.isFlexible).toBe(updateMenuDto.isFlexible);
-      expect(updatedMenu.isMain).toBe(updateMenuDto.isMain);
       expect(updatedMenu.imagePath).toBe(updateMenuDto.imagePath);
     });
 
@@ -682,7 +679,6 @@ describe('Menu e2e test', () => {
         content: 'Old Content',
         price: 5000,
         isFlexible: false,
-        isMain: false,
         imagePath: 'menu/old-image.png',
       });
 
@@ -691,7 +687,6 @@ describe('Menu e2e test', () => {
         content: null,
         price: null,
         isFlexible: false,
-        isMain: false,
         imagePath: null,
       };
 
@@ -710,7 +705,6 @@ describe('Menu e2e test', () => {
       expect(updatedMenu.content).toBeNull();
       expect(updatedMenu.price).toBeNull();
       expect(updatedMenu.isFlexible).toBe(updateMenuDto.isFlexible);
-      expect(updatedMenu.isMain).toBe(updateMenuDto.isMain);
       expect(updatedMenu.imagePath).toBeNull();
     });
 
@@ -728,7 +722,6 @@ describe('Menu e2e test', () => {
         content: 'Old Content',
         price: 5000,
         isFlexible: false,
-        isMain: false,
         imagePath: 'menu/old-image.png',
       });
 
@@ -737,7 +730,6 @@ describe('Menu e2e test', () => {
         content: menuSeed.content,
         price: menuSeed.price,
         isFlexible: menuSeed.isFlexible,
-        isMain: menuSeed.isMain,
         imagePath: menuSeed.imagePath,
       };
 
@@ -756,7 +748,6 @@ describe('Menu e2e test', () => {
       expect(updatedMenu.content).toBe(menuSeed.content);
       expect(updatedMenu.price).toBe(menuSeed.price);
       expect(updatedMenu.isFlexible).toBe(menuSeed.isFlexible);
-      expect(updatedMenu.isMain).toBe(menuSeed.isMain);
       expect(updatedMenu.imagePath).toBe(menuSeed.imagePath);
     });
 
@@ -774,7 +765,6 @@ describe('Menu e2e test', () => {
         content: 'Old Content',
         price: 5000,
         isFlexible: false,
-        isMain: false,
         imagePath: 'menu/old-image.png',
       });
 
@@ -783,7 +773,6 @@ describe('Menu e2e test', () => {
         content: menuSeed.content,
         price: menuSeed.price,
         isFlexible: menuSeed.isFlexible,
-        isMain: menuSeed.isMain,
         imagePath: menuSeed.imagePath,
       };
 
@@ -802,7 +791,6 @@ describe('Menu e2e test', () => {
       expect(updatedMenu.content).toBe(menuSeed.content);
       expect(updatedMenu.price).toBe(menuSeed.price);
       expect(updatedMenu.isFlexible).toBe(menuSeed.isFlexible);
-      expect(updatedMenu.isMain).toBe(menuSeed.isMain);
       expect(updatedMenu.imagePath).toBe(menuSeed.imagePath);
     });
 
@@ -820,7 +808,6 @@ describe('Menu e2e test', () => {
         content: 'Old Content',
         price: 5000,
         isFlexible: false,
-        isMain: false,
         imagePath: 'menu/old-image.png',
       });
 
@@ -829,7 +816,6 @@ describe('Menu e2e test', () => {
         name: menuSeed.name,
         content: menuSeed.content,
         isFlexible: menuSeed.isFlexible,
-        isMain: menuSeed.isMain,
         imagePath: menuSeed.imagePath,
       };
 
@@ -848,7 +834,6 @@ describe('Menu e2e test', () => {
       expect(updatedMenu.content).toBe(menuSeed.content);
       expect(updatedMenu.price).toBe(updateMenuDto.price);
       expect(updatedMenu.isFlexible).toBe(menuSeed.isFlexible);
-      expect(updatedMenu.isMain).toBe(menuSeed.isMain);
       expect(updatedMenu.imagePath).toBe(menuSeed.imagePath);
     });
 
@@ -866,7 +851,6 @@ describe('Menu e2e test', () => {
         content: 'Old Content',
         price: 5000,
         isFlexible: false,
-        isMain: false,
         imagePath: 'menu/old-image.png',
       });
 
@@ -875,7 +859,6 @@ describe('Menu e2e test', () => {
         name: menuSeed.name,
         price: menuSeed.price,
         isFlexible: menuSeed.isFlexible,
-        isMain: menuSeed.isMain,
         imagePath: menuSeed.imagePath,
       };
 
@@ -894,7 +877,6 @@ describe('Menu e2e test', () => {
       expect(updatedMenu.content).toBe(updateMenuDto.content);
       expect(updatedMenu.price).toBe(menuSeed.price);
       expect(updatedMenu.isFlexible).toBe(menuSeed.isFlexible);
-      expect(updatedMenu.isMain).toBe(menuSeed.isMain);
       expect(updatedMenu.imagePath).toBe(menuSeed.imagePath);
     });
 
@@ -912,7 +894,6 @@ describe('Menu e2e test', () => {
         content: 'Old Content',
         price: 5000,
         isFlexible: false,
-        isMain: false,
         imagePath: 'menu/old-image.png',
       });
 
@@ -922,7 +903,6 @@ describe('Menu e2e test', () => {
         content: menuSeed.content,
         price: menuSeed.price,
         isFlexible: menuSeed.isFlexible,
-        isMain: menuSeed.isMain,
       };
 
       await testHelper
@@ -940,7 +920,6 @@ describe('Menu e2e test', () => {
       expect(updatedMenu.content).toBe(menuSeed.content);
       expect(updatedMenu.price).toBe(menuSeed.price);
       expect(updatedMenu.isFlexible).toBe(menuSeed.isFlexible);
-      expect(updatedMenu.isMain).toBe(menuSeed.isMain);
       expect(updatedMenu.imagePath).toBe(updateMenuDto.imagePath);
     });
 
@@ -958,7 +937,6 @@ describe('Menu e2e test', () => {
         content: 'Old Content',
         price: 5000,
         isFlexible: false,
-        isMain: false,
         imagePath: 'menu/old-image.png',
       });
 
@@ -968,7 +946,6 @@ describe('Menu e2e test', () => {
         content: menuSeed.content,
         price: menuSeed.price,
         imagePath: menuSeed.imagePath,
-        isMain: menuSeed.isMain,
       };
 
       await testHelper
@@ -986,53 +963,6 @@ describe('Menu e2e test', () => {
       expect(updatedMenu.content).toBe(menuSeed.content);
       expect(updatedMenu.price).toBe(menuSeed.price);
       expect(updatedMenu.isFlexible).toBe(updateMenuDto.isFlexible);
-      expect(updatedMenu.isMain).toBe(menuSeed.isMain);
-      expect(updatedMenu.imagePath).toBe(menuSeed.imagePath);
-    });
-
-    it('200 - isMain only modified', async () => {
-      const loginUser = testHelper.loginAdmin.admin1;
-
-      const placeSeed = await placeSeedHelper.seed({
-        deletedAt: null,
-        activatedAt: new Date(),
-      });
-
-      const menuSeed = await menuSeedHelper.seed({
-        placeIdx: placeSeed.idx,
-        name: 'Old Menu',
-        content: 'Old Content',
-        price: 5000,
-        isFlexible: false,
-        isMain: false,
-        imagePath: 'menu/old-image.png',
-      });
-
-      const updateMenuDto = {
-        isFlexible: false,
-        name: menuSeed.name,
-        content: menuSeed.content,
-        price: menuSeed.price,
-        imagePath: menuSeed.imagePath,
-        isMain: true,
-      };
-
-      await testHelper
-        .test()
-        .put(`/menu/${menuSeed.idx}`)
-        .set('Cookie', `token=Bearer ${loginUser.token}`)
-        .send(updateMenuDto)
-        .expect(200);
-
-      const updatedMenu = await testHelper.getPrisma().menu.findUniqueOrThrow({
-        where: { idx: menuSeed.idx },
-      });
-
-      expect(updatedMenu.name).toBe(menuSeed.name);
-      expect(updatedMenu.content).toBe(menuSeed.content);
-      expect(updatedMenu.price).toBe(menuSeed.price);
-      expect(updatedMenu.isFlexible).toBe(menuSeed.isFlexible);
-      expect(updatedMenu.isMain).toBe(updateMenuDto.isMain);
       expect(updatedMenu.imagePath).toBe(menuSeed.imagePath);
     });
 
@@ -1326,6 +1256,110 @@ describe('Menu e2e test', () => {
         .put(`/menu/99999/sort-order`) // ! 존재하지 않는 메뉴
         .set('Cookie', `token=Bearer ${loginUser.token}`)
         .send({ sortOrder: 2 })
+        .expect(404);
+    });
+  });
+
+  describe('PUT /menu/:menuIdx/main-menu', () => {
+    it('200 - successfully isMain modified (false -> true)', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+
+      const placeSeed = await placeSeedHelper.seed({
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+
+      const menuSeed = await menuSeedHelper.seed({
+        placeIdx: placeSeed.idx,
+        name: 'Old Menu',
+        content: 'Old Content',
+        price: 5000,
+        isFlexible: false,
+        isMain: false,
+        imagePath: 'menu/old-image.png',
+      });
+
+      const updateMenuIsMainDto = {
+        isMain: true,
+      };
+
+      await testHelper
+        .test()
+        .put(`/menu/${menuSeed.idx}/main-menu`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send(updateMenuIsMainDto)
+        .expect(200);
+
+      const updatedMenu = await testHelper.getPrisma().menu.findUniqueOrThrow({
+        where: { idx: menuSeed.idx },
+      });
+
+      expect(updatedMenu.isMain).toBe(updateMenuIsMainDto.isMain);
+    });
+
+    it('200 - successfully isMain modified (true -> false)', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+
+      const placeSeed = await placeSeedHelper.seed({
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+
+      const menuSeed = await menuSeedHelper.seed({
+        placeIdx: placeSeed.idx,
+        name: 'Old Menu',
+        content: 'Old Content',
+        price: 5000,
+        isFlexible: false,
+        isMain: true,
+        imagePath: 'menu/old-image.png',
+      });
+
+      const updateMenuIsMainDto = {
+        isMain: false,
+      };
+
+      await testHelper
+        .test()
+        .put(`/menu/${menuSeed.idx}/main-menu`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send(updateMenuIsMainDto)
+        .expect(200);
+
+      const updatedMenu = await testHelper.getPrisma().menu.findUniqueOrThrow({
+        where: { idx: menuSeed.idx },
+      });
+
+      expect(updatedMenu.isMain).toBe(updateMenuIsMainDto.isMain);
+    });
+
+    it('400 - invalid menuIdx', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+
+      const updateMenuIsMainDto = {
+        isMain: true,
+      };
+
+      await testHelper
+        .test()
+        .put(`/menu/invalid/main-menu`) // ! invalid menuIdx
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send(updateMenuIsMainDto)
+        .expect(400);
+    });
+
+    it('404 - menu does not exist', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+
+      const updateMenuIsMainDto = {
+        isMain: true,
+      };
+
+      await testHelper
+        .test()
+        .put(`/menu/99999/main-menu`) // ! 존재하지 않는 메뉴
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send(updateMenuIsMainDto)
         .expect(404);
     });
   });

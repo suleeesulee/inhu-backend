@@ -1,3 +1,4 @@
+import { PartialType } from '@nestjs/swagger';
 import { CreateMenuInput } from './create-menu.input';
 
 /**
@@ -5,4 +6,4 @@ import { CreateMenuInput } from './create-menu.input';
  *
  * @publicApi
  */
-export class UpdateMenuInput extends CreateMenuInput {}
+export class UpdateMenuInput extends PartialType(CreateMenuInput) {}
