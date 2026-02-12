@@ -65,6 +65,7 @@ export class PlaceLogCoreRepository {
       },
     });
   }
+
   public async insertDimRoadAddress(
     input: CreateInputWrapper<CreateDimRoadAddressInput>,
   ) {
@@ -93,6 +94,7 @@ export class PlaceLogCoreRepository {
       },
     });
   }
+
   public async insertDimPlaceTypeMapping(
     input: CreateInputWrapper<CreateDimPlaceTypeMappingInput>,
   ) {
@@ -118,6 +120,7 @@ export class PlaceLogCoreRepository {
       },
     });
   }
+
   public async insertDimPlaceMainCategoryMapping(
     input: CreateInputWrapper<CreateDimPlaceMainCategoryMappingInput>,
   ) {
@@ -143,6 +146,7 @@ export class PlaceLogCoreRepository {
       },
     });
   }
+
   public async insertDimPlaceMoodCategoryMapping(
     input: CreateInputWrapper<CreateDimPlaceMoodCategoryMappingInput>,
   ) {
@@ -168,6 +172,7 @@ export class PlaceLogCoreRepository {
       },
     });
   }
+
   public async insertDimPlaceImage(
     input: CreateInputWrapper<CreateDimPlaceImageInput>,
   ) {
@@ -196,6 +201,7 @@ export class PlaceLogCoreRepository {
       },
     });
   }
+
   public async insertDimClosedDay(
     input: CreateInputWrapper<CreateDimClosedDayInput>,
   ) {
@@ -224,6 +230,7 @@ export class PlaceLogCoreRepository {
       },
     });
   }
+
   public async insertDimOperatingHour(
     input: CreateInputWrapper<CreateDimOperatingHourInput>,
   ) {
@@ -254,6 +261,7 @@ export class PlaceLogCoreRepository {
       },
     });
   }
+
   public async insertDimWeeklyClosedDay(
     input: CreateInputWrapper<CreateDimWeeklyClosedDayInput>,
   ) {
@@ -282,6 +290,7 @@ export class PlaceLogCoreRepository {
       },
     });
   }
+
   public async insertDimBreakTime(
     input: CreateInputWrapper<CreateDimBreakTimeInput>,
   ) {

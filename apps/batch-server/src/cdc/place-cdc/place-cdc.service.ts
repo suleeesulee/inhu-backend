@@ -10,6 +10,7 @@ import { ClosedDayTb } from './events/closed-day-tb.event';
 import { OperatingHourTb } from './events/operating-hour-tb.event';
 import { WeeklyClosedDayTb } from './events/weekly-closed-day-tb.event';
 import { BreakTimeTb } from './events/break-time-tb.event';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class PlaceCdcService {
@@ -42,8 +43,8 @@ export class PlaceCdcService {
         idx: roadAddress.idx,
         addressName: roadAddress.address_name,
         detailAddress: roadAddress.detail_address,
-        addressX: roadAddress.address_x,
-        addressY: roadAddress.address_y,
+        addressX: new Prisma.Decimal(roadAddress.address_x),
+        addressY: new Prisma.Decimal(roadAddress.address_y),
       },
       time,
     );
@@ -52,14 +53,13 @@ export class PlaceCdcService {
   public async createDimPlaceTypeMapping(
     placeTypeMapping: PlaceTypeMappingTb,
     time: Date,
+    deletedAt: Date | null = null,
   ) {
     await this.placeLogCoreService.createDimPlaceTypeMapping(
       {
         placeTypeIdx: placeTypeMapping.place_type_idx,
         placeIdx: placeTypeMapping.place_idx,
-        deletedAt: placeTypeMapping.deleted_at
-          ? new Date(placeTypeMapping.deleted_at)
-          : null,
+        deletedAt,
       },
       time,
     );
@@ -68,14 +68,13 @@ export class PlaceCdcService {
   public async createDimPlaceMainCategoryMapping(
     placeMainCategoryMapping: PlaceMainCategoryMappingTb,
     time: Date,
+    deletedAt: Date | null = null,
   ) {
     await this.placeLogCoreService.createDimPlaceMainCategoryMapping(
       {
         mainCategoryIdx: placeMainCategoryMapping.main_category_idx,
         placeIdx: placeMainCategoryMapping.place_idx,
-        deletedAt: placeMainCategoryMapping.deleted_at
-          ? new Date(placeMainCategoryMapping.deleted_at)
-          : null,
+        deletedAt,
       },
       time,
     );
@@ -84,14 +83,13 @@ export class PlaceCdcService {
   public async createDimPlaceMoodCategoryMapping(
     placeMoodCategoryMapping: PlaceMoodCategoryMappingTb,
     time: Date,
+    deletedAt: Date | null = null,
   ) {
     await this.placeLogCoreService.createDimPlaceMoodCategoryMapping(
       {
         moodCategoryIdx: placeMoodCategoryMapping.mood_category_idx,
         placeIdx: placeMoodCategoryMapping.place_idx,
-        deletedAt: placeMoodCategoryMapping.deleted_at
-          ? new Date(placeMoodCategoryMapping.deleted_at)
-          : null,
+        deletedAt,
       },
       time,
     );
@@ -112,14 +110,18 @@ export class PlaceCdcService {
     );
   }
 
-  public async createDimClosedDay(closedDay: ClosedDayTb, time: Date) {
+  public async createDimClosedDay(
+    closedDay: ClosedDayTb,
+    time: Date,
+    deletedAt: Date | null = null,
+  ) {
     await this.placeLogCoreService.createDimClosedDay(
       {
         idx: closedDay.idx,
         placeIdx: closedDay.place_idx,
         day: closedDay.day,
         week: closedDay.week,
-        deletedAt: closedDay.deleted_at ? new Date(closedDay.deleted_at) : null,
+        deletedAt,
       },
       time,
     );
@@ -128,6 +130,7 @@ export class PlaceCdcService {
   public async createDimOperatingHour(
     operatingHour: OperatingHourTb,
     time: Date,
+    deletedAt: Date | null = null,
   ) {
     await this.placeLogCoreService.createDimOperatingHour(
       {
@@ -136,9 +139,7 @@ export class PlaceCdcService {
         startAt: operatingHour.start_at,
         endAt: operatingHour.end_at,
         day: operatingHour.day,
-        deletedAt: operatingHour.deleted_at
-          ? new Date(operatingHour.deleted_at)
-          : null,
+        deletedAt,
       },
       time,
     );
@@ -147,6 +148,7 @@ export class PlaceCdcService {
   public async createDimWeeklyClosedDay(
     weeklyClosedDay: WeeklyClosedDayTb,
     time: Date,
+    deletedAt: Date | null = null,
   ) {
     await this.placeLogCoreService.createDimWeeklyClosedDay(
       {
@@ -154,15 +156,17 @@ export class PlaceCdcService {
         placeIdx: weeklyClosedDay.place_idx,
         closedDate: weeklyClosedDay.closed_date,
         type: weeklyClosedDay.type,
-        deletedAt: weeklyClosedDay.deleted_at
-          ? new Date(weeklyClosedDay.deleted_at)
-          : null,
+        deletedAt,
       },
       time,
     );
   }
 
-  public async createDimBreakTime(breakTime: BreakTimeTb, time: Date) {
+  public async createDimBreakTime(
+    breakTime: BreakTimeTb,
+    time: Date,
+    deletedAt: Date | null = null,
+  ) {
     await this.placeLogCoreService.createDimBreakTime(
       {
         idx: breakTime.idx,
@@ -170,7 +174,7 @@ export class PlaceCdcService {
         startAt: breakTime.start_at,
         endAt: breakTime.end_at,
         day: breakTime.day,
-        deletedAt: breakTime.deleted_at ? new Date(breakTime.deleted_at) : null,
+        deletedAt,
       },
       time,
     );

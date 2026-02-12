@@ -1,7 +1,9 @@
+import { Prisma } from '@prisma/client';
+
 export class CreateDimRoadAddressInput {
   idx: number;
   addressName: string;
   detailAddress: string | null;
-  addressX: number;
-  addressY: number;
+  addressX: Prisma.Decimal | string;
+  addressY: Prisma.Decimal | string;
 }

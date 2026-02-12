@@ -16,5 +16,7 @@
   "schema.include.list": "public",
   "table.include.list": "public.*",
 
-  "publication.autocreate.mode": "disabled"
+  "publication.autocreate.mode": "disabled",
+
+  "decimal.handling.mode": "string"
 }
