@@ -4,5 +4,4 @@ export class CreateDimRoadAddressInput {
   detailAddress: string | null;
   addressX: number;
   addressY: number;
-  registeredAt: Date;
 }
