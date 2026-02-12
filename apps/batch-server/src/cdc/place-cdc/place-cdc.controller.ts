@@ -39,36 +39,78 @@ export class PlaceCdcController {
   public async placeTypeMappingTbEvent(
     @Payload() message: DebeziumEvent<PlaceTypeMappingTb>,
   ) {
-    if (message.op === 'd' || !message.after) return;
+    if (
+      !message.source ||
+      (message.op === 'd' && !message.before) ||
+      (message.op === 'c' && !message.after)
+    )
+      return;
 
     const time = new Date(message.source.ts_ms || message.ts_ms || new Date());
-    await this.placeCdcService.createDimPlaceTypeMapping(message.after, time);
+
+    if (message.op === 'd') {
+      await this.placeCdcService.createDimPlaceTypeMapping(
+        message.before,
+        time,
+        time,
+      );
+    } else if (message.op === 'c') {
+      await this.placeCdcService.createDimPlaceTypeMapping(message.after, time);
+    }
   }
 
   @MessagePattern('inhu.public.place_main_category_mapping_tb')
   public async placeMainCategoryMappingTbEvent(
     @Payload() message: DebeziumEvent<PlaceMainCategoryMappingTb>,
   ) {
-    if (message.op === 'd' || !message.after) return;
+    if (
+      !message.source ||
+      (message.op === 'd' && !message.before) ||
+      (message.op === 'c' && !message.after)
+    )
+      return;
 
     const time = new Date(message.source.ts_ms || message.ts_ms || new Date());
-    await this.placeCdcService.createDimPlaceMainCategoryMapping(
-      message.after,
-      time,
-    );
+
+    if (message.op === 'd') {
+      await this.placeCdcService.createDimPlaceMainCategoryMapping(
+        message.before,
+        time,
+        time,
+      );
+    } else if (message.op === 'c') {
+      await this.placeCdcService.createDimPlaceMainCategoryMapping(
+        message.after,
+        time,
+      );
+    }
   }
 
   @MessagePattern('inhu.public.place_mood_category_mapping_tb')
   public async placeMoodCategoryMappingTbEvent(
     @Payload() message: DebeziumEvent<PlaceMoodCategoryMappingTb>,
   ) {
-    if (message.op === 'd' || !message.after) return;
+    if (
+      !message.source ||
+      (message.op === 'd' && !message.before) ||
+      (message.op === 'c' && !message.after)
+    )
+      return;
 
     const time = new Date(message.source.ts_ms || message.ts_ms || new Date());
-    await this.placeCdcService.createDimPlaceMoodCategoryMapping(
-      message.after,
-      time,
-    );
+
+    if (message.op === 'd') {
+      await this.placeCdcService.createDimPlaceMoodCategoryMapping(
+        message.before,
+        time,
+        time,
+      );
+    } else if (message.op === 'c') {
+      await this.placeCdcService.createDimPlaceMoodCategoryMapping(
+        message.after,
+        time,
+      );
+    }
   }
 
   @MessagePattern('inhu.public.place_image_tb')
@@ -85,39 +127,87 @@ export class PlaceCdcController {
   public async closedDayTbEvent(
     @Payload() message: DebeziumEvent<ClosedDayTb>,
   ) {
-    if (message.op === 'd' || !message.after) return;
+    if (
+      !message.source ||
+      (message.op === 'd' && !message.before) ||
+      (message.op === 'c' && !message.after)
+    )
+      return;
 
     const time = new Date(message.source.ts_ms || message.ts_ms || new Date());
-    await this.placeCdcService.createDimClosedDay(message.after, time);
+
+    if (message.op === 'd') {
+      await this.placeCdcService.createDimClosedDay(message.before, time, time);
+    } else if (message.op === 'c') {
+      await this.placeCdcService.createDimClosedDay(message.after, time);
+    }
   }
 
   @MessagePattern('inhu.public.operating_hour_tb')
   public async operatingHourTbEvent(
     @Payload() message: DebeziumEvent<OperatingHourTb>,
   ) {
-    if (message.op === 'd' || !message.after) return;
+    if (
+      !message.source ||
+      (message.op === 'd' && !message.before) ||
+      (message.op === 'c' && !message.after)
+    )
+      return;
 
     const time = new Date(message.source.ts_ms || message.ts_ms || new Date());
-    await this.placeCdcService.createDimOperatingHour(message.after, time);
+
+    if (message.op === 'd') {
+      await this.placeCdcService.createDimOperatingHour(
+        message.before,
+        time,
+        time,
+      );
+    } else if (message.op === 'c') {
+      await this.placeCdcService.createDimOperatingHour(message.after, time);
+    }
   }
 
   @MessagePattern('inhu.public.weekly_closed_day_tb')
   public async weeklyClosedDayTbEvent(
     @Payload() message: DebeziumEvent<WeeklyClosedDayTb>,
   ) {
-    if (message.op === 'd' || !message.after) return;
+    if (
+      !message.source ||
+      (message.op === 'd' && !message.before) ||
+      (message.op === 'c' && !message.after)
+    )
+      return;
 
     const time = new Date(message.source.ts_ms || message.ts_ms || new Date());
-    await this.placeCdcService.createDimWeeklyClosedDay(message.after, time);
+
+    if (message.op === 'd') {
+      await this.placeCdcService.createDimWeeklyClosedDay(
+        message.before,
+        time,
+        time,
+      );
+    } else if (message.op === 'c') {
+      await this.placeCdcService.createDimWeeklyClosedDay(message.after, time);
+    }
   }
 
   @MessagePattern('inhu.public.break_time_tb')
   public async breakTimeTbEvent(
     @Payload() message: DebeziumEvent<BreakTimeTb>,
   ) {
-    if (message.op === 'd' || !message.after) return;
+    if (
+      !message.source ||
+      (message.op === 'd' && !message.before) ||
+      (message.op === 'c' && !message.after)
+    )
+      return;
 
     const time = new Date(message.source.ts_ms || message.ts_ms || new Date());
-    await this.placeCdcService.createDimBreakTime(message.after, time);
+
+    if (message.op === 'd') {
+      await this.placeCdcService.createDimBreakTime(message.before, time, time);
+    } else if (message.op === 'c') {
+      await this.placeCdcService.createDimBreakTime(message.after, time);
+    }
   }
 }
