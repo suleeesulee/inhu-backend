@@ -131,12 +131,13 @@ CREATE INDEX index_dim_place_type_mappings_valid_from ON dim_place_type_mappings
 
 CREATE TABLE dim_place_types
 (
-  id          uuid                     NOT NULL DEFAULT uuid_generate_v4(),
-  idx         int                      NOT NULL,
-  content     varchar                  NOT NULL,
-  created_at  timestamp with time zone NOT NULL DEFAULT NOW(),
-  deleted_at  timestamp with time zone,
-  valid_from  timestamp with time zone NOT NULL,
+  id            uuid                     NOT NULL DEFAULT uuid_generate_v4(),
+  idx           int                      NOT NULL,
+  content       varchar                  NOT NULL,
+  created_at    timestamp with time zone NOT NULL DEFAULT NOW(),
+  deleted_at    timestamp with time zone,
+  registered_at timestamp with time zone NOT NULL,
+  valid_from    timestamp with time zone NOT NULL,
   PRIMARY KEY (id)
 );
 ALTER TABLE dim_place_types ADD CONSTRAINT uq_dim_place_types_idx_valid_from UNIQUE (idx, valid_from);
