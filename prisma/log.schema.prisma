@@ -202,12 +202,13 @@ model DimPlaceTypeMappings {
 }
 
 model DimPlaceTypes {
-  id        String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
-  idx       Int
-  content   String    @db.VarChar
-  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz
-  deletedAt DateTime? @map("deleted_at") @db.Timestamptz
-  validFrom DateTime  @map("valid_from") @db.Timestamptz
+  id           String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  idx          Int
+  content      String    @db.VarChar
+  createdAt    DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  deletedAt    DateTime? @map("deleted_at") @db.Timestamptz
+  registeredAt DateTime  @map("registered_at") @db.Timestamptz
+  validFrom    DateTime  @map("valid_from") @db.Timestamptz
 
   @@unique([idx, validFrom], map: "uq_dim_place_types_idx_valid_from")
   @@index([validFrom], map: "index_dim_place_types_valid_from")
