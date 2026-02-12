@@ -136,8 +136,8 @@ export class PlaceCdcService {
       {
         idx: operatingHour.idx,
         placeIdx: operatingHour.place_idx,
-        startAt: operatingHour.start_at,
-        endAt: operatingHour.end_at,
+        startAt: new Date(operatingHour.start_at / 1000),
+        endAt: new Date(operatingHour.end_at / 1000),
         day: operatingHour.day,
         deletedAt,
       },
@@ -154,7 +154,7 @@ export class PlaceCdcService {
       {
         idx: weeklyClosedDay.idx,
         placeIdx: weeklyClosedDay.place_idx,
-        closedDate: weeklyClosedDay.closed_date,
+        closedDate: new Date(weeklyClosedDay.closed_date * 24 * 60 * 60 * 1000),
         type: weeklyClosedDay.type,
         deletedAt,
       },
@@ -171,8 +171,8 @@ export class PlaceCdcService {
       {
         idx: breakTime.idx,
         placeIdx: breakTime.place_idx,
-        startAt: breakTime.start_at,
-        endAt: breakTime.end_at,
+        startAt: new Date(breakTime.start_at / 1000),
+        endAt: new Date(breakTime.end_at / 1000),
         day: breakTime.day,
         deletedAt,
       },
