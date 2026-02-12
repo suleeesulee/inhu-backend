@@ -18,7 +18,7 @@ export class MainCategoryLogCoreRepository {
     >,
   ) {}
 
-  public async insertDimMainCategoryMapping(
+  public async insertDimMainCategory(
     input: CreateInputWrapper<CreateDimMainCategoryInput>,
   ) {
     return await this.txHost.tx.dimMainCategories.upsert({
