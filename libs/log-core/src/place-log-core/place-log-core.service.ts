@@ -2,15 +2,15 @@ import { Injectable } from '@nestjs/common';
 import { PlaceLogCoreRepository } from './place-log-core.repository';
 import { CreateDimPlaceInput } from './inputs/create-dim-place.input';
 import { CreateDimRoadAddressInput } from './inputs/create-dim-road-address.input';
-import { CreateDimPlaceTypeMappingInput } from './inputs/create-dim-place-type-mapping.input';
-import { CreateDimPlaceMainCategoryMappingInput } from './inputs/create-dim-place-main-category-mapping.input';
-import { CreateDimPlaceMoodCategoryMappingInput } from './inputs/create-dim-place-mood-category-mapping.input';
 import { CreateDimPlaceImageInput } from './inputs/create-dim-place-image.input';
 import { CreateDimClosedDayInput } from './inputs/create-dim-closed-day.input';
 import { CreateDimOperatingHourInput } from './inputs/create-dim-operating-hour.input';
 import { CreateDimWeeklyClosedDayInput } from './inputs/create-dim-weekly-closed-day.input';
 import { CreateDimBreakTimeInput } from './inputs/create-dim-break-time.input';
 import { Transactional } from '@nestjs-cls/transactional';
+import { CreateBridgePlaceTypeInput } from './inputs/create-bridge-place-type.input';
+import { CreateBridgeMainCategoryInput } from './inputs/create-bridge-main-category.input';
+import { CreateBridgeMoodCategoryInput } from './inputs/create-bridge-mood-category.input';
 
 @Injectable()
 export class PlaceLogCoreService {
@@ -38,8 +38,8 @@ export class PlaceLogCoreService {
   }
 
   @Transactional()
-  public async createDimPlaceTypeMapping(
-    input: CreateDimPlaceTypeMappingInput,
+  public async createBridgePlaceType(
+    input: CreateBridgePlaceTypeInput,
     updatedAt: Date,
   ) {
     await this.placeLogCoreRepository.insertDimPlaceTypeMapping({
@@ -49,8 +49,8 @@ export class PlaceLogCoreService {
   }
 
   @Transactional()
-  public async createDimPlaceMainCategoryMapping(
-    input: CreateDimPlaceMainCategoryMappingInput,
+  public async createBridgeMainCategory(
+    input: CreateBridgeMainCategoryInput,
     updatedAt: Date,
   ) {
     await this.placeLogCoreRepository.insertDimPlaceMainCategoryMapping({
@@ -60,8 +60,8 @@ export class PlaceLogCoreService {
   }
 
   @Transactional()
-  public async createDimPlaceMoodCategoryMapping(
-    input: CreateDimPlaceMoodCategoryMappingInput,
+  public async createBridgeMoodCategory(
+    input: CreateBridgeMoodCategoryInput,
     updatedAt: Date,
   ) {
     await this.placeLogCoreRepository.insertDimPlaceMoodCategoryMapping({

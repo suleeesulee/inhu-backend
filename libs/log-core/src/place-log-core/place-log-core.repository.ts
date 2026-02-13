@@ -9,14 +9,14 @@ import { Injectable } from '@nestjs/common';
 import { CreateInputWrapper } from '../types/input-wrapper';
 import { CreateDimPlaceInput } from './inputs/create-dim-place.input';
 import { CreateDimRoadAddressInput } from './inputs/create-dim-road-address.input';
-import { CreateDimPlaceTypeMappingInput } from './inputs/create-dim-place-type-mapping.input';
-import { CreateDimPlaceMainCategoryMappingInput } from './inputs/create-dim-place-main-category-mapping.input';
-import { CreateDimPlaceMoodCategoryMappingInput } from './inputs/create-dim-place-mood-category-mapping.input';
 import { CreateDimPlaceImageInput } from './inputs/create-dim-place-image.input';
 import { CreateDimClosedDayInput } from './inputs/create-dim-closed-day.input';
 import { CreateDimOperatingHourInput } from './inputs/create-dim-operating-hour.input';
 import { CreateDimWeeklyClosedDayInput } from './inputs/create-dim-weekly-closed-day.input';
 import { CreateDimBreakTimeInput } from './inputs/create-dim-break-time.input';
+import { CreateBridgePlaceTypeInput } from './inputs/create-bridge-place-type.input';
+import { CreateBridgeMainCategoryInput } from './inputs/create-bridge-main-category.input';
+import { CreateBridgeMoodCategoryInput } from './inputs/create-bridge-mood-category.input';
 
 @Injectable()
 export class PlaceLogCoreRepository {
@@ -96,7 +96,7 @@ export class PlaceLogCoreRepository {
   }
 
   public async insertDimPlaceTypeMapping(
-    input: CreateInputWrapper<CreateDimPlaceTypeMappingInput>,
+    input: CreateInputWrapper<CreateBridgePlaceTypeInput>,
   ) {
     return await this.txHost.tx.dimPlaceTypeMappings.upsert({
       where: {
@@ -122,7 +122,7 @@ export class PlaceLogCoreRepository {
   }
 
   public async insertDimPlaceMainCategoryMapping(
-    input: CreateInputWrapper<CreateDimPlaceMainCategoryMappingInput>,
+    input: CreateInputWrapper<CreateBridgeMainCategoryInput>,
   ) {
     return await this.txHost.tx.dimPlaceMainCategoryMappings.upsert({
       where: {
@@ -148,7 +148,7 @@ export class PlaceLogCoreRepository {
   }
 
   public async insertDimPlaceMoodCategoryMapping(
-    input: CreateInputWrapper<CreateDimPlaceMoodCategoryMappingInput>,
+    input: CreateInputWrapper<CreateBridgeMoodCategoryInput>,
   ) {
     return await this.txHost.tx.dimPlaceMoodCategoryMappings.upsert({
       where: {

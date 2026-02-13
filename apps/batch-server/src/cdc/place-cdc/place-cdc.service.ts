@@ -50,12 +50,12 @@ export class PlaceCdcService {
     );
   }
 
-  public async createDimPlaceTypeMapping(
+  public async createBridgePlaceType(
     placeTypeMapping: PlaceTypeMappingTb,
     time: Date,
     deletedAt: Date | null = null,
   ) {
-    await this.placeLogCoreService.createDimPlaceTypeMapping(
+    await this.placeLogCoreService.createBridgePlaceType(
       {
         placeTypeIdx: placeTypeMapping.place_type_idx,
         placeIdx: placeTypeMapping.place_idx,
@@ -65,12 +65,12 @@ export class PlaceCdcService {
     );
   }
 
-  public async createDimPlaceMainCategoryMapping(
+  public async createBridgeMainCategory(
     placeMainCategoryMapping: PlaceMainCategoryMappingTb,
     time: Date,
     deletedAt: Date | null = null,
   ) {
-    await this.placeLogCoreService.createDimPlaceMainCategoryMapping(
+    await this.placeLogCoreService.createBridgeMainCategory(
       {
         mainCategoryIdx: placeMainCategoryMapping.main_category_idx,
         placeIdx: placeMainCategoryMapping.place_idx,
@@ -80,12 +80,12 @@ export class PlaceCdcService {
     );
   }
 
-  public async createDimPlaceMoodCategoryMapping(
+  public async createBridgeMoodCategory(
     placeMoodCategoryMapping: PlaceMoodCategoryMappingTb,
     time: Date,
     deletedAt: Date | null = null,
   ) {
-    await this.placeLogCoreService.createDimPlaceMoodCategoryMapping(
+    await this.placeLogCoreService.createBridgeMoodCategory(
       {
         moodCategoryIdx: placeMoodCategoryMapping.mood_category_idx,
         placeIdx: placeMoodCategoryMapping.place_idx,

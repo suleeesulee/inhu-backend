@@ -49,13 +49,13 @@ export class PlaceCdcController {
     const time = new Date(message.source.ts_ms || message.ts_ms || new Date());
 
     if (message.op === 'd') {
-      await this.placeCdcService.createDimPlaceTypeMapping(
+      await this.placeCdcService.createBridgePlaceType(
         message.before,
         time,
         time,
       );
     } else if (message.op === 'c') {
-      await this.placeCdcService.createDimPlaceTypeMapping(message.after, time);
+      await this.placeCdcService.createBridgePlaceType(message.after, time);
     }
   }
 
@@ -73,16 +73,13 @@ export class PlaceCdcController {
     const time = new Date(message.source.ts_ms || message.ts_ms || new Date());
 
     if (message.op === 'd') {
-      await this.placeCdcService.createDimPlaceMainCategoryMapping(
+      await this.placeCdcService.createBridgeMainCategory(
         message.before,
         time,
         time,
       );
     } else if (message.op === 'c') {
-      await this.placeCdcService.createDimPlaceMainCategoryMapping(
-        message.after,
-        time,
-      );
+      await this.placeCdcService.createBridgeMainCategory(message.after, time);
     }
   }
 
@@ -100,16 +97,13 @@ export class PlaceCdcController {
     const time = new Date(message.source.ts_ms || message.ts_ms || new Date());
 
     if (message.op === 'd') {
-      await this.placeCdcService.createDimPlaceMoodCategoryMapping(
+      await this.placeCdcService.createBridgeMoodCategory(
         message.before,
         time,
         time,
       );
     } else if (message.op === 'c') {
-      await this.placeCdcService.createDimPlaceMoodCategoryMapping(
-        message.after,
-        time,
-      );
+      await this.placeCdcService.createBridgeMoodCategory(message.after, time);
     }
   }
 
