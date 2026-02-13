@@ -98,7 +98,7 @@ export class PlaceLogCoreRepository {
   public async insertDimPlaceTypeMapping(
     input: CreateInputWrapper<CreateBridgePlaceTypeInput>,
   ) {
-    return await this.txHost.tx.dimPlaceTypeMappings.upsert({
+    return await this.txHost.tx.bridgePlaceTypes.upsert({
       where: {
         placeTypeIdx_placeIdx_validFrom: {
           placeTypeIdx: input.placeTypeIdx,
@@ -124,7 +124,7 @@ export class PlaceLogCoreRepository {
   public async insertDimPlaceMainCategoryMapping(
     input: CreateInputWrapper<CreateBridgeMainCategoryInput>,
   ) {
-    return await this.txHost.tx.dimPlaceMainCategoryMappings.upsert({
+    return await this.txHost.tx.bridgeMainCategories.upsert({
       where: {
         mainCategoryIdx_placeIdx_validFrom: {
           mainCategoryIdx: input.mainCategoryIdx,
@@ -150,7 +150,7 @@ export class PlaceLogCoreRepository {
   public async insertDimPlaceMoodCategoryMapping(
     input: CreateInputWrapper<CreateBridgeMoodCategoryInput>,
   ) {
-    return await this.txHost.tx.dimPlaceMoodCategoryMappings.upsert({
+    return await this.txHost.tx.bridgeMoodCategories.upsert({
       where: {
         moodCategoryIdx_placeIdx_validFrom: {
           moodCategoryIdx: input.moodCategoryIdx,
