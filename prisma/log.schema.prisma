@@ -1,75 +1,75 @@
 generator client {
-    provider = "prisma-client-js"
-    output   = "../generated/log"
+  provider = "prisma-client-js"
+  output   = "../generated/log"
 }
 
 datasource db {
-    provider = "postgresql"
-    url      = env("LOG_DATABASE_URL")
+  provider = "postgresql"
+  url      = env("LOG_DATABASE_URL")
 }
 
 model EventTypes {
-    idx        Int          @id
-    name       String       @db.VarChar
-    factEvents FactEvents[]
+  idx        Int          @id
+  name       String       @db.VarChar
+  factEvents FactEvents[]
 
-    @@map("event_types")
+  @@map("event_types")
 }
 
 model FactEvents {
-    id                  String                @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
-    typeIdx             Int                   @map("type_idx")
-    userIdx             Int?                  @map("user_idx")
-    eventTime           DateTime              @map("event_time") @db.Timestamptz
-    createdAt           DateTime              @default(now()) @map("created_at") @db.Timestamptz
-    deviceType          Int                   @map("device_type")
-    platform            Int
-    eventType           EventTypes            @relation(fields: [typeIdx], references: [idx])
-    factEventProperties FactEventProperties[]
+  id                  String                @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  typeIdx             Int                   @map("type_idx")
+  userIdx             Int?                  @map("user_idx")
+  eventTime           DateTime              @map("event_time") @db.Timestamptz
+  createdAt           DateTime              @default(now()) @map("created_at") @db.Timestamptz
+  deviceType          Int                   @map("device_type")
+  platform            Int
+  eventType           EventTypes            @relation(fields: [typeIdx], references: [idx])
+  factEventProperties FactEventProperties[]
 
-    @@index([typeIdx], map: "index_fact_type_idx")
-    @@index([eventTime], map: "index_fact_event_time")
-    @@index([userIdx], map: "index_fact_user_idx")
-    @@map("fact_events")
+  @@index([typeIdx], map: "index_fact_type_idx")
+  @@index([eventTime], map: "index_fact_event_time")
+  @@index([userIdx], map: "index_fact_user_idx")
+  @@map("fact_events")
 }
 
 model FactEventProperties {
-    id            String     @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
-    eventId       String     @map("event_id") @db.Uuid
-    propertyKey   String     @map("property_key") @db.VarChar
-    propertyValue String     @map("property_value") @db.VarChar
-    event         FactEvents @relation(fields: [eventId], references: [id])
+  id            String     @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  eventId       String     @map("event_id") @db.Uuid
+  propertyKey   String     @map("property_key") @db.VarChar
+  propertyValue String     @map("property_value") @db.VarChar
+  event         FactEvents @relation(fields: [eventId], references: [id])
 
-    @@unique([eventId, propertyKey], map: "fact_event_properties_event_id_key_uk")
-    @@map("fact_event_properties")
+  @@unique([eventId, propertyKey], map: "fact_event_properties_event_id_key_uk")
+  @@map("fact_event_properties")
 }
 
 model DimUsers {
-    id               String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
-    idx              Int
-    signupAt         DateTime  @map("signup_at") @db.Timestamptz
-    nickname         String    @db.VarChar
-    platform         String    @db.VarChar
-    profileImagePath String?   @map("profile_image_path") @db.VarChar
-    deletedAt        DateTime? @map("deleted_at") @db.Timestamptz
-    createdAt        DateTime  @default(now()) @map("created_at") @db.Timestamptz
-    validFrom        DateTime  @map("valid_from") @db.Timestamptz
+  id               String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  idx              Int
+  signupAt         DateTime  @map("signup_at") @db.Timestamptz
+  nickname         String    @db.VarChar
+  platform         String    @db.VarChar
+  profileImagePath String?   @map("profile_image_path") @db.VarChar
+  deletedAt        DateTime? @map("deleted_at") @db.Timestamptz
+  createdAt        DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  validFrom        DateTime  @map("valid_from") @db.Timestamptz
 
-    @@unique([idx, validFrom], map: "uq_dim_users_idx_valid_from")
-    @@index([validFrom], map: "index_dim_users_valid_from_index")
-    @@map("dim_users")
+  @@unique([idx, validFrom], map: "uq_dim_users_idx_valid_from")
+  @@index([validFrom], map: "index_dim_users_valid_from_index")
+  @@map("dim_users")
 }
 
 model DimUserProviders {
-    id        String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
-    idx       Int
-    provider  String   @db.VarChar
-    createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
-    validFrom DateTime @map("valid_from") @db.Timestamptz
+  id        String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  idx       Int
+  provider  String   @db.VarChar
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  validFrom DateTime @map("valid_from") @db.Timestamptz
 
-    @@unique([idx, validFrom], map: "uq_dim_user_providers_idx_valid_from")
-    @@index([idx, validFrom], map: "index_dim_user_providers_idx_valid_from")
-    @@map("dim_user_providers")
+  @@unique([idx, validFrom], map: "uq_dim_user_providers_idx_valid_from")
+  @@index([idx, validFrom], map: "index_dim_user_providers_idx_valid_from")
+  @@map("dim_user_providers")
 }
 
 model DimBreakTimes {
@@ -161,8 +161,7 @@ model DimPlaceImages {
   @@index([validFrom], map: "index_dim_place_images_valid_from")
   @@map("dim_place_images")
 }
-
-model DimPlaceMainCategoryMappings {
+model BridgeMainCategories {
   id              String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
   mainCategoryIdx Int       @map("main_category_idx")
   placeIdx        Int       @map("place_idx")
@@ -170,12 +169,11 @@ model DimPlaceMainCategoryMappings {
   deletedAt       DateTime? @map("deleted_at") @db.Timestamptz
   validFrom       DateTime  @map("valid_from") @db.Timestamptz
 
-  @@unique([mainCategoryIdx, placeIdx, validFrom], map: "uq_dim_place_main_category_mappings_idx_valid_from")
-  @@index([validFrom], map: "index_dim_place_main_category_mappings_valid_from")
-  @@map("dim_place_main_category_mappings")
+  @@unique([mainCategoryIdx, placeIdx, validFrom], map: "uq_bridge_main_categories_idx_valid_from")
+  @@index([validFrom], map: "index_bridge_main_categories_valid_from")
+  @@map("bridge_main_categories")
 }
-
-model DimPlaceMoodCategoryMappings {
+model BridgeMoodCategories {
   id              String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
   moodCategoryIdx Int       @map("mood_category_idx")
   placeIdx        Int       @map("place_idx")
@@ -183,12 +181,11 @@ model DimPlaceMoodCategoryMappings {
   deletedAt       DateTime? @map("deleted_at") @db.Timestamptz
   validFrom       DateTime  @map("valid_from") @db.Timestamptz
 
-  @@unique([moodCategoryIdx, placeIdx, validFrom], map: "uq_dim_place_mood_category_mappings_idx_valid_from")
-  @@index([validFrom], map: "index_dim_place_mood_category_mappings_valid_from")
-  @@map("dim_place_mood_category_mappings")
+  @@unique([moodCategoryIdx, placeIdx, validFrom], map: "uq_bridge_mood_categories_idx_valid_from")
+  @@index([validFrom], map: "index_bridge_mood_categories_valid_from")
+  @@map("bridge_mood_categories")
 }
-
-model DimPlaceTypeMappings {
+model BridgePlaceTypes {
   id           String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
   placeTypeIdx Int       @map("place_type_idx")
   placeIdx     Int       @map("place_idx")
@@ -196,9 +193,9 @@ model DimPlaceTypeMappings {
   deletedAt    DateTime? @map("deleted_at") @db.Timestamptz
   validFrom    DateTime  @map("valid_from") @db.Timestamptz
 
-  @@unique([placeTypeIdx, placeIdx, validFrom], map: "uq_dim_place_type_mappings_idx_valid_from")
-  @@index([validFrom], map: "index_dim_place_type_mappings_valid_from")
-  @@map("dim_place_type_mappings")
+  @@unique([placeTypeIdx, placeIdx, validFrom], map: "uq_bridge_place_types_idx_valid_from")
+  @@index([validFrom], map: "index_bridge_place_types_valid_from")
+  @@map("bridge_place_types")
 }
 
 model DimPlaceTypes {
