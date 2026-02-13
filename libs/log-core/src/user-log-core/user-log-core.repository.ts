@@ -20,7 +20,6 @@ export class UserLogCoreRepository {
   ) {}
 
   public async insertDimUser(input: CreateInputWrapper<CreateDimUserInput>) {
-    console.log(input);
     return await this.txHost.tx.dimUsers.upsert({
       where: {
         idx_validFrom: {
