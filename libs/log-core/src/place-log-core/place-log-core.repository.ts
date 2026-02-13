@@ -315,6 +315,7 @@ export class PlaceLogCoreRepository {
         placeIdx: input.placeIdx,
         startAt: input.startAt,
         endAt: input.endAt,
+        day: input.day,
         deletedAt: input.deletedAt,
         validFrom: input.validFrom,
       },

@@ -46,6 +46,8 @@ export class PlaceCdcController {
     )
       return;
 
+    console.log(message);
+
     const time = new Date(message.source.ts_ms || message.ts_ms || new Date());
 
     if (message.op === 'd') {
@@ -54,7 +56,7 @@ export class PlaceCdcController {
         time,
         time,
       );
-    } else if (message.op === 'c') {
+    } else {
       await this.placeCdcService.createBridgePlaceType(message.after, time);
     }
   }
@@ -78,7 +80,7 @@ export class PlaceCdcController {
         time,
         time,
       );
-    } else if (message.op === 'c') {
+    } else {
       await this.placeCdcService.createBridgeMainCategory(message.after, time);
     }
   }
@@ -102,7 +104,7 @@ export class PlaceCdcController {
         time,
         time,
       );
-    } else if (message.op === 'c') {
+    } else {
       await this.placeCdcService.createBridgeMoodCategory(message.after, time);
     }
   }
@@ -132,7 +134,7 @@ export class PlaceCdcController {
 
     if (message.op === 'd') {
       await this.placeCdcService.createDimClosedDay(message.before, time, time);
-    } else if (message.op === 'c') {
+    } else {
       await this.placeCdcService.createDimClosedDay(message.after, time);
     }
   }
@@ -156,7 +158,7 @@ export class PlaceCdcController {
         time,
         time,
       );
-    } else if (message.op === 'c') {
+    } else {
       await this.placeCdcService.createDimOperatingHour(message.after, time);
     }
   }
@@ -180,7 +182,7 @@ export class PlaceCdcController {
         time,
         time,
       );
-    } else if (message.op === 'c') {
+    } else {
       await this.placeCdcService.createDimWeeklyClosedDay(message.after, time);
     }
   }
@@ -200,7 +202,7 @@ export class PlaceCdcController {
 
     if (message.op === 'd') {
       await this.placeCdcService.createDimBreakTime(message.before, time, time);
-    } else if (message.op === 'c') {
+    } else {
       await this.placeCdcService.createDimBreakTime(message.after, time);
     }
   }
