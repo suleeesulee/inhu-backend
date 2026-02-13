@@ -90,7 +90,7 @@ CREATE TABLE dim_place_images
 ALTER TABLE dim_place_images ADD CONSTRAINT uq_dim_place_images_idx_valid_from UNIQUE (idx, valid_from);
 CREATE INDEX index_dim_place_images_valid_from ON dim_place_images(valid_from);
 
-CREATE TABLE dim_place_main_category_mappings
+CREATE TABLE bridge_main_categories
 (
   id                uuid                     NOT NULL DEFAULT uuid_generate_v4(),
   main_category_idx int                      NOT NULL,
@@ -100,10 +100,10 @@ CREATE TABLE dim_place_main_category_mappings
   valid_from        timestamp with time zone NOT NULL,
   PRIMARY KEY (id)
 );
-ALTER TABLE dim_place_main_category_mappings ADD CONSTRAINT uq_dim_place_main_category_mappings_idx_valid_from UNIQUE (main_category_idx, place_idx, valid_from);
-CREATE INDEX index_dim_place_main_category_mappings_valid_from ON dim_place_main_category_mappings(valid_from);
+ALTER TABLE bridge_main_categories ADD CONSTRAINT uq_bridge_main_categories_idx_valid_from UNIQUE (main_category_idx, place_idx, valid_from);
+CREATE INDEX index_bridge_main_categories_valid_from ON bridge_main_categories(valid_from);
 
-CREATE TABLE dim_place_mood_category_mappings
+CREATE TABLE bridge_mood_categories
 (
   id                uuid                     NOT NULL DEFAULT uuid_generate_v4(),
   mood_category_idx int                      NOT NULL,
@@ -113,10 +113,10 @@ CREATE TABLE dim_place_mood_category_mappings
   valid_from        timestamp with time zone NOT NULL,
   PRIMARY KEY (id)
 );
-ALTER TABLE dim_place_mood_category_mappings ADD CONSTRAINT uq_dim_place_mood_category_mappings_idx_valid_from UNIQUE (mood_category_idx, place_idx, valid_from);
-CREATE INDEX index_dim_place_mood_category_mappings_valid_from ON dim_place_mood_category_mappings(valid_from);
+ALTER TABLE bridge_mood_categories ADD CONSTRAINT uq_bridge_mood_categories_idx_valid_from UNIQUE (mood_category_idx, place_idx, valid_from);
+CREATE INDEX index_bridge_mood_categories_valid_from ON bridge_mood_categories(valid_from);
 
-CREATE TABLE dim_place_type_mappings
+CREATE TABLE bridge_place_types
 (
   id             uuid                     NOT NULL DEFAULT uuid_generate_v4(),
   place_type_idx int                      NOT NULL,
@@ -126,8 +126,8 @@ CREATE TABLE dim_place_type_mappings
   valid_from     timestamp with time zone NOT NULL,
   PRIMARY KEY (id)
 );
-ALTER TABLE dim_place_type_mappings ADD CONSTRAINT uq_dim_place_type_mappings_idx_valid_from UNIQUE (place_type_idx, place_idx, valid_from);
-CREATE INDEX index_dim_place_type_mappings_valid_from ON dim_place_type_mappings(valid_from);
+ALTER TABLE bridge_place_types ADD CONSTRAINT uq_bridge_place_types_idx_valid_from UNIQUE (place_type_idx, place_idx, valid_from);
+CREATE INDEX index_bridge_place_types_valid_from ON bridge_place_types(valid_from);
 
 CREATE TABLE dim_place_types
 (
