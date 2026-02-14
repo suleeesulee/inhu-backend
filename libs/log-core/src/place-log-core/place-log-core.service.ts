@@ -8,9 +8,9 @@ import { CreateDimOperatingHourInput } from './inputs/create-dim-operating-hour.
 import { CreateDimWeeklyClosedDayInput } from './inputs/create-dim-weekly-closed-day.input';
 import { CreateDimBreakTimeInput } from './inputs/create-dim-break-time.input';
 import { Transactional } from '@nestjs-cls/transactional';
-import { CreateBridgePlaceTypeInput } from './inputs/create-bridge-place-type.input';
-import { CreateBridgeMainCategoryInput } from './inputs/create-bridge-main-category.input';
-import { CreateBridgeMoodCategoryInput } from './inputs/create-bridge-mood-category.input';
+import { CreateDimPlaceTypeMappingInput } from './inputs/create-dim-place-type-mapping.input';
+import { CreateDimMainCategoryMappingInput } from './inputs/create-dim-main-category-mapping.input';
+import { CreateDimMoodCategoryMappingInput } from './inputs/create-dim-mood-category-mapping.input';
 
 @Injectable()
 export class PlaceLogCoreService {
@@ -38,8 +38,8 @@ export class PlaceLogCoreService {
   }
 
   @Transactional()
-  public async createBridgePlaceType(
-    input: CreateBridgePlaceTypeInput,
+  public async createDimPlaceTypeMapping(
+    input: CreateDimPlaceTypeMappingInput,
     updatedAt: Date,
   ) {
     await this.placeLogCoreRepository.insertDimPlaceTypeMapping({
@@ -49,8 +49,8 @@ export class PlaceLogCoreService {
   }
 
   @Transactional()
-  public async createBridgeMainCategory(
-    input: CreateBridgeMainCategoryInput,
+  public async createDimPlaceMainCategoryMapping(
+    input: CreateDimMainCategoryMappingInput,
     updatedAt: Date,
   ) {
     await this.placeLogCoreRepository.insertDimPlaceMainCategoryMapping({
@@ -60,8 +60,8 @@ export class PlaceLogCoreService {
   }
 
   @Transactional()
-  public async createBridgeMoodCategory(
-    input: CreateBridgeMoodCategoryInput,
+  public async createDimPlaceMoodCategoryMapping(
+    input: CreateDimMoodCategoryMappingInput,
     updatedAt: Date,
   ) {
     await this.placeLogCoreRepository.insertDimPlaceMoodCategoryMapping({

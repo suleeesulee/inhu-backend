@@ -14,9 +14,9 @@ import { CreateDimClosedDayInput } from './inputs/create-dim-closed-day.input';
 import { CreateDimOperatingHourInput } from './inputs/create-dim-operating-hour.input';
 import { CreateDimWeeklyClosedDayInput } from './inputs/create-dim-weekly-closed-day.input';
 import { CreateDimBreakTimeInput } from './inputs/create-dim-break-time.input';
-import { CreateBridgePlaceTypeInput } from './inputs/create-bridge-place-type.input';
-import { CreateBridgeMainCategoryInput } from './inputs/create-bridge-main-category.input';
-import { CreateBridgeMoodCategoryInput } from './inputs/create-bridge-mood-category.input';
+import { CreateDimPlaceTypeMappingInput } from './inputs/create-dim-place-type-mapping.input';
+import { CreateDimMainCategoryMappingInput } from './inputs/create-dim-main-category-mapping.input';
+import { CreateDimMoodCategoryMappingInput } from './inputs/create-dim-mood-category-mapping.input';
 
 @Injectable()
 export class PlaceLogCoreRepository {
@@ -96,9 +96,9 @@ export class PlaceLogCoreRepository {
   }
 
   public async insertDimPlaceTypeMapping(
-    input: CreateInputWrapper<CreateBridgePlaceTypeInput>,
+    input: CreateInputWrapper<CreateDimPlaceTypeMappingInput>,
   ) {
-    return await this.txHost.tx.bridgePlaceTypes.upsert({
+    return await this.txHost.tx.dimPlaceTypeMappings.upsert({
       where: {
         placeTypeIdx_placeIdx_validFrom: {
           placeTypeIdx: input.placeTypeIdx,
@@ -122,9 +122,9 @@ export class PlaceLogCoreRepository {
   }
 
   public async insertDimPlaceMainCategoryMapping(
-    input: CreateInputWrapper<CreateBridgeMainCategoryInput>,
+    input: CreateInputWrapper<CreateDimMainCategoryMappingInput>,
   ) {
-    return await this.txHost.tx.bridgeMainCategories.upsert({
+    return await this.txHost.tx.dimPlaceMainCategoryMappings.upsert({
       where: {
         mainCategoryIdx_placeIdx_validFrom: {
           mainCategoryIdx: input.mainCategoryIdx,
@@ -148,9 +148,9 @@ export class PlaceLogCoreRepository {
   }
 
   public async insertDimPlaceMoodCategoryMapping(
-    input: CreateInputWrapper<CreateBridgeMoodCategoryInput>,
+    input: CreateInputWrapper<CreateDimMoodCategoryMappingInput>,
   ) {
-    return await this.txHost.tx.bridgeMoodCategories.upsert({
+    return await this.txHost.tx.dimPlaceMoodCategoryMappings.upsert({
       where: {
         moodCategoryIdx_placeIdx_validFrom: {
           moodCategoryIdx: input.moodCategoryIdx,
