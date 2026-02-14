@@ -161,7 +161,8 @@ model DimPlaceImages {
   @@index([validFrom], map: "index_dim_place_images_valid_from")
   @@map("dim_place_images")
 }
-model BridgeMainCategories {
+
+model DimPlaceMainCategoryMappings {
   id              String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
   mainCategoryIdx Int       @map("main_category_idx")
   placeIdx        Int       @map("place_idx")
@@ -169,11 +170,12 @@ model BridgeMainCategories {
   deletedAt       DateTime? @map("deleted_at") @db.Timestamptz
   validFrom       DateTime  @map("valid_from") @db.Timestamptz
 
-  @@unique([mainCategoryIdx, placeIdx, validFrom], map: "uq_bridge_main_categories_idx_valid_from")
-  @@index([validFrom], map: "index_bridge_main_categories_valid_from")
-  @@map("bridge_main_categories")
+  @@unique([mainCategoryIdx, placeIdx, validFrom], map: "uq_dim_place_main_category_mappings_idx_valid_from")
+  @@index([validFrom], map: "index_dim_place_main_category_mappings_valid_from")
+  @@map("dim_place_main_category_mappings")
 }
-model BridgeMoodCategories {
+
+model DimPlaceMoodCategoryMappings {
   id              String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
   moodCategoryIdx Int       @map("mood_category_idx")
   placeIdx        Int       @map("place_idx")
@@ -181,11 +183,12 @@ model BridgeMoodCategories {
   deletedAt       DateTime? @map("deleted_at") @db.Timestamptz
   validFrom       DateTime  @map("valid_from") @db.Timestamptz
 
-  @@unique([moodCategoryIdx, placeIdx, validFrom], map: "uq_bridge_mood_categories_idx_valid_from")
-  @@index([validFrom], map: "index_bridge_mood_categories_valid_from")
-  @@map("bridge_mood_categories")
+  @@unique([moodCategoryIdx, placeIdx, validFrom], map: "uq_dim_place_mood_category_mappings_idx_valid_from")
+  @@index([validFrom], map: "index_dim_place_mood_category_mappings_valid_from")
+  @@map("dim_place_mood_category_mappings")
 }
-model BridgePlaceTypes {
+
+model DimPlaceTypeMappings {
   id           String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
   placeTypeIdx Int       @map("place_type_idx")
   placeIdx     Int       @map("place_idx")
@@ -193,9 +196,9 @@ model BridgePlaceTypes {
   deletedAt    DateTime? @map("deleted_at") @db.Timestamptz
   validFrom    DateTime  @map("valid_from") @db.Timestamptz
 
-  @@unique([placeTypeIdx, placeIdx, validFrom], map: "uq_bridge_place_types_idx_valid_from")
-  @@index([validFrom], map: "index_bridge_place_types_valid_from")
-  @@map("bridge_place_types")
+  @@unique([placeTypeIdx, placeIdx, validFrom], map: "uq_dim_place_type_mappings_idx_valid_from")
+  @@index([validFrom], map: "index_dim_place_type_mappings_valid_from")
+  @@map("dim_place_type_mappings")
 }
 
 model DimPlaceTypes {
