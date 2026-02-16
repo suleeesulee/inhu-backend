@@ -19,15 +19,25 @@ export class FreeTagCoreService {
     return freeTag && FreeTagModel.fromPrisma(freeTag);
   }
 
-  public async getFreeTagAll(search?: string): Promise<FreeTagModel[]> {
+  public async getFreeTagAllByContent(
+    contentList: string[],
+  ): Promise<FreeTagModel[]> {
     const freeTagList =
-      await this.freeTagCoreRepository.selectFreeTagAll(search);
+      await this.freeTagCoreRepository.selectFreeTagAllByContent(contentList);
     return freeTagList.map(FreeTagModel.fromPrisma);
   }
 
   public async createFreeTag(content: string): Promise<FreeTagModel> {
     const freeTag = await this.freeTagCoreRepository.insertFreeTag(content);
     return FreeTagModel.fromPrisma(freeTag);
+  }
+
+  public async createManyFreeTag(
+    contentList: string[],
+  ): Promise<FreeTagModel[]> {
+    const freeTagList =
+      await this.freeTagCoreRepository.insertManyFreeTag(contentList);
+    return freeTagList.map(FreeTagModel.fromPrisma);
   }
 
   public async deleteFreeTagByIdx(idx: number): Promise<void> {

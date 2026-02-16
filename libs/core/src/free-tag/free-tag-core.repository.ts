@@ -35,11 +35,16 @@ export class FreeTagCoreRepository {
     });
   }
 
-  public async selectFreeTagAll(content?: string): Promise<SelectFreeTag[]> {
+  public async selectFreeTagAllByContent(
+    contentList: string[],
+  ): Promise<SelectFreeTag[]> {
     return await this.txHost.tx.freeTag.findMany({
       ...SELECT_FREE_TAG,
       where: {
-        AND: [{ deletedAt: null }, this.getSearchContentWhereClause(content)],
+        AND: [
+          { deletedAt: null },
+          this.getSearchContentWhereClause(contentList),
+        ],
       },
     });
   }
@@ -50,6 +55,14 @@ export class FreeTagCoreRepository {
       data: {
         content,
       },
+    });
+  }
+
+  public async insertManyFreeTag(
+    contentList: string[],
+  ): Promise<SelectFreeTag[]> {
+    return await this.txHost.tx.freeTag.createManyAndReturn({
+      data: contentList.map((content) => ({ content })),
     });
   }
 
@@ -66,16 +79,16 @@ export class FreeTagCoreRepository {
   }
 
   private getSearchContentWhereClause(
-    content?: string,
+    contentList?: string[],
   ): Prisma.FreeTagWhereInput {
-    if (!content) {
+    if (!contentList || contentList.length === 0) {
       return {};
     }
 
-    const trimmedContent = content.trim();
-
     return {
-      OR: [{ content: { startsWith: trimmedContent } }],
+      OR: contentList.map((content) => ({
+        content: { startsWith: content },
+      })),
     };
   }
 }
