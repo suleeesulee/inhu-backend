@@ -60,7 +60,7 @@ model Place {
   menuList                     Menu[]
   operatingHourList            OperatingHour[]
   pickedPlace                  PickedPlace?
-  placeFreeTagMapping          PlaceFreeTagMapping[]
+  placeFreeTagMappingList      PlaceFreeTagMapping[]
   placeImageList               PlaceImage[]
   placeKeywordCountList        PlaceKeywordCount[]
   placeMainCategoryMappingList PlaceMainCategoryMapping[]
@@ -489,11 +489,11 @@ model PlaceTypeMagazineMapping {
 }
 
 model FreeTag {
-  idx                 Int                     @id @default(autoincrement())
-  content             String                  @db.VarChar
-  createdAt           DateTime                @default(now()) @map("created_at") @db.Timestamptz(6)
-  deletedAt           DateTime?               @map("deleted_at") @db.Timestamptz(6)
-  placeFreeTagMapping PlaceFreeTagMapping[]
+  idx                     Int                     @id @default(autoincrement())
+  content                 String                  @db.VarChar
+  createdAt               DateTime                @default(now()) @map("created_at") @db.Timestamptz(6)
+  deletedAt               DateTime?               @map("deleted_at") @db.Timestamptz(6)
+  placeFreeTagMappingList PlaceFreeTagMapping[]
 
   @@index([content], map: "index_free_tag_tb_content_active")
   @@map("free_tag_tb")
