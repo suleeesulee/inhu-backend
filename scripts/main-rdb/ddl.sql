@@ -35,8 +35,12 @@ CREATE TABLE free_tag_tb
   deleted_at timestamp with time zone,
   PRIMARY KEY (idx)
 );
-CREATE INDEX index_free_tag_tb_content_active
-  ON free_tag_tb (content);
+CREATE INDEX ix_free_tag_content_active
+  ON free_tag_tb (content)
+  WHERE deleted_at IS NULL;
+CREATE INDEX ix_free_tag_content_like_active
+  ON free_tag_tb (content text_pattern_ops)
+  WHERE deleted_at IS NULL;
 
 CREATE TABLE keyword_tb
 (
