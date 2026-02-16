@@ -60,6 +60,7 @@ model Place {
   menuList                     Menu[]
   operatingHourList            OperatingHour[]
   pickedPlace                  PickedPlace?
+  placeFreeTagMapping          PlaceFreeTagMapping[]
   placeImageList               PlaceImage[]
   placeKeywordCountList        PlaceKeywordCount[]
   placeMainCategoryMappingList PlaceMainCategoryMapping[]
@@ -256,8 +257,8 @@ model UserProvider {
 model User {
   idx                       Int                     @id @default(autoincrement())
   nickname                  String                  @db.VarChar
-  platform                  String                  @default("unknown") @db.VarChar
   profileImagePath          String?                 @map("profile_image_path") @db.VarChar
+  platform                  String                  @default("unknown") @db.VarChar
   createdAt                 DateTime                @default(now()) @map("created_at") @db.Timestamptz(6)
   deletedAt                 DateTime?               @map("deleted_at") @db.Timestamptz(6)
   adminAccount              AdminAccount?
@@ -485,4 +486,25 @@ model PlaceTypeMagazineMapping {
 
   @@id([placeTypeIdx, magazineIdx])
   @@map("place_type_magazine_mapping_tb")
+}
+
+model FreeTag {
+  idx                 Int                     @id @default(autoincrement())
+  content             String                  @db.VarChar
+  createdAt           DateTime                @default(now()) @map("created_at") @db.Timestamptz(6)
+  deletedAt           DateTime?               @map("deleted_at") @db.Timestamptz(6)
+  placeFreeTagMapping PlaceFreeTagMapping[]
+
+  @@index([content], map: "index_free_tag_tb_content_active")
+  @@map("free_tag_tb")
+}
+
+model PlaceFreeTagMapping {
+  freeTagIdx Int     @map("free_tag_idx")
+  placeIdx   Int     @map("place_idx")
+  freeTag    FreeTag @relation(fields: [freeTagIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_free_tag_tb_to_place_free_tag_mapping_tb")
+  place      Place   @relation(fields: [placeIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_place_tb_to_place_free_tag_mapping_tb")
+
+  @@id([freeTagIdx, placeIdx])
+  @@map("place_free_tag_mapping_tb")
 }
