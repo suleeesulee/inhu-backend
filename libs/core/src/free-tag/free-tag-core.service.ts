@@ -11,8 +11,17 @@ export class FreeTagCoreService {
     return freeTag && FreeTagModel.fromPrisma(freeTag);
   }
 
-  public async getFreeTagAll(): Promise<FreeTagModel[]> {
-    const freeTagList = await this.freeTagCoreRepository.selectFreeTagAll();
+  public async getFreeTagByContent(
+    content: string,
+  ): Promise<FreeTagModel | null> {
+    const freeTag =
+      await this.freeTagCoreRepository.selectFreeTagByContent(content);
+    return freeTag && FreeTagModel.fromPrisma(freeTag);
+  }
+
+  public async getFreeTagAll(search?: string): Promise<FreeTagModel[]> {
+    const freeTagList =
+      await this.freeTagCoreRepository.selectFreeTagAll(search);
     return freeTagList.map(FreeTagModel.fromPrisma);
   }
 

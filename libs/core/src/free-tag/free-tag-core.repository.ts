@@ -5,6 +5,7 @@ import {
   SELECT_FREE_TAG,
   SelectFreeTag,
 } from './model/prisma-type/select-free-tag';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class FreeTagCoreRepository {
@@ -22,11 +23,23 @@ export class FreeTagCoreRepository {
     });
   }
 
-  public async selectFreeTagAll(): Promise<SelectFreeTag[]> {
+  public async selectFreeTagByContent(
+    content: string,
+  ): Promise<SelectFreeTag | null> {
+    return await this.txHost.tx.freeTag.findFirst({
+      ...SELECT_FREE_TAG,
+      where: {
+        content,
+        deletedAt: null,
+      },
+    });
+  }
+
+  public async selectFreeTagAll(content?: string): Promise<SelectFreeTag[]> {
     return await this.txHost.tx.freeTag.findMany({
       ...SELECT_FREE_TAG,
       where: {
-        deletedAt: null,
+        AND: [{ deletedAt: null }, this.getSearchContentWhereClause(content)],
       },
     });
   }
@@ -50,5 +63,19 @@ export class FreeTagCoreRepository {
         deletedAt: new Date(),
       },
     });
+  }
+
+  private getSearchContentWhereClause(
+    content?: string,
+  ): Prisma.FreeTagWhereInput {
+    if (!content) {
+      return {};
+    }
+
+    const trimmedContent = content.trim();
+
+    return {
+      OR: [{ content: { startsWith: trimmedContent } }],
+    };
   }
 }
