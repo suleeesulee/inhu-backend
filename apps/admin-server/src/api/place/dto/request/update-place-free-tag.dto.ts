@@ -4,6 +4,11 @@ import { UniqueArray } from '@libs/common/decorator/unique-array.decorator';
 import { IsString } from 'class-validator';
 
 export class UpdatePlaceFreeTagDto {
+  /**
+   * 자유 태그 목록
+   *
+   * @example ['가성비 좋은', '조용한']
+   */
   @ToArray()
   @TrimStringArray()
   @UniqueArray()

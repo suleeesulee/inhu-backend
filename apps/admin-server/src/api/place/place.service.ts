@@ -20,7 +20,7 @@ import { UpdatePlaceCategoryDto } from './dto/request/update-place-category.dto'
 import { FreeTagCoreService } from '@libs/core/free-tag/free-tag-core.service';
 import { Locker } from '@libs/common/decorator/locker.decorator';
 import { Transactional } from '@nestjs-cls/transactional';
-import { UpdatePlaceFreeTagDto } from './dto/request/update-place-free-tage.dto';
+import { UpdatePlaceFreeTagDto } from './dto/request/update-place-free-tag.dto';
 
 @Injectable()
 export class PlaceService {
@@ -175,26 +175,35 @@ export class PlaceService {
     }
 
     const freeTagList = dto.freeTagList;
+    console.log('freeTagList: ', freeTagList);
 
     const existingFreeTagModelList =
       await this.freeTagCoreService.getFreeTagAllByContent(freeTagList);
+    console.log('existingFreeTagModelList: ', existingFreeTagModelList);
     const existingFreeTagContentList = existingFreeTagModelList.map(
       (freeTag) => freeTag.content,
     );
+    console.log('existingFreeTagContentList: ', existingFreeTagContentList);
 
     const nonExistingFreeTagContentList = freeTagList.filter(
       (content) => !existingFreeTagContentList.includes(content),
+    );
+    console.log(
+      'nonExistingFreeTagContentList: ',
+      nonExistingFreeTagContentList,
     );
 
     const newFreeTagModelList = await this.freeTagCoreService.createManyFreeTag(
       nonExistingFreeTagContentList,
     );
+    console.log('newFreeTagModelList: ', newFreeTagModelList);
 
     const allFreeTagIdxList = [
       ...existingFreeTagModelList.map((freeTag) => freeTag.idx),
       ...newFreeTagModelList.map((freeTag) => freeTag.idx),
     ];
-
+    console.log('allFreeTagIdxList: ', allFreeTagIdxList);
+    console.log('\n');
     return await this.placeCoreService.updatePlaceByIdx(idx, {
       freeTagIdxList: allFreeTagIdxList,
     });

@@ -24,7 +24,7 @@ import { CreateBiWeeklyClosedDayDto } from './dto/request/create-bi-weekly-close
 import { RunBiWeeklyClosedDayCronJobDto } from './dto/request/run-bi-weekly-closed-day-cron-job.dto';
 import { RunBiWeeklyClosedDayCronJobResponseDto } from './dto/response/run-bi-weekly-closed-day-cron-job.response.dto';
 import { UpdatePlaceCategoryDto } from './dto/request/update-place-category.dto';
-import { UpdatePlaceFreeTagDto } from './dto/request/update-place-free-tage.dto';
+import { UpdatePlaceFreeTagDto } from './dto/request/update-place-free-tag.dto';
 
 @Controller('place')
 @ApiTags('Place')
