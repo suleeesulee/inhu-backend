@@ -646,6 +646,16 @@ export class PlaceCoreRepository {
               },
             }
           : undefined,
+        placeFreeTagMappingList: input.freeTagIdxList
+          ? {
+              deleteMany: {},
+              createMany: {
+                data: input.freeTagIdxList.map((freeTagIdx) => ({
+                  freeTagIdx,
+                })),
+              },
+            }
+          : undefined,
       },
       where: { idx, deletedAt: null },
     });

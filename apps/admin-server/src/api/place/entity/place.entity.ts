@@ -152,10 +152,9 @@ export class PlaceEntity {
   @IsEnumValue(PlaceType, { each: true })
   public typeList: PlaceType[];
 
-  @ToArray()
-  @TrimStringArray()
-  @UniqueArray()
-  @IsString({ each: true })
+  /**
+   * 자유 태그 목록
+   */
   public freeTagList: FreeTagEntity[];
 
   constructor(data: PlaceEntity) {

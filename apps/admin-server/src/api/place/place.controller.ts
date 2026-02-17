@@ -24,6 +24,7 @@ import { CreateBiWeeklyClosedDayDto } from './dto/request/create-bi-weekly-close
 import { RunBiWeeklyClosedDayCronJobDto } from './dto/request/run-bi-weekly-closed-day-cron-job.dto';
 import { RunBiWeeklyClosedDayCronJobResponseDto } from './dto/response/run-bi-weekly-closed-day-cron-job.response.dto';
 import { UpdatePlaceCategoryDto } from './dto/request/update-place-category.dto';
+import { UpdatePlaceFreeTagDto } from './dto/request/update-place-free-tage.dto';
 
 @Controller('place')
 @ApiTags('Place')
@@ -98,6 +99,21 @@ export class PlaceController {
     @Body() dto: UpdatePlaceCategoryDto,
   ) {
     return await this.placeService.updatePlaceCategoryByIdx(idx, dto);
+  }
+
+  /**
+   * 특정 장소 자유 태그 수정하기 Endpoint
+   */
+  @Put('/:idx/free-tag')
+  @Exception(400, 'Invalid place idx or free tag data')
+  @Exception(404, 'Place not found')
+  @HttpCode(200)
+  @AdminAuth()
+  public async updatePlaceFreeTagByIdx(
+    @Param('idx', ParseIntPipe) idx: number,
+    @Body() dto: UpdatePlaceFreeTagDto,
+  ) {
+    return await this.placeService.updatePlaceFreeTagByIdx(idx, dto);
   }
 
   /**
