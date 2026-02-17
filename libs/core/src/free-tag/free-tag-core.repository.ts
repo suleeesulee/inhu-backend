@@ -36,7 +36,7 @@ export class FreeTagCoreRepository {
   }
 
   public async selectFreeTagAllByContent(
-    contentList: string[],
+    contentList?: string[],
   ): Promise<SelectFreeTag[]> {
     return await this.txHost.tx.freeTag.findMany({
       ...SELECT_FREE_TAG,

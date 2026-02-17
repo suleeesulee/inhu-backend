@@ -181,7 +181,7 @@ export class PlaceService {
     }
 
     const existingFreeTagModelList =
-      await this.freeTagCoreService.getFreeTagAllByContent(freeTagList);
+      await this.freeTagCoreService.getFreeTagAll(freeTagList);
     const existingFreeTagContentList = existingFreeTagModelList.map(
       (freeTag) => freeTag.content,
     );
