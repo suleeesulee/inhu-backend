@@ -21,6 +21,7 @@ import { FreeTagCoreService } from '@libs/core/free-tag/free-tag-core.service';
 import { Locker } from '@libs/common/decorator/locker.decorator';
 import { Transactional } from '@nestjs-cls/transactional';
 import { UpdatePlaceFreeTagDto } from './dto/request/update-place-free-tag.dto';
+import { FreeTagModel } from '@libs/core/free-tag/model/free-tag.model';
 
 @Injectable()
 export class PlaceService {
@@ -175,35 +176,31 @@ export class PlaceService {
     }
 
     const freeTagList = dto.freeTagList;
-    console.log('freeTagList: ', freeTagList);
+    if (freeTagList.length === 0 || !freeTagList) {
+      return;
+    }
 
     const existingFreeTagModelList =
       await this.freeTagCoreService.getFreeTagAllByContent(freeTagList);
-    console.log('existingFreeTagModelList: ', existingFreeTagModelList);
     const existingFreeTagContentList = existingFreeTagModelList.map(
       (freeTag) => freeTag.content,
     );
-    console.log('existingFreeTagContentList: ', existingFreeTagContentList);
 
     const nonExistingFreeTagContentList = freeTagList.filter(
       (content) => !existingFreeTagContentList.includes(content),
     );
-    console.log(
-      'nonExistingFreeTagContentList: ',
-      nonExistingFreeTagContentList,
-    );
 
-    const newFreeTagModelList = await this.freeTagCoreService.createManyFreeTag(
-      nonExistingFreeTagContentList,
-    );
-    console.log('newFreeTagModelList: ', newFreeTagModelList);
+    let newFreeTagModelList: FreeTagModel[] = [];
+    if (nonExistingFreeTagContentList.length > 0) {
+      newFreeTagModelList = await this.freeTagCoreService.createManyFreeTag(
+        nonExistingFreeTagContentList,
+      );
+    }
 
     const allFreeTagIdxList = [
       ...existingFreeTagModelList.map((freeTag) => freeTag.idx),
       ...newFreeTagModelList.map((freeTag) => freeTag.idx),
     ];
-    console.log('allFreeTagIdxList: ', allFreeTagIdxList);
-    console.log('\n');
     return await this.placeCoreService.updatePlaceByIdx(idx, {
       freeTagIdxList: allFreeTagIdxList,
     });
