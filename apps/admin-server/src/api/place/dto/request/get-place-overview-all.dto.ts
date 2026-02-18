@@ -1,4 +1,6 @@
+import { IsEnumValue } from '@libs/common/decorator/is-enum-value.decorator';
 import { ToBoolean } from '@libs/common/decorator/to-boolean.decorator';
+import { PlaceType } from '@libs/core/place/constants/place-type.constant';
 import { Type } from 'class-transformer';
 import {
   IsBoolean,
@@ -39,4 +41,14 @@ export class GetPlaceOverviewDto {
   @IsString()
   @IsOptional()
   public search?: string;
+
+  /**
+   * 1: 카페
+   * 2: 음식점
+   * 3: 술집
+   */
+  @IsOptional()
+  @IsEnumValue(PlaceType)
+  @Type(() => Number)
+  type?: PlaceType;
 }
