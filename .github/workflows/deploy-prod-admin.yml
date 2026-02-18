@@ -165,5 +165,5 @@ jobs:
             tar -xzf deploy-admin.tar.gz
             rm deploy-admin.tar.gz
             npm ci
-            pm2 restart inhu-backend-admin
+            pm2 reload inhu-backend-admin
           EOF
