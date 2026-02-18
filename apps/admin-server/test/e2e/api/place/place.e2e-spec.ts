@@ -572,6 +572,148 @@ describe('Place E2E test', () => {
       expect(places).toStrictEqual([]);
       expect(count).toBe(0);
     });
+
+    it('200 - check type filtering', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const dto: GetPlaceOverviewDto = {
+        page: 1,
+        type: PlaceType.CAFE,
+      };
+
+      const [
+        place1,
+        place2,
+        place3,
+        place4,
+        place5,
+        place6,
+        place7,
+        place8,
+        place9,
+        place10,
+        place11,
+        place12,
+        place13,
+        place14,
+      ] = await placeSeedHelper.seedAll([
+        {
+          name: 'place 1',
+          activatedAt: new Date(),
+          type: PlaceType.CAFE,
+        },
+        {
+          name: 'place 2',
+          activatedAt: new Date(),
+          type: PlaceType.RESTAURANT,
+        },
+        {
+          name: 'place 3',
+          activatedAt: new Date(),
+          type: PlaceType.BAR,
+        },
+        {
+          name: 'place 4',
+          activatedAt: new Date(),
+          type: PlaceType.CAFE,
+        },
+        {
+          name: 'place 5',
+          activatedAt: new Date(),
+          type: PlaceType.CAFE,
+        },
+        {
+          name: 'place 6',
+          activatedAt: new Date(),
+          type: PlaceType.CAFE,
+        },
+        {
+          name: 'place 7',
+          activatedAt: new Date(),
+          type: PlaceType.CAFE,
+        },
+        {
+          name: 'place 8',
+          activatedAt: new Date(),
+          type: PlaceType.CAFE,
+        },
+        {
+          name: 'place 9',
+          activatedAt: new Date(),
+          type: PlaceType.CAFE,
+        },
+        {
+          name: 'place 10',
+          activatedAt: new Date(),
+          type: PlaceType.CAFE,
+        },
+        {
+          name: 'place 11',
+          activatedAt: new Date(),
+          type: PlaceType.CAFE,
+        },
+        {
+          name: 'place 12',
+          activatedAt: new Date(),
+          type: PlaceType.CAFE,
+        },
+        {
+          name: 'place 13',
+          activatedAt: new Date(),
+          type: PlaceType.CAFE,
+        },
+        {
+          name: 'place 14',
+          activatedAt: new Date(),
+          type: PlaceType.CAFE,
+        },
+      ]);
+
+      const response = await testHelper
+        .test()
+        .get('/place')
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .query(dto)
+        .expect(200);
+
+      const places: PlaceOverviewEntity[] = response.body.placeList;
+      const count: number = response.body.count;
+
+      expect(places.map(({ name }) => name).sort()).toStrictEqual(
+        [
+          place5.name,
+          place6.name,
+          place7.name,
+          place8.name,
+          place9.name,
+          place10.name,
+          place11.name,
+          place12.name,
+          place13.name,
+          place14.name,
+        ].sort(),
+      );
+      expect(count).toBe(12);
+
+      const dto2: GetPlaceOverviewDto = {
+        page: 2,
+        type: PlaceType.CAFE,
+      };
+
+      const response2 = await testHelper
+        .test()
+        .get('/place')
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .query(dto2)
+        .expect(200);
+
+      const places2: PlaceOverviewEntity[] = response2.body.placeList;
+      const count2: number = response2.body.count;
+
+      expect(places2.map(({ name }) => name).sort()).toStrictEqual(
+        [place1.name, place4.name].sort(),
+      );
+      expect(count2).toBe(12);
+    });
   });
 
   describe('GET /place/:idx', () => {
