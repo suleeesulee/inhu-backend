@@ -165,5 +165,5 @@ jobs:
             tar -xzf deploy-batch.tar.gz
             rm deploy-batch.tar.gz
             npm ci
-            pm2 restart inhu-backend-batch
+            pm2 reload inhu-backend-batch
           EOF
