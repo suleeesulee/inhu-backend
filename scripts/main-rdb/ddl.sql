@@ -27,6 +27,21 @@ CREATE TABLE closed_day_tb
   PRIMARY KEY (idx)
 );
 
+CREATE TABLE free_tag_tb
+(
+  idx        int                      NOT NULL GENERATED ALWAYS AS IDENTITY,
+  content    varchar                  NOT NULL,
+  created_at timestamp with time zone NOT NULL DEFAULT NOW(),
+  deleted_at timestamp with time zone,
+  PRIMARY KEY (idx)
+);
+CREATE INDEX ix_free_tag_content_active
+  ON free_tag_tb (content)
+  WHERE deleted_at IS NULL;
+CREATE INDEX ix_free_tag_content_like_active
+  ON free_tag_tb (content text_pattern_ops)
+  WHERE deleted_at IS NULL;
+
 CREATE TABLE keyword_tb
 (
   idx        int                      NOT NULL,
@@ -196,6 +211,13 @@ CREATE TABLE pinned_magazine_tb
   idx        int                      NOT NULL,
   created_at timestamp with time zone NOT NULL DEFAULT NOW(),
   PRIMARY KEY (idx)
+);
+
+CREATE TABLE place_free_tag_mapping_tb
+(
+  free_tag_idx int NOT NULL,
+  place_idx    int NOT NULL,
+  PRIMARY KEY (free_tag_idx, place_idx)
 );
 
 CREATE TABLE place_type_magazine_mapping_tb
@@ -608,3 +630,13 @@ ALTER TABLE magazine_mood_category_mapping_tb
   ADD CONSTRAINT FK_magazine_tb_TO_magazine_mood_category_mapping_tb
     FOREIGN KEY (magazine_idx)
     REFERENCES magazine_tb (idx);
+
+ALTER TABLE place_free_tag_mapping_tb
+  ADD CONSTRAINT FK_free_tag_tb_TO_place_free_tag_mapping_tb
+    FOREIGN KEY (free_tag_idx)
+    REFERENCES free_tag_tb (idx);
+
+ALTER TABLE place_free_tag_mapping_tb
+  ADD CONSTRAINT FK_place_tb_TO_place_free_tag_mapping_tb
+    FOREIGN KEY (place_idx)
+    REFERENCES place_tb (idx);

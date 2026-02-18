@@ -1,3 +1,4 @@
+import { SELECT_FREE_TAG } from '@libs/core/free-tag/model/prisma-type/select-free-tag';
 import { Prisma } from '@prisma/client';
 
 export const SELECT_PLACE_OVERVIEW =
@@ -76,6 +77,11 @@ export const SELECT_PLACE_OVERVIEW =
       placeMoodCategoryMappingList: {
         select: {
           moodCategoryIdx: true,
+        },
+      },
+      placeFreeTagMappingList: {
+        select: {
+          freeTag: SELECT_FREE_TAG,
         },
       },
     },

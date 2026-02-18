@@ -69,4 +69,5 @@ export type PlaceSeedInput = {
   mainCategoryList?: MainCategory[] | null;
   moodCategoryList?: MoodCategory[] | null;
   typeList?: PlaceType[] | null;
+  freeTagContentList?: number[] | null;
 };

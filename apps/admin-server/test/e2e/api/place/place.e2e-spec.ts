@@ -1,6 +1,7 @@
 import { AdminServerModule } from '@admin/admin-server.module';
 import { CreatePlaceDto } from '@admin/api/place/dto/request/create-place.dto';
 import { GetPlaceOverviewDto } from '@admin/api/place/dto/request/get-place-overview-all.dto';
+import { UpdatePlaceFreeTagDto } from '@admin/api/place/dto/request/update-place-free-tag.dto';
 import { UpdatePlaceDto } from '@admin/api/place/dto/request/update-place.dto';
 import { RunBiWeeklyClosedDayCronJobResponseDto } from '@admin/api/place/dto/response/run-bi-weekly-closed-day-cron-job.response.dto';
 import { PlaceOverviewEntity } from '@admin/api/place/entity/place-overview.entity';
@@ -12,6 +13,7 @@ import { PlaceType } from '@libs/core/place/constants/place-type.constant';
 import { WeeklyCloseType } from '@libs/core/place/constants/weekly-close-type.constant';
 import { PlaceCoreService } from '@libs/core/place/place-core.service';
 import { KakaoAddressService } from '@libs/modules/kakao-address/kakao-address.service';
+import { FreeTagSeedHelper } from '@libs/testing/seed/free-tag/free-tag.seed';
 import { MenuSeedHelper } from '@libs/testing/seed/menu/menu.seed';
 import { PlaceSeedHelper } from '@libs/testing/seed/place/place.seed';
 import { TestHelper } from 'apps/admin-server/test/e2e/setup/test.helper';
@@ -20,6 +22,7 @@ describe('Place E2E test', () => {
   const testHelper = TestHelper.create(AdminServerModule);
   const placeSeedHelper = testHelper.seedHelper(PlaceSeedHelper);
   const menuSeedHelper = testHelper.seedHelper(MenuSeedHelper);
+  const freeTagSeedHelper = testHelper.seedHelper(FreeTagSeedHelper);
 
   beforeEach(async () => {
     await testHelper.init();
@@ -62,6 +65,7 @@ describe('Place E2E test', () => {
       expect(place.activatedAt).toBe(placeSeed.activatedAt);
       expect(place.mainCategoryList).toEqual([]);
       expect(place.moodCategoryList).toEqual([]);
+      expect(place.freeTagList).toEqual([]);
     });
 
     it('401 - no access token provided', async () => {
@@ -575,6 +579,15 @@ describe('Place E2E test', () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const now = testHelper.mockTodayTime('10:00');
 
+      const [freeTag1, freeTag2] = await freeTagSeedHelper.seedAll([
+        {
+          content: 'free tag 1',
+        },
+        {
+          content: 'free tag 2',
+        },
+      ]);
+
       const placeSeed = await placeSeedHelper.seed({
         activatedAt: new Date(),
         name: 'Test Place',
@@ -658,6 +671,7 @@ describe('Place E2E test', () => {
           MoodCategory.STUDY_FRIENDLY,
           MoodCategory.DESSERT_HOTSPOT,
         ],
+        freeTagContentList: [freeTag1.idx, freeTag2.idx],
       });
 
       const response = await testHelper
@@ -707,6 +721,9 @@ describe('Place E2E test', () => {
       expect(place.mainCategoryList[1]).toBe(MainCategory.BUNGEOPPANG_WAFFLE);
       expect(place.moodCategoryList[0]).toBe(MoodCategory.STUDY_FRIENDLY);
       expect(place.moodCategoryList[1]).toBe(MoodCategory.DESSERT_HOTSPOT);
+      expect(place.freeTagList.map(({ idx }) => idx).sort()).toEqual(
+        [freeTag1.idx, freeTag2.idx].sort(),
+      );
     });
 
     it('200 - not activated place', async () => {
@@ -847,6 +864,7 @@ describe('Place E2E test', () => {
       expect(place.closedDayList[1].week).toBe(2);
       expect(place.mainCategoryList).toEqual([]);
       expect(place.moodCategoryList).toEqual([]);
+      expect(place.freeTagList).toEqual([]);
 
       mock.mockRestore();
     });
@@ -1570,6 +1588,309 @@ describe('Place E2E test', () => {
           typeList: [PlaceType.CAFE],
           mainCategoryList: [MainCategory.DESSERT],
           moodCategoryList: [MoodCategory.GOOD_ATMOSPHERE],
+        })
+        .expect(404);
+    });
+  });
+
+  describe('PUT /place/:idx/free-tag', () => {
+    it('200 - successfully updates free tag list to place', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+
+      const [freeTag1, freeTag2] = await freeTagSeedHelper.seedAll([
+        {
+          content: 'Free Tag 1',
+        },
+        {
+          content: 'Free Tag 2',
+        },
+      ]);
+      const place = await placeSeedHelper.seed({
+        activatedAt: new Date(),
+      });
+
+      const updatePlaceFreeTagDto: UpdatePlaceFreeTagDto = {
+        freeTagList: [freeTag1.content, freeTag2.content],
+      };
+
+      await testHelper
+        .test()
+        .put(`/place/${place.idx}/free-tag`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send(updatePlaceFreeTagDto)
+        .expect(200);
+
+      const placeModel = await testHelper
+        .get(PlaceCoreService)
+        .getPlaceByIdx(place.idx);
+
+      if (!placeModel) {
+        throw new Error('Place not found after update');
+      }
+
+      expect(placeModel.freeTagList.length).toBe(2);
+      expect(placeModel.freeTagList.map(({ idx }) => idx).sort()).toEqual(
+        [freeTag1.idx, freeTag2.idx].sort(),
+      );
+    });
+
+    it('200 - successfully updates empty free tag list to place', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+
+      const place = await placeSeedHelper.seed({
+        activatedAt: new Date(),
+      });
+
+      const updatePlaceFreeTagDto: UpdatePlaceFreeTagDto = {
+        freeTagList: [],
+      };
+
+      await testHelper
+        .test()
+        .put(`/place/${place.idx}/free-tag`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send(updatePlaceFreeTagDto)
+        .expect(200);
+
+      const placeModel = await testHelper
+        .get(PlaceCoreService)
+        .getPlaceByIdx(place.idx);
+
+      if (!placeModel) {
+        throw new Error('Place not found after update');
+      }
+
+      expect(placeModel.freeTagList.length).toBe(0);
+    });
+
+    it('200 - successfully updated place free tags when none of the tags previously existed', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+
+      const place = await placeSeedHelper.seed({
+        activatedAt: new Date(),
+      });
+
+      const prisma = testHelper.getPrisma();
+
+      const newFreeTags = ['New Free Tag 1', 'New Free Tag 2'];
+      const existingFreeTags = await prisma.freeTag.findMany({
+        where: {
+          content: {
+            in: newFreeTags,
+          },
+        },
+      });
+      expect(existingFreeTags.length).toBe(0);
+
+      const updatePlaceFreeTagDto: UpdatePlaceFreeTagDto = {
+        freeTagList: newFreeTags,
+      };
+
+      await testHelper
+        .test()
+        .put(`/place/${place.idx}/free-tag`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send(updatePlaceFreeTagDto)
+        .expect(200);
+
+      const placeModel = await testHelper
+        .get(PlaceCoreService)
+        .getPlaceByIdx(place.idx);
+
+      if (!placeModel) {
+        throw new Error('Place not found after update');
+      }
+
+      expect(placeModel.freeTagList.length).toBe(2);
+      expect(
+        placeModel.freeTagList.map(({ content }) => content).sort(),
+      ).toEqual(newFreeTags.sort());
+
+      const createdFreeTags = await prisma.freeTag.findMany({
+        where: {
+          content: {
+            in: newFreeTags,
+          },
+        },
+      });
+      expect(createdFreeTags.length).toBe(2);
+      expect(createdFreeTags.map(({ content }) => content).sort()).toEqual(
+        newFreeTags.sort(),
+      );
+    });
+
+    it('200 - successfully updates place free tags when some of the tags previously existed and some are new', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+
+      const place = await placeSeedHelper.seed({
+        activatedAt: new Date(),
+      });
+
+      const prisma = testHelper.getPrisma();
+
+      const [freeTag1, freeTag2] = await freeTagSeedHelper.seedAll([
+        {
+          content: 'Existing Free Tag 1',
+        },
+        {
+          content: 'Existing Free Tag 2',
+        },
+      ]);
+
+      const newFreeTags = ['Existing Free Tag 1', 'New Free Tag 1'];
+      const existingFreeTags = await prisma.freeTag.findMany({
+        where: {
+          content: {
+            in: newFreeTags,
+          },
+        },
+      });
+      expect(existingFreeTags.length).toBe(1);
+      expect(existingFreeTags[0].content).toBe('Existing Free Tag 1');
+
+      const updatePlaceFreeTagDto: UpdatePlaceFreeTagDto = {
+        freeTagList: newFreeTags,
+      };
+
+      await testHelper
+        .test()
+        .put(`/place/${place.idx}/free-tag`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send(updatePlaceFreeTagDto)
+        .expect(200);
+
+      const placeModel = await testHelper
+        .get(PlaceCoreService)
+        .getPlaceByIdx(place.idx);
+
+      if (!placeModel) {
+        throw new Error('Place not found after update');
+      }
+
+      expect(placeModel.freeTagList.length).toBe(2);
+      expect(
+        placeModel.freeTagList.map(({ content }) => content).sort(),
+      ).toEqual(newFreeTags.sort());
+
+      const createdFreeTags = await prisma.freeTag.findMany({
+        where: {
+          content: {
+            in: newFreeTags,
+          },
+        },
+      });
+      expect(createdFreeTags.length).toBe(2);
+      expect(createdFreeTags.map(({ content }) => content).sort()).toEqual(
+        newFreeTags.sort(),
+      );
+    });
+
+    it('200 - successfully updates place free tags when all of the tags previously existed', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+
+      const place = await placeSeedHelper.seed({
+        activatedAt: new Date(),
+      });
+
+      const prisma = testHelper.getPrisma();
+
+      const [freeTag1, freeTag2] = await freeTagSeedHelper.seedAll([
+        {
+          content: 'Existing Free Tag 1',
+        },
+        {
+          content: 'Existing Free Tag 2',
+        },
+      ]);
+
+      const newFreeTags = ['Existing Free Tag 1', 'Existing Free Tag 2'];
+      const existingFreeTags = await prisma.freeTag.findMany({
+        where: {
+          content: {
+            in: newFreeTags,
+          },
+        },
+      });
+      expect(existingFreeTags.length).toBe(2);
+      expect(existingFreeTags.map(({ content }) => content).sort()).toEqual(
+        newFreeTags.sort(),
+      );
+
+      const updatePlaceFreeTagDto: UpdatePlaceFreeTagDto = {
+        freeTagList: newFreeTags,
+      };
+
+      await testHelper
+        .test()
+        .put(`/place/${place.idx}/free-tag`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send(updatePlaceFreeTagDto)
+        .expect(200);
+
+      const placeModel = await testHelper
+        .get(PlaceCoreService)
+        .getPlaceByIdx(place.idx);
+
+      if (!placeModel) {
+        throw new Error('Place not found after update');
+      }
+
+      expect(placeModel.freeTagList.length).toBe(2);
+      expect(
+        placeModel.freeTagList.map(({ content }) => content).sort(),
+      ).toEqual(newFreeTags.sort());
+
+      const createdFreeTags = await prisma.freeTag.findMany({
+        where: {
+          content: {
+            in: newFreeTags,
+          },
+        },
+      });
+      expect(createdFreeTags.length).toBe(2);
+      expect(createdFreeTags.map(({ content }) => content).sort()).toEqual(
+        newFreeTags.sort(),
+      );
+    });
+
+    it('401 - no access token', async () => {
+      const place = await placeSeedHelper.seed({
+        activatedAt: new Date(),
+      });
+
+      await testHelper
+        .test()
+        .put(`/place/${place.idx}/free-tag`)
+        .send({
+          freeTagList: ['Free Tag 1', 'Free Tag 2'],
+        })
+        .expect(401);
+    });
+
+    it('400 - invalid place idx', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const invalidPlaceIdx = 'invalid-idx';
+
+      await testHelper
+        .test()
+        .put(`/place/${invalidPlaceIdx}/free-tag`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send({
+          freeTagList: ['Free Tag 1', 'Free Tag 2'],
+        })
+        .expect(400);
+    });
+
+    it('404 - place not found', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const nonExistentPlaceIdx = 99999;
+
+      await testHelper
+        .test()
+        .put(`/place/${nonExistentPlaceIdx}/free-tag`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send({
+          freeTagList: ['Free Tag 1', 'Free Tag 2'],
         })
         .expect(404);
     });

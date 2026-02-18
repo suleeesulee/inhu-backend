@@ -17,12 +17,18 @@ import { AddressRequiredException } from './exception/address-required.exception
 import { AlreadyExistWeeklyClosedDayException } from './exception/already-exist-weekly-closed-day.exception';
 import { WeeklyCloseType } from '@libs/core/place/constants/weekly-close-type.constant';
 import { UpdatePlaceCategoryDto } from './dto/request/update-place-category.dto';
+import { FreeTagCoreService } from '@libs/core/free-tag/free-tag-core.service';
+import { Locker } from '@libs/common/decorator/locker.decorator';
+import { Transactional } from '@nestjs-cls/transactional';
+import { UpdatePlaceFreeTagDto } from './dto/request/update-place-free-tag.dto';
+import { FreeTagModel } from '@libs/core/free-tag/model/free-tag.model';
 
 @Injectable()
 export class PlaceService {
   constructor(
     private readonly placeCoreService: PlaceCoreService,
     private readonly kakaoAddressService: KakaoAddressService,
+    private readonly freeTagCoreService: FreeTagCoreService,
   ) {}
 
   public async getPlaceAll(
@@ -154,6 +160,50 @@ export class PlaceService {
     }
 
     return await this.placeCoreService.updatePlaceByIdx(idx, dto);
+  }
+
+  @Locker({
+    key: (idx: number) => `place:${idx}:free-tag`,
+  })
+  @Transactional()
+  public async updatePlaceFreeTagByIdx(
+    idx: number,
+    dto: UpdatePlaceFreeTagDto,
+  ): Promise<void> {
+    const place = await this.placeCoreService.getPlaceByIdx(idx);
+    if (!place) {
+      throw new PlaceNotFoundException('Cannot find place with idx: ' + idx);
+    }
+
+    const freeTagList = dto.freeTagList;
+    if (freeTagList.length === 0 || !freeTagList) {
+      return;
+    }
+
+    const existingFreeTagModelList =
+      await this.freeTagCoreService.getFreeTagAll(freeTagList);
+    const existingFreeTagContentList = existingFreeTagModelList.map(
+      (freeTag) => freeTag.content,
+    );
+
+    const nonExistingFreeTagContentList = freeTagList.filter(
+      (content) => !existingFreeTagContentList.includes(content),
+    );
+
+    let newFreeTagModelList: FreeTagModel[] = [];
+    if (nonExistingFreeTagContentList.length > 0) {
+      newFreeTagModelList = await this.freeTagCoreService.createManyFreeTag(
+        nonExistingFreeTagContentList,
+      );
+    }
+
+    const allFreeTagIdxList = [
+      ...existingFreeTagModelList.map((freeTag) => freeTag.idx),
+      ...newFreeTagModelList.map((freeTag) => freeTag.idx),
+    ];
+    return await this.placeCoreService.updatePlaceByIdx(idx, {
+      freeTagIdxList: allFreeTagIdxList,
+    });
   }
 
   public async deletePlaceByIdx(idx: number): Promise<void> {
