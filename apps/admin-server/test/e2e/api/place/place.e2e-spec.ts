@@ -813,7 +813,7 @@ describe('Place E2E test', () => {
           MoodCategory.STUDY_FRIENDLY,
           MoodCategory.DESSERT_HOTSPOT,
         ],
-        freeTagContentList: [freeTag1.idx, freeTag2.idx],
+        freeTagIdxList: [freeTag1.idx, freeTag2.idx],
       });
 
       const response = await testHelper
@@ -1993,6 +1993,57 @@ describe('Place E2E test', () => {
       expect(createdFreeTags.map(({ content }) => content).sort()).toEqual(
         newFreeTags.sort(),
       );
+    });
+
+    it('200 - successfully deletes all free tags from place when empty free tag list is sent', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+
+      const [freeTag1, freeTag2] = await freeTagSeedHelper.seedAll([
+        {
+          content: 'Existing Free Tag 1',
+        },
+        {
+          content: 'Existing Free Tag 2',
+        },
+      ]);
+
+      const place = await placeSeedHelper.seed({
+        activatedAt: new Date(),
+        freeTagIdxList: [freeTag1.idx, freeTag2.idx],
+      });
+      const updatePlaceFreeTagDto: UpdatePlaceFreeTagDto = {
+        freeTagList: [],
+      };
+
+      const placeModel1 = await testHelper
+        .get(PlaceCoreService)
+        .getPlaceByIdx(place.idx);
+
+      if (!placeModel1) {
+        throw new Error('Place not found before update');
+      }
+
+      expect(placeModel1.freeTagList.length).toBe(2);
+      expect(
+        placeModel1.freeTagList.map(({ content }) => content).sort(),
+      ).toEqual([freeTag1.content, freeTag2.content].sort());
+
+      await testHelper
+        .test()
+        .put(`/place/${place.idx}/free-tag`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send(updatePlaceFreeTagDto)
+        .expect(200);
+
+      const placeMode2 = await testHelper
+        .get(PlaceCoreService)
+        .getPlaceByIdx(place.idx);
+
+      if (!placeMode2) {
+        throw new Error('Place not found after update');
+      }
+
+      expect(placeMode2.freeTagList.length).toBe(0);
     });
 
     it('401 - no access token', async () => {
