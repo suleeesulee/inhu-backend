@@ -41,6 +41,7 @@ export class PlaceService {
       order: 'desc',
       orderBy: 'time',
       searchKeyword: dto.search,
+      types: dto.type ? [dto.type] : undefined,
     };
 
     return {
