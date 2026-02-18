@@ -33,6 +33,7 @@ jobs:
 
   # 2. Batch 서버 배포
   deploy-batch:
+    concurrency: raspberry-pi-deploy
     runs-on: ubuntu-latest
     needs: build-batch
     steps:

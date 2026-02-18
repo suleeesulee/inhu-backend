@@ -22,6 +22,7 @@ import { NaverMenuModule } from '@libs/common/modules/naver-menu/naver-menu.modu
 import { ServerExceptionsFilter } from '@libs/common/filters/server-exception.filter';
 import { AdminAccountModule } from '@libs/core/admin-account/admin-account-core.module';
 import { HashModule } from '@libs/common/modules/hash/hash.module';
+import { FreeTagModule } from './api/free-tag/free-tag.module';
 
 @Module({
   imports: [
@@ -51,6 +52,7 @@ import { HashModule } from '@libs/common/modules/hash/hash.module';
     NaverMenuModule,
     AdminAccountModule,
     HashModule,
+    FreeTagModule,
   ],
   providers: [
     {

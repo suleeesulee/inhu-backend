@@ -1,6 +1,12 @@
 {
   "liveServer.settings.port": 5502,
-  "cSpell.words": ["Debezium", "naverblog"],
+  "cSpell.words": [
+    "autoincrement",
+    "dbgenerated",
+    "Debezium",
+    "naverblog",
+    "Timestamptz"
+  ],
   "prisma.pinToPrisma6": true,
   "prisma.schemaPath": "./prisma/schema.prisma"
 }
