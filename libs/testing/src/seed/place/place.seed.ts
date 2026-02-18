@@ -62,7 +62,7 @@ export class PlaceSeedHelper extends ISeedHelper<
       mainCategoryList: defaultValue(input.mainCategoryList, null),
       moodCategoryList: defaultValue(input.moodCategoryList, null),
       typeList: defaultValue(input.typeList, null),
-      freeTagContentList: defaultValue(input.freeTagContentList, null),
+      freeTagIdxList: defaultValue(input.freeTagIdxList, null),
     };
   }
 
@@ -188,10 +188,10 @@ export class PlaceSeedHelper extends ISeedHelper<
               },
             }
           : undefined,
-        placeFreeTagMappingList: filledInput.freeTagContentList
+        placeFreeTagMappingList: filledInput.freeTagIdxList
           ? {
               createMany: {
-                data: filledInput.freeTagContentList.map((freeTagIdx) => ({
+                data: filledInput.freeTagIdxList.map((freeTagIdx) => ({
                   freeTagIdx,
                 })),
               },
