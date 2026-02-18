@@ -15,11 +15,6 @@ export class FreeTagEntity {
    */
   public name: string;
 
-  /**
-   * 생성 날짜
-   */
-  public createdAt: Date;
-
   constructor(data: FreeTagEntity) {
     Object.assign(this, data);
   }
@@ -28,7 +23,6 @@ export class FreeTagEntity {
     return new FreeTagEntity({
       idx: model.idx,
       name: model.content,
-      createdAt: model.createdAt,
     });
   }
 }
