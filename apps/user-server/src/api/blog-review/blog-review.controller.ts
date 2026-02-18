@@ -21,7 +21,6 @@ export class BlogReviewController {
     @Param('placeIdx', ParseIntPipe) placeIdx: number,
     @Query() dto: GetBlogReviewAllDto,
   ): Promise<GetBlogReviewAllResponseDto> {
-    console.log(dto);
     return await this.blogReviewService.getBlogReviewAll(placeIdx, dto);
   }
 }
