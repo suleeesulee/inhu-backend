@@ -177,8 +177,10 @@ export class PlaceService {
     }
 
     const freeTagList = dto.freeTagList;
-    if (freeTagList.length === 0 || !freeTagList) {
-      return;
+    if (freeTagList.length === 0) {
+      return await this.placeCoreService.updatePlaceByIdx(idx, {
+        freeTagIdxList: [],
+      });
     }
 
     const existingFreeTagModelList =
