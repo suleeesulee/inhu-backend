@@ -11,7 +11,7 @@ export class SearchTagEntity {
   /**
    * search tag name
    *
-   * @example '가성비 좋은'
+   * @example '돈가스'
    */
   public name: string;
 
