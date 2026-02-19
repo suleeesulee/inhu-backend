@@ -25,6 +25,7 @@ import { RunBiWeeklyClosedDayCronJobDto } from './dto/request/run-bi-weekly-clos
 import { RunBiWeeklyClosedDayCronJobResponseDto } from './dto/response/run-bi-weekly-closed-day-cron-job.response.dto';
 import { UpdatePlaceCategoryDto } from './dto/request/update-place-category.dto';
 import { UpdatePlaceFreeTagDto } from './dto/request/update-place-free-tag.dto';
+import { UpdatePlaceSearchTagDto } from './dto/request/update-place-search-tag.dto';
 
 @Controller('place')
 @ApiTags('Place')
@@ -114,6 +115,21 @@ export class PlaceController {
     @Body() dto: UpdatePlaceFreeTagDto,
   ) {
     return await this.placeService.updatePlaceFreeTagByIdx(idx, dto);
+  }
+
+  /**
+   * 특정 장소 검색 태그 수정하기 Endpoint
+   */
+  @Put('/:idx/search-tag')
+  @Exception(400, 'Invalid place idx or search tag data')
+  @Exception(404, 'Place not found')
+  @HttpCode(200)
+  @AdminAuth()
+  public async updatePlaceSearchTagByIdx(
+    @Param('idx', ParseIntPipe) idx: number,
+    @Body() dto: UpdatePlaceSearchTagDto,
+  ) {
+    return await this.placeService.updatePlaceSearchTagByIdx(idx, dto);
   }
 
   /**
