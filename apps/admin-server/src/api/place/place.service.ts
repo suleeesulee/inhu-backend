@@ -22,6 +22,9 @@ import { Locker } from '@libs/common/decorator/locker.decorator';
 import { Transactional } from '@nestjs-cls/transactional';
 import { UpdatePlaceFreeTagDto } from './dto/request/update-place-free-tag.dto';
 import { FreeTagModel } from '@libs/core/free-tag/model/free-tag.model';
+import { SearchTagCoreService } from '@libs/core/search-tag/search-tag-core.service';
+import { SearchTagModel } from '@libs/core/search-tag/model/search-tag.model';
+import { UpdatePlaceSearchTagDto } from './dto/request/update-place-search-tag.dto';
 
 @Injectable()
 export class PlaceService {
@@ -29,6 +32,7 @@ export class PlaceService {
     private readonly placeCoreService: PlaceCoreService,
     private readonly kakaoAddressService: KakaoAddressService,
     private readonly freeTagCoreService: FreeTagCoreService,
+    private readonly searchTagCoreService: SearchTagCoreService,
   ) {}
 
   public async getPlaceAll(
@@ -206,6 +210,53 @@ export class PlaceService {
     ];
     return await this.placeCoreService.updatePlaceByIdx(idx, {
       freeTagIdxList: allFreeTagIdxList,
+    });
+  }
+
+  @Locker({
+    key: (idx: number) => `place:${idx}:search-tag`,
+  })
+  @Transactional()
+  public async updatePlaceSearchTagByIdx(
+    idx: number,
+    dto: UpdatePlaceSearchTagDto,
+  ): Promise<void> {
+    const place = await this.placeCoreService.getPlaceByIdx(idx);
+    if (!place) {
+      throw new PlaceNotFoundException('Cannot find place with idx: ' + idx);
+    }
+
+    const searchTagList = dto.searchTagList;
+    if (searchTagList.length === 0) {
+      return await this.placeCoreService.updatePlaceByIdx(idx, {
+        searchTagIdxList: [],
+      });
+    }
+
+    const existingSearchTagModelList =
+      await this.searchTagCoreService.getSearchTagAll(searchTagList);
+    const existingSearchTagContentList = existingSearchTagModelList.map(
+      (searchTag) => searchTag.content,
+    );
+
+    const nonExistingSearchTagContentList = searchTagList.filter(
+      (content) => !existingSearchTagContentList.includes(content),
+    );
+
+    let newSearchTagModelList: SearchTagModel[] = [];
+    if (nonExistingSearchTagContentList.length > 0) {
+      newSearchTagModelList =
+        await this.searchTagCoreService.createManySearchTag(
+          nonExistingSearchTagContentList,
+        );
+    }
+
+    const allSearchTagIdxList = [
+      ...existingSearchTagModelList.map((searchTag) => searchTag.idx),
+      ...newSearchTagModelList.map((searchTag) => searchTag.idx),
+    ];
+    return await this.placeCoreService.updatePlaceByIdx(idx, {
+      searchTagIdxList: allSearchTagIdxList,
     });
   }
 

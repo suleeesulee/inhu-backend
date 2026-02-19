@@ -4,6 +4,7 @@ import { PlaceRoadAddressEntity } from './place-road-address.entity';
 import { KeywordEntity } from '@admin/api/keyword/entity/keyword.entity';
 import { PlaceOverviewModel } from '@libs/core/place/model/place-overview.model';
 import { FreeTagEntity } from '@admin/api/free-tag/entity/free-tag.entity';
+import { SearchTagEntity } from '@admin/api/search-tag/entity/search-tag.entity';
 
 export class PlaceOverviewEntity extends PickType(PlaceEntity, [
   'idx',
@@ -23,6 +24,7 @@ export class PlaceOverviewEntity extends PickType(PlaceEntity, [
   'moodCategoryList',
   'typeList',
   'freeTagList',
+  'searchTagList',
 ]) {
   constructor(data: PlaceOverviewEntity) {
     super();
@@ -48,6 +50,7 @@ export class PlaceOverviewEntity extends PickType(PlaceEntity, [
       moodCategoryList: model.moodCategoryList,
       typeList: model.typeList,
       freeTagList: model.freeTagList.map(FreeTagEntity.fromModel),
+      searchTagList: model.searchTagList.map(SearchTagEntity.fromModel),
     });
   }
 }
