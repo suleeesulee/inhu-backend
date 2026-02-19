@@ -656,6 +656,16 @@ export class PlaceCoreRepository {
               },
             }
           : undefined,
+        placeSearchTagMappingList: input.searchTagIdxList
+          ? {
+              deleteMany: {},
+              createMany: {
+                data: input.searchTagIdxList.map((searchTagIdx) => ({
+                  searchTagIdx,
+                })),
+              },
+            }
+          : undefined,
       },
       where: { idx, deletedAt: null },
     });
