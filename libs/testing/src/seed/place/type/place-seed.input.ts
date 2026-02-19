@@ -70,4 +70,5 @@ export type PlaceSeedInput = {
   moodCategoryList?: MoodCategory[] | null;
   typeList?: PlaceType[] | null;
   freeTagIdxList?: number[] | null;
+  searchTagIdxList?: number[] | null;
 };
