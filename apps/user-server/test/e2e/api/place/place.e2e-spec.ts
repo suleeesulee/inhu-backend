@@ -8,6 +8,7 @@ import { BookmarkSeedHelper } from '@libs/testing/seed/bookmark/bookmark.seed';
 import { MenuSeedHelper } from '@libs/testing/seed/menu/menu.seed';
 import { PlaceOwnerSeedHelper } from '@libs/testing/seed/place-owner/place-owner.seed';
 import { PlaceSeedHelper } from '@libs/testing/seed/place/place.seed';
+import { SearchTagSeedHelper } from '@libs/testing/seed/search-tag/search-tag.seed';
 import { GetAllPlaceOverviewResponseDto } from '@user/api/place/dto/response/get-all-place-overview-response.dto';
 import { PlaceMarkerEntity } from '@user/api/place/entity/place-marker.entity';
 import { PlaceOverviewEntity } from '@user/api/place/entity/place-overview.entity';
@@ -23,6 +24,7 @@ describe('Place E2E test', () => {
   const bookmarkSeedHelper = testHelper.seedHelper(BookmarkSeedHelper);
   const menuSeedHelper = testHelper.seedHelper(MenuSeedHelper);
   const placeOwnerSeedHelper = testHelper.seedHelper(PlaceOwnerSeedHelper);
+  const searchTagSeedHelper = testHelper.seedHelper(SearchTagSeedHelper);
 
   beforeEach(async () => {
     await testHelper.init();
@@ -3181,6 +3183,239 @@ describe('Place E2E test', () => {
     });
 
     it('200 - check searchKeyword filtering (do not exist menu content)', async () => {
+      const [place1, place2, place3] = await placeSeedHelper.seedAll([
+        {
+          name: 'place 1',
+          activatedAt: new Date(),
+        },
+        {
+          name: 'place 2',
+          activatedAt: new Date(),
+        },
+        {
+          name: 'place 3',
+          activatedAt: new Date(),
+        },
+      ]);
+
+      await menuSeedHelper.seedAll([
+        {
+          placeIdx: place1.idx,
+          name: 'menu 1',
+          content: 'content 1',
+        },
+        {
+          placeIdx: place2.idx,
+          name: 'menu 2',
+          content: 'content 2',
+        },
+        {
+          placeIdx: place3.idx,
+          name: 'menu 3',
+          content: 'content 3',
+        },
+      ]);
+
+      const response = await testHelper
+        .test()
+        .get('/place/marker/all')
+        .query({
+          searchKeyword: 'not exist',
+        })
+        .expect(200);
+
+      const places: PlaceMarkerEntity[] = response.body.placeMarkerList;
+
+      expect(places).toStrictEqual([]);
+    });
+
+    it('200 - check searchKeyword filtering single search tag content', async () => {
+      const [searchTag1, searchTag2, searchTag3, searchTag4] =
+        await searchTagSeedHelper.seedAll([
+          { content: 'search tag 1' },
+          { content: 'search tag 2' },
+          { content: 'search tag 3' },
+          { content: 'search tag 4' },
+        ]);
+
+      const [place1, place2, place3] = await placeSeedHelper.seedAll([
+        {
+          name: 'place 1',
+          activatedAt: new Date(),
+          searchTagIdxList: [searchTag1.idx, searchTag2.idx],
+        },
+        {
+          name: 'place 2',
+          activatedAt: new Date(),
+          searchTagIdxList: [searchTag3.idx],
+        },
+        {
+          name: 'place 3',
+          activatedAt: new Date(),
+          searchTagIdxList: [searchTag4.idx],
+        },
+      ]);
+
+      await menuSeedHelper.seedAll([
+        {
+          placeIdx: place1.idx,
+          name: 'menu 1',
+          content: 'content 1',
+        },
+        {
+          placeIdx: place2.idx,
+          name: 'menu 2',
+          content: 'content 2',
+        },
+        {
+          placeIdx: place3.idx,
+          name: 'menu 3',
+          content: 'content 3',
+        },
+      ]);
+
+      const response = await testHelper
+        .test()
+        .get('/place/marker/all')
+        .query({
+          searchKeyword: 'search tag 3',
+        })
+        .expect(200);
+
+      const places: PlaceMarkerEntity[] = response.body.placeMarkerList;
+
+      expect(places.map(({ idx }) => idx)).toStrictEqual([place2.idx]);
+    });
+
+    it('200 - check searchKeyword filtering multiple search tag content', async () => {
+      const [searchTag1, searchTag2, searchTag3, searchTag4] =
+        await searchTagSeedHelper.seedAll([
+          { content: 'search tag 1' },
+          { content: 'search tag 2' },
+          { content: 'search tag 3' },
+          { content: 'search tag 4' },
+        ]);
+
+      const [place1, place2, place3] = await placeSeedHelper.seedAll([
+        {
+          name: 'place 1',
+          activatedAt: new Date(),
+          searchTagIdxList: [searchTag1.idx, searchTag2.idx],
+        },
+        {
+          name: 'place 2',
+          activatedAt: new Date(),
+          searchTagIdxList: [searchTag2.idx, searchTag3.idx],
+        },
+        {
+          name: 'place 3',
+          activatedAt: new Date(),
+          searchTagIdxList: [searchTag3.idx, searchTag4.idx],
+        },
+      ]);
+
+      await menuSeedHelper.seedAll([
+        {
+          placeIdx: place1.idx,
+          name: 'menu 1',
+          content: 'content 1',
+        },
+        {
+          placeIdx: place2.idx,
+          name: 'menu 2',
+          content: 'content 2',
+        },
+        {
+          placeIdx: place3.idx,
+          name: 'menu 3',
+          content: 'content 3',
+        },
+      ]);
+
+      const response = await testHelper
+        .test()
+        .get('/place/marker/all')
+        .query({
+          searchKeyword: 'search tag 2',
+        })
+        .expect(200);
+
+      const places: PlaceMarkerEntity[] = response.body.placeMarkerList;
+
+      expect(places.map(({ idx }) => idx).sort()).toStrictEqual(
+        [place1.idx, place2.idx].sort(),
+      );
+    });
+
+    it('200 - check searchKeyword filtering multiple search tag prefix content', async () => {
+      const [searchTag1, searchTag2, searchTag3, searchTag4] =
+        await searchTagSeedHelper.seedAll([
+          { content: 'search tag 1' },
+          { content: 'search tag 2' },
+          { content: 'search tag 3' },
+          { content: 'search tag 4' },
+        ]);
+
+      const [place1, place2, place3] = await placeSeedHelper.seedAll([
+        {
+          name: 'place 1',
+          activatedAt: new Date(),
+          searchTagIdxList: [searchTag1.idx, searchTag2.idx],
+        },
+        {
+          name: 'place 2',
+          activatedAt: new Date(),
+          searchTagIdxList: [searchTag2.idx, searchTag3.idx],
+        },
+        {
+          name: 'place 3',
+          activatedAt: new Date(),
+          searchTagIdxList: [searchTag3.idx, searchTag4.idx],
+        },
+      ]);
+
+      await menuSeedHelper.seedAll([
+        {
+          placeIdx: place1.idx,
+          name: 'menu 1',
+          content: 'content 1',
+        },
+        {
+          placeIdx: place2.idx,
+          name: 'menu 2',
+          content: 'content 2',
+        },
+        {
+          placeIdx: place3.idx,
+          name: 'menu 3',
+          content: 'content 3',
+        },
+      ]);
+
+      const response = await testHelper
+        .test()
+        .get('/place/marker/all')
+        .query({
+          searchKeyword: 'search',
+        })
+        .expect(200);
+
+      const places: PlaceMarkerEntity[] = response.body.placeMarkerList;
+
+      expect(places.map(({ idx }) => idx).sort()).toStrictEqual(
+        [place1.idx, place2.idx, place3.idx].sort(),
+      );
+    });
+
+    it('200 - check searchKeyword filtering (do not exist menu content)', async () => {
+      const [searchTag1, searchTag2, searchTag3, searchTag4] =
+        await searchTagSeedHelper.seedAll([
+          { content: 'search tag 1' },
+          { content: 'search tag 2' },
+          { content: 'search tag 3' },
+          { content: 'search tag 4' },
+        ]);
+
       const [place1, place2, place3] = await placeSeedHelper.seedAll([
         {
           name: 'place 1',
