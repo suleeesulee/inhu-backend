@@ -2,6 +2,7 @@ import { AdminServerModule } from '@admin/admin-server.module';
 import { CreatePlaceDto } from '@admin/api/place/dto/request/create-place.dto';
 import { GetPlaceOverviewDto } from '@admin/api/place/dto/request/get-place-overview-all.dto';
 import { UpdatePlaceFreeTagDto } from '@admin/api/place/dto/request/update-place-free-tag.dto';
+import { UpdatePlaceSearchTagDto } from '@admin/api/place/dto/request/update-place-search-tag.dto';
 import { UpdatePlaceDto } from '@admin/api/place/dto/request/update-place.dto';
 import { RunBiWeeklyClosedDayCronJobResponseDto } from '@admin/api/place/dto/response/run-bi-weekly-closed-day-cron-job.response.dto';
 import { PlaceOverviewEntity } from '@admin/api/place/entity/place-overview.entity';
@@ -16,6 +17,7 @@ import { KakaoAddressService } from '@libs/modules/kakao-address/kakao-address.s
 import { FreeTagSeedHelper } from '@libs/testing/seed/free-tag/free-tag.seed';
 import { MenuSeedHelper } from '@libs/testing/seed/menu/menu.seed';
 import { PlaceSeedHelper } from '@libs/testing/seed/place/place.seed';
+import { SearchTagSeedHelper } from '@libs/testing/seed/search-tag/search-tag.seed';
 import { TestHelper } from 'apps/admin-server/test/e2e/setup/test.helper';
 
 describe('Place E2E test', () => {
@@ -23,6 +25,7 @@ describe('Place E2E test', () => {
   const placeSeedHelper = testHelper.seedHelper(PlaceSeedHelper);
   const menuSeedHelper = testHelper.seedHelper(MenuSeedHelper);
   const freeTagSeedHelper = testHelper.seedHelper(FreeTagSeedHelper);
+  const searchTagSeedHelper = testHelper.seedHelper(SearchTagSeedHelper);
 
   beforeEach(async () => {
     await testHelper.init();
@@ -66,6 +69,7 @@ describe('Place E2E test', () => {
       expect(place.mainCategoryList).toEqual([]);
       expect(place.moodCategoryList).toEqual([]);
       expect(place.freeTagList).toEqual([]);
+      expect(place.searchTagList).toEqual([]);
     });
 
     it('401 - no access token provided', async () => {
@@ -730,6 +734,15 @@ describe('Place E2E test', () => {
         },
       ]);
 
+      const [searchTag1, searchTag2] = await searchTagSeedHelper.seedAll([
+        {
+          content: 'search tag 1',
+        },
+        {
+          content: 'search tag 2',
+        },
+      ]);
+
       const placeSeed = await placeSeedHelper.seed({
         activatedAt: new Date(),
         name: 'Test Place',
@@ -814,6 +827,7 @@ describe('Place E2E test', () => {
           MoodCategory.DESSERT_HOTSPOT,
         ],
         freeTagIdxList: [freeTag1.idx, freeTag2.idx],
+        searchTagIdxList: [searchTag1.idx, searchTag2.idx],
       });
 
       const response = await testHelper
@@ -865,6 +879,9 @@ describe('Place E2E test', () => {
       expect(place.moodCategoryList[1]).toBe(MoodCategory.DESSERT_HOTSPOT);
       expect(place.freeTagList.map(({ idx }) => idx).sort()).toEqual(
         [freeTag1.idx, freeTag2.idx].sort(),
+      );
+      expect(place.searchTagList.map(({ idx }) => idx).sort()).toEqual(
+        [searchTag1.idx, searchTag2.idx].sort(),
       );
     });
 
@@ -1007,6 +1024,7 @@ describe('Place E2E test', () => {
       expect(place.mainCategoryList).toEqual([]);
       expect(place.moodCategoryList).toEqual([]);
       expect(place.freeTagList).toEqual([]);
+      expect(place.searchTagList).toEqual([]);
 
       mock.mockRestore();
     });
@@ -2084,6 +2102,360 @@ describe('Place E2E test', () => {
         .set('Cookie', `token=Bearer ${loginUser.token}`)
         .send({
           freeTagList: ['Free Tag 1', 'Free Tag 2'],
+        })
+        .expect(404);
+    });
+  });
+
+  describe('PUT /place/:idx/search-tag', () => {
+    it('200 - successfully updates search tag list to place', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+
+      const [searchTag1, searchTag2] = await searchTagSeedHelper.seedAll([
+        {
+          content: 'Search Tag 1',
+        },
+        {
+          content: 'Search Tag 2',
+        },
+      ]);
+      const place = await placeSeedHelper.seed({
+        activatedAt: new Date(),
+      });
+
+      const updatePlaceSearchTagDto: UpdatePlaceSearchTagDto = {
+        searchTagList: [searchTag1.content, searchTag2.content],
+      };
+
+      await testHelper
+        .test()
+        .put(`/place/${place.idx}/search-tag`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send(updatePlaceSearchTagDto)
+        .expect(200);
+
+      const placeModel = await testHelper
+        .get(PlaceCoreService)
+        .getPlaceByIdx(place.idx);
+
+      if (!placeModel) {
+        throw new Error('Place not found after update');
+      }
+
+      expect(placeModel.searchTagList.length).toBe(2);
+      expect(placeModel.searchTagList.map(({ idx }) => idx).sort()).toEqual(
+        [searchTag1.idx, searchTag2.idx].sort(),
+      );
+    });
+
+    it('200 - successfully updates empty search tag list to place', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+
+      const place = await placeSeedHelper.seed({
+        activatedAt: new Date(),
+      });
+
+      const updatePlaceSearchTagDto: UpdatePlaceSearchTagDto = {
+        searchTagList: [],
+      };
+
+      await testHelper
+        .test()
+        .put(`/place/${place.idx}/search-tag`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send(updatePlaceSearchTagDto)
+        .expect(200);
+
+      const placeModel = await testHelper
+        .get(PlaceCoreService)
+        .getPlaceByIdx(place.idx);
+
+      if (!placeModel) {
+        throw new Error('Place not found after update');
+      }
+
+      expect(placeModel.searchTagList.length).toBe(0);
+    });
+
+    it('200 - successfully updated place search tags when none of the tags previously existed', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+
+      const place = await placeSeedHelper.seed({
+        activatedAt: new Date(),
+      });
+
+      const prisma = testHelper.getPrisma();
+
+      const newSearchTags = ['New Search Tag 1', 'New Search Tag 2'];
+      const existingSearchTags = await prisma.searchTag.findMany({
+        where: {
+          content: {
+            in: newSearchTags,
+          },
+        },
+      });
+      expect(existingSearchTags.length).toBe(0);
+
+      const updatePlaceSearchTagDto: UpdatePlaceSearchTagDto = {
+        searchTagList: newSearchTags,
+      };
+
+      await testHelper
+        .test()
+        .put(`/place/${place.idx}/search-tag`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send(updatePlaceSearchTagDto)
+        .expect(200);
+
+      const placeModel = await testHelper
+        .get(PlaceCoreService)
+        .getPlaceByIdx(place.idx);
+
+      if (!placeModel) {
+        throw new Error('Place not found after update');
+      }
+
+      expect(placeModel.searchTagList.length).toBe(2);
+      expect(
+        placeModel.searchTagList.map(({ content }) => content).sort(),
+      ).toEqual(newSearchTags.sort());
+
+      const createdSearchTags = await prisma.searchTag.findMany({
+        where: {
+          content: {
+            in: newSearchTags,
+          },
+        },
+      });
+      expect(createdSearchTags.length).toBe(2);
+      expect(createdSearchTags.map(({ content }) => content).sort()).toEqual(
+        newSearchTags.sort(),
+      );
+    });
+
+    it('200 - successfully updates place search tags when some of the tags previously existed and some are new', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+
+      const place = await placeSeedHelper.seed({
+        activatedAt: new Date(),
+      });
+
+      const prisma = testHelper.getPrisma();
+
+      const [searchTag1, searchTag2] = await searchTagSeedHelper.seedAll([
+        {
+          content: 'Existing Search Tag 1',
+        },
+        {
+          content: 'Existing Search Tag 2',
+        },
+      ]);
+
+      const newSearchTags = ['Existing Search Tag 1', 'New Search Tag 1'];
+      const existingSearchTags = await prisma.searchTag.findMany({
+        where: {
+          content: {
+            in: newSearchTags,
+          },
+        },
+      });
+      expect(existingSearchTags.length).toBe(1);
+      expect(existingSearchTags[0].content).toBe('Existing Search Tag 1');
+
+      const updatePlaceSearchTagDto: UpdatePlaceSearchTagDto = {
+        searchTagList: newSearchTags,
+      };
+
+      await testHelper
+        .test()
+        .put(`/place/${place.idx}/search-tag`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send(updatePlaceSearchTagDto)
+        .expect(200);
+
+      const placeModel = await testHelper
+        .get(PlaceCoreService)
+        .getPlaceByIdx(place.idx);
+
+      if (!placeModel) {
+        throw new Error('Place not found after update');
+      }
+
+      expect(placeModel.searchTagList.length).toBe(2);
+      expect(
+        placeModel.searchTagList.map(({ content }) => content).sort(),
+      ).toEqual(newSearchTags.sort());
+
+      const createdSearchTags = await prisma.searchTag.findMany({
+        where: {
+          content: {
+            in: newSearchTags,
+          },
+        },
+      });
+      expect(createdSearchTags.length).toBe(2);
+      expect(createdSearchTags.map(({ content }) => content).sort()).toEqual(
+        newSearchTags.sort(),
+      );
+    });
+
+    it('200 - successfully updates place search tags when all of the tags previously existed', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+
+      const place = await placeSeedHelper.seed({
+        activatedAt: new Date(),
+      });
+
+      const prisma = testHelper.getPrisma();
+
+      const [searchTag1, searchTag2] = await searchTagSeedHelper.seedAll([
+        {
+          content: 'Existing Search Tag 1',
+        },
+        {
+          content: 'Existing Search Tag 2',
+        },
+      ]);
+
+      const newSearchTags = ['Existing Search Tag 1', 'Existing Search Tag 2'];
+      const existingSearchTags = await prisma.searchTag.findMany({
+        where: {
+          content: {
+            in: newSearchTags,
+          },
+        },
+      });
+      expect(existingSearchTags.length).toBe(2);
+      expect(existingSearchTags.map(({ content }) => content).sort()).toEqual(
+        newSearchTags.sort(),
+      );
+
+      const updatePlaceSearchTagDto: UpdatePlaceSearchTagDto = {
+        searchTagList: newSearchTags,
+      };
+
+      await testHelper
+        .test()
+        .put(`/place/${place.idx}/search-tag`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send(updatePlaceSearchTagDto)
+        .expect(200);
+
+      const placeModel = await testHelper
+        .get(PlaceCoreService)
+        .getPlaceByIdx(place.idx);
+
+      if (!placeModel) {
+        throw new Error('Place not found after update');
+      }
+
+      expect(placeModel.searchTagList.length).toBe(2);
+      expect(
+        placeModel.searchTagList.map(({ content }) => content).sort(),
+      ).toEqual(newSearchTags.sort());
+
+      const createdSearchTags = await prisma.searchTag.findMany({
+        where: {
+          content: {
+            in: newSearchTags,
+          },
+        },
+      });
+      expect(createdSearchTags.length).toBe(2);
+      expect(createdSearchTags.map(({ content }) => content).sort()).toEqual(
+        newSearchTags.sort(),
+      );
+    });
+
+    it('200 - successfully deletes all search tags from place when empty search tag list is sent', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+
+      const [searchTag1, searchTag2] = await searchTagSeedHelper.seedAll([
+        {
+          content: 'Existing Search Tag 1',
+        },
+        {
+          content: 'Existing Search Tag 2',
+        },
+      ]);
+
+      const place = await placeSeedHelper.seed({
+        activatedAt: new Date(),
+        searchTagIdxList: [searchTag1.idx, searchTag2.idx],
+      });
+      const updatePlaceSearchTagDto: UpdatePlaceSearchTagDto = {
+        searchTagList: [],
+      };
+
+      const placeModel1 = await testHelper
+        .get(PlaceCoreService)
+        .getPlaceByIdx(place.idx);
+
+      if (!placeModel1) {
+        throw new Error('Place not found before update');
+      }
+
+      expect(placeModel1.searchTagList.length).toBe(2);
+      expect(
+        placeModel1.searchTagList.map(({ content }) => content).sort(),
+      ).toEqual([searchTag1.content, searchTag2.content].sort());
+
+      await testHelper
+        .test()
+        .put(`/place/${place.idx}/search-tag`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send(updatePlaceSearchTagDto)
+        .expect(200);
+
+      const placeMode2 = await testHelper
+        .get(PlaceCoreService)
+        .getPlaceByIdx(place.idx);
+
+      if (!placeMode2) {
+        throw new Error('Place not found after update');
+      }
+
+      expect(placeMode2.searchTagList.length).toBe(0);
+    });
+
+    it('401 - no access token', async () => {
+      const place = await placeSeedHelper.seed({
+        activatedAt: new Date(),
+      });
+
+      await testHelper
+        .test()
+        .put(`/place/${place.idx}/search-tag`)
+        .send({
+          searchTagList: ['Search Tag 1', 'Search Tag 2'],
+        })
+        .expect(401);
+    });
+
+    it('400 - invalid place idx', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const invalidPlaceIdx = 'invalid-idx';
+
+      await testHelper
+        .test()
+        .put(`/place/${invalidPlaceIdx}/search-tag`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send({
+          searchTagList: ['Search Tag 1', 'Search Tag 2'],
+        })
+        .expect(400);
+    });
+
+    it('404 - place not found', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const nonExistentPlaceIdx = 99999;
+
+      await testHelper
+        .test()
+        .put(`/place/${nonExistentPlaceIdx}/search-tag`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send({
+          searchTagList: ['Search Tag 1', 'Search Tag 2'],
         })
         .expect(404);
     });

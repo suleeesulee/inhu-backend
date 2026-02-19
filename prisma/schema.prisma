@@ -66,6 +66,7 @@ model Place {
   placeMainCategoryMappingList PlaceMainCategoryMapping[]
   placeMoodCategoryMappingList PlaceMoodCategoryMapping[]
   placeOwnerList               PlaceOwner[]
+  placeSearchTagMappingList    PlaceSearchTagMapping[]
   roadAddress                  RoadAddress                @relation(fields: [roadAddressIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_road_address_tb_to_place_tb")
   placeTypeMappingList         PlaceTypeMapping[]
   reviewList                   Review[]
@@ -279,7 +280,7 @@ model AdminAccount {
   id        String   @db.VarChar
   pw        String   @db.VarChar
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
-  user      User     @relation(fields: [idx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_user_tb_to_admin_account_tb")
+  user      User     @relation(fields: [idx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_user_tb_to_admin_tb")
 
   @@map("admin_account_tb")
 }
@@ -350,7 +351,7 @@ model BlogReview {
   createdAt              DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
   uploadedAt             DateTime  @map("uploaded_at") @db.Timestamptz(6)
   deletedAt              DateTime? @map("deleted_at") @db.Timestamptz(6)
-  place                  Place     @relation(fields: [placeIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_place_tb_to_place_owner_tb")
+  place                  Place     @relation(fields: [placeIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_place_tb_to_blog_review_tb")
 
   @@map("blog_review_tb")
 }
@@ -489,10 +490,10 @@ model PlaceTypeMagazineMapping {
 }
 
 model FreeTag {
-  idx                     Int                     @id @default(autoincrement())
-  content                 String                  @db.VarChar
-  createdAt               DateTime                @default(now()) @map("created_at") @db.Timestamptz(6)
-  deletedAt               DateTime?               @map("deleted_at") @db.Timestamptz(6)
+  idx                     Int                   @id @default(autoincrement())
+  content                 String                @db.VarChar
+  createdAt               DateTime              @default(now()) @map("created_at") @db.Timestamptz(6)
+  deletedAt               DateTime?             @map("deleted_at") @db.Timestamptz(6)
   placeFreeTagMappingList PlaceFreeTagMapping[]
 
   @@index([content], map: "index_free_tag_tb_content_active")
@@ -507,4 +508,25 @@ model PlaceFreeTagMapping {
 
   @@id([freeTagIdx, placeIdx])
   @@map("place_free_tag_mapping_tb")
+}
+
+model SearchTag {
+  idx                       Int                     @id @default(autoincrement())
+  content                   String                  @db.VarChar
+  createdAt                 DateTime                @default(now()) @map("created_at") @db.Timestamptz(6)
+  deletedAt                 DateTime?               @map("deleted_at") @db.Timestamptz(6)
+  placeSearchTagMappingList PlaceSearchTagMapping[]
+
+  @@index([content], map: "index_search_tag_content_active")
+  @@map("search_tag_tb")
+}
+
+model PlaceSearchTagMapping {
+  searchTagIdx Int       @map("search_tag_idx")
+  placeIdx     Int       @map("place_idx")
+  place        Place     @relation(fields: [placeIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_place_tb_to_place_search_tag_mapping_tb")
+  searchTag    SearchTag @relation(fields: [searchTagIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_search_tag_tb_to_place_search_tag_mapping_tb")
+
+  @@id([searchTagIdx, placeIdx])
+  @@map("place_search_tag_mapping_tb")
 }

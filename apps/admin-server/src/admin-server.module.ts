@@ -23,6 +23,7 @@ import { ServerExceptionsFilter } from '@libs/common/filters/server-exception.fi
 import { AdminAccountModule } from '@libs/core/admin-account/admin-account-core.module';
 import { HashModule } from '@libs/common/modules/hash/hash.module';
 import { FreeTagModule } from './api/free-tag/free-tag.module';
+import { SearchTagModule } from './api/search-tag/search-tag.module';
 
 @Module({
   imports: [
@@ -53,6 +54,7 @@ import { FreeTagModule } from './api/free-tag/free-tag.module';
     AdminAccountModule,
     HashModule,
     FreeTagModule,
+    SearchTagModule,
   ],
   providers: [
     {

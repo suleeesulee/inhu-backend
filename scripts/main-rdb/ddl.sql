@@ -35,10 +35,10 @@ CREATE TABLE free_tag_tb
   deleted_at timestamp with time zone,
   PRIMARY KEY (idx)
 );
-CREATE INDEX ix_free_tag_content_active
+CREATE INDEX index_free_tag_content_active
   ON free_tag_tb (content)
   WHERE deleted_at IS NULL;
-CREATE INDEX ix_free_tag_content_like_active
+CREATE INDEX index_free_tag_content_like_active
   ON free_tag_tb (content text_pattern_ops)
   WHERE deleted_at IS NULL;
 
@@ -190,6 +190,13 @@ CREATE TABLE place_mood_category_mapping_tb
   PRIMARY KEY (mood_category_idx, place_idx)
 );
 
+CREATE TABLE place_search_tag_mapping_tb
+(
+  search_tag_idx int NOT NULL,
+  place_idx      int NOT NULL,
+  PRIMARY KEY (search_tag_idx, place_idx)
+);
+
 CREATE TABLE place_tb
 (
   idx                   int                      NOT NULL GENERATED ALWAYS AS IDENTITY,
@@ -279,6 +286,21 @@ CREATE TABLE road_address_tb
   address_y      numeric NOT NULL,
   PRIMARY KEY (idx)
 );
+
+CREATE TABLE search_tag_tb
+(
+  idx        int                      NOT NULL GENERATED ALWAYS AS IDENTITY,
+  content    varchar                  NOT NULL,
+  created_at timestamp with time zone NOT NULL DEFAULT NOW(),
+  deleted_at timestamp with time zone,
+  PRIMARY KEY (idx)
+);
+CREATE INDEX index_search_tag_content_active
+  ON search_tag_tb (content)
+  WHERE deleted_at IS NULL;
+CREATE INDEX index_search_tag_content_like_active
+  ON search_tag_tb (content text_pattern_ops)
+  WHERE deleted_at IS NULL;
 
 CREATE TABLE service1_result_tb
 (
@@ -638,5 +660,15 @@ ALTER TABLE place_free_tag_mapping_tb
 
 ALTER TABLE place_free_tag_mapping_tb
   ADD CONSTRAINT FK_place_tb_TO_place_free_tag_mapping_tb
+    FOREIGN KEY (place_idx)
+    REFERENCES place_tb (idx);
+
+ALTER TABLE place_search_tag_mapping_tb
+  ADD CONSTRAINT FK_search_tag_tb_TO_place_search_tag_mapping_tb
+    FOREIGN KEY (search_tag_idx)
+    REFERENCES search_tag_tb (idx);
+
+ALTER TABLE place_search_tag_mapping_tb
+  ADD CONSTRAINT FK_place_tb_TO_place_search_tag_mapping_tb
     FOREIGN KEY (place_idx)
     REFERENCES place_tb (idx);
