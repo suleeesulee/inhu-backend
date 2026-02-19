@@ -21,6 +21,7 @@ import { ToArray } from '@libs/common/decorator/to-array.decorator';
 import { Type } from 'class-transformer';
 import { TrimStringArray } from '@libs/common/decorator/trim-string-array.decorator';
 import { FreeTagEntity } from '@admin/api/free-tag/entity/free-tag.entity';
+import { SearchTagEntity } from '@admin/api/search-tag/entity/search-tag.entity';
 
 export class PlaceEntity {
   /**
@@ -157,6 +158,11 @@ export class PlaceEntity {
    */
   public freeTagList: FreeTagEntity[];
 
+  /**
+   * 검색 태그 목록
+   */
+  public searchTagList: SearchTagEntity[];
+
   constructor(data: PlaceEntity) {
     Object.assign(this, data);
   }
@@ -187,6 +193,7 @@ export class PlaceEntity {
       moodCategoryList: model.moodCategoryList,
       typeList: model.typeList,
       freeTagList: model.freeTagList.map(FreeTagEntity.fromModel),
+      searchTagList: model.searchTagList.map(SearchTagEntity.fromModel),
     });
   }
 }

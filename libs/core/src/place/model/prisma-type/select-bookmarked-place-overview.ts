@@ -1,4 +1,5 @@
 import { SELECT_FREE_TAG } from '@libs/core/free-tag/model/prisma-type/select-free-tag';
+import { SELECT_SEARCH_TAG } from '@libs/core/search-tag/model/prisma-type/select-search-tag';
 import { Prisma } from '@prisma/client';
 
 export const SELECT_BOOKMARKED_PLACE_OVERVIEW =
@@ -85,6 +86,11 @@ export const SELECT_BOOKMARKED_PLACE_OVERVIEW =
           placeFreeTagMappingList: {
             select: {
               freeTag: SELECT_FREE_TAG,
+            },
+          },
+          placeSearchTagMappingList: {
+            select: {
+              searchTag: SELECT_SEARCH_TAG,
             },
           },
         },
