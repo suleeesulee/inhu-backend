@@ -235,15 +235,18 @@ export class PlaceCoreRepository {
           menuList: {
             some: {
               OR: [
-                {
-                  name: { contains: trimmedSearchKeyword },
-                },
-                {
-                  content: {
-                    contains: trimmedSearchKeyword,
-                  },
-                },
+                { name: { contains: trimmedSearchKeyword } },
+                { content: { contains: trimmedSearchKeyword } },
               ],
+            },
+          },
+        },
+        {
+          placeSearchTagMappingList: {
+            some: {
+              searchTag: {
+                content: { startsWith: trimmedSearchKeyword },
+              },
             },
           },
         },
