@@ -1751,7 +1751,7 @@ describe('Place E2E test', () => {
           activatedAt: new Date(),
           name: 'place2: 붕어빵, 샌드위치',
           mainCategoryList: [
-            MainCategory.BUNGEOPPANG_WAFFLE,
+            // MainCategory.BUNGEOPPANG_WAFFLE,
             MainCategory.SANDWICH_SALAD,
           ],
         },
@@ -1778,6 +1778,50 @@ describe('Place E2E test', () => {
 
       expect(placeList.map(({ idx }) => idx).sort()).toStrictEqual(
         [place1.idx].sort(),
+      );
+    });
+
+    it('200 - main category filtering check (multiple conditions, multiple matched)', async () => {
+      const [place1, place2, place3] = await placeSeedHelper.seedAll([
+        {
+          activatedAt: new Date(),
+          name: 'place1: 베이커리, 붕어빵',
+          mainCategoryList: [
+            MainCategory.BAKERY,
+            MainCategory.BUNGEOPPANG_WAFFLE,
+          ],
+        },
+        {
+          activatedAt: new Date(),
+          name: 'place2: 붕어빵, 샌드위치',
+          mainCategoryList: [
+            MainCategory.BUNGEOPPANG_WAFFLE,
+            MainCategory.SANDWICH_SALAD,
+          ],
+        },
+        {
+          activatedAt: new Date(),
+          name: 'place3: 샌드위치, 디저트',
+          mainCategoryList: [MainCategory.SANDWICH_SALAD, MainCategory.DESSERT],
+        },
+      ]);
+
+      const response = await testHelper
+        .test()
+        .get('/place/all')
+        .query({
+          page: 1,
+          mainCategoryList: [
+            MainCategory.BAKERY,
+            MainCategory.BUNGEOPPANG_WAFFLE,
+          ],
+        })
+        .expect(200);
+
+      const placeList: PlaceOverviewEntity[] = response.body.placeOverviewList;
+
+      expect(placeList.map(({ idx }) => idx).sort()).toStrictEqual(
+        [place1.idx, place2.idx].sort(),
       );
     });
 
@@ -1892,7 +1936,7 @@ describe('Place E2E test', () => {
         .get('/place/all')
         .query({
           page: 1,
-          mainCategoryList: [MainCategory.BAKERY, MainCategory.FAST_FOOD],
+          mainCategoryList: [MainCategory.CAFE_COFFEE, MainCategory.FAST_FOOD],
         })
         .expect(200);
 
@@ -2032,7 +2076,7 @@ describe('Place E2E test', () => {
             MainCategory.SANDWICH_SALAD,
           ],
           moodCategoryList: [
-            MoodCategory.SOLO_DRINKING,
+            // MoodCategory.SOLO_DRINKING,
             MoodCategory.DESSERT_HOTSPOT,
           ],
         },
@@ -2201,7 +2245,7 @@ describe('Place E2E test', () => {
           activatedAt: new Date(),
           name: 'place2: 붕어빵, 샌드위치',
           mainCategoryList: [
-            MainCategory.BUNGEOPPANG_WAFFLE,
+            MainCategory.CAFE_COFFEE,
             MainCategory.SANDWICH_SALAD,
           ],
           moodCategoryList: [
