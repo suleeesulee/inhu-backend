@@ -358,7 +358,7 @@ export class PlaceCoreRepository {
     }
 
     return {
-      AND: mainCategoryList.map((category) => ({
+      OR: mainCategoryList.map((category) => ({
         placeMainCategoryMappingList: {
           some: { mainCategoryIdx: category },
         },
