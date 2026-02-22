@@ -1,6 +1,7 @@
 import {
   CanActivate,
   ExecutionContext,
+  ForbiddenException,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -40,7 +41,11 @@ export class AdminLoginAuthGuard implements CanActivate {
       return true;
     }
 
-    return effectiveRequiredRoles.includes(userRole);
+    if (!effectiveRequiredRoles.includes(userRole)) {
+      throw new ForbiddenException('permission denied');
+    }
+
+    return true;
   }
 
   /**

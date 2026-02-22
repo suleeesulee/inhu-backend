@@ -4,6 +4,7 @@ import { AdminAccountModel } from '@libs/core/admin-account/model/admin-account.
 export class AdminAccountEntity {
   idx: number;
   role: AdminRole;
+  nickname: string;
 
   constructor(data: AdminAccountEntity) {
     Object.assign(this, data);
@@ -13,6 +14,7 @@ export class AdminAccountEntity {
     return new AdminAccountEntity({
       idx: model.idx,
       role: model.role,
+      nickname: model.user.nickname,
     });
   }
 }

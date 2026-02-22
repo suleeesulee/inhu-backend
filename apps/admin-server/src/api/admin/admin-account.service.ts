@@ -3,12 +3,27 @@ import { AdminAccountCoreService } from '@libs/core/admin-account/admin-account-
 import { Injectable } from '@nestjs/common';
 import { AdminAccountEntity } from './entity/admin-account.entity';
 import { CreateAdminAccountDto } from './dto/request/create-admin-account.dto';
+import { GetAdminAccountAllDto } from './dto/request/get-admin-account-all.dto';
 
 @Injectable()
 export class AdminAccountService {
   constructor(
     private readonly adminAccountCoreService: AdminAccountCoreService,
   ) {}
+
+  /**
+   * 모든 관리자 계정 조회
+   */
+  public async getAdminAccountAll(
+    dto: GetAdminAccountAllDto,
+  ): Promise<AdminAccountEntity[]> {
+    return (
+      await this.adminAccountCoreService.getAdminAccountAll({
+        take: 10,
+        skip: (dto.page - 1) * 10,
+      })
+    ).map(AdminAccountEntity.fromModel);
+  }
 
   /**
    * 내 정보 조회

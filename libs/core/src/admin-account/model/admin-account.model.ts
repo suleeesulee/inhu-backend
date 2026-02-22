@@ -1,5 +1,6 @@
 import { AdminRole } from '@admin/api/auth/admin-role.enum';
 import { SelectAdminAccount } from '@libs/core/admin-account/model/prisma-type/select-admin-account';
+import { AdminUserModel } from './account-user.model';
 
 /**
  * 관리자 계정 모델
@@ -27,6 +28,8 @@ export class AdminAccountModel {
    */
   public role: AdminRole;
 
+  public user: AdminUserModel;
+
   constructor(data: AdminAccountModel) {
     Object.assign(this, data);
   }
@@ -37,6 +40,7 @@ export class AdminAccountModel {
       id: account.id,
       pw: account.pw,
       role: account.role as AdminRole,
+      user: AdminUserModel.fromPrisma(account.user),
     });
   }
 }
