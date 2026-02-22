@@ -6,6 +6,7 @@ export const SELECT_ADMIN_ACCOUNT =
       idx: true,
       id: true,
       pw: true,
+      role: true,
     },
   });
 
