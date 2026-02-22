@@ -14,6 +14,16 @@ export class AdminAccountCoreRepository {
     private readonly txHost: TransactionHost<TransactionalAdapterPrisma>,
   ) {}
 
+  public async selectAdminAccountCount(): Promise<number> {
+    return await this.txHost.tx.adminAccount.count({
+      where: {
+        user: {
+          deletedAt: null,
+        },
+      },
+    });
+  }
+
   public async selectAdminAccountAll(
     input: GetAdminAccountAllInput,
   ): Promise<SelectAdminAccount[]> {

@@ -15,15 +15,24 @@ export class AdminAccountService {
   /**
    * 모든 관리자 계정 조회
    */
-  public async getAdminAccountAll(
-    dto: GetAdminAccountAllDto,
-  ): Promise<AdminAccountEntity[]> {
-    return (
-      await this.adminAccountCoreService.getAdminAccountAll({
-        take: 10,
-        skip: (dto.page - 1) * 10,
-      })
-    ).map(AdminAccountEntity.fromModel);
+  public async getAdminAccountAll(dto: GetAdminAccountAllDto): Promise<{
+    accountList: AdminAccountEntity[];
+    count: number;
+  }> {
+    const [accountList, count] = await Promise.all([
+      this.adminAccountCoreService
+        .getAdminAccountAll({
+          take: 10,
+          skip: (dto.page - 1) * 10,
+        })
+        .then((data) => data.map(AdminAccountEntity.fromModel)),
+      this.adminAccountCoreService.getAdminAccountCount(),
+    ]);
+
+    return {
+      accountList,
+      count,
+    };
   }
 
   /**
