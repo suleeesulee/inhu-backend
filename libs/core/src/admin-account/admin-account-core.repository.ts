@@ -2,7 +2,7 @@ import {
   SELECT_ADMIN_ACCOUNT,
   SelectAdminAccount,
 } from '@libs/core/admin-account/model/prisma-type/select-admin-account';
-import { TransactionHost } from '@nestjs-cls/transactional';
+import { Transactional, TransactionHost } from '@nestjs-cls/transactional';
 import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-prisma';
 import { Injectable } from '@nestjs/common';
 import { CreateAdminAccountInput } from './inputs/create-admin-account.input';
@@ -80,6 +80,22 @@ export class AdminAccountCoreRepository {
           },
         },
       },
+    });
+  }
+
+  @Transactional()
+  public async softDeleteAdminAccountByIdx(idx: number): Promise<void> {
+    await this.txHost.tx.adminAccount.delete({
+      where: {
+        idx,
+      },
+    });
+
+    await this.txHost.tx.user.update({
+      where: {
+        idx,
+      },
+      data: { deletedAt: new Date() },
     });
   }
 }
