@@ -1,3 +1,4 @@
+import { AdminRole } from '@admin/api/auth/admin-role.enum';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
@@ -19,9 +20,13 @@ export class LoginTokenService {
     this.TOKEN_EXPIRATION = config.expiresIn;
   }
 
-  public async generateAdminToken(userIdx: number): Promise<string> {
+  public async generateAdminToken(
+    userIdx: number,
+    role: AdminRole,
+  ): Promise<string> {
     const tokenPayload: TokenPayload = {
       idx: userIdx,
+      role,
     };
 
     return await this.jwtService.signAsync(tokenPayload, {
