@@ -279,6 +279,7 @@ model AdminAccount {
   idx       Int      @id
   id        String   @db.VarChar
   pw        String   @db.VarChar
+  role      String   @db.VarChar @default("ADMIN")
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
   user      User     @relation(fields: [idx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_user_tb_to_admin_tb")
 

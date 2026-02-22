@@ -360,6 +360,7 @@ CREATE TABLE admin_account_tb
   idx        int                      NOT NULL,
   id         varchar                  NOT NULL,
   pw         varchar                  NOT NULL,
+  role       varchar                  NOT NULL DEFAULT 'ADMIN',
   created_at timestamp with time zone NOT NULL DEFAULT NOW(),
   PRIMARY KEY (idx)
 );

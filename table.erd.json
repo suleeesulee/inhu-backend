@@ -10,7 +10,7 @@
     "show": 511,
     "database": 16,
     "databaseName": "inhu",
-    "canvasType": "@dineug/erd-editor/builtin-schema-sql",
+    "canvasType": "ERD",
     "language": 1,
     "tableNameCase": 4,
     "columnNameCase": 2,
@@ -947,6 +947,7 @@
           "PBiRiceKu-xtQJ-wIOXZq",
           "UFk6S-pPzMwQYI1Ll1OSr",
           "FyV5T8yX_5KGXJvckPGmm",
+          "PAMKIe4rCBHC6LR_ueFgb",
           "Lpkf4HxjdGcmifNnjgpez"
         ],
         "seqColumnIds": [
@@ -954,6 +955,7 @@
           "PBiRiceKu-xtQJ-wIOXZq",
           "UFk6S-pPzMwQYI1Ll1OSr",
           "FyV5T8yX_5KGXJvckPGmm",
+          "PAMKIe4rCBHC6LR_ueFgb",
           "Lpkf4HxjdGcmifNnjgpez"
         ],
         "ui": {
@@ -965,7 +967,7 @@
           "color": "#03A9F4"
         },
         "meta": {
-          "updateAt": 1753261005342,
+          "updateAt": 1771732509822,
           "createAt": 1753260950161
         }
       },
@@ -6663,6 +6665,26 @@
           "updateAt": 1771502364034,
           "createAt": 1771502356554
         }
+      },
+      "PAMKIe4rCBHC6LR_ueFgb": {
+        "id": "PAMKIe4rCBHC6LR_ueFgb",
+        "tableId": "hEI5GaS7WgFDBLEISim-Y",
+        "name": "role",
+        "comment": "",
+        "dataType": "varchar",
+        "default": "ADMIN",
+        "options": 8,
+        "ui": {
+          "keys": 0,
+          "widthName": 60,
+          "widthComment": 60,
+          "widthDataType": 60,
+          "widthDefault": 60
+        },
+        "meta": {
+          "updateAt": 1771734467168,
+          "createAt": 1771732508443
+        }
       }
     },
     "relationshipEntities": {
@@ -7414,7 +7436,7 @@
             "PBiRiceKu-xtQJ-wIOXZq"
           ],
           "x": 4073.1196,
-          "y": 2632.1515,
+          "y": 2644.1515,
           "direction": 1
         },
         "meta": {
