@@ -15,6 +15,10 @@ export class AdminAccountCoreService {
     private readonly adminAccountCoreRepository: AdminAccountCoreRepository,
   ) {}
 
+  public async getAdminAccountCount(): Promise<number> {
+    return await this.adminAccountCoreRepository.selectAdminAccountCount();
+  }
+
   public async getAdminAccountAll(
     input: GetAdminAccountAllInput,
   ): Promise<AdminAccountModel[]> {

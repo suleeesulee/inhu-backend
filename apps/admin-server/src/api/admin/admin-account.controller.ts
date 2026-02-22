@@ -7,6 +7,7 @@ import { AdminAuth } from '@admin/common/decorator/admin-auth.decorator';
 import { AdminRole } from '../auth/admin-role.enum';
 import { CreateAdminAccountDto } from './dto/request/create-admin-account.dto';
 import { GetAdminAccountAllDto } from './dto/request/get-admin-account-all.dto';
+import { GetAdminAccountAllResponseDto } from './dto/response/get-admin-account-all-response.dto';
 
 @Controller('admin-account')
 export class AdminAccountController {
@@ -19,7 +20,7 @@ export class AdminAccountController {
   @AdminAuth(AdminRole.SuperAdmin)
   async getAdminAccountAll(
     @Query() dto: GetAdminAccountAllDto,
-  ): Promise<AdminAccountEntity[]> {
+  ): Promise<GetAdminAccountAllResponseDto> {
     return await this.adminAccountService.getAdminAccountAll(dto);
   }
 
