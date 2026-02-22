@@ -68,15 +68,15 @@ export class AdminAccountCoreRepository {
   public async insertAdminAccount(
     input: CreateAdminAccountInput,
   ): Promise<SelectAdminAccount> {
-    return await this.txHost.tx.user.create({
-      ...SELECT_ADMIN_ACCOUNT,
+    return await this.txHost.tx.adminAccount.create({
+      select: SELECT_ADMIN_ACCOUNT.select,
       data: {
-        nickname: input.nickname,
-        adminAccount: {
+        id: input.id,
+        pw: input.pw,
+        role: input.role,
+        user: {
           create: {
-            id: input.id,
-            pw: input.pw,
-            role: input.role,
+            nickname: input.nickname,
           },
         },
       },

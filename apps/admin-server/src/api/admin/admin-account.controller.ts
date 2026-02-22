@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 import { AdminAccountService } from './admin-account.service';
 import { Admin } from '@admin/common/decorator/admin.decorator';
 import { LoginAdmin } from '@admin/common/login-admin';
@@ -39,7 +39,7 @@ export class AdminAccountController {
   @Post()
   @AdminAuth(AdminRole.SuperAdmin)
   async createAdminAccount(
-    dto: CreateAdminAccountDto,
+    @Body() dto: CreateAdminAccountDto,
   ): Promise<AdminAccountEntity> {
     return await this.adminAccountService.createAdminAccount(dto);
   }
