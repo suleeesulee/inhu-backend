@@ -23,13 +23,15 @@ export class AdminLoginAuthGuard implements CanActivate {
       throw new UnauthorizedException('Admin not authenticated');
     }
 
-    const requireRoles = this.reflector.getAllAndOverride<AdminRole[]>(
+    const requiredRoles = this.reflector.getAllAndOverride<AdminRole[]>(
       ADMIN_ROLES_METADATA_KEY,
       [context.getHandler(), context.getClass()],
     );
+    const effectiveRequiredRoles =
+      requiredRoles.length > 0 ? requiredRoles : [AdminRole.Admin];
 
     const userRole = admin.role || AdminRole.Admin;
-    const lowestRole = this.getRoleOrder(requireRoles);
+    const lowestRole = this.getRoleOrder(effectiveRequiredRoles);
 
     /**
      * 현재 명시된 권한보다 높은지 확인하기
@@ -38,7 +40,7 @@ export class AdminLoginAuthGuard implements CanActivate {
       return true;
     }
 
-    return requireRoles.includes(userRole);
+    return effectiveRequiredRoles.includes(userRole);
   }
 
   /**
