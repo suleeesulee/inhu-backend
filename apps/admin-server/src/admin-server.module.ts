@@ -22,7 +22,6 @@ import { ServerExceptionsFilter } from '@libs/common/filters/server-exception.fi
 import { HashModule } from '@libs/common/modules/hash/hash.module';
 import { FreeTagModule } from './api/free-tag/free-tag.module';
 import { SearchTagModule } from './api/search-tag/search-tag.module';
-import { AdminAccountCoreModule } from '@libs/core/admin-account/admin-account-core.module';
 import { AdminAccountModule } from './api/admin/admin-account.module';
 
 @Module({
@@ -51,7 +50,6 @@ import { AdminAccountModule } from './api/admin/admin-account.module';
     OpenAIModule,
     PinnedMagazineModule,
     NaverMenuModule,
-    AdminAccountCoreModule,
     HashModule,
     FreeTagModule,
     SearchTagModule,

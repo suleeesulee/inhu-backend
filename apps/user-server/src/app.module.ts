@@ -23,7 +23,6 @@ import { MagazineModule } from './api/magazine/magazine.module';
 import { PinnedMagazineModule } from './api/pinned-magazine/pinned-magazine.module';
 import { ServerExceptionsFilter } from '@libs/common/filters/server-exception.filter';
 import { HashModule } from '@libs/common/modules/hash/hash.module';
-import { AdminAccountModule } from '@admin/api/admin/admin-account.module';
 
 @Module({
   imports: [
@@ -55,7 +54,6 @@ import { AdminAccountModule } from '@admin/api/admin/admin-account.module';
     AopModule,
     MagazineModule,
     PinnedMagazineModule,
-    AdminAccountModule,
     HashModule,
   ],
   providers: [
