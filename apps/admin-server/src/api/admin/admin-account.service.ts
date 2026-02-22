@@ -2,6 +2,7 @@ import { LoginAdmin } from '@admin/common/login-admin';
 import { AdminAccountCoreService } from '@libs/core/admin-account/admin-account-core.service';
 import { Injectable } from '@nestjs/common';
 import { AdminAccountEntity } from './entity/admin-account.entity';
+import { CreateAdminAccountDto } from './dto/request/create-admin-account.dto';
 
 @Injectable()
 export class AdminAccountService {
@@ -11,8 +12,6 @@ export class AdminAccountService {
 
   /**
    * 내 정보 조회
-   *
-   * @author 조희주
    */
   public async getAdminAccountByIdx(
     admin: LoginAdmin,
@@ -25,5 +24,13 @@ export class AdminAccountService {
     }
 
     return AdminAccountEntity.fromModel(adminModel);
+  }
+
+  public async createAdminAccount(
+    input: CreateAdminAccountDto,
+  ): Promise<AdminAccountEntity> {
+    return AdminAccountEntity.fromModel(
+      await this.adminAccountCoreService.createAdminAccount(input),
+    );
   }
 }
