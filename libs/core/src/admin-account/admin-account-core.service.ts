@@ -20,4 +20,12 @@ export class AdminAccountCoreService {
 
     return account && AdminAccountModel.fromPrisma(account);
   }
+
+  public async getAdminAccountByIdx(
+    idx: number,
+  ): Promise<AdminAccountModel | null> {
+    const account = await this.adminAccountCoreRepository.selectAdminByIdx(idx);
+
+    return account && AdminAccountModel.fromPrisma(account);
+  }
 }

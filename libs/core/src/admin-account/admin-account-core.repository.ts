@@ -16,4 +16,14 @@ export class AdminAccountCoreRepository {
       },
     });
   }
+
+  public async selectAdminByIdx(
+    idx: number,
+  ): Promise<SelectAdminAccount | null> {
+    return await this.txHost.tx.adminAccount.findFirst({
+      where: {
+        idx,
+      },
+    });
+  }
 }
