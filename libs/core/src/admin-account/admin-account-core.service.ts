@@ -2,6 +2,7 @@ import { AdminAccountCoreRepository } from '@libs/core/admin-account/admin-accou
 import { AdminAccountModel } from '@libs/core/admin-account/model/admin-account.model';
 import { Injectable } from '@nestjs/common';
 import { CreateAdminAccountInput } from './inputs/create-admin-account.input';
+import { GetAdminAccountAllInput } from './inputs/get-admin-account-all.input';
 
 /**
  * 관리자 계정 코어 서비스
@@ -13,6 +14,14 @@ export class AdminAccountCoreService {
   constructor(
     private readonly adminAccountCoreRepository: AdminAccountCoreRepository,
   ) {}
+
+  public async getAdminAccountAll(
+    input: GetAdminAccountAllInput,
+  ): Promise<AdminAccountModel[]> {
+    return (
+      await this.adminAccountCoreRepository.selectAdminAccountAll(input)
+    ).map(AdminAccountModel.fromPrisma);
+  }
 
   public async getAdminAccountById(
     id: string,
