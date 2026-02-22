@@ -22,8 +22,8 @@ import { BlogReviewModule } from '@user/api/blog-review/blog-review.module';
 import { MagazineModule } from './api/magazine/magazine.module';
 import { PinnedMagazineModule } from './api/pinned-magazine/pinned-magazine.module';
 import { ServerExceptionsFilter } from '@libs/common/filters/server-exception.filter';
-import { AdminAccountModule } from '@libs/core/admin-account/admin-account-core.module';
 import { HashModule } from '@libs/common/modules/hash/hash.module';
+import { AdminAccountModule } from '@admin/api/admin/admin-account.module';
 
 @Module({
   imports: [
