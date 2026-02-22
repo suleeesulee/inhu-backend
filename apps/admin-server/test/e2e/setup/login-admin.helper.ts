@@ -1,3 +1,4 @@
+import { AdminRole } from '@admin/api/auth/admin-role.enum';
 import { LoginTokenService } from '@admin/common/modules/login-token/login-token.service';
 import { HashService } from '@libs/common/modules/hash/hash.service';
 import { ITestHelper } from '@libs/testing/interface/test-helper.interface';
@@ -46,8 +47,12 @@ export class LoginAdminHelper {
     ]);
 
     const [admin1Token, admin2Token] = await Promise.all([
-      await testHelper.get(LoginTokenService).generateAdminToken(admin1.idx),
-      await testHelper.get(LoginTokenService).generateAdminToken(admin2.idx),
+      await testHelper
+        .get(LoginTokenService)
+        .generateAdminToken(admin1.idx, AdminRole.Admin),
+      await testHelper
+        .get(LoginTokenService)
+        .generateAdminToken(admin2.idx, AdminRole.Admin),
     ]);
 
     return {

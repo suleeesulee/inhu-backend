@@ -28,6 +28,7 @@ export class AuthService {
 
     const token = await this.loginTokenService.generateAdminToken(
       adminAccount.idx,
+      adminAccount.role,
     );
 
     return token;
