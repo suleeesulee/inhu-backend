@@ -74,15 +74,15 @@ export class AdminAccountService {
   public async createAdminAccount(
     dto: CreateAdminAccountDto,
   ): Promise<CreateAdminAccountEntity> {
-    if (dto.role !== AdminRole.SuperAdmin) {
+    if (dto.role === AdminRole.SuperAdmin) {
       throw new ForbiddenException('permission denied');
     }
 
-    const pw = await this.hashService.hash(this.generateTempPassword(12));
+    const pw = this.generateTempPassword(12);
 
     return CreateAdminAccountEntity.fromModel(
       await this.adminAccountCoreService.createAdminAccount({
-        pw,
+        pw: await this.hashService.hash(pw),
         role: dto.role,
       }),
       pw,
@@ -112,6 +112,9 @@ export class AdminAccountService {
       await this.adminAccountCoreService.getAdminAccountByIdx(idx);
     if (!adminAccountModel) {
       throw new NotFoundException('Admin account not found');
+    }
+    if (adminAccountModel.role === AdminRole.SuperAdmin) {
+      throw new ForbiddenException('permission denied');
     }
 
     await this.loginTokenService.revokeAdminToken(idx);
