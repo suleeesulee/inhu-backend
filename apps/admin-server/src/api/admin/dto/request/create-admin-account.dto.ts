@@ -1,34 +1,40 @@
 import { AdminRole } from '@admin/api/auth/admin-role.enum';
 import { IsEnumValue } from '@libs/common/decorator/is-enum-value.decorator';
-import { IsNotEmpty, IsString, MaxLength, MinLength } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  MaxLength,
+  MinLength,
+} from 'class-validator';
 
 export class CreateAdminAccountDto {
   /**
    * @example "홍길동"
    */
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   @MinLength(1)
   @MaxLength(10)
-  nickname: string;
+  nickname?: string;
 
   /**
    * @example "hong1234"
    */
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   @MinLength(4)
   @MaxLength(20)
-  id: string;
+  id?: string;
 
   /**
    * @example "password1234"
    */
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   @MinLength(8)
   @MaxLength(20)
-  pw: string;
+  pw?: string;
 
   /**
    * 관리자 권한 (SUPER_ADMIN, ADMIN, MAGAZINE_ADMIN)

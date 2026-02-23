@@ -15,5 +15,6 @@ export const AdminAuth = (...roles: AdminRole[]) => {
     AdminRoles(...roles),
     ApiBearerAuth(),
     Exception(401, 'token not provided or expired'),
+    Exception(403, 'permission denied'),
   );
 };
