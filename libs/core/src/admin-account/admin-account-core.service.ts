@@ -3,6 +3,7 @@ import { AdminAccountModel } from '@libs/core/admin-account/model/admin-account.
 import { Injectable } from '@nestjs/common';
 import { CreateAdminAccountInput } from './inputs/create-admin-account.input';
 import { GetAdminAccountAllInput } from './inputs/get-admin-account-all.input';
+import { UpdateAdminAccountInput } from './inputs/update-admin-account.input';
 
 /**
  * 관리자 계정 코어 서비스
@@ -49,6 +50,13 @@ export class AdminAccountCoreService {
     return AdminAccountModel.fromPrisma(
       await this.adminAccountCoreRepository.insertAdminAccount(input),
     );
+  }
+
+  public async updateAdminAccountByIdx(
+    idx: number,
+    input: UpdateAdminAccountInput,
+  ): Promise<void> {
+    await this.adminAccountCoreRepository.updateAdminAccountByIdx(idx, input);
   }
 
   public async deleteAdminAccountByIdx(idx: number): Promise<void> {

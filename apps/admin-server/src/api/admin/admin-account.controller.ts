@@ -20,6 +20,7 @@ import { GetAdminAccountAllDto } from './dto/request/get-admin-account-all.dto';
 import { GetAdminAccountAllResponseDto } from './dto/response/get-admin-account-all-response.dto';
 import { Exception } from '@libs/common/decorator/exception.decorator';
 import { CheckAdminIdDuplicateDto } from './dto/request/check-admin-id-duplicate.dto';
+import { UpdateAdminAccountDto } from './dto/request/update-admin-account.dto';
 
 @Controller('admin-account')
 export class AdminAccountController {
@@ -63,6 +64,16 @@ export class AdminAccountController {
     @Body() dto: CreateAdminAccountDto,
   ): Promise<AdminAccountEntity> {
     return await this.adminAccountService.createAdminAccount(dto);
+  }
+
+  @Put('/my')
+  @AdminAuth(AdminRole.All)
+  @Exception(404, 'Admin account not found')
+  async updateMyInfo(
+    @Admin() admin: LoginAdmin,
+    @Body() dto: UpdateAdminAccountDto,
+  ): Promise<void> {
+    return await this.adminAccountService.updateAdminAccountByIdx(admin, dto);
   }
 
   @Delete('/:idx')

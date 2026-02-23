@@ -14,6 +14,7 @@ import { CheckAdminIdDuplicateDto } from './dto/request/check-admin-id-duplicate
 import { randomBytes } from 'crypto';
 import { CreateAdminAccountEntity } from './entity/create-admin-account.entity';
 import { LoginTokenService } from '@admin/common/modules/login-token/login-token.service';
+import { UpdateAdminAccountDto } from './dto/request/update-admin-account.dto';
 
 @Injectable()
 export class AdminAccountService {
@@ -86,6 +87,24 @@ export class AdminAccountService {
       }),
       pw,
     );
+  }
+
+  public async updateAdminAccountByIdx(
+    admin: LoginAdmin,
+    dto: UpdateAdminAccountDto,
+  ): Promise<void> {
+    const adminModel = await this.adminAccountCoreService.getAdminAccountByIdx(
+      admin.idx,
+    );
+    if (!adminModel) {
+      throw new NotFoundException('Admin account not found');
+    }
+
+    await this.adminAccountCoreService.updateAdminAccountByIdx(admin.idx, {
+      id: dto.id,
+      pw: dto.pw ? await this.hashService.hash(dto.pw) : undefined,
+      nickname: dto.nickname,
+    });
   }
 
   public async deleteAdminAccountByIdx(idx: number): Promise<void> {

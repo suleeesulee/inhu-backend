@@ -7,6 +7,7 @@ import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-pr
 import { Injectable } from '@nestjs/common';
 import { CreateAdminAccountInput } from './inputs/create-admin-account.input';
 import { GetAdminAccountAllInput } from './inputs/get-admin-account-all.input';
+import { UpdateAdminAccountInput } from './inputs/update-admin-account.input';
 
 @Injectable()
 export class AdminAccountCoreRepository {
@@ -80,6 +81,27 @@ export class AdminAccountCoreRepository {
         id: `admin_${user.idx}`,
         pw: input.pw,
         role: input.role,
+      },
+    });
+  }
+
+  public async updateAdminAccountByIdx(
+    idx: number,
+    input: UpdateAdminAccountInput,
+  ): Promise<void> {
+    await this.txHost.tx.adminAccount.update({
+      where: {
+        idx,
+      },
+      data: {
+        id: input.id,
+        pw: input.pw,
+        role: input.role,
+        user: {
+          update: {
+            nickname: input.nickname,
+          },
+        },
       },
     });
   }
