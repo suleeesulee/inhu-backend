@@ -1,5 +1,5 @@
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
-import { LoginAdmin } from '../login-admin';
+import { LoginAdmin } from '../types/login-admin';
 
 /**
  * access token 에서 decode 한 관리자 정보를 가져오는 데코레이터

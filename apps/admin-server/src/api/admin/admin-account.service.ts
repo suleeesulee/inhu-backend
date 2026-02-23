@@ -1,4 +1,4 @@
-import { LoginAdmin } from '@admin/common/login-admin';
+import { LoginAdmin } from '@admin/common/types/login-admin';
 import { AdminAccountCoreService } from '@libs/core/admin-account/admin-account-core.service';
 import {
   ForbiddenException,
@@ -10,6 +10,9 @@ import { CreateAdminAccountDto } from './dto/request/create-admin-account.dto';
 import { GetAdminAccountAllDto } from './dto/request/get-admin-account-all.dto';
 import { AdminRole } from '../auth/admin-role.enum';
 import { HashService } from '@libs/common/modules/hash/hash.service';
+import { CheckAdminIdDuplicateDto } from './dto/request/check-admin-id-duplicate.dto';
+import { randomBytes } from 'crypto';
+import { CreateAdminAccountEntity } from './entity/create-admin-account.entity';
 
 @Injectable()
 export class AdminAccountService {
@@ -57,20 +60,29 @@ export class AdminAccountService {
     return AdminAccountEntity.fromModel(adminModel);
   }
 
+  public async checkAdminIdDuplicate(
+    dto: CheckAdminIdDuplicateDto,
+  ): Promise<boolean> {
+    return (
+      (await this.adminAccountCoreService.getAdminAccountById(dto.id)) !== null
+    );
+  }
+
   public async createAdminAccount(
     dto: CreateAdminAccountDto,
-  ): Promise<AdminAccountEntity> {
+  ): Promise<CreateAdminAccountEntity> {
     if (dto.role !== AdminRole.SuperAdmin) {
       throw new ForbiddenException('permission denied');
     }
 
-    return AdminAccountEntity.fromModel(
+    const pw = await this.hashService.hash(this.generateTempPassword(12));
+
+    return CreateAdminAccountEntity.fromModel(
       await this.adminAccountCoreService.createAdminAccount({
-        id: dto.id,
-        pw: await this.hashService.hash(dto.pw),
-        nickname: dto.nickname,
+        pw,
         role: dto.role,
       }),
+      pw,
     );
   }
 
@@ -82,5 +94,9 @@ export class AdminAccountService {
     }
 
     await this.adminAccountCoreService.deleteAdminAccountByIdx(idx);
+  }
+
+  private generateTempPassword(length = 12): string {
+    return randomBytes(32).toString('base64url').slice(0, length);
   }
 }

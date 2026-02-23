@@ -65,20 +65,21 @@ export class AdminAccountCoreRepository {
     });
   }
 
-  public async insertAdminAccount(
-    input: CreateAdminAccountInput,
-  ): Promise<SelectAdminAccount> {
-    return await this.txHost.tx.adminAccount.create({
-      select: SELECT_ADMIN_ACCOUNT.select,
+  @Transactional()
+  public async insertAdminAccount(input: CreateAdminAccountInput) {
+    const user = await this.txHost.tx.user.create({
       data: {
-        id: input.id,
+        nickname: 'admin',
+      },
+    });
+
+    return await this.txHost.tx.adminAccount.create({
+      ...SELECT_ADMIN_ACCOUNT,
+      data: {
+        idx: user.idx,
+        id: `admin_${user.idx}`,
         pw: input.pw,
         role: input.role,
-        user: {
-          create: {
-            nickname: input.nickname,
-          },
-        },
       },
     });
   }
