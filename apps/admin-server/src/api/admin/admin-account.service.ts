@@ -1,15 +1,21 @@
 import { LoginAdmin } from '@admin/common/login-admin';
 import { AdminAccountCoreService } from '@libs/core/admin-account/admin-account-core.service';
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { AdminAccountEntity } from './entity/admin-account.entity';
 import { CreateAdminAccountDto } from './dto/request/create-admin-account.dto';
 import { GetAdminAccountAllDto } from './dto/request/get-admin-account-all.dto';
 import { AdminRole } from '../auth/admin-role.enum';
+import { HashService } from '@libs/common/modules/hash/hash.service';
 
 @Injectable()
 export class AdminAccountService {
   constructor(
     private readonly adminAccountCoreService: AdminAccountCoreService,
+    private readonly hashService: HashService,
   ) {}
 
   /**
@@ -45,7 +51,7 @@ export class AdminAccountService {
       admin.idx,
     );
     if (!adminModel) {
-      throw new Error('Authenticated admin not found in database');
+      throw new NotFoundException('Admin account not found');
     }
 
     return AdminAccountEntity.fromModel(adminModel);
@@ -54,12 +60,27 @@ export class AdminAccountService {
   public async createAdminAccount(
     dto: CreateAdminAccountDto,
   ): Promise<AdminAccountEntity> {
-    if (dto.role === AdminRole.SuperAdmin) {
+    if (dto.role !== AdminRole.SuperAdmin) {
       throw new ForbiddenException('permission denied');
     }
 
     return AdminAccountEntity.fromModel(
-      await this.adminAccountCoreService.createAdminAccount(dto),
+      await this.adminAccountCoreService.createAdminAccount({
+        id: dto.id,
+        pw: await this.hashService.hash(dto.pw),
+        nickname: dto.nickname,
+        role: dto.role,
+      }),
     );
+  }
+
+  public async deleteAdminAccountByIdx(idx: number): Promise<void> {
+    const adminAccountModel =
+      await this.adminAccountCoreService.getAdminAccountByIdx(idx);
+    if (!adminAccountModel) {
+      throw new NotFoundException('Admin account not found');
+    }
+
+    await this.adminAccountCoreService.deleteAdminAccountByIdx(idx);
   }
 }

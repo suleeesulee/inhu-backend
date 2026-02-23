@@ -2,7 +2,7 @@ import {
   SELECT_ADMIN_ACCOUNT,
   SelectAdminAccount,
 } from '@libs/core/admin-account/model/prisma-type/select-admin-account';
-import { TransactionHost } from '@nestjs-cls/transactional';
+import { Transactional, TransactionHost } from '@nestjs-cls/transactional';
 import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-prisma';
 import { Injectable } from '@nestjs/common';
 import { CreateAdminAccountInput } from './inputs/create-admin-account.input';
@@ -68,18 +68,34 @@ export class AdminAccountCoreRepository {
   public async insertAdminAccount(
     input: CreateAdminAccountInput,
   ): Promise<SelectAdminAccount> {
-    return await this.txHost.tx.user.create({
-      ...SELECT_ADMIN_ACCOUNT,
+    return await this.txHost.tx.adminAccount.create({
+      select: SELECT_ADMIN_ACCOUNT.select,
       data: {
-        nickname: input.nickname,
-        adminAccount: {
+        id: input.id,
+        pw: input.pw,
+        role: input.role,
+        user: {
           create: {
-            id: input.id,
-            pw: input.pw,
-            role: input.role,
+            nickname: input.nickname,
           },
         },
       },
+    });
+  }
+
+  @Transactional()
+  public async softDeleteAdminAccountByIdx(idx: number): Promise<void> {
+    await this.txHost.tx.adminAccount.delete({
+      where: {
+        idx,
+      },
+    });
+
+    await this.txHost.tx.user.update({
+      where: {
+        idx,
+      },
+      data: { deletedAt: new Date() },
     });
   }
 }

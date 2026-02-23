@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  ParseIntPipe,
+  Post,
+  Query,
+} from '@nestjs/common';
 import { AdminAccountService } from './admin-account.service';
 import { Admin } from '@admin/common/decorator/admin.decorator';
 import { LoginAdmin } from '@admin/common/login-admin';
@@ -8,6 +17,7 @@ import { AdminRole } from '../auth/admin-role.enum';
 import { CreateAdminAccountDto } from './dto/request/create-admin-account.dto';
 import { GetAdminAccountAllDto } from './dto/request/get-admin-account-all.dto';
 import { GetAdminAccountAllResponseDto } from './dto/response/get-admin-account-all-response.dto';
+import { Exception } from '@libs/common/decorator/exception.decorator';
 
 @Controller('admin-account')
 export class AdminAccountController {
@@ -29,6 +39,7 @@ export class AdminAccountController {
    */
   @Get('/my')
   @AdminAuth(AdminRole.All)
+  @Exception(404, 'Admin account not found')
   async getMyInfo(@Admin() admin: LoginAdmin): Promise<AdminAccountEntity> {
     return await this.adminAccountService.getAdminAccountByIdx(admin);
   }
@@ -39,8 +50,17 @@ export class AdminAccountController {
   @Post()
   @AdminAuth(AdminRole.SuperAdmin)
   async createAdminAccount(
-    dto: CreateAdminAccountDto,
+    @Body() dto: CreateAdminAccountDto,
   ): Promise<AdminAccountEntity> {
     return await this.adminAccountService.createAdminAccount(dto);
+  }
+
+  @Delete('/:idx')
+  @AdminAuth(AdminRole.SuperAdmin)
+  @Exception(404, 'Admin account not found')
+  async deleteAdminAccount(
+    @Param('idx', ParseIntPipe) idx: number,
+  ): Promise<void> {
+    await this.adminAccountService.deleteAdminAccountByIdx(idx);
   }
 }

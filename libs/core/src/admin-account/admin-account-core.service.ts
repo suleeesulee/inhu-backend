@@ -50,4 +50,8 @@ export class AdminAccountCoreService {
       await this.adminAccountCoreRepository.insertAdminAccount(input),
     );
   }
+
+  public async deleteAdminAccountByIdx(idx: number): Promise<void> {
+    await this.adminAccountCoreRepository.softDeleteAdminAccountByIdx(idx);
+  }
 }
