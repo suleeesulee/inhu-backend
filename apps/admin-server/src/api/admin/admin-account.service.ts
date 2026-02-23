@@ -13,12 +13,14 @@ import { HashService } from '@libs/common/modules/hash/hash.service';
 import { CheckAdminIdDuplicateDto } from './dto/request/check-admin-id-duplicate.dto';
 import { randomBytes } from 'crypto';
 import { CreateAdminAccountEntity } from './entity/create-admin-account.entity';
+import { LoginTokenService } from '@admin/common/modules/login-token/login-token.service';
 
 @Injectable()
 export class AdminAccountService {
   constructor(
     private readonly adminAccountCoreService: AdminAccountCoreService,
     private readonly hashService: HashService,
+    private readonly loginTokenService: LoginTokenService,
   ) {}
 
   /**
@@ -93,6 +95,7 @@ export class AdminAccountService {
       throw new NotFoundException('Admin account not found');
     }
 
+    await this.loginTokenService.revokeAdminToken(idx);
     await this.adminAccountCoreService.deleteAdminAccountByIdx(idx);
   }
 
