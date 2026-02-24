@@ -1,17 +1,31 @@
 import { Page } from 'puppeteer';
 import { NaverCrawlingStrategy } from './naver-crawling.strategy';
-import { NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { NaverMenu } from '../naver-menu';
+import { ConfigService } from '@nestjs/config';
 
+@Injectable()
 export class PcmapStrategy extends NaverCrawlingStrategy {
-  private readonly selectors = {
-    liSelector: 'li.E2jtL',
-    expandButtonSelector: 'a.fvwqf',
-    nameSelector: 'span.lPzHi',
-    priceSelector: 'div.GXS1X > em',
-    contentSelector: 'div.kPogF',
-    imageSelector: 'img.K0PDV',
+  private readonly selectors: {
+    liSelector: string;
+    expandButtonSelector: string;
+    nameSelector: string;
+    priceSelector: string;
+    contentSelector: string;
+    imageSelector: string;
   };
+
+  constructor(private readonly configService: ConfigService) {
+    super();
+    this.selectors = this.configService.get('naverMenu.pcmap') || {
+      liSelector: 'li.E2jtL',
+      expandButtonSelector: 'a.fvwqf',
+      nameSelector: 'span.lPzHi',
+      priceSelector: 'div.GXS1X > em',
+      contentSelector: 'div.okI98',
+      imageSelector: 'img.K0PDV',
+    };
+  }
 
   public async crawl(page: Page, timeout: number): Promise<NaverMenu[]> {
     await this.expandAllMenus(page, timeout);
