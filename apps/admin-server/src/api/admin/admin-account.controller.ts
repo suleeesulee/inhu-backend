@@ -21,6 +21,7 @@ import { GetAdminAccountAllResponseDto } from './dto/response/get-admin-account-
 import { Exception } from '@libs/common/decorator/exception.decorator';
 import { CheckAdminIdDuplicateDto } from './dto/request/check-admin-id-duplicate.dto';
 import { UpdateAdminAccountDto } from './dto/request/update-admin-account.dto';
+import { CreateAdminAccountEntity } from './entity/create-admin-account.entity';
 
 @Controller('admin-account')
 export class AdminAccountController {
@@ -62,7 +63,7 @@ export class AdminAccountController {
   @AdminAuth(AdminRole.SuperAdmin)
   async createAdminAccount(
     @Body() dto: CreateAdminAccountDto,
-  ): Promise<AdminAccountEntity> {
+  ): Promise<CreateAdminAccountEntity> {
     return await this.adminAccountService.createAdminAccount(dto);
   }
 
