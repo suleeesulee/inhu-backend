@@ -234,6 +234,7 @@ export class PlaceCoreRepository {
         {
           menuList: {
             some: {
+              deletedAt: null,
               OR: [
                 { name: { contains: trimmedSearchKeyword } },
                 { content: { contains: trimmedSearchKeyword } },
@@ -245,6 +246,7 @@ export class PlaceCoreRepository {
           placeSearchTagMappingList: {
             some: {
               searchTag: {
+                deletedAt: null,
                 content: { startsWith: trimmedSearchKeyword },
               },
             },
