@@ -1,3 +1,4 @@
+import { RedisModule } from '@libs/common/modules/redis/redis.module';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
@@ -14,6 +15,7 @@ import { LoginTokenService } from 'apps/admin-server/src/common/modules/login-to
       }),
       inject: [ConfigService],
     }),
+    RedisModule,
   ],
   providers: [LoginTokenService],
   exports: [LoginTokenService],
