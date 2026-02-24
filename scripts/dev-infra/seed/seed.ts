@@ -7,6 +7,8 @@ import { MenuSeedHelper } from '@libs/testing/seed/menu/menu.seed';
 import { PlaceSeedDataList } from './data/place.seed';
 import { MagazineSeedHelper } from '@libs/testing/seed/magazine/magazine.seed';
 import { magazineSeedDataList } from './data/magazine.seed';
+import { FreeTagSeedHelper } from '@libs/testing/seed/free-tag/free-tag.seed';
+import { SearchTagSeedHelper } from '@libs/testing/seed/search-tag/search-tag.seed';
 
 const prisma = new PrismaService();
 
@@ -19,6 +21,8 @@ async function main() {
   const pickedPlaceSeedHelper = new PickedPlaceSeedHelper(prisma);
   const menuSeedHelper = new MenuSeedHelper(prisma);
   const magazineSeedHelper = new MagazineSeedHelper(prisma);
+  const freeTagSeedHelper = new FreeTagSeedHelper(prisma);
+  const searchTagSeedHelper = new SearchTagSeedHelper(prisma);
 
   /**
    * 사용자 생성
@@ -29,6 +33,51 @@ async function main() {
   });
   const user2 = await userSeedHelper.seed({ nickname: '인덕이' });
   const userList = { user1, user2 };
+
+  await freeTagSeedHelper.seedAll([
+    { content: '가성비' },
+    { content: '맛집' },
+    { content: '인기' },
+    { content: '추천' },
+    { content: '신규' },
+    { content: '현지인추천' },
+    { content: '재방문의사' },
+    { content: '혼밥가능' },
+    { content: '데이트코스' },
+    { content: '단체모임' },
+    { content: '포장가능' },
+    { content: '주차가능' },
+    { content: '늦게까지영업' },
+    { content: '분위기좋음' },
+    { content: '웨이팅맛집' },
+  ]);
+  await searchTagSeedHelper.seedAll([
+    { content: '돈까스' },
+    { content: '라멘' },
+    { content: '자장면' },
+    { content: '닭발' },
+    { content: '카레' },
+    { content: '국밥' },
+    { content: '해장국' },
+    { content: '순대국' },
+    { content: '제육볶음' },
+    { content: '삼겹살' },
+    { content: '곱창' },
+    { content: '초밥' },
+    { content: '파스타' },
+    { content: '피자' },
+    { content: '샐러드' },
+    { content: '샌드위치' },
+    { content: '브런치' },
+    { content: '디저트' },
+    { content: '빙수' },
+    { content: '와플' },
+    { content: '베이글' },
+    { content: '떡볶이' },
+    { content: '김밥' },
+    { content: '칼국수' },
+    { content: '냉면' },
+  ]);
 
   /**
    * 장소 생성

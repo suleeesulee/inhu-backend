@@ -6,6 +6,8 @@ import {
 } from '../constants/type';
 import { WeeklyCloseType } from '@libs/core/place/constants/weekly-close-type.constant';
 import { PlaceType } from '@libs/core/place/constants/place-type.constant';
+import { MainCategory } from '@libs/core/category/constants/main-category.constant';
+import { MoodCategory } from '@libs/core/category/constants/mood-category.constant';
 //
 const PLACE_IMAGE = {
   BAKERY: '/place/bakery.jpg',
@@ -1906,7 +1908,7 @@ for (let i = 0; i < size * size; i++) {
 /**
  * 생성한 모든 데이터를 묶어서 하나의 배열로 export해줌
  */
-export const PlaceSeedDataList = [
+const placeSeedBaseList: PlaceSeedData[] = [
   place1,
   place2,
   place3,
@@ -1965,3 +1967,88 @@ export const PlaceSeedDataList = [
   place56,
   ...generatedPlaces,
 ];
+
+const RESTAURANT_MAIN_CATEGORY_POOL: MainCategory[] = [
+  MainCategory.KOREAN,
+  MainCategory.JAPANESE,
+  MainCategory.CHINESE,
+  MainCategory.WESTERN,
+  MainCategory.MEAT_SEAFOOD,
+  MainCategory.SNACK_BAR,
+  MainCategory.ASIAN,
+];
+
+const CAFE_MAIN_CATEGORY_POOL: MainCategory[] = [
+  MainCategory.CAFE_COFFEE,
+  MainCategory.DESSERT,
+  MainCategory.BAKERY,
+  MainCategory.ICE_CREAM_BINGSU,
+  MainCategory.BUNGEOPPANG_WAFFLE,
+  MainCategory.SANDWICH_SALAD,
+];
+
+const BAR_MAIN_CATEGORY_POOL: MainCategory[] = [
+  MainCategory.DINING_PUB,
+  MainCategory.HOF_BEER,
+  MainCategory.WINE_COCKTAIL,
+  MainCategory.IZAKAYA,
+  MainCategory.GASTROPUB,
+];
+
+function getDefaultMainCategoryList(
+  type: PlaceType,
+  index: number,
+): MainCategory[] {
+  if (type === PlaceType.CAFE) {
+    return [
+      CAFE_MAIN_CATEGORY_POOL[index % CAFE_MAIN_CATEGORY_POOL.length],
+      CAFE_MAIN_CATEGORY_POOL[(index + 1) % CAFE_MAIN_CATEGORY_POOL.length],
+    ];
+  }
+
+  if (type === PlaceType.BAR) {
+    return [
+      BAR_MAIN_CATEGORY_POOL[index % BAR_MAIN_CATEGORY_POOL.length],
+      BAR_MAIN_CATEGORY_POOL[(index + 1) % BAR_MAIN_CATEGORY_POOL.length],
+    ];
+  }
+
+  return [
+    RESTAURANT_MAIN_CATEGORY_POOL[index % RESTAURANT_MAIN_CATEGORY_POOL.length],
+    RESTAURANT_MAIN_CATEGORY_POOL[
+      (index + 1) % RESTAURANT_MAIN_CATEGORY_POOL.length
+    ],
+  ];
+}
+
+function getDefaultMoodCategoryList(type: PlaceType): MoodCategory[] {
+  if (type === PlaceType.CAFE) {
+    return [MoodCategory.GOOD_ATMOSPHERE, MoodCategory.STUDY_FRIENDLY];
+  }
+
+  if (type === PlaceType.BAR) {
+    return [MoodCategory.SOLO_DRINKING, MoodCategory.COST_EFFECTIVE];
+  }
+
+  return [MoodCategory.SOLO_DINING, MoodCategory.RESTAURANT_GROUP_GATHERING];
+}
+
+function getRotatingIdxList(max: number, start: number, count: number): number[] {
+  return Array.from({ length: count }, (_, offset) => {
+    return ((start + offset) % max) + 1;
+  });
+}
+
+export const PlaceSeedDataList = placeSeedBaseList.map((place, index) => {
+  const type = place.type ?? PlaceType.RESTAURANT;
+
+  return {
+    ...place,
+    mainCategoryList:
+      place.mainCategoryList ?? getDefaultMainCategoryList(type, index),
+    moodCategoryList: place.moodCategoryList ?? getDefaultMoodCategoryList(type),
+    freeTagIdxList: place.freeTagIdxList ?? getRotatingIdxList(15, index, 3),
+    searchTagIdxList:
+      place.searchTagIdxList ?? getRotatingIdxList(25, index * 2, 4),
+  };
+});
