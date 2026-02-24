@@ -1,19 +1,35 @@
 import { Page } from 'puppeteer';
 import { NaverCrawlingStrategy } from './naver-crawling.strategy';
 import { NaverMenu } from '../naver-menu';
-import { NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 
+@Injectable()
 export class BookingStrategy extends NaverCrawlingStrategy {
-  private readonly selectors = {
-    rootDivSelector: 'div.user_app',
-    liSelector: 'li[class^="MenuContent__order_list_item"]',
-    nameSelector: 'div[class^="MenuContent__tit"]',
-    priceSelector: 'div[class^="MenuContent__price"] strong',
-    contentSelector: 'span.detail_txt',
-    imageSelector: 'img[class^="MenuContent__img"]',
-    tabBoxSelector: 'div[class^="SelectOrderType__tab_switch_box"]',
-    tabItemSelector: 'a[role="tab"]',
+  private readonly selectors: {
+    rootDivSelector: string;
+    liSelector: string;
+    nameSelector: string;
+    priceSelector: string;
+    contentSelector: string;
+    imageSelector: string;
+    tabBoxSelector: string;
+    tabItemSelector: string;
   };
+
+  constructor(private readonly configService: ConfigService) {
+    super();
+    this.selectors = this.configService.get('naverMenu.booking') || {
+      rootDivSelector: 'div.user_app',
+      liSelector: 'li[class^="MenuContent__order_list_item"]',
+      nameSelector: 'div[class^="MenuContent__tit"]',
+      priceSelector: 'div[class^="MenuContent__price"] strong',
+      contentSelector: 'span.detail_txt',
+      imageSelector: 'img[class^="MenuContent__img"]',
+      tabBoxSelector: 'div[class^="SelectOrderType__tab_switch_box"]',
+      tabItemSelector: 'a[role="tab"]',
+    };
+  }
 
   public async crawl(page: Page, timeout: number): Promise<NaverMenu[]> {
     await this.showSoldOutMenus(page, timeout);
