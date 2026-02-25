@@ -83,6 +83,7 @@ CREATE TABLE magazine_place_tb
 CREATE TABLE magazine_tb
 (
   idx                  int                      NOT NULL GENERATED ALWAYS AS IDENTITY,
+  author_idx           int                      NOT NULL,
   title                varchar                  NOT NULL,
   description          varchar                 ,
   content              varchar                  NOT NULL,
@@ -673,3 +674,8 @@ ALTER TABLE place_search_tag_mapping_tb
   ADD CONSTRAINT FK_place_tb_TO_place_search_tag_mapping_tb
     FOREIGN KEY (place_idx)
     REFERENCES place_tb (idx);
+
+ALTER TABLE magazine_tb
+  ADD CONSTRAINT FK_user_tb_TO_magazine_tb
+    FOREIGN KEY (author_idx)
+    REFERENCES user_tb (idx);
