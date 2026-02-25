@@ -1,6 +1,6 @@
-import { IsString } from 'class-validator';
+import { IsUrl } from 'class-validator';
 
 export class CreateBlogReviewViaLinkDto {
-  @IsString()
+  @IsUrl()
   url: string;
 }

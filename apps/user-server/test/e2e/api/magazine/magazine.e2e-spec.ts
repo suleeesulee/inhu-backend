@@ -10,7 +10,8 @@ import { MagazineEntity } from '@user/api/magazine/entity/magazine.entity';
 import { AppModule } from '@user/app.module';
 import { TestHelper } from 'apps/user-server/test/e2e/setup/test.helper';
 
-describe('Menu E2E test', () => {
+// TODO: authorIdx를 사용자 idx로 넘기는데, 의미적으론 관리자 idx임. 다른 방법 고민할 필요 있음
+describe('Magazine E2E test', () => {
   const testHelper = TestHelper.create(AppModule);
   const placeSeedHelper = testHelper.seedHelper(PlaceSeedHelper);
   const bookmarkSeedHelper = testHelper.seedHelper(BookmarkSeedHelper);
@@ -45,6 +46,7 @@ describe('Menu E2E test', () => {
         userIdx: loginUser.idx,
       });
       const magazineSeed = await magazineSeedHelper.seed({
+        authorIdx: loginUser.idx,
         title: 'Test Magazine',
         description: 'Test Description',
         content: 'Test Content',
@@ -113,6 +115,7 @@ describe('Menu E2E test', () => {
         userIdx: loginUser.idx,
       });
       const magazineSeed = await magazineSeedHelper.seed({
+        authorIdx: loginUser.idx,
         activatedAt: new Date(),
         deletedAt: null,
         placeIdxList: [place1.idx, place2.idx],
@@ -136,6 +139,7 @@ describe('Menu E2E test', () => {
         { deletedAt: null, activatedAt: new Date() },
       ]);
       const magazineSeed = await magazineSeedHelper.seed({
+        authorIdx: testHelper.loginUsers.user1.idx,
         activatedAt: new Date(),
         deletedAt: null,
         placeIdxList: [place1.idx, place2.idx],
@@ -155,6 +159,7 @@ describe('Menu E2E test', () => {
     it('200 - isLiked check when not liked', async () => {
       const loginUser = testHelper.loginUsers.user1;
       const magazineSeed = await magazineSeedHelper.seed({
+        authorIdx: loginUser.idx,
         activatedAt: new Date(),
         deletedAt: null,
       });
@@ -172,6 +177,7 @@ describe('Menu E2E test', () => {
 
     it('200 - isLiked check when not login', async () => {
       const magazineSeed = await magazineSeedHelper.seed({
+        authorIdx: testHelper.loginUsers.user1.idx,
         activatedAt: new Date(),
         deletedAt: null,
       });
@@ -188,6 +194,7 @@ describe('Menu E2E test', () => {
 
     it('200 - viewCount increment check(multiple calls && not login)', async () => {
       const magazineSeed = await magazineSeedHelper.seed({
+        authorIdx: testHelper.loginUsers.user1.idx,
         activatedAt: new Date(),
         deletedAt: null,
       });
@@ -211,6 +218,7 @@ describe('Menu E2E test', () => {
     it('200 - viewCount increment check(multiple calls && login)', async () => {
       const loginUser = testHelper.loginUsers.user1;
       const magazineSeed = await magazineSeedHelper.seed({
+        authorIdx: loginUser.idx,
         activatedAt: new Date(),
         deletedAt: null,
       });
@@ -257,6 +265,7 @@ describe('Menu E2E test', () => {
     it('200 - field check', async () => {
       const loginUser = testHelper.loginUsers.user1;
       const magazineSeed = await magazineSeedHelper.seed({
+        authorIdx: loginUser.idx,
         title: 'Test Magazine',
         description: 'Test Description',
         content: 'Test Content',
@@ -310,6 +319,7 @@ describe('Menu E2E test', () => {
 
     it('200 - not select magazine that is not activated', async () => {
       const magazineSeed = await magazineSeedHelper.seed({
+        authorIdx: testHelper.loginUsers.user1.idx,
         activatedAt: null,
         deletedAt: null,
       });
@@ -330,6 +340,7 @@ describe('Menu E2E test', () => {
 
     it('200 - not select magazine that is deleted', async () => {
       const magazineSeed = await magazineSeedHelper.seed({
+        authorIdx: testHelper.loginUsers.user1.idx,
         activatedAt: new Date(),
         deletedAt: new Date(),
       });
@@ -364,19 +375,23 @@ describe('Menu E2E test', () => {
     });
 
     it('200 - order by check(like)', async () => {
+      const loginUser = testHelper.loginUsers.user1;
       const [magazine1, magazine2, magazine3] =
         await magazineSeedHelper.seedAll([
           {
+            authorIdx: loginUser.idx,
             likeCount: 5,
             activatedAt: new Date(),
             deletedAt: null,
           },
           {
+            authorIdx: loginUser.idx,
             likeCount: 10,
             activatedAt: new Date(),
             deletedAt: null,
           },
           {
+            authorIdx: loginUser.idx,
             likeCount: 3,
             activatedAt: new Date(),
             deletedAt: null,
@@ -399,19 +414,23 @@ describe('Menu E2E test', () => {
     });
 
     it('200 - order by check(view)', async () => {
+      const loginUser = testHelper.loginUsers.user1;
       const [magazine1, magazine2, magazine3] =
         await magazineSeedHelper.seedAll([
           {
+            authorIdx: loginUser.idx,
             viewCount: 50,
             activatedAt: new Date(),
             deletedAt: null,
           },
           {
+            authorIdx: loginUser.idx,
             viewCount: 100,
             activatedAt: new Date(),
             deletedAt: null,
           },
           {
+            authorIdx: loginUser.idx,
             viewCount: 30,
             activatedAt: new Date(),
             deletedAt: null,
@@ -434,17 +453,21 @@ describe('Menu E2E test', () => {
     });
 
     it('200 - order by check(time)', async () => {
+      const loginUser = testHelper.loginUsers.user1;
       const [magazine1, magazine2, magazine3] =
         await magazineSeedHelper.seedAll([
           {
+            authorIdx: loginUser.idx,
             activatedAt: new Date(),
             deletedAt: null,
           },
           {
+            authorIdx: loginUser.idx,
             activatedAt: new Date(),
             deletedAt: null,
           },
           {
+            authorIdx: loginUser.idx,
             activatedAt: new Date(),
             deletedAt: null,
           },
@@ -466,12 +489,15 @@ describe('Menu E2E test', () => {
     });
 
     it('200 - isLiked check when no login', async () => {
+      const loginUser = testHelper.loginUsers.user1;
       const [magazine1, magazine2] = await magazineSeedHelper.seedAll([
         {
+          authorIdx: loginUser.idx,
           activatedAt: new Date(),
           deletedAt: null,
         },
         {
+          authorIdx: loginUser.idx,
           activatedAt: new Date(),
           deletedAt: null,
         },
@@ -493,10 +519,12 @@ describe('Menu E2E test', () => {
       const loginUser = testHelper.loginUsers.user1;
       const [magazine1, magazine2] = await magazineSeedHelper.seedAll([
         {
+          authorIdx: loginUser.idx,
           activatedAt: new Date(),
           deletedAt: null,
         },
         {
+          authorIdx: loginUser.idx,
           activatedAt: new Date(),
           deletedAt: null,
         },
@@ -521,17 +549,21 @@ describe('Menu E2E test', () => {
     });
 
     it('200 - type filtering check', async () => {
+      const loginUser = testHelper.loginUsers.user1;
       const [magazine1, magazine2, magazine3] =
         await magazineSeedHelper.seedAll([
           {
+            authorIdx: loginUser.idx,
             activatedAt: new Date(),
             typeList: [PlaceType.CAFE],
           },
           {
+            authorIdx: loginUser.idx,
             activatedAt: new Date(),
             typeList: [PlaceType.RESTAURANT],
           },
           {
+            authorIdx: loginUser.idx,
             activatedAt: new Date(),
             typeList: [PlaceType.BAR],
           },
@@ -554,9 +586,11 @@ describe('Menu E2E test', () => {
     });
 
     it('200 - main category filtering check (mainCategory === undefined)', async () => {
+      const loginUser = testHelper.loginUsers.user1;
       const [magazine1, magazine2, magazine3] =
         await magazineSeedHelper.seedAll([
           {
+            authorIdx: loginUser.idx,
             activatedAt: new Date(),
             mainCategoryList: [
               MainCategory.BAKERY,
@@ -564,6 +598,7 @@ describe('Menu E2E test', () => {
             ],
           },
           {
+            authorIdx: loginUser.idx,
             activatedAt: new Date(),
             mainCategoryList: [
               MainCategory.BUNGEOPPANG_WAFFLE,
@@ -571,6 +606,7 @@ describe('Menu E2E test', () => {
             ],
           },
           {
+            authorIdx: loginUser.idx,
             activatedAt: new Date(),
             mainCategoryList: [
               MainCategory.SANDWICH_SALAD,
@@ -595,9 +631,11 @@ describe('Menu E2E test', () => {
     });
 
     it('200 - main category filtering check (single condition, multiple matched)', async () => {
+      const loginUser = testHelper.loginUsers.user1;
       const [magazine1, magazine2, magazine3] =
         await magazineSeedHelper.seedAll([
           {
+            authorIdx: loginUser.idx,
             activatedAt: new Date(),
             mainCategoryList: [
               MainCategory.BAKERY,
@@ -605,6 +643,7 @@ describe('Menu E2E test', () => {
             ],
           },
           {
+            authorIdx: loginUser.idx,
             activatedAt: new Date(),
             mainCategoryList: [
               MainCategory.BUNGEOPPANG_WAFFLE,
@@ -612,6 +651,7 @@ describe('Menu E2E test', () => {
             ],
           },
           {
+            authorIdx: loginUser.idx,
             activatedAt: new Date(),
             mainCategoryList: [
               MainCategory.SANDWICH_SALAD,
@@ -637,9 +677,11 @@ describe('Menu E2E test', () => {
     });
 
     it('200 - main category filtering check (multiple conditions, single matched)', async () => {
+      const loginUser = testHelper.loginUsers.user1;
       const [magazine1, magazine2, magazine3] =
         await magazineSeedHelper.seedAll([
           {
+            authorIdx: loginUser.idx,
             activatedAt: new Date(),
             mainCategoryList: [
               MainCategory.BAKERY,
@@ -647,6 +689,7 @@ describe('Menu E2E test', () => {
             ],
           },
           {
+            authorIdx: loginUser.idx,
             activatedAt: new Date(),
             mainCategoryList: [
               MainCategory.BUNGEOPPANG_WAFFLE,
@@ -654,6 +697,7 @@ describe('Menu E2E test', () => {
             ],
           },
           {
+            authorIdx: loginUser.idx,
             activatedAt: new Date(),
             mainCategoryList: [
               MainCategory.SANDWICH_SALAD,
@@ -682,9 +726,11 @@ describe('Menu E2E test', () => {
     });
 
     it('200 - main category filtering check (single condition, single matched)', async () => {
+      const loginUser = testHelper.loginUsers.user1;
       const [magazine1, magazine2, magazine3] =
         await magazineSeedHelper.seedAll([
           {
+            authorIdx: loginUser.idx,
             activatedAt: new Date(),
             mainCategoryList: [
               MainCategory.BAKERY,
@@ -692,6 +738,7 @@ describe('Menu E2E test', () => {
             ],
           },
           {
+            authorIdx: loginUser.idx,
             activatedAt: new Date(),
             mainCategoryList: [
               MainCategory.BUNGEOPPANG_WAFFLE,
@@ -699,6 +746,7 @@ describe('Menu E2E test', () => {
             ],
           },
           {
+            authorIdx: loginUser.idx,
             activatedAt: new Date(),
             mainCategoryList: [
               MainCategory.SANDWICH_SALAD,
@@ -724,9 +772,11 @@ describe('Menu E2E test', () => {
     });
 
     it('200 - main category filtering check (single conditions, no matched)', async () => {
+      const loginUser = testHelper.loginUsers.user1;
       const [magazine1, magazine2, magazine3] =
         await magazineSeedHelper.seedAll([
           {
+            authorIdx: loginUser.idx,
             activatedAt: new Date(),
             mainCategoryList: [
               MainCategory.BAKERY,
@@ -734,6 +784,7 @@ describe('Menu E2E test', () => {
             ],
           },
           {
+            authorIdx: loginUser.idx,
             activatedAt: new Date(),
             mainCategoryList: [
               MainCategory.BUNGEOPPANG_WAFFLE,
@@ -741,6 +792,7 @@ describe('Menu E2E test', () => {
             ],
           },
           {
+            authorIdx: loginUser.idx,
             activatedAt: new Date(),
             mainCategoryList: [
               MainCategory.SANDWICH_SALAD,
@@ -765,9 +817,11 @@ describe('Menu E2E test', () => {
     });
 
     it('200 - main category filtering check (multiple conditions, no matched)', async () => {
+      const loginUser = testHelper.loginUsers.user1;
       const [magazine1, magazine2, magazine3] =
         await magazineSeedHelper.seedAll([
           {
+            authorIdx: loginUser.idx,
             activatedAt: new Date(),
             mainCategoryList: [
               MainCategory.BAKERY,
@@ -775,6 +829,7 @@ describe('Menu E2E test', () => {
             ],
           },
           {
+            authorIdx: loginUser.idx,
             activatedAt: new Date(),
             mainCategoryList: [
               MainCategory.BUNGEOPPANG_WAFFLE,
@@ -782,6 +837,7 @@ describe('Menu E2E test', () => {
             ],
           },
           {
+            authorIdx: loginUser.idx,
             activatedAt: new Date(),
             mainCategoryList: [
               MainCategory.SANDWICH_SALAD,
@@ -806,9 +862,11 @@ describe('Menu E2E test', () => {
     });
 
     it('200 - main category & mood category filtering check(single mood condition, single matched)', async () => {
+      const loginUser = testHelper.loginUsers.user1;
       const [magazine1, magazine2, magazine3] =
         await magazineSeedHelper.seedAll([
           {
+            authorIdx: loginUser.idx,
             activatedAt: new Date(),
             mainCategoryList: [
               MainCategory.BAKERY,
@@ -820,6 +878,7 @@ describe('Menu E2E test', () => {
             ],
           },
           {
+            authorIdx: loginUser.idx,
             activatedAt: new Date(),
             mainCategoryList: [
               MainCategory.BUNGEOPPANG_WAFFLE,
@@ -831,6 +890,7 @@ describe('Menu E2E test', () => {
             ],
           },
           {
+            authorIdx: loginUser.idx,
             activatedAt: new Date(),
             mainCategoryList: [
               MainCategory.SANDWICH_SALAD,
@@ -861,9 +921,11 @@ describe('Menu E2E test', () => {
     });
 
     it('200 - main category & mood category filtering check(single mood condition, multiple matched)', async () => {
+      const loginUser = testHelper.loginUsers.user1;
       const [magazine1, magazine2, magazine3] =
         await magazineSeedHelper.seedAll([
           {
+            authorIdx: loginUser.idx,
             activatedAt: new Date(),
             mainCategoryList: [
               MainCategory.BAKERY,
@@ -875,6 +937,7 @@ describe('Menu E2E test', () => {
             ],
           },
           {
+            authorIdx: loginUser.idx,
             activatedAt: new Date(),
             mainCategoryList: [
               MainCategory.BUNGEOPPANG_WAFFLE,
@@ -886,6 +949,7 @@ describe('Menu E2E test', () => {
             ],
           },
           {
+            authorIdx: loginUser.idx,
             activatedAt: new Date(),
             mainCategoryList: [
               MainCategory.SANDWICH_SALAD,
@@ -916,9 +980,11 @@ describe('Menu E2E test', () => {
     });
 
     it('200 - main category & mood category filtering check(multiple mood conditions, single matched)', async () => {
+      const loginUser = testHelper.loginUsers.user1;
       const [magazine1, magazine2, magazine3] =
         await magazineSeedHelper.seedAll([
           {
+            authorIdx: loginUser.idx,
             activatedAt: new Date(),
             mainCategoryList: [
               MainCategory.BAKERY,
@@ -930,6 +996,7 @@ describe('Menu E2E test', () => {
             ],
           },
           {
+            authorIdx: loginUser.idx,
             activatedAt: new Date(),
             mainCategoryList: [
               MainCategory.BUNGEOPPANG_WAFFLE,
@@ -941,6 +1008,7 @@ describe('Menu E2E test', () => {
             ],
           },
           {
+            authorIdx: loginUser.idx,
             activatedAt: new Date(),
             mainCategoryList: [
               MainCategory.SANDWICH_SALAD,
@@ -977,9 +1045,11 @@ describe('Menu E2E test', () => {
     });
 
     it('200 - main category & mood category filtering check(single mood conditions, no matched)', async () => {
+      const loginUser = testHelper.loginUsers.user1;
       const [magazine1, magazine2, magazine3] =
         await magazineSeedHelper.seedAll([
           {
+            authorIdx: loginUser.idx,
             activatedAt: new Date(),
             mainCategoryList: [
               MainCategory.BAKERY,
@@ -991,6 +1061,7 @@ describe('Menu E2E test', () => {
             ],
           },
           {
+            authorIdx: loginUser.idx,
             activatedAt: new Date(),
             mainCategoryList: [
               MainCategory.BUNGEOPPANG_WAFFLE,
@@ -1002,6 +1073,7 @@ describe('Menu E2E test', () => {
             ],
           },
           {
+            authorIdx: loginUser.idx,
             activatedAt: new Date(),
             mainCategoryList: [
               MainCategory.SANDWICH_SALAD,
@@ -1031,9 +1103,11 @@ describe('Menu E2E test', () => {
     });
 
     it('200 - main category & mood category filtering check(multiple mood conditions, no matched)', async () => {
+      const loginUser = testHelper.loginUsers.user1;
       const [magazine1, magazine2, magazine3] =
         await magazineSeedHelper.seedAll([
           {
+            authorIdx: loginUser.idx,
             activatedAt: new Date(),
             mainCategoryList: [
               MainCategory.BAKERY,
@@ -1045,6 +1119,7 @@ describe('Menu E2E test', () => {
             ],
           },
           {
+            authorIdx: loginUser.idx,
             activatedAt: new Date(),
             mainCategoryList: [
               MainCategory.BUNGEOPPANG_WAFFLE,
@@ -1056,6 +1131,7 @@ describe('Menu E2E test', () => {
             ],
           },
           {
+            authorIdx: loginUser.idx,
             activatedAt: new Date(),
             mainCategoryList: [
               MainCategory.SANDWICH_SALAD,
@@ -1097,6 +1173,7 @@ describe('Menu E2E test', () => {
       const [magazine1, magazine2, magazine3] =
         await magazineSeedHelper.seedAll([
           {
+            authorIdx: loginUser.idx,
             likeCount: 5,
             activatedAt: new Date(),
             deletedAt: null,
@@ -1111,6 +1188,7 @@ describe('Menu E2E test', () => {
             ],
           },
           {
+            authorIdx: loginUser.idx,
             likeCount: 10,
             activatedAt: new Date(),
             deletedAt: null,
@@ -1122,6 +1200,7 @@ describe('Menu E2E test', () => {
             ],
           },
           {
+            authorIdx: loginUser.idx,
             likeCount: 3,
             activatedAt: new Date(),
             deletedAt: null,
@@ -1198,10 +1277,12 @@ describe('Menu E2E test', () => {
       const loginUser = testHelper.loginUsers.user1;
       const [magazine1, magazine2] = await magazineSeedHelper.seedAll([
         {
+          authorIdx: loginUser.idx,
           activatedAt: new Date(),
           deletedAt: null,
         },
         {
+          authorIdx: loginUser.idx,
           activatedAt: new Date(),
           deletedAt: null,
         },
@@ -1227,6 +1308,7 @@ describe('Menu E2E test', () => {
     it('200 - successfully like magazine', async () => {
       const loginUser = testHelper.loginUsers.user1;
       const magazineSeed = await magazineSeedHelper.seed({
+        authorIdx: loginUser.idx,
         activatedAt: new Date(),
         deletedAt: null,
       });
@@ -1268,6 +1350,7 @@ describe('Menu E2E test', () => {
     it('409 - magazine like already exists(not at the same time)', async () => {
       const loginUser = testHelper.loginUsers.user1;
       const magazineSeed = await magazineSeedHelper.seed({
+        authorIdx: loginUser.idx,
         activatedAt: new Date(),
         deletedAt: null,
       });
@@ -1301,6 +1384,7 @@ describe('Menu E2E test', () => {
     it('409 - magazine like already exists(at the same time)', async () => {
       const loginUser = testHelper.loginUsers.user1;
       const magazineSeed = await magazineSeedHelper.seed({
+        authorIdx: loginUser.idx,
         activatedAt: new Date(),
         deletedAt: null,
       });
@@ -1338,6 +1422,7 @@ describe('Menu E2E test', () => {
     it('200 - successfully unlike magazine', async () => {
       const loginUser = testHelper.loginUsers.user1;
       const magazineSeed = await magazineSeedHelper.seed({
+        authorIdx: loginUser.idx,
         activatedAt: new Date(),
         deletedAt: null,
       });
@@ -1370,6 +1455,7 @@ describe('Menu E2E test', () => {
     it('200 - unlike magazine when likeCount is 0 (no effect)', async () => {
       const loginUser = testHelper.loginUsers.user1;
       const magazineSeed = await magazineSeedHelper.seed({
+        authorIdx: loginUser.idx,
         activatedAt: new Date(),
         deletedAt: null,
         likeCount: 0,
@@ -1412,6 +1498,7 @@ describe('Menu E2E test', () => {
     it('409 - magazine like does not exist(not at the same time)', async () => {
       const loginUser = testHelper.loginUsers.user1;
       const magazineSeed = await magazineSeedHelper.seed({
+        authorIdx: loginUser.idx,
         likeCount: 1,
         activatedAt: new Date(),
         deletedAt: null,
@@ -1449,6 +1536,7 @@ describe('Menu E2E test', () => {
     it('409 - magazine like does not exist(at the same time)', async () => {
       const loginUser = testHelper.loginUsers.user1;
       const magazineSeed = await magazineSeedHelper.seed({
+        authorIdx: loginUser.idx,
         likeCount: 1,
         activatedAt: new Date(),
         deletedAt: null,

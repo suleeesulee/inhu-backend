@@ -8,6 +8,9 @@ import { PinnedMagazineSeedHelper } from '@libs/testing/seed/pinned-magazine/pin
 import { PlaceType } from '@libs/core/place/constants/place-type.constant';
 import { MainCategory } from '@libs/core/category/constants/main-category.constant';
 import { MoodCategory } from '@libs/core/category/constants/mood-category.constant';
+import { AdminAccountSeedHelper } from '@libs/testing/seed/admin-account/admin-account.seed';
+import { UserSeedHelper } from '@libs/testing/seed/user/user.seed';
+import { AdminRole } from '@admin/api/auth/admin-role.enum';
 
 describe('Magazine e2e test', () => {
   const testHelper = TestHelper.create(AdminServerModule);
@@ -16,6 +19,8 @@ describe('Magazine e2e test', () => {
   const pinnedMagazineSeedHelper = testHelper.seedHelper(
     PinnedMagazineSeedHelper,
   );
+  const userSeedHelper = testHelper.seedHelper(UserSeedHelper);
+  const adminAccountSeedHelper = testHelper.seedHelper(AdminAccountSeedHelper);
 
   beforeEach(async () => {
     await testHelper.init();
@@ -41,6 +46,7 @@ describe('Magazine e2e test', () => {
         activatedAt: new Date(),
       });
       const magazineSeed = await magazineSeedHelper.seed({
+        authorIdx: loginUser.idx,
         title: 'Test Magazine',
         description: 'Test Description',
         content: 'Test Content',
@@ -88,8 +94,8 @@ describe('Magazine e2e test', () => {
     it('200 - magazineList empty due to page too high', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
       await magazineSeedHelper.seedAll([
-        { deletedAt: null, activatedAt: new Date() },
-        { deletedAt: null, activatedAt: new Date() },
+        { authorIdx: loginUser.idx, deletedAt: null, activatedAt: new Date() },
+        { authorIdx: loginUser.idx, deletedAt: null, activatedAt: new Date() },
       ]);
 
       const response = await testHelper
@@ -110,8 +116,8 @@ describe('Magazine e2e test', () => {
     it('200 - activated filter (undefined)', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const [magazine1, magazine2] = await magazineSeedHelper.seedAll([
-        { deletedAt: null, activatedAt: new Date() },
-        { deletedAt: null, activatedAt: null },
+        { authorIdx: loginUser.idx, deletedAt: null, activatedAt: new Date() },
+        { authorIdx: loginUser.idx, deletedAt: null, activatedAt: null },
       ]);
 
       const response = await testHelper
@@ -135,9 +141,13 @@ describe('Magazine e2e test', () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const [magazine1, magazine2, magazine3] =
         await magazineSeedHelper.seedAll([
-          { deletedAt: null, activatedAt: new Date() },
-          { deletedAt: null, activatedAt: null },
-          { deletedAt: null, activatedAt: null },
+          {
+            authorIdx: loginUser.idx,
+            deletedAt: null,
+            activatedAt: new Date(),
+          },
+          { authorIdx: loginUser.idx, deletedAt: null, activatedAt: null },
+          { authorIdx: loginUser.idx, deletedAt: null, activatedAt: null },
         ]);
 
       const response = await testHelper
@@ -161,9 +171,17 @@ describe('Magazine e2e test', () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const [magazine1, magazine2, magazine3] =
         await magazineSeedHelper.seedAll([
-          { deletedAt: null, activatedAt: new Date() },
-          { deletedAt: null, activatedAt: new Date() },
-          { deletedAt: null, activatedAt: null },
+          {
+            authorIdx: loginUser.idx,
+            deletedAt: null,
+            activatedAt: new Date(),
+          },
+          {
+            authorIdx: loginUser.idx,
+            deletedAt: null,
+            activatedAt: new Date(),
+          },
+          { authorIdx: loginUser.idx, deletedAt: null, activatedAt: null },
         ]);
 
       const response = await testHelper
@@ -187,9 +205,21 @@ describe('Magazine e2e test', () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const [magazine1, magazine2, magazine3] =
         await magazineSeedHelper.seedAll([
-          { deletedAt: null, activatedAt: new Date() },
-          { deletedAt: null, activatedAt: new Date() },
-          { deletedAt: null, activatedAt: new Date() },
+          {
+            authorIdx: loginUser.idx,
+            deletedAt: null,
+            activatedAt: new Date(),
+          },
+          {
+            authorIdx: loginUser.idx,
+            deletedAt: null,
+            activatedAt: new Date(),
+          },
+          {
+            authorIdx: loginUser.idx,
+            deletedAt: null,
+            activatedAt: new Date(),
+          },
         ]);
 
       await pinnedMagazineSeedHelper.seedAll([
@@ -218,9 +248,21 @@ describe('Magazine e2e test', () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const [magazine1, magazine2, magazine3] =
         await magazineSeedHelper.seedAll([
-          { deletedAt: null, activatedAt: new Date() },
-          { deletedAt: null, activatedAt: new Date() },
-          { deletedAt: null, activatedAt: new Date() },
+          {
+            authorIdx: loginUser.idx,
+            deletedAt: null,
+            activatedAt: new Date(),
+          },
+          {
+            authorIdx: loginUser.idx,
+            deletedAt: null,
+            activatedAt: new Date(),
+          },
+          {
+            authorIdx: loginUser.idx,
+            deletedAt: null,
+            activatedAt: new Date(),
+          },
         ]);
 
       await pinnedMagazineSeedHelper.seedAll([{ idx: magazine1.idx }]);
@@ -246,10 +288,10 @@ describe('Magazine e2e test', () => {
     //   const loginUser = testHelper.loginAdmin.admin1;
     //   const [magazine1, magazine2, magazine3, magazine4] =
     //     await magazineSeedHelper.seedAll([
-    //       { deletedAt: null, activatedAt: new Date() },
-    //       { deletedAt: null, activatedAt: new Date() },
-    //       { deletedAt: null, activatedAt: new Date() },
-    //       { deletedAt: null, activatedAt: new Date() },
+    //       { authorIdx: loginUser.idx, deletedAt: null, activatedAt: new Date() },
+    //       { authorIdx: loginUser.idx, deletedAt: null, activatedAt: new Date() },
+    //       { authorIdx: loginUser.idx, deletedAt: null, activatedAt: new Date() },
+    //       { authorIdx: loginUser.idx, deletedAt: null, activatedAt: new Date() },
     //     ]);
 
     //   await pinnedMagazineSeedHelper.seedAll([
@@ -276,6 +318,59 @@ describe('Magazine e2e test', () => {
     //   expect(magazineList[3].idx).toBe(magazine3.idx);
     // });
 
+    it('200 - successfully get magazine (super admin)', async () => {
+      const loginUser = testHelper.loginAdmin.superAdmin;
+      const magazineAdmin = testHelper.loginAdmin.magazineAdmin1;
+      const magazineSeed = await magazineSeedHelper.seed({
+        authorIdx: magazineAdmin.idx,
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+
+      const response = await testHelper
+        .test()
+        .get(`/magazine/${magazineSeed.idx}`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .expect(200);
+
+      expect(response.body.idx).toBe(magazineSeed.idx);
+    });
+
+    it('200 - successfully get magazine (admin)', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const magazineAdmin = testHelper.loginAdmin.magazineAdmin1;
+      const magazineSeed = await magazineSeedHelper.seed({
+        authorIdx: magazineAdmin.idx,
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+
+      const response = await testHelper
+        .test()
+        .get(`/magazine/${magazineSeed.idx}`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .expect(200);
+
+      expect(response.body.idx).toBe(magazineSeed.idx);
+    });
+
+    it('200 - successfully get magazine (magazine admin)', async () => {
+      const loginUser = testHelper.loginAdmin.magazineAdmin1;
+      const magazineSeed = await magazineSeedHelper.seed({
+        authorIdx: loginUser.idx,
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+
+      const response = await testHelper
+        .test()
+        .get(`/magazine/${magazineSeed.idx}`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .expect(200);
+
+      expect(response.body.idx).toBe(magazineSeed.idx);
+    });
+
     it('400 - invalid page', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
       await testHelper
@@ -284,6 +379,16 @@ describe('Magazine e2e test', () => {
         .set('Cookie', `token=Bearer ${loginUser.token}`)
         .query({ page: 'invalid-page', activated: true })
         .expect(400);
+    });
+
+    it('403 - unauthorized access', async () => {
+      const loginUser = testHelper.loginAdmin.allAdmin1;
+
+      await testHelper
+        .test()
+        .get('/magazine/all')
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .expect(403);
     });
   });
 
@@ -303,6 +408,7 @@ describe('Magazine e2e test', () => {
         activatedAt: new Date(),
       });
       const magazineSeed = await magazineSeedHelper.seed({
+        authorIdx: loginUser.idx,
         title: 'Test Magazine',
         description: 'Test Description',
         content: 'Test Content',
@@ -361,6 +467,7 @@ describe('Magazine e2e test', () => {
     it('200 - does not increase view count', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const magazineSeed = await magazineSeedHelper.seed({
+        authorIdx: loginUser.idx,
         deletedAt: null,
         activatedAt: new Date(),
       });
@@ -374,6 +481,74 @@ describe('Magazine e2e test', () => {
       const magazine: MagazineEntity = response.body;
 
       expect(magazine.viewCount).toBe(0);
+    });
+
+    it('200 - successfully get magazine (super admin)', async () => {
+      const loginUser = testHelper.loginAdmin.superAdmin;
+      const magazineAdmin = testHelper.loginAdmin.magazineAdmin1;
+      const magazineSeed = await magazineSeedHelper.seed({
+        authorIdx: magazineAdmin.idx,
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+
+      const response = await testHelper
+        .test()
+        .get(`/magazine/${magazineSeed.idx}`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .expect(200);
+
+      expect(response.body.idx).toBe(magazineSeed.idx);
+    });
+
+    it('200 - successfully get magazine (admin)', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const magazineAdmin = testHelper.loginAdmin.magazineAdmin1;
+      const magazineSeed = await magazineSeedHelper.seed({
+        authorIdx: magazineAdmin.idx,
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+
+      const response = await testHelper
+        .test()
+        .get(`/magazine/${magazineSeed.idx}`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .expect(200);
+
+      expect(response.body.idx).toBe(magazineSeed.idx);
+    });
+
+    it('200 - successfully get magazine (magazine admin)', async () => {
+      const loginUser = testHelper.loginAdmin.magazineAdmin1;
+      const magazineSeed = await magazineSeedHelper.seed({
+        authorIdx: loginUser.idx,
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+
+      const response = await testHelper
+        .test()
+        .get(`/magazine/${magazineSeed.idx}`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .expect(200);
+
+      expect(response.body.idx).toBe(magazineSeed.idx);
+    });
+
+    it('403 - unauthorized access', async () => {
+      const loginUser = testHelper.loginAdmin.allAdmin1;
+      const magazineSeed = await magazineSeedHelper.seed({
+        authorIdx: loginUser.idx,
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+
+      await testHelper
+        .test()
+        .get(`/magazine/${magazineSeed.idx}`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .expect(403);
     });
 
     it('404 - magazine not found', async () => {
@@ -636,6 +811,64 @@ describe('Magazine e2e test', () => {
       expect(resultMagazine.placeList[0].idx).toBe(placeSeed.idx);
     });
 
+    it('201 - successfully create magazine (super admin)', async () => {
+      const loginUser = testHelper.loginAdmin.superAdmin;
+      const createMagazineDto = {
+        title: 'New Magazine',
+        content: 'This is a new magazine.',
+        thumbnailImagePath: '/new-thumbnail.jpg',
+        isTitleVisible: true,
+        placeIdxList: null,
+      };
+
+      const response = await testHelper
+        .test()
+        .post('/magazine')
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send(createMagazineDto)
+        .expect(201);
+
+      const resultMagazine: MagazineEntity = response.body;
+
+      expect(resultMagazine.title).toBe(createMagazineDto.title);
+      expect(resultMagazine.content).toBe(createMagazineDto.content);
+      expect(resultMagazine.thumbnailImagePath).toBe(
+        createMagazineDto.thumbnailImagePath,
+      );
+      expect(resultMagazine.isTitleVisible).toBe(
+        createMagazineDto.isTitleVisible,
+      );
+    });
+
+    it('201 - successfully create magazine (admin)', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const createMagazineDto = {
+        title: 'New Magazine',
+        content: 'This is a new magazine.',
+        thumbnailImagePath: '/new-thumbnail.jpg',
+        isTitleVisible: true,
+        placeIdxList: null,
+      };
+
+      const response = await testHelper
+        .test()
+        .post('/magazine')
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send(createMagazineDto)
+        .expect(201);
+
+      const resultMagazine: MagazineEntity = response.body;
+
+      expect(resultMagazine.title).toBe(createMagazineDto.title);
+      expect(resultMagazine.content).toBe(createMagazineDto.content);
+      expect(resultMagazine.thumbnailImagePath).toBe(
+        createMagazineDto.thumbnailImagePath,
+      );
+      expect(resultMagazine.isTitleVisible).toBe(
+        createMagazineDto.isTitleVisible,
+      );
+    });
+
     it('400 - title is empty', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
 
@@ -673,6 +906,25 @@ describe('Magazine e2e test', () => {
         .send(createMagazineDto)
         .expect(400);
     });
+
+    it('403 - unauthorized admin', async () => {
+      const allAdmin = await testHelper.loginAdmin.allAdmin1;
+
+      const createMagazineDto = {
+        title: 'New Magazine',
+        content: 'This is a new magazine.',
+        thumbnailImagePath: '/new-thumbnail.jpg',
+        isTitleVisible: true,
+        placeIdxList: null,
+      };
+
+      await testHelper
+        .test()
+        .post('/magazine')
+        .set('Cookie', `token=Bearer ${allAdmin.token}`)
+        .send(createMagazineDto)
+        .expect(403);
+    });
   });
 
   describe('POST /magazine/:idx/activate', () => {
@@ -689,6 +941,7 @@ describe('Magazine e2e test', () => {
         },
       ]);
       const magazineSeed = await magazineSeedHelper.seed({
+        authorIdx: loginUser.idx,
         title: 'Test Magazine',
         description: 'Test Description',
         content: `Test Content. here is place :::place-${place1.idx}:::`,
@@ -738,6 +991,7 @@ describe('Magazine e2e test', () => {
         activatedAt: new Date(),
       });
       const magazineSeed = await magazineSeedHelper.seed({
+        authorIdx: loginUser.idx,
         title: 'Test Magazine',
         description: 'Test Description',
         content: `Test Content. here is place :::place-${placeSeed.idx}:::`,
@@ -780,6 +1034,138 @@ describe('Magazine e2e test', () => {
       expect(updatedMagazine.activatedAt).toBeNull();
     });
 
+    it('200 - successfully activate magazine (super admin)', async () => {
+      const loginUser = testHelper.loginAdmin.superAdmin;
+      const magazineAdmin = testHelper.loginAdmin.magazineAdmin1;
+      const placeSeed = await placeSeedHelper.seed({
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+      const magazineSeed = await magazineSeedHelper.seed({
+        authorIdx: magazineAdmin.idx,
+        deletedAt: null,
+        activatedAt: null,
+        placeIdxList: [placeSeed.idx],
+      });
+
+      const response = await testHelper
+        .test()
+        .post(`/magazine/${magazineSeed.idx}/activate`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send({ activate: true })
+        .expect(200);
+
+      expect(response.body).toEqual({});
+
+      const updatedMagazine = await testHelper
+        .getPrisma()
+        .magazine.findUniqueOrThrow({
+          where: { idx: magazineSeed.idx },
+          include: { placeList: true },
+        });
+
+      expect(updatedMagazine.activatedAt).not.toBeNull();
+    });
+
+    it('200 - successfully deactivate magazine (super admin)', async () => {
+      const loginUser = testHelper.loginAdmin.superAdmin;
+      const magazineAdmin = testHelper.loginAdmin.magazineAdmin1;
+      const placeSeed = await placeSeedHelper.seed({
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+      const magazineSeed = await magazineSeedHelper.seed({
+        authorIdx: magazineAdmin.idx,
+        deletedAt: null,
+        activatedAt: new Date(),
+        placeIdxList: [placeSeed.idx],
+      });
+
+      const response = await testHelper
+        .test()
+        .post(`/magazine/${magazineSeed.idx}/activate`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send({ activate: false })
+        .expect(200);
+
+      expect(response.body).toEqual({});
+
+      const updatedMagazine = await testHelper
+        .getPrisma()
+        .magazine.findUniqueOrThrow({
+          where: { idx: magazineSeed.idx },
+          include: { placeList: true },
+        });
+
+      expect(updatedMagazine.activatedAt).toBeNull();
+    });
+
+    it('200 - successfully activate magazine (admin)', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const magazineAdmin = testHelper.loginAdmin.magazineAdmin1;
+      const placeSeed = await placeSeedHelper.seed({
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+      const magazineSeed = await magazineSeedHelper.seed({
+        authorIdx: magazineAdmin.idx,
+        deletedAt: null,
+        activatedAt: null,
+        placeIdxList: [placeSeed.idx],
+      });
+
+      const response = await testHelper
+        .test()
+        .post(`/magazine/${magazineSeed.idx}/activate`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send({ activate: true })
+        .expect(200);
+
+      expect(response.body).toEqual({});
+
+      const updatedMagazine = await testHelper
+        .getPrisma()
+        .magazine.findUniqueOrThrow({
+          where: { idx: magazineSeed.idx },
+          include: { placeList: true },
+        });
+
+      expect(updatedMagazine.activatedAt).not.toBeNull();
+    });
+
+    it('200 - successfully deactivate magazine (admin)', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const magazineAdmin = testHelper.loginAdmin.magazineAdmin1;
+      const placeSeed = await placeSeedHelper.seed({
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+      const magazineSeed = await magazineSeedHelper.seed({
+        authorIdx: magazineAdmin.idx,
+        deletedAt: null,
+        activatedAt: new Date(),
+        placeIdxList: [placeSeed.idx],
+      });
+
+      const response = await testHelper
+        .test()
+        .post(`/magazine/${magazineSeed.idx}/activate`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send({ activate: false })
+        .expect(200);
+
+      expect(response.body).toEqual({});
+
+      const updatedMagazine = await testHelper
+        .getPrisma()
+        .magazine.findUniqueOrThrow({
+          where: { idx: magazineSeed.idx },
+          include: { placeList: true },
+        });
+
+      expect(updatedMagazine.activatedAt).toBeNull();
+    });
+
     it('400 - invalid magazine idx (activate)', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const invalidMagazineIdx = 'invalid-magazine-idx';
@@ -800,6 +1186,56 @@ describe('Magazine e2e test', () => {
         .post(`/magazine/${invalidMagazineIdx}/activate`)
         .set('Cookie', `token=Bearer ${loginUser.token}`)
         .expect(400);
+    });
+
+    it('403 - unauthorized admin', async () => {
+      const allAdmin = await testHelper.loginAdmin.allAdmin1;
+      const magazineSeed = await magazineSeedHelper.seed({
+        authorIdx: allAdmin.idx,
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+
+      await testHelper
+        .test()
+        .post(`/magazine/${magazineSeed.idx}/activate`)
+        .set('Cookie', `token=Bearer ${allAdmin.token}`)
+        .send({ activate: true })
+        .expect(403);
+    });
+
+    it('403 - admin is not the author of magazine (activate)', async () => {
+      const magazineAdmin1 = await testHelper.loginAdmin.magazineAdmin1;
+      const magazineAdmin2 = await testHelper.loginAdmin.magazineAdmin2;
+      const magazineSeed = await magazineSeedHelper.seed({
+        authorIdx: magazineAdmin1.idx,
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+
+      await testHelper
+        .test()
+        .post(`/magazine/${magazineSeed.idx}/activate`)
+        .set('Cookie', `token=Bearer ${magazineAdmin2.token}`)
+        .send({ activate: true })
+        .expect(403);
+    });
+
+    it('403 - admin is not the author of magazine (deactivate)', async () => {
+      const magazineAdmin1 = await testHelper.loginAdmin.magazineAdmin1;
+      const magazineAdmin2 = await testHelper.loginAdmin.magazineAdmin2;
+      const magazineSeed = await magazineSeedHelper.seed({
+        authorIdx: magazineAdmin1.idx,
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+
+      await testHelper
+        .test()
+        .post(`/magazine/${magazineSeed.idx}/activate`)
+        .set('Cookie', `token=Bearer ${magazineAdmin2.token}`)
+        .send({ activate: false })
+        .expect(403);
     });
 
     it('404 - magazine not found (activate)', async () => {
@@ -829,6 +1265,7 @@ describe('Magazine e2e test', () => {
     it('409 - magazine is already activated', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const magazineSeed = await magazineSeedHelper.seed({
+        authorIdx: loginUser.idx,
         deletedAt: null,
         activatedAt: new Date(),
       });
@@ -844,6 +1281,7 @@ describe('Magazine e2e test', () => {
     it('409 - magazine is not activated', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const magazineSeed = await magazineSeedHelper.seed({
+        authorIdx: loginUser.idx,
         deletedAt: null,
         activatedAt: null,
       });
@@ -861,6 +1299,7 @@ describe('Magazine e2e test', () => {
     it('200 - successfully update single type to magazine', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const magazine = await magazineSeedHelper.seed({
+        authorIdx: loginUser.idx,
         typeList: [PlaceType.CAFE],
         activatedAt: new Date(),
       });
@@ -899,6 +1338,7 @@ describe('Magazine e2e test', () => {
     it('200 - successfully update multiple type to magazine', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const magazine = await magazineSeedHelper.seed({
+        authorIdx: loginUser.idx,
         typeList: [PlaceType.CAFE],
         activatedAt: new Date(),
       });
@@ -939,6 +1379,7 @@ describe('Magazine e2e test', () => {
     it('200 - successfully updates single main category and no mood category to magazine', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const magazine = await magazineSeedHelper.seed({
+        authorIdx: loginUser.idx,
         typeList: [PlaceType.CAFE],
         mainCategoryList: [
           MainCategory.BAKERY,
@@ -1008,6 +1449,7 @@ describe('Magazine e2e test', () => {
     it('200 - successfully updates no main category and single mood category to magazine', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const magazine = await magazineSeedHelper.seed({
+        authorIdx: loginUser.idx,
         typeList: [PlaceType.CAFE],
         mainCategoryList: [
           MainCategory.BAKERY,
@@ -1077,6 +1519,7 @@ describe('Magazine e2e test', () => {
     it('200 - successfully updates multiple main category and single mood category to magazine', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const magazine = await magazineSeedHelper.seed({
+        authorIdx: loginUser.idx,
         typeList: [PlaceType.CAFE],
         mainCategoryList: [
           MainCategory.BAKERY,
@@ -1151,6 +1594,7 @@ describe('Magazine e2e test', () => {
     it('200 successfully updates single main category and multiple mood category to magazine', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const magazine = await magazineSeedHelper.seed({
+        authorIdx: loginUser.idx,
         typeList: [PlaceType.CAFE],
         mainCategoryList: [
           MainCategory.BAKERY,
@@ -1228,6 +1672,7 @@ describe('Magazine e2e test', () => {
     it('200 - successfully updates multiple main category and no mood category to magazine', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const magazine = await magazineSeedHelper.seed({
+        authorIdx: loginUser.idx,
         typeList: [PlaceType.CAFE],
         mainCategoryList: [
           MainCategory.BAKERY,
@@ -1299,6 +1744,7 @@ describe('Magazine e2e test', () => {
     it('200 - successfully updates no main category and multiple mood category to magazine', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const magazine = await magazineSeedHelper.seed({
+        authorIdx: loginUser.idx,
         typeList: [PlaceType.CAFE],
         mainCategoryList: [
           MainCategory.BAKERY,
@@ -1375,6 +1821,7 @@ describe('Magazine e2e test', () => {
     it('200 - successfully updates duplicate category is ignored and unique categories are added to magazine', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const magazine = await magazineSeedHelper.seed({
+        authorIdx: loginUser.idx,
         typeList: [PlaceType.CAFE],
         mainCategoryList: [
           MainCategory.BAKERY,
@@ -1463,6 +1910,7 @@ describe('Magazine e2e test', () => {
     it('200 - successfully updates multiple types, main category and mood category to magazine', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const magazine = await magazineSeedHelper.seed({
+        authorIdx: loginUser.idx,
         typeList: [PlaceType.CAFE],
         mainCategoryList: [
           MainCategory.BAKERY,
@@ -1545,8 +1993,65 @@ describe('Magazine e2e test', () => {
       expect(afterMagazine.activatedAt).not.toBeNull();
     });
 
+    it('200 - successfully update (super admin)', async () => {
+      const superAdmin = await testHelper.loginAdmin.superAdmin;
+      const magazineAdmin = await testHelper.loginAdmin.magazineAdmin1;
+      const magazine = await magazineSeedHelper.seed({
+        authorIdx: magazineAdmin.idx,
+        typeList: [PlaceType.CAFE],
+        mainCategoryList: [
+          MainCategory.BAKERY,
+          MainCategory.BUNGEOPPANG_WAFFLE,
+        ],
+        moodCategoryList: [
+          MoodCategory.STUDY_FRIENDLY,
+          MoodCategory.DESSERT_HOTSPOT,
+        ],
+      });
+
+      await testHelper
+        .test()
+        .put(`/magazine/${magazine.idx}/category`)
+        .set('Cookie', `token=Bearer ${superAdmin.token}`)
+        .send({
+          typeList: [PlaceType.CAFE],
+          mainCategoryList: [MainCategory.DESSERT],
+          moodCategoryList: [MoodCategory.GOOD_ATMOSPHERE],
+        })
+        .expect(200);
+    });
+
+    it('200 - successfully update (admin)', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const magazineAdmin = await testHelper.loginAdmin.magazineAdmin1;
+      const magazine = await magazineSeedHelper.seed({
+        authorIdx: magazineAdmin.idx,
+        typeList: [PlaceType.CAFE],
+        mainCategoryList: [
+          MainCategory.BAKERY,
+          MainCategory.BUNGEOPPANG_WAFFLE,
+        ],
+        moodCategoryList: [
+          MoodCategory.STUDY_FRIENDLY,
+          MoodCategory.DESSERT_HOTSPOT,
+        ],
+      });
+
+      await testHelper
+        .test()
+        .put(`/magazine/${magazine.idx}/category`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send({
+          typeList: [PlaceType.CAFE],
+          mainCategoryList: [MainCategory.DESSERT],
+          moodCategoryList: [MoodCategory.GOOD_ATMOSPHERE],
+        })
+        .expect(200);
+    });
+
     it('401 - no access token', async () => {
       const magazine = await magazineSeedHelper.seed({
+        authorIdx: testHelper.loginAdmin.admin1.idx,
         typeList: [PlaceType.CAFE],
         mainCategoryList: [
           MainCategory.BAKERY,
@@ -1585,6 +2090,45 @@ describe('Magazine e2e test', () => {
         .expect(400);
     });
 
+    it('403 - unauthorized admin', async () => {
+      const allAdmin = await testHelper.loginAdmin.allAdmin1;
+      const magazineAdmin = await testHelper.loginAdmin.magazineAdmin1;
+      const magazineSeed = await magazineSeedHelper.seed({
+        authorIdx: magazineAdmin.idx,
+        activatedAt: new Date(),
+      });
+
+      await testHelper
+        .test()
+        .put(`/magazine/${magazineSeed.idx}/category`)
+        .set('Cookie', `token=Bearer ${allAdmin.token}`)
+        .send({
+          mainCategoryList: [MainCategory.DESSERT],
+          moodCategoryList: [MoodCategory.GOOD_ATMOSPHERE],
+        })
+        .expect(403);
+    });
+
+    it('403 - admin is not the author of magazine', async () => {
+      const magazineAdmin = await testHelper.loginAdmin.magazineAdmin1;
+      const otherMagazineAdmin = await testHelper.loginAdmin.magazineAdmin2;
+      const magazineSeed = await magazineSeedHelper.seed({
+        authorIdx: magazineAdmin.idx,
+        activatedAt: new Date(),
+      });
+
+      await testHelper
+        .test()
+        .put(`/magazine/${magazineSeed.idx}/category`)
+        .set('Cookie', `token=Bearer ${otherMagazineAdmin.token}`)
+        .send({
+          typeList: [PlaceType.CAFE],
+          mainCategoryList: [MainCategory.DESSERT],
+          moodCategoryList: [MoodCategory.GOOD_ATMOSPHERE],
+        })
+        .expect(403);
+    });
+
     it('404 - magazine not found', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const nonExistentPlaceIdx = 99999;
@@ -1616,6 +2160,7 @@ describe('Magazine e2e test', () => {
         },
       ]);
       const magazineSeed = await magazineSeedHelper.seed({
+        authorIdx: loginUser.idx,
         title: 'Old Title',
         description: 'Old Description',
         content: `Old Content. here is place 1 :::place-${place1.idx}:::`,
@@ -1669,6 +2214,7 @@ describe('Magazine e2e test', () => {
         activatedAt: new Date(),
       });
       const magazineSeed = await magazineSeedHelper.seed({
+        authorIdx: loginUser.idx,
         title: 'Old Title',
         description: 'Old Description',
         content: `Old Content. here is place :::place-${placeSeed.idx}:::`,
@@ -1731,6 +2277,7 @@ describe('Magazine e2e test', () => {
         },
       ]);
       const magazineSeed = await magazineSeedHelper.seed({
+        authorIdx: loginUser.idx,
         title: 'Old Title',
         description: 'Old Description',
         content: `Old Content. here is place 1 :::place-${place1.idx}:::`,
@@ -1787,6 +2334,7 @@ describe('Magazine e2e test', () => {
         activatedAt: new Date(),
       });
       const magazineSeed = await magazineSeedHelper.seed({
+        authorIdx: loginUser.idx,
         title: 'Old Title',
         description: 'Old Description',
         content: `Old Content. here is place :::place-${placeSeed.idx}:::`,
@@ -1840,6 +2388,7 @@ describe('Magazine e2e test', () => {
         activatedAt: new Date(),
       });
       const magazineSeed = await magazineSeedHelper.seed({
+        authorIdx: loginUser.idx,
         title: 'Old Title',
         description: 'Old Description',
         content: `Old Content. here is place :::place-${placeSeed.idx}:::`,
@@ -1893,6 +2442,7 @@ describe('Magazine e2e test', () => {
         activatedAt: new Date(),
       });
       const magazineSeed = await magazineSeedHelper.seed({
+        authorIdx: loginUser.idx,
         title: 'Old Title',
         description: 'Old Description',
         content: `Old Content. here is place :::place-${placeSeed.idx}:::`,
@@ -1939,6 +2489,66 @@ describe('Magazine e2e test', () => {
       expect(updatedMagazine.activatedAt).not.toBeNull();
     });
 
+    it('200 - successfully update magazine (super admin)', async () => {
+      const superAdmin = await testHelper.loginAdmin.superAdmin;
+      const magazineAdmin = await testHelper.loginAdmin.magazineAdmin1;
+      const magazineSeed = await magazineSeedHelper.seed({
+        authorIdx: magazineAdmin.idx,
+        title: 'Old Title',
+        description: 'Old Description',
+        content: 'Old Content',
+        thumbnailPath: '/old-thumbnail.jpg',
+        isTitleVisible: false,
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+
+      const updateMagazineDto = {
+        title: 'New Title',
+        description: 'New Description',
+        content: 'New Content',
+        thumbnailImagePath: '/new-thumbnail.jpg',
+        isTitleVisible: true,
+      };
+
+      await testHelper
+        .test()
+        .put(`/magazine/${magazineSeed.idx}`)
+        .set('Cookie', `token=Bearer ${superAdmin.token}`)
+        .send(updateMagazineDto)
+        .expect(200);
+    });
+
+    it('200 - successfully update magazine (admin)', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const magazineAdmin = await testHelper.loginAdmin.magazineAdmin1;
+      const magazineSeed = await magazineSeedHelper.seed({
+        authorIdx: magazineAdmin.idx,
+        title: 'Old Title',
+        description: 'Old Description',
+        content: 'Old Content',
+        thumbnailPath: '/old-thumbnail.jpg',
+        isTitleVisible: false,
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+
+      const updateMagazineDto = {
+        title: 'New Title',
+        description: 'New Description',
+        content: 'New Content',
+        thumbnailImagePath: '/new-thumbnail.jpg',
+        isTitleVisible: true,
+      };
+
+      await testHelper
+        .test()
+        .put(`/magazine/${magazineSeed.idx}`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send(updateMagazineDto)
+        .expect(200);
+    });
+
     it('400 - invalid magazine idx', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const invalidMagazineIdx = 'invalid-magazine-idx';
@@ -1957,6 +2567,54 @@ describe('Magazine e2e test', () => {
         .set('Cookie', `token=Bearer ${loginUser.token}`)
         .send(updateMagazineDto)
         .expect(400);
+    });
+
+    it('403 - unauthorized admin', async () => {
+      const allAdmin = await testHelper.loginAdmin.allAdmin1;
+      const magazineAdmin = await testHelper.loginAdmin.magazineAdmin1;
+      const magazineSeed = await magazineSeedHelper.seed({
+        authorIdx: magazineAdmin.idx,
+        activatedAt: new Date(),
+      });
+
+      const updateMagazineDto = {
+        title: 'New Title',
+        description: 'New Description',
+        content: 'New Content',
+        thumbnailImagePath: '/new-thumbnail.jpg',
+        isTitleVisible: true,
+      };
+
+      await testHelper
+        .test()
+        .put(`/magazine/${magazineSeed.idx}`)
+        .set('Cookie', `token=Bearer ${allAdmin.token}`)
+        .send(updateMagazineDto)
+        .expect(403);
+    });
+
+    it('403 - admin is not the author of magazine', async () => {
+      const magazineAdmin = await testHelper.loginAdmin.magazineAdmin1;
+      const otherMagazineAdmin = await testHelper.loginAdmin.magazineAdmin2;
+      const magazineSeed = await magazineSeedHelper.seed({
+        authorIdx: magazineAdmin.idx,
+        activatedAt: new Date(),
+      });
+
+      const updateMagazineDto = {
+        title: 'New Title',
+        description: 'New Description',
+        content: 'New Content',
+        thumbnailImagePath: '/new-thumbnail.jpg',
+        isTitleVisible: true,
+      };
+
+      await testHelper
+        .test()
+        .put(`/magazine/${magazineSeed.idx}`)
+        .set('Cookie', `token=Bearer ${otherMagazineAdmin.token}`)
+        .send(updateMagazineDto)
+        .expect(403);
     });
 
     it('404 - magazine not found', async () => {
@@ -1984,6 +2642,7 @@ describe('Magazine e2e test', () => {
     it('200 - successfully delete magazine', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const magazineSeed = await magazineSeedHelper.seed({
+        authorIdx: loginUser.idx,
         deletedAt: null,
         activatedAt: new Date(),
       });
@@ -2005,6 +2664,38 @@ describe('Magazine e2e test', () => {
       expect(deletedMagazine.deletedAt).not.toBeNull();
     });
 
+    it('200 - successfully delete magazine (super admin)', async () => {
+      const superAdmin = await testHelper.loginAdmin.superAdmin;
+      const magazineAdmin = await testHelper.loginAdmin.magazineAdmin1;
+      const magazineSeed = await magazineSeedHelper.seed({
+        authorIdx: magazineAdmin.idx,
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+
+      await testHelper
+        .test()
+        .delete(`/magazine/${magazineSeed.idx}`)
+        .set('Cookie', `token=Bearer ${superAdmin.token}`)
+        .expect(200);
+    });
+
+    it('200 - successfully delete magazine (admin)', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const magazineAdmin = await testHelper.loginAdmin.magazineAdmin1;
+      const magazineSeed = await magazineSeedHelper.seed({
+        authorIdx: magazineAdmin.idx,
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+
+      await testHelper
+        .test()
+        .delete(`/magazine/${magazineSeed.idx}`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .expect(200);
+    });
+
     it('400 - invalid magazine idx', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const invalidMagazineIdx = 'invalid-magazine-idx';
@@ -2014,6 +2705,36 @@ describe('Magazine e2e test', () => {
         .delete(`/magazine/${invalidMagazineIdx}`)
         .set('Cookie', `token=Bearer ${loginUser.token}`)
         .expect(400);
+    });
+
+    it('403 - unauthorized admin', async () => {
+      const allAdmin = await testHelper.loginAdmin.allAdmin1;
+      const magazineAdmin = await testHelper.loginAdmin.magazineAdmin1;
+      const magazineSeed = await magazineSeedHelper.seed({
+        authorIdx: magazineAdmin.idx,
+        activatedAt: new Date(),
+      });
+
+      await testHelper
+        .test()
+        .delete(`/magazine/${magazineSeed.idx}`)
+        .set('Cookie', `token=Bearer ${allAdmin.token}`)
+        .expect(403);
+    });
+
+    it('403 - admin is not the author of magazine', async () => {
+      const magazineAdmin = await testHelper.loginAdmin.magazineAdmin1;
+      const otherMagazineAdmin = await testHelper.loginAdmin.magazineAdmin2;
+      const magazineSeed = await magazineSeedHelper.seed({
+        authorIdx: magazineAdmin.idx,
+        activatedAt: new Date(),
+      });
+
+      await testHelper
+        .test()
+        .delete(`/magazine/${magazineSeed.idx}`)
+        .set('Cookie', `token=Bearer ${otherMagazineAdmin.token}`)
+        .expect(403);
     });
 
     it('404 - magazine not found', async () => {

@@ -8,6 +8,7 @@ import { PlaceType } from '@libs/core/place/constants/place-type.constant';
  * @publicApi
  */
 export type MagazineSeedInput = {
+  authorIdx: number;
   title?: string;
   description?: string;
   content?: string;

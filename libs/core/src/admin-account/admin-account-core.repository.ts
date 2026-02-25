@@ -70,7 +70,7 @@ export class AdminAccountCoreRepository {
   public async insertAdminAccount(input: CreateAdminAccountInput) {
     const user = await this.txHost.tx.user.create({
       data: {
-        nickname: 'admin',
+        nickname: input.nickname ? input.nickname : 'admin',
       },
     });
 
@@ -78,7 +78,7 @@ export class AdminAccountCoreRepository {
       ...SELECT_ADMIN_ACCOUNT,
       data: {
         idx: user.idx,
-        id: `admin_${user.idx}`,
+        id: input.id ? input.id : `admin_${user.idx}`,
         pw: input.pw,
         role: input.role,
       },

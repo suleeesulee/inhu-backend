@@ -15,7 +15,7 @@ export class CreateAdminAccountDto {
   @IsOptional()
   @IsString()
   @MinLength(1)
-  @MaxLength(10)
+  @MaxLength(20)
   nickname?: string;
 
   /**
