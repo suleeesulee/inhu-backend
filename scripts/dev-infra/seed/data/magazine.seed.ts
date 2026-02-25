@@ -1,4 +1,4 @@
-import { MagazineSeedInput } from '@libs/testing/seed/magazine/type/magazine-seed.input';
+import { MagazineTestCaseInput } from '../constants/type';
 
 const PLACE_IMAGE = {
   BAKERY: '/place/bakery.jpg',
@@ -24,7 +24,7 @@ const FIXED_ACTIVATED_AT = new Date('2025-08-22T00:00:00.000Z');
 /**
  * 카테고리가 하나도 없는 매거진
  */
-const magazine1: MagazineSeedInput = {
+const magazine1: MagazineTestCaseInput = {
   title: '모든 카테고리 없음',
   description: '카테고리가 하나도 없는 매거진입니다.',
   content: '카테고리가 없는 매거진의 내용입니다.',
@@ -40,7 +40,7 @@ const magazine1: MagazineSeedInput = {
 /**
  * 식당 카테고리만 있는 매거진
  */
-const magazine2: MagazineSeedInput = {
+const magazine2: MagazineTestCaseInput = {
   title: '식당 카테고리만 있음',
   description: '식당 카테고리만 있는 매거진입니다.',
   content: '식당 카테고리만 있는 매거진의 내용입니다.',
@@ -56,7 +56,7 @@ const magazine2: MagazineSeedInput = {
 /**
  * 카페 카테고리만 있는 매거진
  */
-const magazine3: MagazineSeedInput = {
+const magazine3: MagazineTestCaseInput = {
   title: '카페 카테고리만 있음',
   description: '카페 카테고리만 있는 매거진입니다.',
   content: '카페 카테고리만 있는 매거진의 내용입니다.',
@@ -72,7 +72,7 @@ const magazine3: MagazineSeedInput = {
 /**
  * 술집 카테고리만 있는 매거진
  */
-const magazine4: MagazineSeedInput = {
+const magazine4: MagazineTestCaseInput = {
   title: '술집 카테고리만 있음',
   description: '술집 카테고리만 있는 매거진입니다.',
   content: '술집 카테고리만 있는 매거진의 내용입니다.',
@@ -88,7 +88,7 @@ const magazine4: MagazineSeedInput = {
 /**
  * 식당 + 카페 카테고리만 있는 매거진
  */
-const magazine5: MagazineSeedInput = {
+const magazine5: MagazineTestCaseInput = {
   title: '식당 + 카페 카테고리만 있음',
   description: '식당 + 카페 카테고리만 있는 매거진입니다.',
   content: '식당 + 카페 카테고리만 있는 매거진의 내용입니다.',
@@ -104,7 +104,7 @@ const magazine5: MagazineSeedInput = {
 /**
  * 식당 + 술집 카테고리만 있는 매거진
  */
-const magazine6: MagazineSeedInput = {
+const magazine6: MagazineTestCaseInput = {
   title: '식당 + 술집 카테고리만 있음',
   description: '식당 + 술집 카테고리만 있는 매거진입니다.',
   content: '식당 + 술집 카테고리만 있는 매거진의 내용입니다.',
@@ -120,7 +120,7 @@ const magazine6: MagazineSeedInput = {
 /**
  * 카페 + 술집 카테고리만 있는 매거진
  */
-const magazine7: MagazineSeedInput = {
+const magazine7: MagazineTestCaseInput = {
   title: '카페 + 술집 카테고리만 있음',
   description: '카페 + 술집 카테고리만 있는 매거진입니다.',
   content: '카페 + 술집 카테고리만 있는 매거진의 내용입니다.',
@@ -136,7 +136,7 @@ const magazine7: MagazineSeedInput = {
 /**
  * 식당 + 카페 + 술집 카테고리가 모두 있는 매거진
  */
-const magazine8: MagazineSeedInput = {
+const magazine8: MagazineTestCaseInput = {
   title: '식당 + 카페 + 술집 카테고리 모두 있음',
   description: '식당 + 카페 + 술집 카테고리가 모두 있는 매거진입니다.',
   content: '식당 + 카페 + 술집 카테고리가 모두 있는 매거진의 내용입니다.',
@@ -152,7 +152,7 @@ const magazine8: MagazineSeedInput = {
 /**
  * 식당, 밥집 카테고리가 있는 매거진 (분위기 카테고리 없음)
  */
-const magazine9: MagazineSeedInput = {
+const magazine9: MagazineTestCaseInput = {
   title: '식당, 밥집 카테고리 있음 (분위기 카테고리 없음)',
   description:
     '식당, 밥집 카테고리가 있는 매거진입니다. (분위기 카테고리 없음)',
@@ -170,7 +170,7 @@ const magazine9: MagazineSeedInput = {
 /**
  * 식당, 밥집 + 일식 카테고리가 있는 매거진 (분위기 카테고리 없음)
  */
-const magazine10: MagazineSeedInput = {
+const magazine10: MagazineTestCaseInput = {
   title: '식당, 밥집 + 일식 카테고리 있음 (분위기 카테고리 없음)',
   description:
     '식당, 밥집 + 일식 카테고리가 있는 매거진입니다. (분위기 카테고리 없음)',
@@ -188,7 +188,7 @@ const magazine10: MagazineSeedInput = {
 /**
  * 식당, 밥집 + 양식 + 고기 카테고리가 있는 매거진 (분위기 카테고리 없음)
  */
-const magazine11: MagazineSeedInput = {
+const magazine11: MagazineTestCaseInput = {
   title: '식당, 밥집 + 양식 + 고기 카테고리 있음 (분위기 카테고리 없음)',
   description:
     '식당, 밥집 + 양식 + 고기 카테고리가 있는 매거진입니다. (분위기 카테고리 없음)',
@@ -206,7 +206,7 @@ const magazine11: MagazineSeedInput = {
 /**
  * 식당, 혼밥 카테고리가 있는 매거진 (메인 카테고리 없음)
  */
-const magazine12: MagazineSeedInput = {
+const magazine12: MagazineTestCaseInput = {
   title: '식당, 혼밥 카테고리 있음 (메인 카테고리 없음)',
   description: '식당, 혼밥 카테고리가 있는 매거진입니다. (메인 카테고리 없음)',
   content:
@@ -223,7 +223,7 @@ const magazine12: MagazineSeedInput = {
 /**
  * 식당, 혼밥 + 데이트 카테고리가 있는 매거진 (메인 카테고리 없음)
  */
-const magazine13: MagazineSeedInput = {
+const magazine13: MagazineTestCaseInput = {
   title: '식당, 혼밥 + 데이트 카테고리 있음 (메인 카테고리 없음)',
   description:
     '식당, 혼밥 + 데이트 카테고리가 있는 매거진입니다. (메인 카테고리 없음)',
@@ -241,7 +241,7 @@ const magazine13: MagazineSeedInput = {
 /**
  * 식당, 밥집, 혼밥 카테고리가 있는 매거진
  */
-const magazine14: MagazineSeedInput = {
+const magazine14: MagazineTestCaseInput = {
   title: '식당, 밥집, 혼밥 카테고리 있음',
   description: '식당, 밥집, 혼밥 카테고리가 있는 매거진입니다.',
   content: '식당, 밥집, 혼밥 카테고리가 있는 매거진의 내용입니다.',
@@ -257,7 +257,7 @@ const magazine14: MagazineSeedInput = {
 /**
  * 식당, 밥집 + 양식, 혼밥 + 데이트 카테고리가 있는 매거진
  */
-const magazine15: MagazineSeedInput = {
+const magazine15: MagazineTestCaseInput = {
   title: '식당, 밥집 + 양식, 혼밥 + 데이트 카테고리 있음',
   description: '식당, 밥집 + 양식, 혼밥 + 데이트 카테고리가 있는 매거진입니다.',
   content:
@@ -274,7 +274,7 @@ const magazine15: MagazineSeedInput = {
 /**
  * 카페, 베이커리 카테고리가 있는 매거진 (분위기 카테고리 없음)
  */
-const magazine16: MagazineSeedInput = {
+const magazine16: MagazineTestCaseInput = {
   title: '카페, 베이커리 카테고리 있음 (분위기 카테고리 없음)',
   description:
     '카페, 베이커리 카테고리가 있는 매거진입니다. (분위기 카테고리 없음)',
@@ -292,7 +292,7 @@ const magazine16: MagazineSeedInput = {
 /**
  * 카페, 베이커리 + 샌드위치 카테고리가 있는 매거진 (분위기 카테고리 없음)
  */
-const magazine17: MagazineSeedInput = {
+const magazine17: MagazineTestCaseInput = {
   title: '카페, 베이커리 + 샌드위치 카테고리 있음 (분위기 카테고리 없음)',
   description:
     '카페, 베이커리 + 샌드위치 카테고리가 있는 매거진입니다. (분위기 카테고리 없음)',
@@ -310,7 +310,7 @@ const magazine17: MagazineSeedInput = {
 /**
  * 카페, 분위기맛집 카테고리가 있는 매거진 (메인 카테고리 없음)
  */
-const magazine18: MagazineSeedInput = {
+const magazine18: MagazineTestCaseInput = {
   title: '카페, 분위기맛집 카테고리 있음 (메인 카테고리 없음)',
   description:
     '카페, 분위기맛집 카테고리가 있는 매거진입니다. (메인 카테고리 없음)',
@@ -328,7 +328,7 @@ const magazine18: MagazineSeedInput = {
 /**
  * 카페, 분위기맛집 + 카공맛집 카테고리가 있는 매거진 (메인 카테고리 없음)
  */
-const magazine19: MagazineSeedInput = {
+const magazine19: MagazineTestCaseInput = {
   title: '카페, 분위기맛집 + 카공맛집 카테고리 있음 (메인 카테고리 없음)',
   description:
     '카페, 분위기맛집 + 카공맛집 카테고리가 있는 매거진입니다. (메인 카테고리 없음)',
@@ -346,7 +346,7 @@ const magazine19: MagazineSeedInput = {
 /**
  * 카페, 베이커리, 분위기맛집 카테고리가 있는 매거진
  */
-const magazine20: MagazineSeedInput = {
+const magazine20: MagazineTestCaseInput = {
   title: '카페, 베이커리, 분위기맛집 카테고리 있음',
   description: '카페, 베이커리, 분위기맛집 카테고리가 있는 매거진입니다.',
   content: '카페, 베이커리, 분위기맛집 카테고리가 있는 매거진의 내용입니다.',
@@ -362,7 +362,7 @@ const magazine20: MagazineSeedInput = {
 /**
  * 카페, 베이커리 + 샌드위치, 분위기맛집 + 카공맛집 카테고리가 있는 매거진
  */
-const magazine21: MagazineSeedInput = {
+const magazine21: MagazineTestCaseInput = {
   title: '카페, 베이커리 + 샌드위치, 분위기맛집 + 카공맛집 카테고리 있음',
   description:
     '카페, 베이커리 + 샌드위치, 분위기맛집 + 카공맛집 카테고리가 있는 매거진입니다.',
@@ -380,7 +380,7 @@ const magazine21: MagazineSeedInput = {
 /**
  * 술집, 이자카야 카테고리가 있는 매거진 (분위기 카테고리 없음)
  */
-const magazine22: MagazineSeedInput = {
+const magazine22: MagazineTestCaseInput = {
   title: '술집, 이자카야 카테고리 있음 (분위기 카테고리 없음)',
   description:
     '술집, 이자카야 카테고리가 있는 매거진입니다. (분위기 카테고리 없음)',
@@ -398,7 +398,7 @@ const magazine22: MagazineSeedInput = {
 /**
  * 술집, 이자카야 + 요리주점 카테고리가 있는 매거진 (분위기 카테고리 없음)
  */
-const magazine23: MagazineSeedInput = {
+const magazine23: MagazineTestCaseInput = {
   title: '술집, 이자카야 + 요리주점 카테고리 있음 (분위기 카테고리 없음)',
   description:
     '술집, 이자카야 + 요리주점 카테고리가 있는 매거진입니다. (분위기 카테고리 없음)',
@@ -416,7 +416,7 @@ const magazine23: MagazineSeedInput = {
 /**
  * 술집, 혼술 카테고리가 있는 매거진 (메인 카테고리 없음)
  */
-const magazine24: MagazineSeedInput = {
+const magazine24: MagazineTestCaseInput = {
   title: '술집, 혼술 카테고리 있음 (메인 카테고리 없음)',
   description: '술집, 혼술 카테고리가 있는 매거진입니다. (메인 카테고리 없음)',
   content:
@@ -433,7 +433,7 @@ const magazine24: MagazineSeedInput = {
 /**
  * 술집, 혼술 + 단체 카테고리가 있는 매거진 (메인 카테고리 없음)
  */
-const magazine25: MagazineSeedInput = {
+const magazine25: MagazineTestCaseInput = {
   title: '술집, 혼술 + 단체 카테고리 있음 (메인 카테고리 없음)',
   description:
     '술집, 혼술 + 단체 카테고리가 있는 매거진입니다. (메인 카테고리 없음)',
@@ -451,7 +451,7 @@ const magazine25: MagazineSeedInput = {
 /**
  * 술집, 이자카야, 혼술 카테고리가 있는 매거진
  */
-const magazine26: MagazineSeedInput = {
+const magazine26: MagazineTestCaseInput = {
   title: '술집, 이자카야, 혼술 카테고리 있음',
   description: '술집, 이자카야, 혼술 카테고리가 있는 매거진입니다.',
   content: '술집, 이자카야, 혼술 카테고리가 있는 매거진의 내용입니다.',
@@ -467,7 +467,7 @@ const magazine26: MagazineSeedInput = {
 /**
  * 술집, 이자카야 + 요리주점, 혼술 + 단체 카테고리가 있는 매거진
  */
-const magazine27: MagazineSeedInput = {
+const magazine27: MagazineTestCaseInput = {
   title: '술집, 이자카야 + 요리주점, 혼술 + 단체 카테고리 있음',
   description:
     '술집, 이자카야 + 요리주점, 혼술 + 단체 카테고리가 있는 매거진입니다.',
@@ -485,7 +485,7 @@ const magazine27: MagazineSeedInput = {
 /**
  * 식당 + 카페, 밥집 + 베이커리, 혼밥 + 분위기맛집 카테고리가 있는 매거진
  */
-const magazine28: MagazineSeedInput = {
+const magazine28: MagazineTestCaseInput = {
   title: '식당 + 카페, 밥집 + 베이커리, 혼밥 + 분위기맛집 카테고리 있음',
   description:
     '식당 + 카페, 밥집 + 베이커리, 혼밥 + 분위기맛집 카테고리가 있는 매거진입니다.',
@@ -503,7 +503,7 @@ const magazine28: MagazineSeedInput = {
 /**
  * 식당 + 술집, 밥집 + 이자카야, 데이트 + 혼술 카테고리가 있는 매거진
  */
-const magazine29: MagazineSeedInput = {
+const magazine29: MagazineTestCaseInput = {
   title: '식당 + 술집, 밥집 + 이자카야, 데이트 + 혼술 카테고리 있음',
   description:
     '식당 + 술집, 밥집 + 이자카야, 데이트 + 혼술 카테고리가 있는 매거진입니다.',
@@ -521,7 +521,7 @@ const magazine29: MagazineSeedInput = {
 /**
  * 식당 + 카페 + 술집, 밥집 + 베이커리 + 이자카야, 혼밥 + 분위기맛집 + 혼술 카테고리가 있는 매거진
  */
-const magazine30: MagazineSeedInput = {
+const magazine30: MagazineTestCaseInput = {
   title:
     '식당 + 카페 + 술집, 밥집 + 베이커리 + 이자카야, 혼밥 + 분위기맛집 + 혼술 카테고리 있음',
   description:
