@@ -18,6 +18,7 @@ import { ActivateMagazineByIdxDto } from './dto/request/activate-magazine-by-idx
 import { UpdateMagazineByIdxDto } from './dto/request/update-magazine-by-idx.dto';
 import { UpdateMagazineCategoryDto } from './dto/request/update-magazine-category.dto';
 import { LoginAdmin } from '@admin/common/types/login-admin';
+import { AdminRole } from '../auth/admin-role.enum';
 
 @Injectable()
 export class MagazineService {
@@ -55,7 +56,10 @@ export class MagazineService {
   }
 
   @Transactional()
-  public async createMagazine(dto: CreateMagazineDto): Promise<MagazineEntity> {
+  public async createMagazine(
+    dto: CreateMagazineDto,
+    admin: LoginAdmin,
+  ): Promise<MagazineEntity> {
     const extractedPlaceIdxList = this.extractAllPlaceIdxFromText(dto.content);
     const validPlaceList: number[] = [];
 
@@ -69,6 +73,7 @@ export class MagazineService {
 
     return await this.magazineCoreService
       .createMagazine({
+        authorIdx: admin.idx,
         title: dto.title,
         description: dto.description,
         content: dto.content,
@@ -91,7 +96,10 @@ export class MagazineService {
       throw new NotFoundException(`Magazine not found for idx: ${idx}`);
     }
 
-    if (magazine.authorIdx !== admin.idx) {
+    if (
+      admin.role === AdminRole.MagazineAdmin &&
+      magazine.authorIdx !== admin.idx
+    ) {
       throw new ForbiddenException(
         `Admin idx: ${admin.idx} is not the author of magazine idx: ${idx}`,
       );
@@ -120,7 +128,10 @@ export class MagazineService {
       throw new NotFoundException(`Magazine not found for idx: ${idx}`);
     }
 
-    if (magazine.authorIdx !== admin.idx) {
+    if (
+      admin.role === AdminRole.MagazineAdmin &&
+      magazine.authorIdx !== admin.idx
+    ) {
       throw new ForbiddenException(
         `Admin idx: ${admin.idx} is not the author of magazine idx: ${idx}`,
       );
@@ -160,7 +171,10 @@ export class MagazineService {
       throw new NotFoundException(`Magazine not found for idx: ${idx}`);
     }
 
-    if (magazine.authorIdx !== admin.idx) {
+    if (
+      admin.role === AdminRole.MagazineAdmin &&
+      magazine.authorIdx !== admin.idx
+    ) {
       throw new ForbiddenException(
         `Admin idx: ${admin.idx} is not the author of magazine idx: ${idx}`,
       );
@@ -181,7 +195,10 @@ export class MagazineService {
       throw new NotFoundException(`Magazine not found for idx: ${idx}`);
     }
 
-    if (magazine.authorIdx !== admin.idx) {
+    if (
+      admin.role === AdminRole.MagazineAdmin &&
+      magazine.authorIdx !== admin.idx
+    ) {
       throw new ForbiddenException(
         `Admin idx: ${admin.idx} is not the author of magazine idx: ${idx}`,
       );

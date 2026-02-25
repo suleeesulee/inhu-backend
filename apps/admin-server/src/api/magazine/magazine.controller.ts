@@ -71,8 +71,9 @@ export class MagazineController {
   @Exception(400, 'Invalid create magazine request')
   public async createMagazine(
     @Body() dto: CreateMagazineDto,
+    @Admin() admin: LoginAdmin,
   ): Promise<MagazineEntity> {
-    return await this.magazineService.createMagazine(dto);
+    return await this.magazineService.createMagazine(dto, admin);
   }
 
   /**
