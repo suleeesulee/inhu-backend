@@ -12,7 +12,9 @@ export class TestHelper extends ITestHelper {
     admin1: LoginAdminForTest;
     admin2: LoginAdminForTest;
     superAdmin: LoginAdminForTest;
-    magazineAdmin: LoginAdminForTest;
+    magazineAdmin1: LoginAdminForTest;
+    magazineAdmin2: LoginAdminForTest;
+    allAdmin1: LoginAdminForTest;
   };
 
   public static create(AppModule: Type) {

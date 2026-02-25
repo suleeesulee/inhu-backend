@@ -29,7 +29,7 @@ describe('Admin Account E2E Tests', () => {
       const admin1 = await testHelper.loginAdmin.admin1;
       const admin2 = await testHelper.loginAdmin.admin2;
       const superAdmin = await testHelper.loginAdmin.superAdmin;
-      const magazineAdmin = await testHelper.loginAdmin.magazineAdmin;
+      const magazineAdmin1 = await testHelper.loginAdmin.magazineAdmin1;
 
       const dto: GetAdminAccountAllDto = {
         page: 1,
@@ -65,9 +65,9 @@ describe('Admin Account E2E Tests', () => {
             role: superAdmin.role,
           }),
           expect.objectContaining({
-            idx: magazineAdmin.idx,
-            nickname: magazineAdmin.nickname,
-            role: magazineAdmin.role,
+            idx: magazineAdmin1.idx,
+            nickname: magazineAdmin1.nickname,
+            role: magazineAdmin1.role,
           }),
         ]),
       );
@@ -179,7 +179,7 @@ describe('Admin Account E2E Tests', () => {
     });
 
     it('403 - access token with insufficient role (role is magazine admin)', async () => {
-      const magazineAdmin = await testHelper.loginAdmin.magazineAdmin;
+      const magazineAdmin1 = await testHelper.loginAdmin.magazineAdmin1;
 
       const dto: GetAdminAccountAllDto = {
         page: 1,
@@ -188,7 +188,7 @@ describe('Admin Account E2E Tests', () => {
       await testHelper
         .test()
         .get('/admin-account')
-        .set('Cookie', `token=Bearer ${magazineAdmin.token}`)
+        .set('Cookie', `token=Bearer ${magazineAdmin1.token}`)
         .query(dto)
         .expect(403);
     });
@@ -463,7 +463,7 @@ describe('Admin Account E2E Tests', () => {
     });
 
     it('403 - access token with insufficient role (role is magazine admin)', async () => {
-      const magazineAdmin = await testHelper.loginAdmin.magazineAdmin;
+      const magazineAdmin1 = await testHelper.loginAdmin.magazineAdmin1;
 
       const dto: CreateAdminAccountDto = {
         nickname: 'newAdmin',
@@ -475,7 +475,7 @@ describe('Admin Account E2E Tests', () => {
       await testHelper
         .test()
         .post('/admin-account')
-        .set('Cookie', `token=Bearer ${magazineAdmin.token}`)
+        .set('Cookie', `token=Bearer ${magazineAdmin1.token}`)
         .send(dto)
         .expect(403);
     });
@@ -828,12 +828,12 @@ describe('Admin Account E2E Tests', () => {
     });
 
     it('403 - access token with insufficient role (role is magazine admin)', async () => {
-      const magazineAdmin = await testHelper.loginAdmin.magazineAdmin;
+      const magazineAdmin1 = await testHelper.loginAdmin.magazineAdmin1;
 
       await testHelper
         .test()
         .delete('/admin-account/1')
-        .set('Cookie', `token=Bearer ${magazineAdmin.token}`)
+        .set('Cookie', `token=Bearer ${magazineAdmin1.token}`)
         .expect(403);
     });
 
