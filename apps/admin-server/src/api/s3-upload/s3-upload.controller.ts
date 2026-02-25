@@ -6,6 +6,7 @@ import { PresignedUrlEntity } from '@admin/api/s3-upload/entity/presigned-url.en
 import { CreatePlaceImagePresignedUrlsDto } from '@admin/api/s3-upload/dto/request/create-place-image-presigned-url.dto';
 import { ApiBadRequestResponse, ApiTags } from '@nestjs/swagger';
 import { CreateMagazineImagePresignedUrlsDto } from './dto/request/create-magazine-image-presigned-url.dto';
+import { AdminRole } from '../auth/admin-role.enum';
 
 @Controller('s3-upload')
 @ApiTags('s3-upload')
@@ -73,7 +74,7 @@ export class S3UploadController {
       '- extensions array contains an invalid extension\n' +
       '- extensions array exceeds max size',
   })
-  @AdminAuth()
+  @AdminAuth(AdminRole.MagazineAdmin)
   async createMagazineImagePresignedUrls(
     @Body()
     createMagazineImagePresignedUrlsDto: CreateMagazineImagePresignedUrlsDto,
