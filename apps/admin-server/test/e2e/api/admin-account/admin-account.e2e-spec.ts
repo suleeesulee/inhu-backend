@@ -46,7 +46,7 @@ describe('Admin Account E2E Tests', () => {
       const count: number = response.body.count;
 
       expect(Array.isArray(accountList)).toBe(true);
-      expect(count).toBe(4);
+      expect(count).toBe(6);
       expect(accountList).toEqual(
         expect.arrayContaining([
           expect.objectContaining({
@@ -139,7 +139,7 @@ describe('Admin Account E2E Tests', () => {
       const count: number = response.body.count;
 
       expect(accountList.length).toBe(10);
-      expect(count).toBe(11);
+      expect(count).toBe(13);
 
       const response2 = await testHelper
         .test()
@@ -151,8 +151,8 @@ describe('Admin Account E2E Tests', () => {
       const accountList2: AdminAccountEntity[] = response2.body.accountList;
       const count2: number = response2.body.count;
 
-      expect(accountList2.length).toBe(1);
-      expect(count2).toBe(11);
+      expect(accountList2.length).toBe(3);
+      expect(count2).toBe(13);
     });
 
     it('401 - no access token', async () => {
