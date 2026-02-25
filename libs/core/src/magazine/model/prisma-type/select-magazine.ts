@@ -4,6 +4,7 @@ import { SELECT_MAGAZINE_PLACE } from './select-magazine-place';
 export const SELECT_MAGAZINE = Prisma.validator<Prisma.MagazineDefaultArgs>()({
   select: {
     idx: true,
+    authorIdx: true,
     title: true,
     description: true,
     content: true,
