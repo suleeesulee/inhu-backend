@@ -6,6 +6,9 @@ import { ITestHelper } from '@libs/testing/interface/test-helper.interface';
 export type LoginAdminForTest = {
   idx: number;
   id: string;
+  pw: string;
+  nickname: string;
+  role: AdminRole;
   token: string;
 };
 
@@ -16,28 +19,55 @@ export class LoginAdminHelper {
     superAdmin: LoginAdminForTest;
     magazineAdmin: LoginAdminForTest;
   }> {
+    const [admin1Form, admin2Form, superAdminForm, magazineAdminForm] = [
+      {
+        nickname: 'admin-1-nick',
+        id: 'admin-1-id',
+        pw: 'admin-1-pw',
+        role: AdminRole.Admin,
+      },
+      {
+        nickname: 'admin-2-nick',
+        id: 'admin-2-id',
+        pw: 'admin-2-pw',
+        role: AdminRole.Admin,
+      },
+      {
+        nickname: 'super-admin-nick',
+        id: 'super-admin-id',
+        pw: 'super-admin-pw',
+        role: AdminRole.SuperAdmin,
+      },
+      {
+        nickname: 'magazine-admin-nick',
+        id: 'magazine-admin-id',
+        pw: 'magazine-admin-pw',
+        role: AdminRole.MagazineAdmin,
+      },
+    ];
+
     const [user1, user2, user3, user4] = await Promise.all([
       testHelper.getPrisma().user.create({
         data: {
-          nickname: 'admin-1-nick',
+          nickname: admin1Form.nickname,
           profileImagePath: null,
         },
       }),
       testHelper.getPrisma().user.create({
         data: {
-          nickname: 'admin-2-nick',
+          nickname: admin2Form.nickname,
           profileImagePath: null,
         },
       }),
       testHelper.getPrisma().user.create({
         data: {
-          nickname: 'admin-3-nick',
+          nickname: superAdminForm.nickname,
           profileImagePath: null,
         },
       }),
       testHelper.getPrisma().user.create({
         data: {
-          nickname: 'admin-4-nick',
+          nickname: magazineAdminForm.nickname,
           profileImagePath: null,
         },
       }),
@@ -45,31 +75,75 @@ export class LoginAdminHelper {
 
     const [admin1, admin2, admin3, admin4] = await Promise.all([
       testHelper.getPrisma().adminAccount.create({
+        select: {
+          idx: true,
+          id: true,
+          role: true,
+          user: {
+            select: {
+              nickname: true,
+            },
+          },
+        },
         data: {
           idx: user1.idx,
-          id: 'admin-1-id',
-          pw: await testHelper.get(HashService).hash('admin-1-pw'),
+          id: admin1Form.id,
+          pw: await testHelper.get(HashService).hash(admin1Form.pw),
+          role: admin1Form.role,
         },
       }),
       testHelper.getPrisma().adminAccount.create({
+        select: {
+          idx: true,
+          id: true,
+          role: true,
+          user: {
+            select: {
+              nickname: true,
+            },
+          },
+        },
         data: {
           idx: user2.idx,
-          id: 'admin-2-id',
-          pw: await testHelper.get(HashService).hash('admin-2-pw'),
+          id: admin2Form.id,
+          pw: await testHelper.get(HashService).hash(admin2Form.pw),
+          role: admin2Form.role,
         },
       }),
       testHelper.getPrisma().adminAccount.create({
+        select: {
+          idx: true,
+          id: true,
+          role: true,
+          user: {
+            select: {
+              nickname: true,
+            },
+          },
+        },
         data: {
           idx: user3.idx,
-          id: 'super-admin-id',
-          pw: await testHelper.get(HashService).hash('super-admin-pw'),
+          id: superAdminForm.id,
+          pw: await testHelper.get(HashService).hash(superAdminForm.pw),
+          role: superAdminForm.role,
         },
       }),
       testHelper.getPrisma().adminAccount.create({
+        select: {
+          idx: true,
+          id: true,
+          role: true,
+          user: {
+            select: {
+              nickname: true,
+            },
+          },
+        },
         data: {
           idx: user4.idx,
-          id: 'magazine-admin-id',
-          pw: await testHelper.get(HashService).hash('magazine-admin-pw'),
+          id: magazineAdminForm.id,
+          pw: await testHelper.get(HashService).hash(magazineAdminForm.pw),
+          role: magazineAdminForm.role,
         },
       }),
     ]);
@@ -93,22 +167,34 @@ export class LoginAdminHelper {
     return {
       admin1: {
         idx: admin1.idx,
-        id: admin1.id,
+        id: admin1Form.id,
+        pw: admin1Form.pw,
+        nickname: admin1Form.nickname,
+        role: admin1Form.role as AdminRole,
         token: admin1Token,
       },
       admin2: {
         idx: admin2.idx,
-        id: admin2.id,
+        id: admin2Form.id,
+        pw: admin2Form.pw,
+        nickname: admin2Form.nickname,
+        role: admin2Form.role as AdminRole,
         token: admin2Token,
       },
       superAdmin: {
         idx: admin3.idx,
-        id: admin3.id,
+        id: superAdminForm.id,
+        pw: superAdminForm.pw,
+        nickname: superAdminForm.nickname,
+        role: superAdminForm.role as AdminRole,
         token: superAdminToken,
       },
       magazineAdmin: {
         idx: admin4.idx,
-        id: admin4.id,
+        id: magazineAdminForm.id,
+        pw: magazineAdminForm.pw,
+        nickname: magazineAdminForm.nickname,
+        role: magazineAdminForm.role as AdminRole,
         token: magazineAdminToken,
       },
     };
