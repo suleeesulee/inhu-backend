@@ -320,8 +320,9 @@ describe('Magazine e2e test', () => {
 
     it('200 - successfully get magazine (super admin)', async () => {
       const loginUser = testHelper.loginAdmin.superAdmin;
+      const magazineAdmin = testHelper.loginAdmin.magazineAdmin1;
       const magazineSeed = await magazineSeedHelper.seed({
-        authorIdx: loginUser.idx,
+        authorIdx: magazineAdmin.idx,
         deletedAt: null,
         activatedAt: new Date(),
       });
@@ -337,8 +338,9 @@ describe('Magazine e2e test', () => {
 
     it('200 - successfully get magazine (admin)', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
+      const magazineAdmin = testHelper.loginAdmin.magazineAdmin1;
       const magazineSeed = await magazineSeedHelper.seed({
-        authorIdx: loginUser.idx,
+        authorIdx: magazineAdmin.idx,
         deletedAt: null,
         activatedAt: new Date(),
       });
@@ -483,8 +485,9 @@ describe('Magazine e2e test', () => {
 
     it('200 - successfully get magazine (super admin)', async () => {
       const loginUser = testHelper.loginAdmin.superAdmin;
+      const magazineAdmin = testHelper.loginAdmin.magazineAdmin1;
       const magazineSeed = await magazineSeedHelper.seed({
-        authorIdx: loginUser.idx,
+        authorIdx: magazineAdmin.idx,
         deletedAt: null,
         activatedAt: new Date(),
       });
@@ -500,8 +503,9 @@ describe('Magazine e2e test', () => {
 
     it('200 - successfully get magazine (admin)', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
+      const magazineAdmin = testHelper.loginAdmin.magazineAdmin1;
       const magazineSeed = await magazineSeedHelper.seed({
-        authorIdx: loginUser.idx,
+        authorIdx: magazineAdmin.idx,
         deletedAt: null,
         activatedAt: new Date(),
       });
@@ -1032,12 +1036,13 @@ describe('Magazine e2e test', () => {
 
     it('200 - successfully activate magazine (super admin)', async () => {
       const loginUser = testHelper.loginAdmin.superAdmin;
+      const magazineAdmin = testHelper.loginAdmin.magazineAdmin1;
       const placeSeed = await placeSeedHelper.seed({
         deletedAt: null,
         activatedAt: new Date(),
       });
       const magazineSeed = await magazineSeedHelper.seed({
-        authorIdx: loginUser.idx,
+        authorIdx: magazineAdmin.idx,
         deletedAt: null,
         activatedAt: null,
         placeIdxList: [placeSeed.idx],
@@ -1064,12 +1069,13 @@ describe('Magazine e2e test', () => {
 
     it('200 - successfully deactivate magazine (super admin)', async () => {
       const loginUser = testHelper.loginAdmin.superAdmin;
+      const magazineAdmin = testHelper.loginAdmin.magazineAdmin1;
       const placeSeed = await placeSeedHelper.seed({
         deletedAt: null,
         activatedAt: new Date(),
       });
       const magazineSeed = await magazineSeedHelper.seed({
-        authorIdx: loginUser.idx,
+        authorIdx: magazineAdmin.idx,
         deletedAt: null,
         activatedAt: new Date(),
         placeIdxList: [placeSeed.idx],
@@ -1096,12 +1102,13 @@ describe('Magazine e2e test', () => {
 
     it('200 - successfully activate magazine (admin)', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
+      const magazineAdmin = testHelper.loginAdmin.magazineAdmin1;
       const placeSeed = await placeSeedHelper.seed({
         deletedAt: null,
         activatedAt: new Date(),
       });
       const magazineSeed = await magazineSeedHelper.seed({
-        authorIdx: loginUser.idx,
+        authorIdx: magazineAdmin.idx,
         deletedAt: null,
         activatedAt: null,
         placeIdxList: [placeSeed.idx],
@@ -1128,12 +1135,13 @@ describe('Magazine e2e test', () => {
 
     it('200 - successfully deactivate magazine (admin)', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
+      const magazineAdmin = testHelper.loginAdmin.magazineAdmin1;
       const placeSeed = await placeSeedHelper.seed({
         deletedAt: null,
         activatedAt: new Date(),
       });
       const magazineSeed = await magazineSeedHelper.seed({
-        authorIdx: loginUser.idx,
+        authorIdx: magazineAdmin.idx,
         deletedAt: null,
         activatedAt: new Date(),
         placeIdxList: [placeSeed.idx],
@@ -1987,8 +1995,9 @@ describe('Magazine e2e test', () => {
 
     it('200 - successfully update (super admin)', async () => {
       const superAdmin = await testHelper.loginAdmin.superAdmin;
+      const magazineAdmin = await testHelper.loginAdmin.magazineAdmin1;
       const magazine = await magazineSeedHelper.seed({
-        authorIdx: superAdmin.idx,
+        authorIdx: magazineAdmin.idx,
         typeList: [PlaceType.CAFE],
         mainCategoryList: [
           MainCategory.BAKERY,
@@ -2013,6 +2022,7 @@ describe('Magazine e2e test', () => {
     });
 
     it('200 - successfully update (admin)', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
       const magazineAdmin = await testHelper.loginAdmin.magazineAdmin1;
       const magazine = await magazineSeedHelper.seed({
         authorIdx: magazineAdmin.idx,
@@ -2030,7 +2040,7 @@ describe('Magazine e2e test', () => {
       await testHelper
         .test()
         .put(`/magazine/${magazine.idx}/category`)
-        .set('Cookie', `token=Bearer ${magazineAdmin.token}`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
         .send({
           typeList: [PlaceType.CAFE],
           mainCategoryList: [MainCategory.DESSERT],
@@ -2481,8 +2491,9 @@ describe('Magazine e2e test', () => {
 
     it('200 - successfully update magazine (super admin)', async () => {
       const superAdmin = await testHelper.loginAdmin.superAdmin;
+      const magazineAdmin = await testHelper.loginAdmin.magazineAdmin1;
       const magazineSeed = await magazineSeedHelper.seed({
-        authorIdx: superAdmin.idx,
+        authorIdx: magazineAdmin.idx,
         title: 'Old Title',
         description: 'Old Description',
         content: 'Old Content',
@@ -2509,6 +2520,7 @@ describe('Magazine e2e test', () => {
     });
 
     it('200 - successfully update magazine (admin)', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
       const magazineAdmin = await testHelper.loginAdmin.magazineAdmin1;
       const magazineSeed = await magazineSeedHelper.seed({
         authorIdx: magazineAdmin.idx,
@@ -2532,7 +2544,7 @@ describe('Magazine e2e test', () => {
       await testHelper
         .test()
         .put(`/magazine/${magazineSeed.idx}`)
-        .set('Cookie', `token=Bearer ${magazineAdmin.token}`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
         .send(updateMagazineDto)
         .expect(200);
     });
@@ -2654,8 +2666,9 @@ describe('Magazine e2e test', () => {
 
     it('200 - successfully delete magazine (super admin)', async () => {
       const superAdmin = await testHelper.loginAdmin.superAdmin;
+      const magazineAdmin = await testHelper.loginAdmin.magazineAdmin1;
       const magazineSeed = await magazineSeedHelper.seed({
-        authorIdx: superAdmin.idx,
+        authorIdx: magazineAdmin.idx,
         deletedAt: null,
         activatedAt: new Date(),
       });
@@ -2668,6 +2681,7 @@ describe('Magazine e2e test', () => {
     });
 
     it('200 - successfully delete magazine (admin)', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
       const magazineAdmin = await testHelper.loginAdmin.magazineAdmin1;
       const magazineSeed = await magazineSeedHelper.seed({
         authorIdx: magazineAdmin.idx,
@@ -2678,7 +2692,7 @@ describe('Magazine e2e test', () => {
       await testHelper
         .test()
         .delete(`/magazine/${magazineSeed.idx}`)
-        .set('Cookie', `token=Bearer ${magazineAdmin.token}`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
         .expect(200);
     });
 

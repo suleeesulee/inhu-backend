@@ -64,6 +64,145 @@ describe('Pinned Magazine e2e test', () => {
       expect(updatedMagazine).toBeNull();
     });
 
+    it('200 - successfully pin magazine (super admin)', async () => {
+      const loginUser = testHelper.loginAdmin.superAdmin;
+      const magazineAdmin = testHelper.loginAdmin.magazineAdmin1;
+      const magazineSeed = await magazineSeedHelper.seed({
+        authorIdx: magazineAdmin.idx,
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+
+      await testHelper
+        .test()
+        .post(`/magazine/${magazineSeed.idx}/pin`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send({ pinned: true })
+        .expect(200);
+
+      const updatedMagazine = await testHelper
+        .getPrisma()
+        .pinnedMagazine.findUniqueOrThrow({ where: { idx: magazineSeed.idx } });
+
+      expect(updatedMagazine.idx).toBe(magazineSeed.idx);
+    });
+
+    it('200 - successfully unpin magazine (super admin)', async () => {
+      const loginUser = testHelper.loginAdmin.superAdmin;
+      const magazineAdmin = testHelper.loginAdmin.magazineAdmin1;
+      const magazineSeed = await magazineSeedHelper.seed({
+        authorIdx: magazineAdmin.idx,
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+      await pinnedMagazineSeedHelper.seed({ idx: magazineSeed.idx });
+
+      await testHelper
+        .test()
+        .post(`/magazine/${magazineSeed.idx}/pin`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send({ pinned: false })
+        .expect(200);
+
+      const updatedMagazine = await testHelper
+        .getPrisma()
+        .pinnedMagazine.findFirst({ where: { idx: magazineSeed.idx } });
+
+      expect(updatedMagazine).toBeNull();
+    });
+
+    it('200 - successfully pin magazine (admin)', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const magazineAdmin = testHelper.loginAdmin.magazineAdmin1;
+      const magazineSeed = await magazineSeedHelper.seed({
+        authorIdx: magazineAdmin.idx,
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+
+      await testHelper
+        .test()
+        .post(`/magazine/${magazineSeed.idx}/pin`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send({ pinned: true })
+        .expect(200);
+
+      const updatedMagazine = await testHelper
+        .getPrisma()
+        .pinnedMagazine.findUniqueOrThrow({ where: { idx: magazineSeed.idx } });
+
+      expect(updatedMagazine.idx).toBe(magazineSeed.idx);
+    });
+
+    it('200 - successfully unpin magazine (admin)', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const magazineAdmin = testHelper.loginAdmin.magazineAdmin1;
+      const magazineSeed = await magazineSeedHelper.seed({
+        authorIdx: magazineAdmin.idx,
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+      await pinnedMagazineSeedHelper.seed({ idx: magazineSeed.idx });
+
+      await testHelper
+        .test()
+        .post(`/magazine/${magazineSeed.idx}/pin`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send({ pinned: false })
+        .expect(200);
+
+      const updatedMagazine = await testHelper
+        .getPrisma()
+        .pinnedMagazine.findFirst({ where: { idx: magazineSeed.idx } });
+
+      expect(updatedMagazine).toBeNull();
+    });
+
+    it('200 - successfully pin magazine (magazine admin)', async () => {
+      const loginUser = testHelper.loginAdmin.magazineAdmin1;
+      const magazineSeed = await magazineSeedHelper.seed({
+        authorIdx: loginUser.idx,
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+
+      await testHelper
+        .test()
+        .post(`/magazine/${magazineSeed.idx}/pin`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send({ pinned: true })
+        .expect(200);
+
+      const updatedMagazine = await testHelper
+        .getPrisma()
+        .pinnedMagazine.findUniqueOrThrow({ where: { idx: magazineSeed.idx } });
+
+      expect(updatedMagazine.idx).toBe(magazineSeed.idx);
+    });
+
+    it('200 - successfully unpin magazine (magazine admin)', async () => {
+      const loginUser = testHelper.loginAdmin.magazineAdmin1;
+      const magazineSeed = await magazineSeedHelper.seed({
+        authorIdx: loginUser.idx,
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+      await pinnedMagazineSeedHelper.seed({ idx: magazineSeed.idx });
+
+      await testHelper
+        .test()
+        .post(`/magazine/${magazineSeed.idx}/pin`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send({ pinned: false })
+        .expect(200);
+
+      const updatedMagazine = await testHelper
+        .getPrisma()
+        .pinnedMagazine.findFirst({ where: { idx: magazineSeed.idx } });
+
+      expect(updatedMagazine).toBeNull();
+    });
+
     it('400 - invalid magazine idx(pin)', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const invalidMagazineIdx = 'invalid-magazine-idx';
@@ -74,6 +213,41 @@ describe('Pinned Magazine e2e test', () => {
         .set('Cookie', `token=Bearer ${loginUser.token}`)
         .send({ pinned: true })
         .expect(400);
+    });
+
+    it('403 - admin is not the author of the magazine (pin)', async () => {
+      const magazineAdmin1 = testHelper.loginAdmin.magazineAdmin1;
+      const magazineAdmin2 = testHelper.loginAdmin.magazineAdmin2;
+      const magazineSeed = await magazineSeedHelper.seed({
+        authorIdx: magazineAdmin1.idx,
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+
+      await testHelper
+        .test()
+        .post(`/magazine/${magazineSeed.idx}/pin`)
+        .set('Cookie', `token=Bearer ${magazineAdmin2.token}`)
+        .send({ pinned: true })
+        .expect(403);
+    });
+
+    it('403 - admin is not the author of the magazine (unpin)', async () => {
+      const magazineAdmin1 = testHelper.loginAdmin.magazineAdmin1;
+      const magazineAdmin2 = testHelper.loginAdmin.magazineAdmin2;
+      const magazineSeed = await magazineSeedHelper.seed({
+        authorIdx: magazineAdmin1.idx,
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+      await pinnedMagazineSeedHelper.seed({ idx: magazineSeed.idx });
+
+      await testHelper
+        .test()
+        .post(`/magazine/${magazineSeed.idx}/pin`)
+        .set('Cookie', `token=Bearer ${magazineAdmin2.token}`)
+        .send({ pinned: false })
+        .expect(403);
     });
 
     it('404 - magazine not found(unpin)', async () => {
