@@ -791,6 +791,7 @@ describe('Admin Account E2E Tests', () => {
       });
       const adminAccount1 = await adminAccountSeedHelper.seed({
         userIdx: admin1.idx,
+        role: AdminRole.Admin,
       });
 
       const adminAccountCoreService = testHelper.get(AdminAccountCoreService);
