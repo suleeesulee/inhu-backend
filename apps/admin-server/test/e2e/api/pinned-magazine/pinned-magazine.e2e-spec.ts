@@ -22,6 +22,7 @@ describe('Pinned Magazine e2e test', () => {
     it('200 - successfully pin magazine', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const magazineSeed = await magazineSeedHelper.seed({
+        authorIdx: loginUser.idx,
         deletedAt: null,
         activatedAt: new Date(),
       });
@@ -43,6 +44,7 @@ describe('Pinned Magazine e2e test', () => {
     it('200 - successfully unpin magazine', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const magazineSeed = await magazineSeedHelper.seed({
+        authorIdx: loginUser.idx,
         deletedAt: null,
         activatedAt: new Date(),
       });
@@ -89,6 +91,7 @@ describe('Pinned Magazine e2e test', () => {
     it('409 - magazine is already pinned', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const magazineSeed = await magazineSeedHelper.seed({
+        authorIdx: loginUser.idx,
         deletedAt: null,
         activatedAt: new Date(),
       });
@@ -105,6 +108,7 @@ describe('Pinned Magazine e2e test', () => {
     it('409 - magazine is not pinned', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const magazineSeed = await magazineSeedHelper.seed({
+        authorIdx: loginUser.idx,
         deletedAt: null,
         activatedAt: new Date(),
       });

@@ -41,6 +41,7 @@ describe('Magazine e2e test', () => {
         activatedAt: new Date(),
       });
       const magazineSeed = await magazineSeedHelper.seed({
+        authorIdx: loginUser.idx,
         title: 'Test Magazine',
         description: 'Test Description',
         content: 'Test Content',
@@ -88,8 +89,8 @@ describe('Magazine e2e test', () => {
     it('200 - magazineList empty due to page too high', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
       await magazineSeedHelper.seedAll([
-        { deletedAt: null, activatedAt: new Date() },
-        { deletedAt: null, activatedAt: new Date() },
+        { authorIdx: loginUser.idx, deletedAt: null, activatedAt: new Date() },
+        { authorIdx: loginUser.idx, deletedAt: null, activatedAt: new Date() },
       ]);
 
       const response = await testHelper
@@ -110,8 +111,8 @@ describe('Magazine e2e test', () => {
     it('200 - activated filter (undefined)', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const [magazine1, magazine2] = await magazineSeedHelper.seedAll([
-        { deletedAt: null, activatedAt: new Date() },
-        { deletedAt: null, activatedAt: null },
+        { authorIdx: loginUser.idx, deletedAt: null, activatedAt: new Date() },
+        { authorIdx: loginUser.idx, deletedAt: null, activatedAt: null },
       ]);
 
       const response = await testHelper
@@ -135,9 +136,13 @@ describe('Magazine e2e test', () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const [magazine1, magazine2, magazine3] =
         await magazineSeedHelper.seedAll([
-          { deletedAt: null, activatedAt: new Date() },
-          { deletedAt: null, activatedAt: null },
-          { deletedAt: null, activatedAt: null },
+          {
+            authorIdx: loginUser.idx,
+            deletedAt: null,
+            activatedAt: new Date(),
+          },
+          { authorIdx: loginUser.idx, deletedAt: null, activatedAt: null },
+          { authorIdx: loginUser.idx, deletedAt: null, activatedAt: null },
         ]);
 
       const response = await testHelper
@@ -161,9 +166,17 @@ describe('Magazine e2e test', () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const [magazine1, magazine2, magazine3] =
         await magazineSeedHelper.seedAll([
-          { deletedAt: null, activatedAt: new Date() },
-          { deletedAt: null, activatedAt: new Date() },
-          { deletedAt: null, activatedAt: null },
+          {
+            authorIdx: loginUser.idx,
+            deletedAt: null,
+            activatedAt: new Date(),
+          },
+          {
+            authorIdx: loginUser.idx,
+            deletedAt: null,
+            activatedAt: new Date(),
+          },
+          { authorIdx: loginUser.idx, deletedAt: null, activatedAt: null },
         ]);
 
       const response = await testHelper
@@ -187,9 +200,21 @@ describe('Magazine e2e test', () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const [magazine1, magazine2, magazine3] =
         await magazineSeedHelper.seedAll([
-          { deletedAt: null, activatedAt: new Date() },
-          { deletedAt: null, activatedAt: new Date() },
-          { deletedAt: null, activatedAt: new Date() },
+          {
+            authorIdx: loginUser.idx,
+            deletedAt: null,
+            activatedAt: new Date(),
+          },
+          {
+            authorIdx: loginUser.idx,
+            deletedAt: null,
+            activatedAt: new Date(),
+          },
+          {
+            authorIdx: loginUser.idx,
+            deletedAt: null,
+            activatedAt: new Date(),
+          },
         ]);
 
       await pinnedMagazineSeedHelper.seedAll([
@@ -218,9 +243,21 @@ describe('Magazine e2e test', () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const [magazine1, magazine2, magazine3] =
         await magazineSeedHelper.seedAll([
-          { deletedAt: null, activatedAt: new Date() },
-          { deletedAt: null, activatedAt: new Date() },
-          { deletedAt: null, activatedAt: new Date() },
+          {
+            authorIdx: loginUser.idx,
+            deletedAt: null,
+            activatedAt: new Date(),
+          },
+          {
+            authorIdx: loginUser.idx,
+            deletedAt: null,
+            activatedAt: new Date(),
+          },
+          {
+            authorIdx: loginUser.idx,
+            deletedAt: null,
+            activatedAt: new Date(),
+          },
         ]);
 
       await pinnedMagazineSeedHelper.seedAll([{ idx: magazine1.idx }]);
@@ -246,10 +283,10 @@ describe('Magazine e2e test', () => {
     //   const loginUser = testHelper.loginAdmin.admin1;
     //   const [magazine1, magazine2, magazine3, magazine4] =
     //     await magazineSeedHelper.seedAll([
-    //       { deletedAt: null, activatedAt: new Date() },
-    //       { deletedAt: null, activatedAt: new Date() },
-    //       { deletedAt: null, activatedAt: new Date() },
-    //       { deletedAt: null, activatedAt: new Date() },
+    //       { authorIdx: loginUser.idx, deletedAt: null, activatedAt: new Date() },
+    //       { authorIdx: loginUser.idx, deletedAt: null, activatedAt: new Date() },
+    //       { authorIdx: loginUser.idx, deletedAt: null, activatedAt: new Date() },
+    //       { authorIdx: loginUser.idx, deletedAt: null, activatedAt: new Date() },
     //     ]);
 
     //   await pinnedMagazineSeedHelper.seedAll([
@@ -303,6 +340,7 @@ describe('Magazine e2e test', () => {
         activatedAt: new Date(),
       });
       const magazineSeed = await magazineSeedHelper.seed({
+        authorIdx: loginUser.idx,
         title: 'Test Magazine',
         description: 'Test Description',
         content: 'Test Content',
@@ -361,6 +399,7 @@ describe('Magazine e2e test', () => {
     it('200 - does not increase view count', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const magazineSeed = await magazineSeedHelper.seed({
+        authorIdx: loginUser.idx,
         deletedAt: null,
         activatedAt: new Date(),
       });
@@ -689,6 +728,7 @@ describe('Magazine e2e test', () => {
         },
       ]);
       const magazineSeed = await magazineSeedHelper.seed({
+        authorIdx: loginUser.idx,
         title: 'Test Magazine',
         description: 'Test Description',
         content: `Test Content. here is place :::place-${place1.idx}:::`,
@@ -738,6 +778,7 @@ describe('Magazine e2e test', () => {
         activatedAt: new Date(),
       });
       const magazineSeed = await magazineSeedHelper.seed({
+        authorIdx: loginUser.idx,
         title: 'Test Magazine',
         description: 'Test Description',
         content: `Test Content. here is place :::place-${placeSeed.idx}:::`,
@@ -829,6 +870,7 @@ describe('Magazine e2e test', () => {
     it('409 - magazine is already activated', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const magazineSeed = await magazineSeedHelper.seed({
+        authorIdx: loginUser.idx,
         deletedAt: null,
         activatedAt: new Date(),
       });
@@ -844,6 +886,7 @@ describe('Magazine e2e test', () => {
     it('409 - magazine is not activated', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const magazineSeed = await magazineSeedHelper.seed({
+        authorIdx: loginUser.idx,
         deletedAt: null,
         activatedAt: null,
       });
@@ -861,6 +904,7 @@ describe('Magazine e2e test', () => {
     it('200 - successfully update single type to magazine', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const magazine = await magazineSeedHelper.seed({
+        authorIdx: loginUser.idx,
         typeList: [PlaceType.CAFE],
         activatedAt: new Date(),
       });
@@ -899,6 +943,7 @@ describe('Magazine e2e test', () => {
     it('200 - successfully update multiple type to magazine', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const magazine = await magazineSeedHelper.seed({
+        authorIdx: loginUser.idx,
         typeList: [PlaceType.CAFE],
         activatedAt: new Date(),
       });
@@ -939,6 +984,7 @@ describe('Magazine e2e test', () => {
     it('200 - successfully updates single main category and no mood category to magazine', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const magazine = await magazineSeedHelper.seed({
+        authorIdx: loginUser.idx,
         typeList: [PlaceType.CAFE],
         mainCategoryList: [
           MainCategory.BAKERY,
@@ -1008,6 +1054,7 @@ describe('Magazine e2e test', () => {
     it('200 - successfully updates no main category and single mood category to magazine', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const magazine = await magazineSeedHelper.seed({
+        authorIdx: loginUser.idx,
         typeList: [PlaceType.CAFE],
         mainCategoryList: [
           MainCategory.BAKERY,
@@ -1077,6 +1124,7 @@ describe('Magazine e2e test', () => {
     it('200 - successfully updates multiple main category and single mood category to magazine', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const magazine = await magazineSeedHelper.seed({
+        authorIdx: loginUser.idx,
         typeList: [PlaceType.CAFE],
         mainCategoryList: [
           MainCategory.BAKERY,
@@ -1151,6 +1199,7 @@ describe('Magazine e2e test', () => {
     it('200 successfully updates single main category and multiple mood category to magazine', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const magazine = await magazineSeedHelper.seed({
+        authorIdx: loginUser.idx,
         typeList: [PlaceType.CAFE],
         mainCategoryList: [
           MainCategory.BAKERY,
@@ -1228,6 +1277,7 @@ describe('Magazine e2e test', () => {
     it('200 - successfully updates multiple main category and no mood category to magazine', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const magazine = await magazineSeedHelper.seed({
+        authorIdx: loginUser.idx,
         typeList: [PlaceType.CAFE],
         mainCategoryList: [
           MainCategory.BAKERY,
@@ -1299,6 +1349,7 @@ describe('Magazine e2e test', () => {
     it('200 - successfully updates no main category and multiple mood category to magazine', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const magazine = await magazineSeedHelper.seed({
+        authorIdx: loginUser.idx,
         typeList: [PlaceType.CAFE],
         mainCategoryList: [
           MainCategory.BAKERY,
@@ -1375,6 +1426,7 @@ describe('Magazine e2e test', () => {
     it('200 - successfully updates duplicate category is ignored and unique categories are added to magazine', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const magazine = await magazineSeedHelper.seed({
+        authorIdx: loginUser.idx,
         typeList: [PlaceType.CAFE],
         mainCategoryList: [
           MainCategory.BAKERY,
@@ -1463,6 +1515,7 @@ describe('Magazine e2e test', () => {
     it('200 - successfully updates multiple types, main category and mood category to magazine', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const magazine = await magazineSeedHelper.seed({
+        authorIdx: loginUser.idx,
         typeList: [PlaceType.CAFE],
         mainCategoryList: [
           MainCategory.BAKERY,
@@ -1547,6 +1600,7 @@ describe('Magazine e2e test', () => {
 
     it('401 - no access token', async () => {
       const magazine = await magazineSeedHelper.seed({
+        authorIdx: testHelper.loginAdmin.admin1.idx,
         typeList: [PlaceType.CAFE],
         mainCategoryList: [
           MainCategory.BAKERY,
@@ -1616,6 +1670,7 @@ describe('Magazine e2e test', () => {
         },
       ]);
       const magazineSeed = await magazineSeedHelper.seed({
+        authorIdx: loginUser.idx,
         title: 'Old Title',
         description: 'Old Description',
         content: `Old Content. here is place 1 :::place-${place1.idx}:::`,
@@ -1669,6 +1724,7 @@ describe('Magazine e2e test', () => {
         activatedAt: new Date(),
       });
       const magazineSeed = await magazineSeedHelper.seed({
+        authorIdx: loginUser.idx,
         title: 'Old Title',
         description: 'Old Description',
         content: `Old Content. here is place :::place-${placeSeed.idx}:::`,
@@ -1731,6 +1787,7 @@ describe('Magazine e2e test', () => {
         },
       ]);
       const magazineSeed = await magazineSeedHelper.seed({
+        authorIdx: loginUser.idx,
         title: 'Old Title',
         description: 'Old Description',
         content: `Old Content. here is place 1 :::place-${place1.idx}:::`,
@@ -1787,6 +1844,7 @@ describe('Magazine e2e test', () => {
         activatedAt: new Date(),
       });
       const magazineSeed = await magazineSeedHelper.seed({
+        authorIdx: loginUser.idx,
         title: 'Old Title',
         description: 'Old Description',
         content: `Old Content. here is place :::place-${placeSeed.idx}:::`,
@@ -1840,6 +1898,7 @@ describe('Magazine e2e test', () => {
         activatedAt: new Date(),
       });
       const magazineSeed = await magazineSeedHelper.seed({
+        authorIdx: loginUser.idx,
         title: 'Old Title',
         description: 'Old Description',
         content: `Old Content. here is place :::place-${placeSeed.idx}:::`,
@@ -1893,6 +1952,7 @@ describe('Magazine e2e test', () => {
         activatedAt: new Date(),
       });
       const magazineSeed = await magazineSeedHelper.seed({
+        authorIdx: loginUser.idx,
         title: 'Old Title',
         description: 'Old Description',
         content: `Old Content. here is place :::place-${placeSeed.idx}:::`,
@@ -1984,6 +2044,7 @@ describe('Magazine e2e test', () => {
     it('200 - successfully delete magazine', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const magazineSeed = await magazineSeedHelper.seed({
+        authorIdx: loginUser.idx,
         deletedAt: null,
         activatedAt: new Date(),
       });
