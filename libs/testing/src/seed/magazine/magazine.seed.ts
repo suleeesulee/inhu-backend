@@ -18,6 +18,7 @@ export class MagazineSeedHelper extends ISeedHelper<
     input: MagazineSeedInput,
   ): FilledSeedInput<MagazineSeedInput> {
     return {
+      authorIdx: input.authorIdx,
       title: defaultValue(input.title, faker.lorem.sentence()),
       description: defaultValue(input.description, faker.lorem.paragraph()),
       content: defaultValue(input.content, faker.lorem.paragraphs()),
@@ -40,6 +41,7 @@ export class MagazineSeedHelper extends ISeedHelper<
     const magazine = await this.prisma.magazine.create({
       select: { idx: true },
       data: {
+        authorIdx: filledInput.authorIdx,
         title: filledInput.title,
         description: filledInput.description,
         content: filledInput.content,
