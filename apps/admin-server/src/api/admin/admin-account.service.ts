@@ -78,10 +78,12 @@ export class AdminAccountService {
       throw new ForbiddenException('permission denied');
     }
 
-    const pw = this.generateTempPassword(12);
+    const pw = dto.pw ? dto.pw : this.generateTempPassword(12);
 
     return CreateAdminAccountEntity.fromModel(
       await this.adminAccountCoreService.createAdminAccount({
+        nickname: dto.nickname,
+        id: dto.id,
         pw: await this.hashService.hash(pw),
         role: dto.role,
       }),
