@@ -39,7 +39,7 @@ export class MagazineController {
    *
    * @author 이수인
    */
-  @AdminAuth()
+  @AdminAuth(AdminRole.MagazineAdmin)
   @Get('/all')
   @Exception(400, 'Invalid magazine request')
   public async getMagazineAll(
@@ -51,7 +51,7 @@ export class MagazineController {
   /**
    * 매거진 자세히보기
    */
-  @AdminAuth()
+  @AdminAuth(AdminRole.MagazineAdmin)
   @Get('/:idx')
   @Exception(400, 'Invalid path parameter')
   @Exception(404, 'Cannot find magazine')
