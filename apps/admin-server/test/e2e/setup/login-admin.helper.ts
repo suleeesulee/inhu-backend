@@ -17,9 +17,18 @@ export class LoginAdminHelper {
     admin1: LoginAdminForTest;
     admin2: LoginAdminForTest;
     superAdmin: LoginAdminForTest;
-    magazineAdmin: LoginAdminForTest;
+    magazineAdmin1: LoginAdminForTest;
+    magazineAdmin2: LoginAdminForTest;
+    allAdmin1: LoginAdminForTest;
   }> {
-    const [admin1Form, admin2Form, superAdminForm, magazineAdminForm] = [
+    const [
+      admin1Form,
+      admin2Form,
+      superAdminForm,
+      magazineAdmin1Form,
+      magazineAdmin2Form,
+      allAdminForm1,
+    ] = [
       {
         nickname: 'admin-1-nick',
         id: 'admin-1-id',
@@ -39,14 +48,26 @@ export class LoginAdminHelper {
         role: AdminRole.SuperAdmin,
       },
       {
-        nickname: 'magazine-admin-nick',
-        id: 'magazine-admin-id',
-        pw: 'magazine-admin-pw',
+        nickname: 'magazine-admin-1-nick',
+        id: 'magazine-admin-1-id',
+        pw: 'magazine-admin-1-pw',
         role: AdminRole.MagazineAdmin,
+      },
+      {
+        nickname: 'magazine-admin-2-nick',
+        id: 'magazine-admin-2-id',
+        pw: 'magazine-admin-2-pw',
+        role: AdminRole.MagazineAdmin,
+      },
+      {
+        nickname: 'all-admin-1-nick',
+        id: 'all-admin-1-id',
+        pw: 'all-admin-1-pw',
+        role: AdminRole.All,
       },
     ];
 
-    const [user1, user2, user3, user4] = await Promise.all([
+    const [user1, user2, user3, user4, user5, user6] = await Promise.all([
       testHelper.getPrisma().user.create({
         data: {
           nickname: admin1Form.nickname,
@@ -67,13 +88,25 @@ export class LoginAdminHelper {
       }),
       testHelper.getPrisma().user.create({
         data: {
-          nickname: magazineAdminForm.nickname,
+          nickname: magazineAdmin1Form.nickname,
+          profileImagePath: null,
+        },
+      }),
+      testHelper.getPrisma().user.create({
+        data: {
+          nickname: magazineAdmin2Form.nickname,
+          profileImagePath: null,
+        },
+      }),
+      testHelper.getPrisma().user.create({
+        data: {
+          nickname: allAdminForm1.nickname,
           profileImagePath: null,
         },
       }),
     ]);
 
-    const [admin1, admin2, admin3, admin4] = await Promise.all([
+    const [admin1, admin2, admin3, admin4, admin5, admin6] = await Promise.all([
       testHelper.getPrisma().adminAccount.create({
         select: {
           idx: true,
@@ -141,28 +174,76 @@ export class LoginAdminHelper {
         },
         data: {
           idx: user4.idx,
-          id: magazineAdminForm.id,
-          pw: await testHelper.get(HashService).hash(magazineAdminForm.pw),
-          role: magazineAdminForm.role,
+          id: magazineAdmin1Form.id,
+          pw: await testHelper.get(HashService).hash(magazineAdmin1Form.pw),
+          role: magazineAdmin1Form.role,
+        },
+      }),
+      testHelper.getPrisma().adminAccount.create({
+        select: {
+          idx: true,
+          id: true,
+          role: true,
+          user: {
+            select: {
+              nickname: true,
+            },
+          },
+        },
+        data: {
+          idx: user5.idx,
+          id: magazineAdmin2Form.id,
+          pw: await testHelper.get(HashService).hash(magazineAdmin2Form.pw),
+          role: magazineAdmin2Form.role,
+        },
+      }),
+      testHelper.getPrisma().adminAccount.create({
+        select: {
+          idx: true,
+          id: true,
+          role: true,
+          user: {
+            select: {
+              nickname: true,
+            },
+          },
+        },
+        data: {
+          idx: user6.idx,
+          id: allAdminForm1.id,
+          pw: await testHelper.get(HashService).hash(allAdminForm1.pw),
+          role: allAdminForm1.role,
         },
       }),
     ]);
 
-    const [admin1Token, admin2Token, superAdminToken, magazineAdminToken] =
-      await Promise.all([
-        await testHelper
-          .get(LoginTokenService)
-          .generateAdminToken(admin1.idx, AdminRole.Admin),
-        await testHelper
-          .get(LoginTokenService)
-          .generateAdminToken(admin2.idx, AdminRole.Admin),
-        await testHelper
-          .get(LoginTokenService)
-          .generateAdminToken(admin3.idx, AdminRole.SuperAdmin),
-        await testHelper
-          .get(LoginTokenService)
-          .generateAdminToken(admin4.idx, AdminRole.MagazineAdmin),
-      ]);
+    const [
+      admin1Token,
+      admin2Token,
+      superAdminToken,
+      magazineAdmin1Token,
+      magazineAdmin2Token,
+      allAdminToken,
+    ] = await Promise.all([
+      await testHelper
+        .get(LoginTokenService)
+        .generateAdminToken(admin1.idx, AdminRole.Admin),
+      await testHelper
+        .get(LoginTokenService)
+        .generateAdminToken(admin2.idx, AdminRole.Admin),
+      await testHelper
+        .get(LoginTokenService)
+        .generateAdminToken(admin3.idx, AdminRole.SuperAdmin),
+      await testHelper
+        .get(LoginTokenService)
+        .generateAdminToken(admin4.idx, AdminRole.MagazineAdmin),
+      await testHelper
+        .get(LoginTokenService)
+        .generateAdminToken(admin5.idx, AdminRole.MagazineAdmin),
+      await testHelper
+        .get(LoginTokenService)
+        .generateAdminToken(admin6.idx, AdminRole.All),
+    ]);
 
     return {
       admin1: {
@@ -189,13 +270,29 @@ export class LoginAdminHelper {
         role: superAdminForm.role as AdminRole,
         token: superAdminToken,
       },
-      magazineAdmin: {
+      magazineAdmin1: {
         idx: admin4.idx,
-        id: magazineAdminForm.id,
-        pw: magazineAdminForm.pw,
-        nickname: magazineAdminForm.nickname,
-        role: magazineAdminForm.role as AdminRole,
-        token: magazineAdminToken,
+        id: magazineAdmin1Form.id,
+        pw: magazineAdmin1Form.pw,
+        nickname: magazineAdmin1Form.nickname,
+        role: magazineAdmin1Form.role as AdminRole,
+        token: magazineAdmin1Token,
+      },
+      magazineAdmin2: {
+        idx: admin5.idx,
+        id: magazineAdmin2Form.id,
+        pw: magazineAdmin2Form.pw,
+        nickname: magazineAdmin2Form.nickname,
+        role: magazineAdmin2Form.role as AdminRole,
+        token: magazineAdmin2Token,
+      },
+      allAdmin1: {
+        idx: admin6.idx,
+        id: allAdminForm1.id,
+        pw: allAdminForm1.pw,
+        nickname: allAdminForm1.nickname,
+        role: allAdminForm1.role as AdminRole,
+        token: allAdminToken,
       },
     };
   }

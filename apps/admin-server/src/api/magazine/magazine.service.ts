@@ -1,6 +1,7 @@
 import { MagazineCoreService } from '@libs/core/magazine/magazine-core.service';
 import {
   ConflictException,
+  ForbiddenException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -16,6 +17,8 @@ import { GetAllMagazineInput } from '@libs/core/magazine/inputs/get-all-magazine
 import { ActivateMagazineByIdxDto } from './dto/request/activate-magazine-by-idx.dto';
 import { UpdateMagazineByIdxDto } from './dto/request/update-magazine-by-idx.dto';
 import { UpdateMagazineCategoryDto } from './dto/request/update-magazine-category.dto';
+import { LoginAdmin } from '@admin/common/types/login-admin';
+import { AdminRole } from '../auth/admin-role.enum';
 
 @Injectable()
 export class MagazineService {
@@ -53,7 +56,10 @@ export class MagazineService {
   }
 
   @Transactional()
-  public async createMagazine(dto: CreateMagazineDto): Promise<MagazineEntity> {
+  public async createMagazine(
+    dto: CreateMagazineDto,
+    admin: LoginAdmin,
+  ): Promise<MagazineEntity> {
     const extractedPlaceIdxList = this.extractAllPlaceIdxFromText(dto.content);
     const validPlaceList: number[] = [];
 
@@ -67,6 +73,7 @@ export class MagazineService {
 
     return await this.magazineCoreService
       .createMagazine({
+        authorIdx: admin.idx,
         title: dto.title,
         description: dto.description,
         content: dto.content,
@@ -80,12 +87,22 @@ export class MagazineService {
   public async activateMagazineByIdx(
     idx: number,
     dto: ActivateMagazineByIdxDto,
+    admin: LoginAdmin,
   ): Promise<void> {
     const isActivate = dto.activate;
     const magazine = await this.magazineCoreService.getMagazineByIdx(idx);
 
     if (!magazine) {
       throw new NotFoundException(`Magazine not found for idx: ${idx}`);
+    }
+
+    if (
+      admin.role === AdminRole.MagazineAdmin &&
+      magazine.authorIdx !== admin.idx
+    ) {
+      throw new ForbiddenException(
+        `Admin idx: ${admin.idx} is not the author of magazine idx: ${idx}`,
+      );
     }
 
     if (isActivate && magazine.activatedAt) {
@@ -104,10 +121,20 @@ export class MagazineService {
   public async updateMagazineByIdx(
     idx: number,
     dto: UpdateMagazineByIdxDto,
+    admin: LoginAdmin,
   ): Promise<void> {
     const magazine = await this.magazineCoreService.getMagazineByIdx(idx);
     if (!magazine) {
       throw new NotFoundException(`Magazine not found for idx: ${idx}`);
+    }
+
+    if (
+      admin.role === AdminRole.MagazineAdmin &&
+      magazine.authorIdx !== admin.idx
+    ) {
+      throw new ForbiddenException(
+        `Admin idx: ${admin.idx} is not the author of magazine idx: ${idx}`,
+      );
     }
 
     const extractedPlaceIdxList = this.extractAllPlaceIdxFromText(
@@ -137,10 +164,20 @@ export class MagazineService {
   public async updateMagazineCategoryByIdx(
     idx: number,
     dto: UpdateMagazineCategoryDto,
+    admin: LoginAdmin,
   ): Promise<void> {
     const magazine = await this.magazineCoreService.getMagazineByIdx(idx);
     if (!magazine) {
       throw new NotFoundException(`Magazine not found for idx: ${idx}`);
+    }
+
+    if (
+      admin.role === AdminRole.MagazineAdmin &&
+      magazine.authorIdx !== admin.idx
+    ) {
+      throw new ForbiddenException(
+        `Admin idx: ${admin.idx} is not the author of magazine idx: ${idx}`,
+      );
     }
 
     return await this.magazineCoreService.updateMagazineByIdx(idx, {
@@ -149,10 +186,22 @@ export class MagazineService {
     });
   }
 
-  public async deleteMagazineByIdx(idx: number): Promise<void> {
+  public async deleteMagazineByIdx(
+    idx: number,
+    admin: LoginAdmin,
+  ): Promise<void> {
     const magazine = await this.magazineCoreService.getMagazineByIdx(idx);
     if (!magazine) {
       throw new NotFoundException(`Magazine not found for idx: ${idx}`);
+    }
+
+    if (
+      admin.role === AdminRole.MagazineAdmin &&
+      magazine.authorIdx !== admin.idx
+    ) {
+      throw new ForbiddenException(
+        `Admin idx: ${admin.idx} is not the author of magazine idx: ${idx}`,
+      );
     }
 
     await this.magazineCoreService.deleteMagazineByIdx(idx);

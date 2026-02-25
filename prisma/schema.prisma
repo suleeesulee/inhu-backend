@@ -265,6 +265,7 @@ model User {
   adminAccount              AdminAccount?
   bookmarkList              Bookmark[]
   magazineLike              MagazineLike[]
+  magazineTb                Magazine[]
   placeOwnerList            PlaceOwner[]
   reviewList                Review[]
   service1ResultList        Service1Result[]
@@ -279,7 +280,7 @@ model AdminAccount {
   idx       Int      @id
   id        String   @db.VarChar
   pw        String   @db.VarChar
-  role      String   @db.VarChar @default("ADMIN")
+  role      String   @default("ADMIN") @db.VarChar
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
   user      User     @relation(fields: [idx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_user_tb_to_admin_tb")
 
@@ -379,6 +380,7 @@ model MagazinePlace {
 
 model Magazine {
   idx                             Int                           @id @default(autoincrement())
+  authorIdx                       Int                           @map("author_idx")
   title                           String                        @db.VarChar
   description                     String?                       @db.VarChar
   content                         String                        @db.VarChar
@@ -393,6 +395,7 @@ model Magazine {
   magazineMainCategoryMappingList MagazineMainCategoryMapping[]
   magazineMoodCategoryMappingList MagazineMoodCategoryMapping[]
   placeList                       MagazinePlace[]
+  userTb                          User                          @relation(fields: [authorIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_user_tb_to_magazine_tb")
   pinnedMagazine                  PinnedMagazine?
   placeTypeMagazineMappingList    PlaceTypeMagazineMapping[]
 

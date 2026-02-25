@@ -122,7 +122,7 @@ async function main() {
    * 매거진 생성
    */
   for (const magazineData of magazineSeedDataList) {
-    await magazineSeedHelper.seed(magazineData);
+    await magazineSeedHelper.seed({ ...magazineData, authorIdx: user1.idx });
   }
 }
 

@@ -23,6 +23,9 @@ import { OpenAIService } from '@libs/common/modules/openAI/openAI.service';
 import { RecommendDescriptionDto } from './dto/request/recommend-description.dto';
 import { DescriptionRecommendResponseDto } from './dto/response/description-recommend.response.dto';
 import { UpdateMagazineCategoryDto } from './dto/request/update-magazine-category.dto';
+import { AdminRole } from '../auth/admin-role.enum';
+import { Admin } from '@admin/common/decorator/admin.decorator';
+import { LoginAdmin } from '@admin/common/types/login-admin';
 
 @Controller('magazine')
 export class MagazineController {
@@ -63,13 +66,14 @@ export class MagazineController {
    *
    * @author 이수인
    */
-  @AdminAuth()
+  @AdminAuth(AdminRole.MagazineAdmin)
   @Post()
   @Exception(400, 'Invalid create magazine request')
   public async createMagazine(
     @Body() dto: CreateMagazineDto,
+    @Admin() admin: LoginAdmin,
   ): Promise<MagazineEntity> {
-    return await this.magazineService.createMagazine(dto);
+    return await this.magazineService.createMagazine(dto, admin);
   }
 
   /**
@@ -77,9 +81,10 @@ export class MagazineController {
    *
    * @author 이수인
    */
-  @AdminAuth()
+  @AdminAuth(AdminRole.MagazineAdmin)
   @Post(':idx/activate')
   @Exception(400, 'Invalid magazine idx')
+  @Exception(403, 'Admin is not the author of magazine')
   @Exception(404, 'Magazine not found')
   @Exception(
     409,
@@ -90,8 +95,9 @@ export class MagazineController {
   public async activateMagazineByIdx(
     @Param('idx', ParseIntPipe) idx: number,
     @Body() dto: ActivateMagazineByIdxDto,
+    @Admin() admin: LoginAdmin,
   ): Promise<void> {
-    await this.magazineService.activateMagazineByIdx(idx, dto);
+    await this.magazineService.activateMagazineByIdx(idx, dto, admin);
   }
 
   /**
@@ -99,7 +105,7 @@ export class MagazineController {
    *
    * @author 이수인
    */
-  @AdminAuth()
+  @AdminAuth(AdminRole.MagazineAdmin)
   @Post('/description/recommend')
   public async recommendDescriptionWithOpenAI(
     @Body() dto: RecommendDescriptionDto,
@@ -117,22 +123,24 @@ export class MagazineController {
    *
    * @author 이수인
    */
-  @AdminAuth()
+  @AdminAuth(AdminRole.MagazineAdmin)
   @Put(':idx')
   @Exception(400, 'Invalid magazine idx')
+  @Exception(403, 'Admin is not the author of magazine')
   @Exception(404, 'Magazine not found')
   @HttpCode(200)
   public async updateMagazineByIdx(
     @Param('idx', ParseIntPipe) idx: number,
     @Body() dto: UpdateMagazineByIdxDto,
+    @Admin() admin: LoginAdmin,
   ): Promise<void> {
-    return await this.magazineService.updateMagazineByIdx(idx, dto);
+    return await this.magazineService.updateMagazineByIdx(idx, dto, admin);
   }
 
   /**
    * 특정 매거진 카테고리 수정
    */
-  @AdminAuth()
+  @AdminAuth(AdminRole.MagazineAdmin)
   @Put('/:idx/category')
   @Exception(400, 'Invalid category idx')
   @Exception(404, 'Category not found')
@@ -140,8 +148,13 @@ export class MagazineController {
   public async updateMagazineCategoryByIdx(
     @Param('idx', ParseIntPipe) idx: number,
     @Body() dto: UpdateMagazineCategoryDto,
+    @Admin() admin: LoginAdmin,
   ): Promise<void> {
-    return await this.magazineService.updateMagazineCategoryByIdx(idx, dto);
+    return await this.magazineService.updateMagazineCategoryByIdx(
+      idx,
+      dto,
+      admin,
+    );
   }
 
   /**
@@ -149,13 +162,14 @@ export class MagazineController {
    *
    * @author 이수인
    */
-  @AdminAuth()
+  @AdminAuth(AdminRole.MagazineAdmin)
   @Delete(':idx')
   @Exception(400, 'Invalid magazine idx')
   @Exception(404, 'Magazine not found')
   public async deleteMagazineByIdx(
     @Param('idx', ParseIntPipe) idx: number,
+    @Admin() admin: LoginAdmin,
   ): Promise<void> {
-    await this.magazineService.deleteMagazineByIdx(idx);
+    await this.magazineService.deleteMagazineByIdx(idx, admin);
   }
 }

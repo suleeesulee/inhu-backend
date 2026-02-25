@@ -20,6 +20,7 @@ describe('Menu Like E2E test', () => {
     it('200 - successfully like magazine', async () => {
       const loginUser = testHelper.loginUsers.user1;
       const magazineSeed = await magazineSeedHelper.seed({
+        authorIdx: loginUser.idx,
         activatedAt: new Date(),
         deletedAt: null,
       });
@@ -61,6 +62,7 @@ describe('Menu Like E2E test', () => {
     it('409 - magazine like already exists(not at the same time)', async () => {
       const loginUser = testHelper.loginUsers.user1;
       const magazineSeed = await magazineSeedHelper.seed({
+        authorIdx: loginUser.idx,
         activatedAt: new Date(),
         deletedAt: null,
       });
@@ -94,6 +96,7 @@ describe('Menu Like E2E test', () => {
     it('409 - magazine like already exists(at the same time)', async () => {
       const loginUser = testHelper.loginUsers.user1;
       const magazineSeed = await magazineSeedHelper.seed({
+        authorIdx: loginUser.idx,
         activatedAt: new Date(),
         deletedAt: null,
       });
@@ -131,6 +134,7 @@ describe('Menu Like E2E test', () => {
     it('200 - successfully unlike magazine', async () => {
       const loginUser = testHelper.loginUsers.user1;
       const magazineSeed = await magazineSeedHelper.seed({
+        authorIdx: loginUser.idx,
         activatedAt: new Date(),
         deletedAt: null,
       });
@@ -163,6 +167,7 @@ describe('Menu Like E2E test', () => {
     it('200 - unlike magazine when likeCount is 0 (no effect)', async () => {
       const loginUser = testHelper.loginUsers.user1;
       const magazineSeed = await magazineSeedHelper.seed({
+        authorIdx: loginUser.idx,
         activatedAt: new Date(),
         deletedAt: null,
         likeCount: 0,
@@ -205,6 +210,7 @@ describe('Menu Like E2E test', () => {
     it('409 - magazine like does not exist(not at the same time)', async () => {
       const loginUser = testHelper.loginUsers.user1;
       const magazineSeed = await magazineSeedHelper.seed({
+        authorIdx: loginUser.idx,
         likeCount: 1,
         activatedAt: new Date(),
         deletedAt: null,
@@ -242,6 +248,7 @@ describe('Menu Like E2E test', () => {
     it('409 - magazine like does not exist(at the same time)', async () => {
       const loginUser = testHelper.loginUsers.user1;
       const magazineSeed = await magazineSeedHelper.seed({
+        authorIdx: loginUser.idx,
         likeCount: 1,
         activatedAt: new Date(),
         deletedAt: null,
