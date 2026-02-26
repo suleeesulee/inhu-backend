@@ -420,6 +420,17 @@ CREATE TABLE blog_review_tb
   PRIMARY KEY (idx)
 );
 
+-- kafka delete event 처리를 위한 REPLICA IDENTITY 설정
+-- 삭제 시 REPLICA IDENTITY가 DEFAULT인 경우, 삭제된 행의 전체 데이터를 가져올 수 없고, PK값만 가져올 수 있음.
+-- 따라서, 삭제된 행의 전체 데이터를 가져오기 위해 REPLICA IDENTITY를 FULL로 설정함.
+ALTER TABLE review_image_tb REPLICA IDENTITY FULL;
+ALTER TABLE pinned_magazine_tb REPLICA IDENTITY FULL;
+ALTER TABLE magazine_like_tb REPLICA IDENTITY FULL;
+ALTER TABLE closed_day_tb REPLICA IDENTITY FULL;
+ALTER TABLE operating_hour_tb REPLICA IDENTITY FULL;
+ALTER TABLE weekly_closed_day_tb REPLICA IDENTITY FULL;
+ALTER TABLE break_time_tb REPLICA IDENTITY FULL;
+
 ALTER TABLE review_image_tb
   ADD CONSTRAINT FK_review_tb_TO_review_image_tb
     FOREIGN KEY (review_idx)
