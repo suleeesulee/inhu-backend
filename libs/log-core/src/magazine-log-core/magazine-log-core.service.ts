@@ -6,6 +6,7 @@ import { Transactional } from '@nestjs-cls/transactional';
 import { CreateDimMainCategoryMappingInput } from './inputs/create-dim-magazine-main-category-mapping.input';
 import { CreateDimMoodCategoryMappingInput } from './inputs/create-dim-magazine-mood-category-mapping.input';
 import { CreateDimPlaceTypeMagazineMappingInput } from './inputs/create-dim-place-type-magazine-mapping.input';
+import { CreateDimMagazinePlaceInput } from './inputs/create-dim-place-type-magazine-mapping.input copy';
 
 @Injectable()
 export class MagazineLogCoreService {
@@ -63,6 +64,17 @@ export class MagazineLogCoreService {
     updatedAt: Date,
   ) {
     await this.magazineLogCoreRepository.insertDimMagazineMoodCategoryMapping({
+      ...input,
+      validFrom: updatedAt,
+    });
+  }
+
+  @Transactional()
+  public async createDimMagazinePlace(
+    input: CreateDimMagazinePlaceInput,
+    updatedAt: Date,
+  ) {
+    await this.magazineLogCoreRepository.insertDimMagazinePlace({
       ...input,
       validFrom: updatedAt,
     });

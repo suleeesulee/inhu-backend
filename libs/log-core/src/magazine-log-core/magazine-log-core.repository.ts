@@ -12,6 +12,7 @@ import { CreateDimMagazineLikeInput } from './inputs/create-dim-magazine-like.in
 import { CreateDimPlaceTypeMagazineMappingInput } from './inputs/create-dim-place-type-magazine-mapping.input';
 import { CreateDimMainCategoryMappingInput } from './inputs/create-dim-magazine-main-category-mapping.input';
 import { CreateDimMoodCategoryMappingInput } from './inputs/create-dim-magazine-mood-category-mapping.input';
+import { CreateDimMagazinePlaceInput } from './inputs/create-dim-place-type-magazine-mapping.input copy';
 
 @Injectable()
 export class MagazineLogCoreRepository {
@@ -165,6 +166,32 @@ export class MagazineLogCoreRepository {
       update: {
         moodCategoryIdx: input.moodCategoryIdx,
         magazineIdx: input.magazineIdx,
+        deletedAt: input.deletedAt,
+        validFrom: input.validFrom,
+      },
+    });
+  }
+
+  public async insertDimMagazinePlace(
+    input: CreateInputWrapper<CreateDimMagazinePlaceInput>,
+  ) {
+    return await this.txHost.tx.dimMagazinePlaces.upsert({
+      where: {
+        magazineIdx_placeIdx_validFrom: {
+          magazineIdx: input.magazineIdx,
+          placeIdx: input.placeIdx,
+          validFrom: input.validFrom,
+        },
+      },
+      create: {
+        magazineIdx: input.magazineIdx,
+        placeIdx: input.placeIdx,
+        deletedAt: input.deletedAt,
+        validFrom: input.validFrom,
+      },
+      update: {
+        magazineIdx: input.magazineIdx,
+        placeIdx: input.placeIdx,
         deletedAt: input.deletedAt,
         validFrom: input.validFrom,
       },
