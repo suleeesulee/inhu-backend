@@ -46,8 +46,6 @@ export class PlaceCdcController {
     )
       return;
 
-    console.log(message);
-
     const time = new Date(message.source.ts_ms || message.ts_ms || new Date());
 
     if (message.op === 'd') {
