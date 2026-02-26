@@ -10,7 +10,7 @@
     "show": 511,
     "database": 16,
     "databaseName": "'",
-    "canvasType": "@dineug/erd-editor/builtin-schema-sql",
+    "canvasType": "ERD",
     "language": 1,
     "tableNameCase": 4,
     "columnNameCase": 2,
@@ -5833,7 +5833,7 @@
         "tableId": "yiTzmQJyTayAyif9b92a-",
         "name": "sort_order",
         "comment": "",
-        "dataType": "boolean",
+        "dataType": "smallint",
         "default": "",
         "options": 8,
         "ui": {
@@ -5844,7 +5844,7 @@
           "widthDefault": 60
         },
         "meta": {
-          "updateAt": 1772097746981,
+          "updateAt": 1772102914949,
           "createAt": 1772097736955
         }
       },

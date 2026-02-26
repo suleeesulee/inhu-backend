@@ -166,7 +166,7 @@ model DimMenus {
   price        Int?
   imagePath    String?   @map("image_path") @db.VarChar
   isFlexible   Boolean   @map("is_flexible")
-  sortOrder    Boolean   @map("sort_order")
+  sortOrder    Int       @map("sort_order")
   isMain       Boolean   @map("is_main")
   registeredAt DateTime  @map("registered_at") @db.Timestamptz
   deletedAt    DateTime? @map("deleted_at") @db.Timestamptz

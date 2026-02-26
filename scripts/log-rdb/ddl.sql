@@ -157,7 +157,7 @@ CREATE TABLE dim_menus
   price         int,
   image_path    varchar,
   is_flexible   boolean                  NOT NULL,
-  sort_order    boolean                  NOT NULL,
+  sort_order    smallint                 NOT NULL,
   is_main       boolean                  NOT NULL,
   registered_at timestamp with time zone NOT NULL,
   deleted_at    timestamp with time zone,
