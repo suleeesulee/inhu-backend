@@ -72,6 +72,42 @@ describe('Place E2E test', () => {
       expect(place.searchTagList).toEqual([]);
     });
 
+    it('200 - successfully get place list (magazine admin', async () => {
+      const dto: GetPlaceOverviewDto = {
+        page: 1,
+      };
+
+      const loginUser = testHelper.loginAdmin.magazineAdmin1;
+
+      const placeSeed = await placeSeedHelper.seed({});
+
+      const response = await testHelper
+        .test()
+        .get('/place')
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .query(dto)
+        .expect(200);
+
+      const place: PlaceOverviewEntity = response.body.placeList[0];
+      const count: number = response.body.count;
+
+      expect(count).toBe(1);
+
+      expect(place.idx).toBe(placeSeed.idx);
+      expect(place.name).toBe(placeSeed.name);
+      expect(place.roadAddress.name).toBe(placeSeed.roadAddress.name);
+      expect(place.roadAddress.detail).toBe(placeSeed.roadAddress.detail);
+      expect(place.roadAddress.addressX).toBe(placeSeed.roadAddress.addressX);
+      expect(place.roadAddress.addressY).toBe(placeSeed.roadAddress.addressY);
+      expect(place.reviewCount).toBe(placeSeed.reviewCount);
+      expect(place.type).toBe(placeSeed.type);
+      expect(place.activatedAt).toBe(placeSeed.activatedAt);
+      expect(place.mainCategoryList).toEqual([]);
+      expect(place.moodCategoryList).toEqual([]);
+      expect(place.freeTagList).toEqual([]);
+      expect(place.searchTagList).toEqual([]);
+    });
+
     it('401 - no access token provided', async () => {
       const dto: GetPlaceOverviewDto = {
         page: 1,
@@ -899,6 +935,24 @@ describe('Place E2E test', () => {
         .expect(200);
     });
 
+    it('200 - successfully get place detail (magazine admin)', async () => {
+      const loginUser = testHelper.loginAdmin.magazineAdmin1;
+      const placeSeed = await placeSeedHelper.seed({
+        activatedAt: new Date(),
+        deletedAt: null,
+      });
+
+      const response = await testHelper
+        .test()
+        .get(`/place/${placeSeed.idx}`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .expect(200);
+
+      const place: PlaceEntity = response.body;
+
+      expect(place.idx).toBe(placeSeed.idx);
+    });
+
     it('404 - deleted place', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
 
@@ -1123,6 +1177,47 @@ describe('Place E2E test', () => {
         .set('Cookie', `token=Bearer ${loginUser.token}`)
         .send(createPlaceDto)
         .expect(400);
+    });
+
+    it('403 - unauthorized access (magazine admin)', async () => {
+      const createPlaceDto: CreatePlaceDto = {
+        name: 'New Place',
+        tel: '032-1234-5678',
+        isClosedOnHoliday: false,
+        imagePathList: ['/place/image1.png', '/place/image2.png'],
+        type: PlaceType.RESTAURANT,
+        roadAddress: {
+          name: 'New Road',
+          detail: 'New Detail',
+          addressX: 37.123,
+          addressY: 126.123,
+        },
+        closedDayList: [
+          { day: DayOfWeek.MON, week: 1 },
+          { day: DayOfWeek.TUE, week: 2 },
+        ],
+        breakTimeList: [
+          { startAt: '12:00:00', endAt: '13:00:00', day: DayOfWeek.WED },
+          { startAt: '14:00:00', endAt: '15:00:00', day: DayOfWeek.FRI },
+        ],
+        operatingHourList: [
+          { startAt: '10:00:00', endAt: '20:00:00', day: DayOfWeek.THU },
+          { startAt: '11:00:00', endAt: '21:00:00', day: DayOfWeek.SAT },
+        ],
+        weeklyClosedDayList: [
+          { date: '2025-07-22', type: WeeklyCloseType.BIWEEKLY },
+          { date: '2025-07-23', type: WeeklyCloseType.BIWEEKLY },
+        ],
+      };
+
+      const loginUser = testHelper.loginAdmin.magazineAdmin1;
+
+      await testHelper
+        .test()
+        .post('/place')
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send(createPlaceDto)
+        .expect(403);
     });
   });
 
@@ -1736,6 +1831,32 @@ describe('Place E2E test', () => {
         .expect(400);
     });
 
+    it('403 - unauthorized access (magazine admin)', async () => {
+      const loginUser = testHelper.loginAdmin.magazineAdmin1;
+      const place = await placeSeedHelper.seed({
+        type: PlaceType.CAFE,
+        mainCategoryList: [
+          MainCategory.BAKERY,
+          MainCategory.BUNGEOPPANG_WAFFLE,
+        ],
+        moodCategoryList: [
+          MoodCategory.STUDY_FRIENDLY,
+          MoodCategory.DESSERT_HOTSPOT,
+        ],
+      });
+
+      await testHelper
+        .test()
+        .put(`/place/${place.idx}/category`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send({
+          typeList: [PlaceType.CAFE],
+          mainCategoryList: [MainCategory.DESSERT],
+          moodCategoryList: [MoodCategory.GOOD_ATMOSPHERE],
+        })
+        .expect(403);
+    });
+
     it('404 - place not found', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const nonExistentPlaceIdx = 99999;
@@ -2092,6 +2213,22 @@ describe('Place E2E test', () => {
         .expect(400);
     });
 
+    it('403 - unauthorized access (magazine admin)', async () => {
+      const loginUser = testHelper.loginAdmin.magazineAdmin1;
+      const place = await placeSeedHelper.seed({
+        activatedAt: new Date(),
+      });
+
+      await testHelper
+        .test()
+        .put(`/place/${place.idx}/free-tag`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send({
+          freeTagList: ['Free Tag 1', 'Free Tag 2'],
+        })
+        .expect(403);
+    });
+
     it('404 - place not found', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const nonExistentPlaceIdx = 99999;
@@ -2446,6 +2583,22 @@ describe('Place E2E test', () => {
         .expect(400);
     });
 
+    it('403 - unauthorized access (magazine admin)', async () => {
+      const loginUser = testHelper.loginAdmin.magazineAdmin1;
+      const place = await placeSeedHelper.seed({
+        activatedAt: new Date(),
+      });
+
+      await testHelper
+        .test()
+        .put(`/place/${place.idx}/search-tag`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send({
+          searchTagList: ['Search Tag 1', 'Search Tag 2'],
+        })
+        .expect(403);
+    });
+
     it('404 - place not found', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const nonExistentPlaceIdx = 99999;
@@ -2657,6 +2810,65 @@ describe('Place E2E test', () => {
         .expect(401);
     });
 
+    it('403 - unauthorized access (magazine admin)', async () => {
+      const loginUser = testHelper.loginAdmin.magazineAdmin1;
+      const place = await placeSeedHelper.seed({
+        activatedAt: new Date(),
+      });
+
+      function getKstDateString(offsetDays = 0): string {
+        const now = new Date();
+        // 한국시간 보정 (+9시간)
+        now.setHours(now.getHours() + 9);
+        now.setDate(now.getDate() + offsetDays);
+
+        const yyyy = now.getFullYear();
+        const mm = String(now.getMonth() + 1).padStart(2, '0');
+        const dd = String(now.getDate()).padStart(2, '0');
+        return `${yyyy}-${mm}-${dd}`;
+      }
+
+      const updatePlaceDto: UpdatePlaceDto = {
+        name: 'Updated Place',
+        tel: '032-9876-5432',
+        isClosedOnHoliday: true,
+        imagePathList: [
+          '/place/updated-image1.png',
+          '/place/updated-image2.png',
+        ],
+        type: PlaceType.RESTAURANT,
+        roadAddress: {
+          name: 'Updated Road',
+          detail: 'Updated Detail',
+          addressX: 37.123,
+          addressY: 126.123,
+        },
+        closedDayList: [
+          { day: DayOfWeek.MON, week: 1 },
+          { day: DayOfWeek.TUE, week: 2 },
+        ],
+        breakTimeList: [
+          { startAt: '12:00:00', endAt: '13:00:00', day: DayOfWeek.WED },
+          { startAt: '14:00:00', endAt: '15:00:00', day: DayOfWeek.FRI },
+        ],
+        operatingHourList: [
+          { startAt: '10:00:00', endAt: '20:00:00', day: DayOfWeek.THU },
+          { startAt: '11:00:00', endAt: '21:00:00', day: DayOfWeek.SAT },
+        ],
+        weeklyClosedDayList: [
+          { date: getKstDateString(), type: WeeklyCloseType.BIWEEKLY },
+          { date: getKstDateString(1), type: WeeklyCloseType.BIWEEKLY },
+        ],
+      };
+
+      await testHelper
+        .test()
+        .put(`/place/${place.idx}`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send(updatePlaceDto)
+        .expect(403);
+    });
+
     it('404 - there is no place with the given idx', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const placeIdx = -1; // ! no place with this idx
@@ -2759,6 +2971,19 @@ describe('Place E2E test', () => {
       await testHelper.test().delete(`/place/${place.idx}`).expect(401);
     });
 
+    it('403 - unauthorized access (magazine admin)', async () => {
+      const loginUser = testHelper.loginAdmin.magazineAdmin1;
+      const place = await placeSeedHelper.seed({
+        activatedAt: new Date(),
+      });
+
+      await testHelper
+        .test()
+        .delete(`/place/${place.idx}`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .expect(403);
+    });
+
     it('400 - invalid place idx', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const invalidPlaceIdx = 'invalid-idx';
@@ -2812,6 +3037,19 @@ describe('Place E2E test', () => {
         .test()
         .post(`/place/${placeSeed.idx}/activate`)
         .expect(401);
+    });
+
+    it('403 - unauthorized access (magazine admin)', async () => {
+      const loginUser = testHelper.loginAdmin.magazineAdmin1;
+      const placeSeed = await placeSeedHelper.seed({
+        activatedAt: null,
+      });
+
+      await testHelper
+        .test()
+        .post(`/place/${placeSeed.idx}/activate`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .expect(403);
     });
 
     it('404 - attempt to activate a place that does not exist', async () => {
@@ -2874,6 +3112,19 @@ describe('Place E2E test', () => {
         .post(`/place/${invalidPlaceIdx}/deactivate`)
         .set('Cookie', `token=Bearer ${loginUser.token}`)
         .expect(400);
+    });
+
+    it('403 - unauthorized access (magazine admin)', async () => {
+      const loginUser = testHelper.loginAdmin.magazineAdmin1;
+      const placeSeed = await placeSeedHelper.seed({
+        activatedAt: new Date(),
+      });
+
+      await testHelper
+        .test()
+        .post(`/place/${placeSeed.idx}/deactivate`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .expect(403);
     });
 
     it('404 - attempt to deactivate a place that does not exist', async () => {
@@ -2946,6 +3197,20 @@ describe('Place E2E test', () => {
         .expect(401);
     });
 
+    it('403 - unauthorized access (magazine admin)', async () => {
+      const loginUser = testHelper.loginAdmin.magazineAdmin1;
+      const placeSeed = await placeSeedHelper.seed({
+        activatedAt: new Date(),
+        permanentlyClosedAt: null,
+      });
+
+      await testHelper
+        .test()
+        .post(`/place/${placeSeed.idx}/close-permanently`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .expect(403);
+    });
+
     it('404 - attempt to close permanently a place that does not exist', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const nonExistentPlaceIdx = -1; // ! no place with this idx
@@ -3014,6 +3279,20 @@ describe('Place E2E test', () => {
         .test()
         .post(`/place/${placeSeed.idx}/cancel-close-permanently`)
         .expect(401);
+    });
+
+    it('403 - unauthorized access (magazine admin)', async () => {
+      const loginUser = testHelper.loginAdmin.magazineAdmin1;
+      const placeSeed = await placeSeedHelper.seed({
+        activatedAt: new Date(),
+        permanentlyClosedAt: null,
+      });
+
+      await testHelper
+        .test()
+        .post(`/place/${placeSeed.idx}/cancel-close-permanently`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .expect(403);
     });
 
     it('404 - attempt to close a place that does not exist', async () => {
@@ -3153,6 +3432,18 @@ describe('Place E2E test', () => {
         .send({ date: '2025-08-20' })
         .expect(401);
     });
+
+    it('403 - unauthorized access (magazine admin)', async () => {
+      const loginUser = testHelper.loginAdmin.magazineAdmin1;
+      await placeSeedHelper.seed({});
+
+      await testHelper
+        .test()
+        .post('/place/cron/bi-weekly-closed-day')
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send({ date: '2025-08-20' })
+        .expect(403);
+    });
   });
 
   describe('POST /place/:idx/bi-weekly-closed-day', () => {
@@ -3199,6 +3490,18 @@ describe('Place E2E test', () => {
         .post(`/place/${place.idx}/bi-weekly-closed-day`)
         .send({ date: '2025-08-20' })
         .expect(401);
+    });
+
+    it('403 - unauthorized access (magazine admin)', async () => {
+      const loginUser = testHelper.loginAdmin.magazineAdmin1;
+      const place = await placeSeedHelper.seed({});
+
+      await testHelper
+        .test()
+        .post(`/place/${place.idx}/bi-weekly-closed-day`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send({ date: '2025-08-20' })
+        .expect(403);
     });
 
     it('404 - place does not exist', async () => {

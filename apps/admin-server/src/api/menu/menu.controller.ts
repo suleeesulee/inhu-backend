@@ -21,6 +21,7 @@ import { UpdateMenuSortOrderDto } from './dto/request/update-menu-sort-order.dto
 import { NaverMenuEntity } from './entity/naver-menu.entity';
 import { MenuCrawlingDto } from './dto/request/menu-crawling.dto';
 import { UpdateMenuIsMainDto } from './dto/request/update-menu-is-main.dto';
+import { AdminRole } from '../auth/admin-role.enum';
 
 @Controller()
 export class MenuController {
@@ -29,7 +30,7 @@ export class MenuController {
   /**
    * 메뉴 목록 보기
    */
-  @AdminAuth()
+  @AdminAuth(AdminRole.MagazineAdmin)
   @Exception(400, 'Invalid placeIdx or query parameters')
   @Get('/place/:placeIdx/menu')
   public async getAllMenu(

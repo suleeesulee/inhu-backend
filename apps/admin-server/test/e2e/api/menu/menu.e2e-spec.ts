@@ -76,6 +76,77 @@ describe('Menu e2e test', () => {
       expect(menu.reviewCount).toBe(1);
     });
 
+    it('200 - successfully get menu (super admin)', async () => {
+      const loginUser = testHelper.loginAdmin.superAdmin;
+      const placeSeed = await placeSeedHelper.seed({
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+      await menuSeedHelper.seed({
+        placeIdx: placeSeed.idx,
+        deletedAt: null,
+      });
+
+      const response = await testHelper
+        .test()
+        .get(`/place/${placeSeed.idx}/menu`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .query({ page: 1, row: 10 })
+        .expect(200);
+
+      const menuList: MenuEntity[] = response.body.menuList;
+
+      expect(Array.isArray(menuList)).toBe(true);
+      expect(menuList.length).toBeGreaterThan(0);
+    });
+    it('200 - successfully get menu (admin)', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const placeSeed = await placeSeedHelper.seed({
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+      await menuSeedHelper.seed({
+        placeIdx: placeSeed.idx,
+        deletedAt: null,
+      });
+
+      const response = await testHelper
+        .test()
+        .get(`/place/${placeSeed.idx}/menu`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .query({ page: 1, row: 10 })
+        .expect(200);
+
+      const menuList: MenuEntity[] = response.body.menuList;
+
+      expect(Array.isArray(menuList)).toBe(true);
+      expect(menuList.length).toBeGreaterThan(0);
+    });
+
+    it('200 - successfully get menu (magazine admin)', async () => {
+      const loginUser = testHelper.loginAdmin.magazineAdmin1;
+      const placeSeed = await placeSeedHelper.seed({
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+      await menuSeedHelper.seed({
+        placeIdx: placeSeed.idx,
+        deletedAt: null,
+      });
+
+      const response = await testHelper
+        .test()
+        .get(`/place/${placeSeed.idx}/menu`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .query({ page: 1, row: 10 })
+        .expect(200);
+
+      const menuList: MenuEntity[] = response.body.menuList;
+
+      expect(Array.isArray(menuList)).toBe(true);
+      expect(menuList.length).toBeGreaterThan(0);
+    });
+
     it('200 - no menu review exists', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const placeSeed = await placeSeedHelper.seed({
@@ -417,6 +488,82 @@ describe('Menu e2e test', () => {
       expect(resultMenu.reviewCount).toBe(0);
     });
 
+    it('201 - successfully create menu (super admin)', async () => {
+      const loginUser = testHelper.loginAdmin.superAdmin;
+      const placeSeed = await placeSeedHelper.seed({
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+
+      const createMenuDto = {
+        name: 'Test Menu',
+        content: 'Test Content',
+        price: 10000,
+        isFlexible: false,
+        isMain: true,
+        imagePath: '/test-image.png',
+      };
+
+      const response = await testHelper
+        .test()
+        .post(`/place/${placeSeed.idx}/menu`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send(createMenuDto)
+        .expect(201);
+
+      const menu: MenuEntity = response.body;
+
+      expect(menu.idx).toBeDefined();
+      expect(menu.placeIdx).toBe(placeSeed.idx);
+      expect(menu.name).toBe(createMenuDto.name);
+      expect(menu.content).toBe(createMenuDto.content);
+      expect(menu.price).toBe(createMenuDto.price);
+      expect(menu.isFlexible).toBe(createMenuDto.isFlexible);
+      expect(menu.imagePath).toBe(createMenuDto.imagePath);
+      expect(menu.sortOrder).toBe(1);
+      expect(menu.isMain).toBe(createMenuDto.isMain);
+      expect(menu.reviewList).toEqual([]);
+      expect(menu.reviewCount).toBe(0);
+    });
+
+    it('201 - successfully create menu (admin)', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const placeSeed = await placeSeedHelper.seed({
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+
+      const createMenuDto = {
+        name: 'Test Menu',
+        content: 'Test Content',
+        price: 10000,
+        isFlexible: false,
+        isMain: true,
+        imagePath: '/test-image.png',
+      };
+
+      const response = await testHelper
+        .test()
+        .post(`/place/${placeSeed.idx}/menu`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send(createMenuDto)
+        .expect(201);
+
+      const menu: MenuEntity = response.body;
+
+      expect(menu.idx).toBeDefined();
+      expect(menu.placeIdx).toBe(placeSeed.idx);
+      expect(menu.name).toBe(createMenuDto.name);
+      expect(menu.content).toBe(createMenuDto.content);
+      expect(menu.price).toBe(createMenuDto.price);
+      expect(menu.isFlexible).toBe(createMenuDto.isFlexible);
+      expect(menu.imagePath).toBe(createMenuDto.imagePath);
+      expect(menu.sortOrder).toBe(1);
+      expect(menu.isMain).toBe(createMenuDto.isMain);
+      expect(menu.reviewList).toEqual([]);
+      expect(menu.reviewCount).toBe(0);
+    });
+
     it('400 - invalid placeIdx', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
 
@@ -496,6 +643,29 @@ describe('Menu e2e test', () => {
         .expect(401);
     });
 
+    it('403 - unauthorized access (magazine admin)', async () => {
+      const loginUser = testHelper.loginAdmin.magazineAdmin1;
+      const placeSeed = await placeSeedHelper.seed({
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+
+      const createMenuDto = {
+        name: 'Test Menu',
+        content: null,
+        price: null,
+        imagePath: null,
+        isFlexible: false,
+      };
+
+      return await testHelper
+        .test()
+        .post(`/place/${placeSeed.idx}/menu`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send(createMenuDto)
+        .expect(403);
+    });
+
     it('404 - place not found', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
 
@@ -518,6 +688,68 @@ describe('Menu e2e test', () => {
 
   describe('POST /menu/:menuIdx/review/:reviewIdx', () => {
     it('201 - successfully create menu review', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const placeSeed = await placeSeedHelper.seed({
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+      const reviewSeed = await reviewSeedHelper.seed({
+        placeIdx: placeSeed.idx,
+        userIdx: loginUser.idx,
+      });
+      const menuSeed = await menuSeedHelper.seed({
+        placeIdx: placeSeed.idx,
+        deletedAt: null,
+      });
+
+      await testHelper
+        .test()
+        .post(`/menu/${menuSeed.idx}/review/${reviewSeed.idx}`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .expect(201);
+
+      const updatedMenu = await testHelper.getPrisma().menu.findUniqueOrThrow({
+        include: { reviewList: true },
+        where: { idx: menuSeed.idx },
+      });
+
+      expect(updatedMenu.reviewList[0].menuIdx).toBe(menuSeed.idx);
+      expect(updatedMenu.reviewList[0].reviewIdx).toBe(reviewSeed.idx);
+      expect(updatedMenu.reviewList.length).toBe(1);
+    });
+
+    it('201 - successfully create menu review (super admin)', async () => {
+      const loginUser = testHelper.loginAdmin.superAdmin;
+      const placeSeed = await placeSeedHelper.seed({
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+      const reviewSeed = await reviewSeedHelper.seed({
+        placeIdx: placeSeed.idx,
+        userIdx: loginUser.idx,
+      });
+      const menuSeed = await menuSeedHelper.seed({
+        placeIdx: placeSeed.idx,
+        deletedAt: null,
+      });
+
+      await testHelper
+        .test()
+        .post(`/menu/${menuSeed.idx}/review/${reviewSeed.idx}`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .expect(201);
+
+      const updatedMenu = await testHelper.getPrisma().menu.findUniqueOrThrow({
+        include: { reviewList: true },
+        where: { idx: menuSeed.idx },
+      });
+
+      expect(updatedMenu.reviewList[0].menuIdx).toBe(menuSeed.idx);
+      expect(updatedMenu.reviewList[0].reviewIdx).toBe(reviewSeed.idx);
+      expect(updatedMenu.reviewList.length).toBe(1);
+    });
+
+    it('201 - successfully create menu review (admin)', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const placeSeed = await placeSeedHelper.seed({
         deletedAt: null,
@@ -582,6 +814,28 @@ describe('Menu e2e test', () => {
         .post(`/menu/${menuSeed.idx}/review/invalid`) // ! invalid reviewIdx
         .set('Cookie', `token=Bearer ${loginUser.token}`)
         .expect(400);
+    });
+
+    it('403 - unauthorized access (magazine admin)', async () => {
+      const loginUser = testHelper.loginAdmin.magazineAdmin1;
+      const placeSeed = await placeSeedHelper.seed({
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+      const reviewSeed = await reviewSeedHelper.seed({
+        placeIdx: placeSeed.idx,
+        userIdx: loginUser.idx,
+      });
+      const menuSeed = await menuSeedHelper.seed({
+        placeIdx: placeSeed.idx,
+        deletedAt: null,
+      });
+
+      await testHelper
+        .test()
+        .post(`/menu/${menuSeed.idx}/review/${reviewSeed.idx}`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .expect(403);
     });
 
     it('404 - menu not found', async () => {
@@ -966,6 +1220,92 @@ describe('Menu e2e test', () => {
       expect(updatedMenu.imagePath).toBe(menuSeed.imagePath);
     });
 
+    it('200 - successfully update menu (super admin)', async () => {
+      const loginUser = testHelper.loginAdmin.superAdmin;
+
+      const placeSeed = await placeSeedHelper.seed({
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+
+      const menuSeed = await menuSeedHelper.seed({
+        placeIdx: placeSeed.idx,
+        name: 'Old Menu',
+        content: 'Old Content',
+        price: 5000,
+        isFlexible: false,
+        imagePath: 'menu/old-image.png',
+      });
+
+      const updateMenuDto = {
+        name: 'Updated Menu',
+        content: 'Updated Content',
+        price: 10000,
+        isFlexible: true,
+        imagePath: 'menu/updated-image.png',
+      };
+
+      await testHelper
+        .test()
+        .put(`/menu/${menuSeed.idx}`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send(updateMenuDto)
+        .expect(200);
+
+      const updatedMenu = await testHelper.getPrisma().menu.findUniqueOrThrow({
+        where: { idx: menuSeed.idx },
+      });
+
+      expect(updatedMenu.name).toBe(updateMenuDto.name);
+      expect(updatedMenu.content).toBe(updateMenuDto.content);
+      expect(updatedMenu.price).toBe(updateMenuDto.price);
+      expect(updatedMenu.isFlexible).toBe(updateMenuDto.isFlexible);
+      expect(updatedMenu.imagePath).toBe(updateMenuDto.imagePath);
+    });
+
+    it('200 - successfully update menu (admin)', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+
+      const placeSeed = await placeSeedHelper.seed({
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+
+      const menuSeed = await menuSeedHelper.seed({
+        placeIdx: placeSeed.idx,
+        name: 'Old Menu',
+        content: 'Old Content',
+        price: 5000,
+        isFlexible: false,
+        imagePath: 'menu/old-image.png',
+      });
+
+      const updateMenuDto = {
+        name: 'Updated Menu',
+        content: 'Updated Content',
+        price: 10000,
+        isFlexible: true,
+        imagePath: 'menu/updated-image.png',
+      };
+
+      await testHelper
+        .test()
+        .put(`/menu/${menuSeed.idx}`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send(updateMenuDto)
+        .expect(200);
+
+      const updatedMenu = await testHelper.getPrisma().menu.findUniqueOrThrow({
+        where: { idx: menuSeed.idx },
+      });
+
+      expect(updatedMenu.name).toBe(updateMenuDto.name);
+      expect(updatedMenu.content).toBe(updateMenuDto.content);
+      expect(updatedMenu.price).toBe(updateMenuDto.price);
+      expect(updatedMenu.isFlexible).toBe(updateMenuDto.isFlexible);
+      expect(updatedMenu.imagePath).toBe(updateMenuDto.imagePath);
+    });
+
     it('400 - invalid menuIdx', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
 
@@ -1073,6 +1413,34 @@ describe('Menu e2e test', () => {
         .put(`/menu/${menuSeed.idx}`)
         .send(updateMenuDto)
         .expect(401);
+    });
+
+    it('403 - unauthorized access (magazine admin)', async () => {
+      const loginUser = testHelper.loginAdmin.magazineAdmin1;
+
+      const placeSeed = await placeSeedHelper.seed({
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+
+      const menuSeed = await menuSeedHelper.seed({
+        placeIdx: placeSeed.idx,
+      });
+
+      const updateMenuDto = {
+        name: 'Updated Menu',
+        content: null,
+        price: null,
+        isFlexible: false,
+        imagePath: null,
+      };
+
+      await testHelper
+        .test()
+        .put(`/menu/${menuSeed.idx}`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send(updateMenuDto)
+        .expect(403);
     });
 
     it('404 - menu does not exist', async () => {
@@ -1225,6 +1593,92 @@ describe('Menu e2e test', () => {
       expect(updatedMenu3?.sortOrder).toBe(3);
     });
 
+    it('200 - successfully change sort order (super admin)', async () => {
+      const loginUser = testHelper.loginAdmin.superAdmin;
+
+      const placeSeed = await placeSeedHelper.seed({
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+
+      const menuSeed1 = await menuSeedHelper.seed({
+        placeIdx: placeSeed.idx,
+      });
+      const menuSeed2 = await menuSeedHelper.seed({
+        placeIdx: placeSeed.idx,
+      });
+      const menuSeed3 = await menuSeedHelper.seed({
+        placeIdx: placeSeed.idx,
+      });
+      expect(menuSeed1.sortOrder).toBe(1);
+      expect(menuSeed2.sortOrder).toBe(2);
+      expect(menuSeed3.sortOrder).toBe(3);
+
+      await testHelper
+        .test()
+        .put(`/menu/${menuSeed1.idx}/sort-order`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send({ sortOrder: 2 }) // 1번 메뉴를 2번 위치로 이동
+        .expect(200);
+
+      const prisma = testHelper.getPrisma();
+      const updatedMenu1 = await prisma.menu.findUnique({
+        where: { idx: menuSeed1.idx },
+      });
+      const updatedMenu2 = await prisma.menu.findUnique({
+        where: { idx: menuSeed2.idx },
+      });
+      const updatedMenu3 = await prisma.menu.findUnique({
+        where: { idx: menuSeed3.idx },
+      });
+      expect(updatedMenu1?.sortOrder).toBe(2);
+      expect(updatedMenu2?.sortOrder).toBe(1);
+      expect(updatedMenu3?.sortOrder).toBe(3);
+    });
+
+    it('200 - successfully change sort order (admin)', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+
+      const placeSeed = await placeSeedHelper.seed({
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+
+      const menuSeed1 = await menuSeedHelper.seed({
+        placeIdx: placeSeed.idx,
+      });
+      const menuSeed2 = await menuSeedHelper.seed({
+        placeIdx: placeSeed.idx,
+      });
+      const menuSeed3 = await menuSeedHelper.seed({
+        placeIdx: placeSeed.idx,
+      });
+      expect(menuSeed1.sortOrder).toBe(1);
+      expect(menuSeed2.sortOrder).toBe(2);
+      expect(menuSeed3.sortOrder).toBe(3);
+
+      await testHelper
+        .test()
+        .put(`/menu/${menuSeed1.idx}/sort-order`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send({ sortOrder: 2 }) // 1번 메뉴를 2번 위치로 이동
+        .expect(200);
+
+      const prisma = testHelper.getPrisma();
+      const updatedMenu1 = await prisma.menu.findUnique({
+        where: { idx: menuSeed1.idx },
+      });
+      const updatedMenu2 = await prisma.menu.findUnique({
+        where: { idx: menuSeed2.idx },
+      });
+      const updatedMenu3 = await prisma.menu.findUnique({
+        where: { idx: menuSeed3.idx },
+      });
+      expect(updatedMenu1?.sortOrder).toBe(2);
+      expect(updatedMenu2?.sortOrder).toBe(1);
+      expect(updatedMenu3?.sortOrder).toBe(3);
+    });
+
     it('400 - invalid sortOrder (a value that exceeds the menu count)', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
 
@@ -1246,6 +1700,29 @@ describe('Menu e2e test', () => {
         .set('Cookie', `token=Bearer ${loginUser.token}`)
         .send({ sortOrder: 3 })
         .expect(400);
+    });
+
+    it('403 - unauthorized access (magazine admin)', async () => {
+      const loginUser = testHelper.loginAdmin.magazineAdmin1;
+
+      const placeSeed = await placeSeedHelper.seed({
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+
+      const menuSeed1 = await menuSeedHelper.seed({
+        placeIdx: placeSeed.idx,
+      });
+      await menuSeedHelper.seed({
+        placeIdx: placeSeed.idx,
+      });
+
+      await testHelper
+        .test()
+        .put(`/menu/${menuSeed1.idx}/sort-order`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send({ sortOrder: 2 })
+        .expect(403);
     });
 
     it('404 - menu does not exist', async () => {
@@ -1333,6 +1810,66 @@ describe('Menu e2e test', () => {
       expect(updatedMenu.isMain).toBe(updateMenuIsMainDto.isMain);
     });
 
+    it('200 - successfully isMain modified (super admin)', async () => {
+      const loginUser = testHelper.loginAdmin.superAdmin;
+
+      const placeSeed = await placeSeedHelper.seed({
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+
+      const menuSeed = await menuSeedHelper.seed({
+        placeIdx: placeSeed.idx,
+      });
+
+      const updateMenuIsMainDto = {
+        isMain: true,
+      };
+
+      await testHelper
+        .test()
+        .put(`/menu/${menuSeed.idx}/main-menu`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send(updateMenuIsMainDto)
+        .expect(200);
+
+      const updatedMenu = await testHelper.getPrisma().menu.findUniqueOrThrow({
+        where: { idx: menuSeed.idx },
+      });
+
+      expect(updatedMenu.isMain).toBe(updateMenuIsMainDto.isMain);
+    });
+
+    it('200 - successfully isMain modified (admin)', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+
+      const placeSeed = await placeSeedHelper.seed({
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+
+      const menuSeed = await menuSeedHelper.seed({
+        placeIdx: placeSeed.idx,
+      });
+
+      const updateMenuIsMainDto = {
+        isMain: true,
+      };
+
+      await testHelper
+        .test()
+        .put(`/menu/${menuSeed.idx}/main-menu`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send(updateMenuIsMainDto)
+        .expect(200);
+
+      const updatedMenu = await testHelper.getPrisma().menu.findUniqueOrThrow({
+        where: { idx: menuSeed.idx },
+      });
+
+      expect(updatedMenu.isMain).toBe(updateMenuIsMainDto.isMain);
+    });
+
     it('400 - invalid menuIdx', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
 
@@ -1346,6 +1883,30 @@ describe('Menu e2e test', () => {
         .set('Cookie', `token=Bearer ${loginUser.token}`)
         .send(updateMenuIsMainDto)
         .expect(400);
+    });
+
+    it('403 - unauthorized access (magazine admin)', async () => {
+      const loginUser = testHelper.loginAdmin.magazineAdmin1;
+
+      const placeSeed = await placeSeedHelper.seed({
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+
+      const menuSeed = await menuSeedHelper.seed({
+        placeIdx: placeSeed.idx,
+      });
+
+      const updateMenuIsMainDto = {
+        isMain: true,
+      };
+
+      await testHelper
+        .test()
+        .put(`/menu/${menuSeed.idx}/main-menu`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send(updateMenuIsMainDto)
+        .expect(403);
     });
 
     it('404 - menu does not exist', async () => {
@@ -1433,6 +1994,54 @@ describe('Menu e2e test', () => {
       expect(menu3?.sortOrder).toBe(2);
     });
 
+    it('200 - successfully delete menu (super admin)', async () => {
+      const loginUser = testHelper.loginAdmin.superAdmin;
+
+      const placeSeed = await placeSeedHelper.seed({
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+
+      const menuSeed = await menuSeedHelper.seed({
+        placeIdx: placeSeed.idx,
+      });
+
+      await testHelper
+        .test()
+        .delete(`/menu/${menuSeed.idx}`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .expect(200);
+
+      const deletedMenu = await testHelper.getPrisma().menu.findUnique({
+        where: { idx: menuSeed.idx },
+      });
+      expect(deletedMenu?.deletedAt).not.toBeNull();
+    });
+
+    it('200 - successfully delete menu (admin)', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+
+      const placeSeed = await placeSeedHelper.seed({
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+
+      const menuSeed = await menuSeedHelper.seed({
+        placeIdx: placeSeed.idx,
+      });
+
+      await testHelper
+        .test()
+        .delete(`/menu/${menuSeed.idx}`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .expect(200);
+
+      const deletedMenu = await testHelper.getPrisma().menu.findUnique({
+        where: { idx: menuSeed.idx },
+      });
+      expect(deletedMenu?.deletedAt).not.toBeNull();
+    });
+
     it('400 - invalid menuIdx', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
 
@@ -1441,6 +2050,25 @@ describe('Menu e2e test', () => {
         .delete(`/menu/invalid`) // ! invalid menuIdx
         .set('Cookie', `token=Bearer ${loginUser.token}`)
         .expect(400);
+    });
+
+    it('403 - unauthorized access (magazine admin)', async () => {
+      const loginUser = testHelper.loginAdmin.magazineAdmin1;
+
+      const placeSeed = await placeSeedHelper.seed({
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+
+      const menuSeed = await menuSeedHelper.seed({
+        placeIdx: placeSeed.idx,
+      });
+
+      await testHelper
+        .test()
+        .delete(`/menu/${menuSeed.idx}`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .expect(403);
     });
 
     it('404 - menu does not exist', async () => {
@@ -1492,6 +2120,66 @@ describe('Menu e2e test', () => {
       expect(updatedMenu?.reviewList.length).toBe(0);
     });
 
+    it('200 - successfully delete menu review (super admin)', async () => {
+      const loginUser = testHelper.loginAdmin.superAdmin;
+      const placeSeed = await placeSeedHelper.seed({
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+      const reviewSeed = await reviewSeedHelper.seed({
+        placeIdx: placeSeed.idx,
+        userIdx: loginUser.idx,
+      });
+      const menuSeed = await menuSeedHelper.seed({
+        placeIdx: placeSeed.idx,
+        deletedAt: null,
+        reviewIdxList: [reviewSeed.idx],
+      });
+
+      await testHelper
+        .test()
+        .delete(`/menu/${menuSeed.idx}/review/${reviewSeed.idx}`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .expect(200);
+
+      const updatedMenu = await testHelper.getPrisma().menu.findFirst({
+        include: { reviewList: true },
+        where: { idx: menuSeed.idx },
+      });
+
+      expect(updatedMenu?.reviewList.length).toBe(0);
+    });
+
+    it('200 - successfully delete menu review (admin)', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const placeSeed = await placeSeedHelper.seed({
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+      const reviewSeed = await reviewSeedHelper.seed({
+        placeIdx: placeSeed.idx,
+        userIdx: loginUser.idx,
+      });
+      const menuSeed = await menuSeedHelper.seed({
+        placeIdx: placeSeed.idx,
+        deletedAt: null,
+        reviewIdxList: [reviewSeed.idx],
+      });
+
+      await testHelper
+        .test()
+        .delete(`/menu/${menuSeed.idx}/review/${reviewSeed.idx}`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .expect(200);
+
+      const updatedMenu = await testHelper.getPrisma().menu.findFirst({
+        include: { reviewList: true },
+        where: { idx: menuSeed.idx },
+      });
+
+      expect(updatedMenu?.reviewList.length).toBe(0);
+    });
+
     it('400 - invalid menuIdx', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const placeSeed = await placeSeedHelper.seed({
@@ -1526,6 +2214,28 @@ describe('Menu e2e test', () => {
         .delete(`/menu/${menuSeed.idx}/review/invalid`) // ! invalid reviewIdx
         .set('Cookie', `token=Bearer ${loginUser.token}`)
         .expect(400);
+    });
+
+    it('403 - unauthorized access (magazine admin)', async () => {
+      const loginUser = testHelper.loginAdmin.magazineAdmin1;
+      const placeSeed = await placeSeedHelper.seed({
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+      const reviewSeed = await reviewSeedHelper.seed({
+        placeIdx: placeSeed.idx,
+        userIdx: loginUser.idx,
+      });
+      const menuSeed = await menuSeedHelper.seed({
+        placeIdx: placeSeed.idx,
+        deletedAt: null,
+      });
+
+      await testHelper
+        .test()
+        .delete(`/menu/${menuSeed.idx}/review/${reviewSeed.idx}`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .expect(403);
     });
 
     it('404 - menu review not found', async () => {
