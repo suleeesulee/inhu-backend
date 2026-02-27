@@ -26,6 +26,7 @@ import { RunBiWeeklyClosedDayCronJobResponseDto } from './dto/response/run-bi-we
 import { UpdatePlaceCategoryDto } from './dto/request/update-place-category.dto';
 import { UpdatePlaceFreeTagDto } from './dto/request/update-place-free-tag.dto';
 import { UpdatePlaceSearchTagDto } from './dto/request/update-place-search-tag.dto';
+import { AdminRole } from '../auth/admin-role.enum';
 
 @Controller('place')
 @ApiTags('Place')
@@ -40,7 +41,7 @@ export class PlaceController {
    */
   @Get()
   @Exception(400, 'Invalid place overview request')
-  @AdminAuth()
+  @AdminAuth(AdminRole.MagazineAdmin)
   public async getPlaceOverviewAll(
     @Query() dto: GetPlaceOverviewDto,
   ): Promise<GetPlaceOverviewAllResponseDto> {
@@ -53,7 +54,7 @@ export class PlaceController {
   @Get('/:idx')
   @Exception(400, 'Invalid place idx')
   @Exception(404, 'Place not found')
-  @AdminAuth()
+  @AdminAuth(AdminRole.MagazineAdmin)
   public async getPlaceByIdx(
     @Param('idx', ParseIntPipe) idx: number,
   ): Promise<PlaceEntity> {
