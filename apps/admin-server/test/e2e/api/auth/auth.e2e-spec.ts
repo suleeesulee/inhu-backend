@@ -1,6 +1,7 @@
 import { AdminServerModule } from '@admin/admin-server.module';
 import { TestHelper } from '../../setup/test.helper';
 import { extractCookieValueFromSetCookieHeader } from '@libs/testing/utils/extract-cookie-value.util';
+import { ComparePasswordDto } from '@admin/api/auth/dto/request/compare-password.dto';
 
 describe('Auth E2E Tests', () => {
   const testHelper = TestHelper.create(AdminServerModule);
@@ -78,6 +79,68 @@ describe('Auth E2E Tests', () => {
         'token',
       );
       expect(afterToken).toBeNull();
+    });
+  });
+
+  describe('POST /auth/compare-password', () => {
+    it('201 - successfully compare password (super admin)', async () => {
+      const loginUser = testHelper.loginAdmin.superAdmin;
+
+      const dto: ComparePasswordDto = {
+        pw: loginUser.pw,
+      };
+
+      await testHelper
+        .test()
+        .post('/auth/compare-password')
+        .set('Cookie', [`token=Bearer ${loginUser.token}`])
+        .send(dto)
+        .expect(201);
+    });
+
+    it('201 - successfully compare password (admin)', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+
+      const dto: ComparePasswordDto = {
+        pw: loginUser.pw,
+      };
+
+      await testHelper
+        .test()
+        .post('/auth/compare-password')
+        .set('Cookie', [`token=Bearer ${loginUser.token}`])
+        .send(dto)
+        .expect(201);
+    });
+
+    it('201 - successfully compare password (magazine admin)', async () => {
+      const loginUser = testHelper.loginAdmin.magazineAdmin1;
+
+      const dto: ComparePasswordDto = {
+        pw: loginUser.pw,
+      };
+
+      await testHelper
+        .test()
+        .post('/auth/compare-password')
+        .set('Cookie', [`token=Bearer ${loginUser.token}`])
+        .send(dto)
+        .expect(201);
+    });
+
+    it('201 - successfully compare password (all)', async () => {
+      const loginUser = testHelper.loginAdmin.allAdmin1;
+
+      const dto: ComparePasswordDto = {
+        pw: loginUser.pw,
+      };
+
+      await testHelper
+        .test()
+        .post('/auth/compare-password')
+        .set('Cookie', [`token=Bearer ${loginUser.token}`])
+        .send(dto)
+        .expect(201);
     });
   });
 });
