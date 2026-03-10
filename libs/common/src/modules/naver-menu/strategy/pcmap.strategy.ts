@@ -28,7 +28,7 @@ export class PcmapStrategy extends NaverCrawlingStrategy {
   }
 
   public async crawl(page: Page, timeout: number): Promise<NaverMenu[]> {
-    await this.expandAllMenus(page, timeout);
+    await this.expandAllMenus(page);
 
     const selector = this.selectors;
     const liSelector = selector.liSelector;
@@ -84,24 +84,16 @@ export class PcmapStrategy extends NaverCrawlingStrategy {
   /**
    * 메뉴 펼쳐서 더보기 버튼을 모두 클릭하는 메서드
    */
-  private async expandAllMenus(page: Page, timeout: number): Promise<void> {
+  private async expandAllMenus(page: Page): Promise<void> {
     const selector = this.selectors.expandButtonSelector;
-    try {
-      await page.waitForSelector(selector, {
-        timeout,
-      });
 
-      while (true) {
-        const expandButton = await page.$(selector);
+    let btn = await page.$(selector);
+    if (!btn) return;
 
-        if (expandButton) {
-          await page.click(selector);
-        } else {
-          break;
-        }
-      }
-    } catch (err) {
-      console.log('추가 메뉴 더보기 버튼이 없어 넘어갑니다.');
+    while (btn) {
+      await btn.click();
+      await new Promise((resolve) => setTimeout(resolve, 100));
+      btn = await page.$(selector);
     }
   }
 }
