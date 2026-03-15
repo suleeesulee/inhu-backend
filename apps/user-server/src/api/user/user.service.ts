@@ -3,10 +3,14 @@ import { UserEntity } from './entity/user.entity';
 import { UpdateUserDto } from './dto/request/update-user.dto';
 import { LoginUser } from '@user/common/types/LoginUser';
 import { UserCoreService } from '@libs/core/user/user-core.service';
+import { LoginTokenService } from '@user/common/module/login-token/login-token.service';
 
 @Injectable()
 export class UserService {
-  constructor(private readonly userCoreService: UserCoreService) {}
+  constructor(
+    private readonly userCoreService: UserCoreService,
+    private readonly loginTokenService: LoginTokenService,
+  ) {}
 
   /**
    * 내 정보 조회
@@ -47,6 +51,8 @@ export class UserService {
     if (!userModel) {
       throw new Error('Authenticated user not found in database');
     }
+
+    await this.loginTokenService.invalidateAllRefreshTokens(user.idx);
 
     await this.userCoreService.deleteUserByIdx(user.idx);
   }
