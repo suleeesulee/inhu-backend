@@ -15,6 +15,7 @@ export class BookingStrategy extends NaverCrawlingStrategy {
     imageSelector: string;
     tabBoxSelector: string;
     tabItemSelector: string;
+    soldOutSelector: string;
   };
 
   constructor(private readonly configService: ConfigService) {
@@ -28,11 +29,12 @@ export class BookingStrategy extends NaverCrawlingStrategy {
       imageSelector: 'img[class^="MenuContent__img"]',
       tabBoxSelector: 'div[class^="SelectOrderType__tab_switch_box"]',
       tabItemSelector: 'a[role="tab"]',
+      soldOutSelector: 'i.fn-booking-check1',
     };
   }
 
   public async crawl(page: Page, timeout: number): Promise<NaverMenu[]> {
-    await this.showSoldOutMenus(page, timeout);
+    await this.showSoldOutMenus(this.selectors.soldOutSelector, page, timeout);
 
     try {
       await page.waitForSelector(this.selectors.rootDivSelector, {
@@ -82,13 +84,23 @@ export class BookingStrategy extends NaverCrawlingStrategy {
     return this.removeDuplicateMenu(menuList);
   }
 
-  private async showSoldOutMenus(page: Page, timeout: number): Promise<void> {
-    const selector = 'i.fn-booking-check1';
+  private async showSoldOutMenus(
+    selector: string,
+    page: Page,
+    timeout: number,
+  ): Promise<void> {
     try {
-      await page.waitForSelector(selector, {
+      const checkbox = await page.waitForSelector(selector, {
         timeout,
+        visible: true,
       });
-      await page.click(selector);
+
+      if (checkbox) {
+        await checkbox.evaluate((el) => el.scrollIntoView());
+
+        await new Promise((res) => setTimeout(res, 500));
+        await checkbox.click();
+      }
     } catch (err) {
       console.log('품절 메뉴 표시 버튼이 없어 넘어갑니다.');
     }
@@ -108,7 +120,7 @@ export class BookingStrategy extends NaverCrawlingStrategy {
             clearInterval(timer);
             resolve();
           }
-        }, 100);
+        }, 10);
       });
     });
   }

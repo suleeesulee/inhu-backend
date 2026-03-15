@@ -19,6 +19,7 @@ export default () => ({
       imageSelector: process.env.BOOKING_IMAGE_SELECTOR || '',
       tabBoxSelector: process.env.BOOKING_TAB_BOX_SELECTOR || '',
       tabItemSelector: process.env.BOOKING_TAB_ITEM_SELECTOR || '',
+      soldOutSelector: process.env.BOOKING_SOLD_OUT_SELECTOR || '',
     },
   },
 });
