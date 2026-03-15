@@ -110,6 +110,15 @@ export class RedisStorageProvider implements IRefreshTokenStorage {
     });
   }
 
+  /**
+   * 특정 사용자의 모든 Refresh Token 삭제
+   */
+  public async removeAllRefreshTokensByUserIdx(userIdx: number): Promise<void> {
+    const HASH_KEY = this.getHashKey(userIdx);
+
+    await this.redisService.del(HASH_KEY);
+  }
+
   private getHashKey(userIdx: number): string {
     return `user:${userIdx}:rt`;
   }
