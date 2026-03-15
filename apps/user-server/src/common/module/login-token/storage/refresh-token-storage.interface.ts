@@ -28,4 +28,8 @@ export abstract class IRefreshTokenStorage {
       issuedBy: TokenIssuedBy;
     }[]
   >;
+
+  public abstract removeAllRefreshTokensByUserIdx(
+    userIdx: number,
+  ): Promise<void>;
 }

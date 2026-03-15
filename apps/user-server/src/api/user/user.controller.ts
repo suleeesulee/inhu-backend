@@ -5,15 +5,10 @@ import { LoginUser } from '@user/common/types/LoginUser';
 import { LoginAuth } from '@user/common/decorator/login-auth.decorator';
 import { UpdateUserDto } from './dto/request/update-user.dto';
 import { UserEntity } from './entity/user.entity';
-import { DeleteUserDto } from './dto/request/delete-user.dto';
-import { AuthService } from '../auth/auth.service';
 
 @Controller('user')
 export class UserController {
-  constructor(
-    private readonly userService: UserService,
-    private readonly authService: AuthService,
-  ) {}
+  constructor(private readonly userService: UserService) {}
 
   /**
    * 내 정보 조회
@@ -45,15 +40,7 @@ export class UserController {
    */
   @Delete('')
   @LoginAuth()
-  async deleteUserByIdx(
-    @User() user: LoginUser,
-    @Body() deleteUserDto: DeleteUserDto,
-  ): Promise<void> {
-    const refreshToken = deleteUserDto.refreshTokenWithType.replace(
-      'Bearer ',
-      '',
-    );
+  async deleteUserByIdx(@User() user: LoginUser): Promise<void> {
     await this.userService.deleteUserByIdx(user);
-    await this.authService.logout(refreshToken);
   }
 }

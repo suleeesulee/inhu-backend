@@ -245,4 +245,11 @@ export class LoginTokenService {
       payload,
     };
   }
+
+  /**
+   * 특정 사용자의 모든 Refresh Token 무효화
+   */
+  public async invalidateAllRefreshTokens(userIdx: number): Promise<void> {
+    await this.refreshTokenStorage.removeAllRefreshTokensByUserIdx(userIdx);
+  }
 }
