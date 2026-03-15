@@ -38,4 +38,16 @@ export class UserService {
 
     await this.userCoreService.updateUserByIdx(user.idx, updateUserDto);
   }
+
+  /**
+   * 회원 탈퇴
+   */
+  public async deleteUserByIdx(user: LoginUser): Promise<void> {
+    const userModel = await this.userCoreService.getUserByIdx(user.idx);
+    if (!userModel) {
+      throw new Error('Authenticated user not found in database');
+    }
+
+    await this.userCoreService.deleteUserByIdx(user.idx);
+  }
 }
