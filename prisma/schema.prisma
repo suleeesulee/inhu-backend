@@ -500,7 +500,6 @@ model FreeTag {
   deletedAt               DateTime?             @map("deleted_at") @db.Timestamptz(6)
   placeFreeTagMappingList PlaceFreeTagMapping[]
 
-  @@index([content], map: "index_free_tag_tb_content_active")
   @@map("free_tag_tb")
 }
 
@@ -521,7 +520,6 @@ model SearchTag {
   deletedAt                 DateTime?               @map("deleted_at") @db.Timestamptz(6)
   placeSearchTagMappingList PlaceSearchTagMapping[]
 
-  @@index([content], map: "index_search_tag_content_active")
   @@map("search_tag_tb")
 }
 
@@ -533,4 +531,14 @@ model PlaceSearchTagMapping {
 
   @@id([searchTagIdx, placeIdx])
   @@map("place_search_tag_mapping_tb")
+}
+
+model PlaceSection {
+  idx       Int       @id @default(autoincrement())
+  title     String    @db.VarChar
+  parameter Json
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz(6)
+
+  @@map("place_section_tb")
 }
