@@ -5,6 +5,7 @@ export class PlaceSectionEntity {
   idx: number;
   title: string;
   parameter: PlaceSectionParameter;
+  createdAt: Date;
 
   constructor(data: PlaceSectionEntity) {
     Object.assign(this, data);
@@ -15,6 +16,7 @@ export class PlaceSectionEntity {
       idx: model.idx,
       title: model.title,
       parameter: model.parameter,
+      createdAt: model.createdAt,
     });
   }
 }

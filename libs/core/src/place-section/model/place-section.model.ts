@@ -10,6 +10,7 @@ export class PlaceSectionModel {
   public idx: number;
   public title: string;
   public parameter: PlaceSectionParameter;
+  public createdAt: Date;
 
   constructor(data: PlaceSectionModel) {
     Object.assign(this, data);
@@ -22,6 +23,7 @@ export class PlaceSectionModel {
       idx: placeSection.idx,
       title: placeSection.title,
       parameter: placeSection.parameter as PlaceSectionParameter,
+      createdAt: placeSection.createdAt,
     });
   }
 }
