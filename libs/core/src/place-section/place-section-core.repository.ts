@@ -6,7 +6,6 @@ import {
   SelectPlaceSection,
 } from './model/prisma-type/select-place-section';
 import { CreatePlaceSectionInput } from './inputs/create-place-section.input';
-import { Prisma } from '@prisma/client';
 import { UpdatePlaceSectionInput } from './inputs/update-place-section.input';
 
 @Injectable()
