@@ -23,6 +23,7 @@ import { MagazineModule } from './api/magazine/magazine.module';
 import { PinnedMagazineModule } from './api/pinned-magazine/pinned-magazine.module';
 import { ServerExceptionsFilter } from '@libs/common/filters/server-exception.filter';
 import { HashModule } from '@libs/common/modules/hash/hash.module';
+import { PlaceSectionModule } from './api/place-section/place-section.module';
 
 @Module({
   imports: [
@@ -55,6 +56,7 @@ import { HashModule } from '@libs/common/modules/hash/hash.module';
     MagazineModule,
     PinnedMagazineModule,
     HashModule,
+    PlaceSectionModule,
   ],
   providers: [
     {
