@@ -29,7 +29,6 @@ export class CreatePlaceSectionParameterDto {
    *
    * @example "desc"
    */
-  @IsOptional()
   @IsIn(['asc', 'desc'])
   order: 'desc' | 'asc' = 'desc';
 
@@ -38,7 +37,6 @@ export class CreatePlaceSectionParameterDto {
    *
    * @example "time"
    */
-  @IsOptional()
   @IsIn(['time', 'review'])
   orderby: 'time' | 'review' = 'time';
 
@@ -54,6 +52,8 @@ export class CreatePlaceSectionParameterDto {
 
   /**
    * 자유 태그 리스트
+   *
+   * @example ["가성비 좋은", "조용한"]
    */
   @IsOptional()
   @ToArray()

@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   ParseIntPipe,
@@ -11,17 +12,22 @@ import { PlaceSectionService } from './place-section.service';
 import { CreatePlaceSectionDto } from './dto/request/create-place-section.dto';
 import { PlaceSectionEntity } from './entity/place-section.entity';
 import { UpdatePlaceSectionDto } from './dto/request/update-place-section.dto';
+import { GetPlaceSectionAllResponseDto } from './dto/response/get-place-section-all.response.dto';
+import { AdminAuth } from '@admin/common/decorator/admin-auth.decorator';
+import { Exception } from '@libs/common/decorator/exception.decorator';
 
 @Controller('place-section')
 export class PlaceSectionController {
   constructor(private readonly placeSectionService: PlaceSectionService) {}
 
   @Get('/all')
-  public async getPlaceSectionAll() {
+  @AdminAuth()
+  public async getPlaceSectionAll(): Promise<GetPlaceSectionAllResponseDto> {
     return await this.placeSectionService.getPlaceSectionAll();
   }
 
   @Post()
+  @AdminAuth()
   public async createPlaceSection(
     @Body() dto: CreatePlaceSectionDto,
   ): Promise<PlaceSectionEntity> {
@@ -29,6 +35,8 @@ export class PlaceSectionController {
   }
 
   @Put('/:idx')
+  @Exception(404, 'Place section not found')
+  @AdminAuth()
   public async updatePlaceSection(
     @Param('idx', ParseIntPipe) idx: number,
     @Body() dto: UpdatePlaceSectionDto,
@@ -36,7 +44,9 @@ export class PlaceSectionController {
     await this.placeSectionService.updatePlaceSection(idx, dto);
   }
 
-  @Put('/:idx')
+  @Delete('/:idx')
+  @Exception(404, 'Place section not found')
+  @AdminAuth()
   public async deletePlaceSection(
     @Param('idx', ParseIntPipe) idx: number,
   ): Promise<void> {
