@@ -1,4 +1,4 @@
-import { PlaceSectionParameter } from '../place-section-parameter';
+import { PlaceSectionParameter } from '../place-section-parameter.type';
 import { SelectPlaceSection } from './prisma-type/select-place-section';
 
 /**
@@ -22,7 +22,7 @@ export class PlaceSectionModel {
     return new PlaceSectionModel({
       idx: placeSection.idx,
       title: placeSection.title,
-      parameter: placeSection.parameter as PlaceSectionParameter,
+      parameter: placeSection.parameter as unknown as PlaceSectionParameter,
       createdAt: placeSection.createdAt,
     });
   }

@@ -7,6 +7,7 @@ import {
 } from './model/prisma-type/select-place-section';
 import { CreatePlaceSectionInput } from './inputs/create-place-section.input';
 import { UpdatePlaceSectionInput } from './inputs/update-place-section.input';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class PlaceSectionCoreRepository {
@@ -42,7 +43,7 @@ export class PlaceSectionCoreRepository {
       ...SELECT_PLACE_SECTION,
       data: {
         title: input.title,
-        parameter: input.parameter,
+        parameter: input.parameter as unknown as Prisma.InputJsonValue,
       },
     });
   }
@@ -54,7 +55,7 @@ export class PlaceSectionCoreRepository {
     await this.txHost.tx.placeSection.update({
       data: {
         title: input.title,
-        parameter: input.parameter,
+        parameter: input.parameter as unknown as Prisma.InputJsonValue,
       },
       where: {
         idx,

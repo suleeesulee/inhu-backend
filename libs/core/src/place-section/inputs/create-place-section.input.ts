@@ -1,4 +1,4 @@
-import { PlaceSectionParameter } from '../place-section-parameter';
+import { PlaceSectionParameter } from '../place-section-parameter.type';
 
 /**
  * CreatePlaceSectionInput 클래스
