@@ -86,6 +86,11 @@ export class GetPlaceOverviewInput {
   moodCategoryList?: MoodCategory[];
 
   /**
+   * 자유 태그 필터링
+   */
+  freeTagList?: string[];
+
+  /**
    * 만원 이하 여부
    *
    * true: 만원 이하 메뉴가 있는 장소만

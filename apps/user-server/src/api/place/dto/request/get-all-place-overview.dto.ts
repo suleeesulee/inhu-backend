@@ -13,6 +13,7 @@ import {
   IsNotEmpty,
   IsNumber,
   IsOptional,
+  IsString,
   MaxLength,
   Min,
 } from 'class-validator';
@@ -88,6 +89,15 @@ export class GetAllPlaceOverviewDto {
   @IsEnumValue(MoodCategory, { each: true })
   @Type(() => Number)
   moodCategoryList?: MoodCategory[];
+
+  /**
+   * 자유 태그 리스트
+   */
+  @IsOptional()
+  @ToArray()
+  @UniqueArray()
+  @IsString({ each: true })
+  freeTagList?: string[];
 
   /**
    * 만원 이하 여부
