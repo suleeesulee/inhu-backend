@@ -29,16 +29,18 @@ export class CreatePlaceSectionParameterDto {
    *
    * @example "desc"
    */
+  @IsOptional()
   @IsIn(['asc', 'desc'])
-  order: 'desc' | 'asc' = 'desc';
+  order?: 'desc' | 'asc' = 'desc';
 
   /**
    * 정렬 옵션
    *
    * @example "time"
    */
+  @IsOptional()
   @IsIn(['time', 'review'])
-  orderby: 'time' | 'review' = 'time';
+  orderby?: 'time' | 'review' = 'time';
 
   /**
    * 메인 카테고리 리스트

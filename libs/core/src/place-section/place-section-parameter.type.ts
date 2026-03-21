@@ -13,14 +13,14 @@ export class PlaceSectionParameter {
    *
    * @example "desc"
    */
-  order: 'asc' | 'desc';
+  order?: 'asc' | 'desc';
 
   /**
    * 정렬 옵션
    *
    * @example "time"
    */
-  orderby: 'time' | 'review';
+  orderby?: 'time' | 'review';
 
   /**
    * 메인 카테고리 리스트
