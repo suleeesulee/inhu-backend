@@ -198,6 +198,16 @@ CREATE TABLE place_search_tag_mapping_tb
   PRIMARY KEY (search_tag_idx, place_idx)
 );
 
+CREATE TABLE place_section_tb
+(
+  idx        int                      NOT NULL GENERATED ALWAYS AS IDENTITY,
+  title      varchar                  NOT NULL,
+  parameter  jsonb                    NOT NULL,
+  created_at timestamp with time zone NOT NULL DEFAULT NOW(),
+  deleted_at timestamp with time zone,
+  PRIMARY KEY (idx)
+);
+
 CREATE TABLE place_tb
 (
   idx                   int                      NOT NULL GENERATED ALWAYS AS IDENTITY,

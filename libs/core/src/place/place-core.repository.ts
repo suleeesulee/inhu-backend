@@ -79,6 +79,7 @@ export class PlaceCoreRepository {
     searchKeyword,
     mainCategoryList,
     moodCategoryList,
+    freeTagList,
     lowPrice,
   }: GetPlaceOverviewInput): Promise<SelectPlaceOverview[]> {
     const now = this.dateUtilService.getNow();
@@ -105,6 +106,7 @@ export class PlaceCoreRepository {
           this.getSearchKeywordWhereClause(searchKeyword), // 검색 키워드 필터링
           this.getMainCategoryFilterWhereClause(mainCategoryList), // 메인 카테고리 필터링
           this.getMoodCategoryFilterWhereClause(moodCategoryList), // 분위기 카테고리 필터링
+          this.getFreeTagFilterWhereClause(freeTagList), // 자유 태그 필터링
           this.getPriceFilterWhereClause(lowPrice), // 저렴한 메뉴 필터링
         ],
       },
@@ -181,6 +183,7 @@ export class PlaceCoreRepository {
           this.getPermanentlyClosedFilterWhereClause(false),
           this.getMainCategoryFilterWhereClause(input.mainCategoryList),
           this.getMoodCategoryFilterWhereClause(input.moodCategoryList),
+          this.getFreeTagFilterWhereClause(input.freeTagList),
           this.getPriceFilterWhereClause(input.lowPrice),
         ],
       },
@@ -379,6 +382,22 @@ export class PlaceCoreRepository {
       OR: moodCategoryList.map((category) => ({
         placeMoodCategoryMappingList: {
           some: { moodCategoryIdx: category },
+        },
+      })),
+    };
+  }
+
+  private getFreeTagFilterWhereClause(
+    freeTagList?: string[],
+  ): Prisma.PlaceWhereInput {
+    if (freeTagList === undefined || freeTagList.length === 0) {
+      return {};
+    }
+
+    return {
+      OR: freeTagList.map((name) => ({
+        placeFreeTagMappingList: {
+          some: { freeTag: { content: name } },
         },
       })),
     };

@@ -10,7 +10,7 @@
     "show": 511,
     "database": 16,
     "databaseName": "inhu",
-    "canvasType": "@dineug/erd-editor/builtin-schema-sql",
+    "canvasType": "ERD",
     "language": 1,
     "tableNameCase": 4,
     "columnNameCase": 2,
@@ -74,7 +74,8 @@
       "XCpX0Df8MIHxmgSxW4XCz",
       "t1KzZMKTDbHyQ8UTHQywX",
       "HctR6A2qYm_RHsh7G0Q75",
-      "Awnf9xGp9NUsJtrXwTYlh"
+      "Awnf9xGp9NUsJtrXwTYlh",
+      "vkGljxjKl34EWvuKd8Wd-"
     ],
     "relationshipIds": [
       "Yra7neaOqUtQtIORshpQt",
@@ -1505,6 +1506,37 @@
         "meta": {
           "updateAt": 1771502377139,
           "createAt": 1771502319636
+        }
+      },
+      "vkGljxjKl34EWvuKd8Wd-": {
+        "id": "vkGljxjKl34EWvuKd8Wd-",
+        "name": "place_section_tb",
+        "comment": "",
+        "columnIds": [
+          "6FJhw-SYN-J_gs1inKTfy",
+          "WX1mxXTNHamua4cdsKieg",
+          "s-dx9mR3wUOByE6ovfCIH",
+          "Nn7xbY5iPq3Wlq0tqA43a",
+          "YMqauYujkXn_u0sLKbCI0"
+        ],
+        "seqColumnIds": [
+          "6FJhw-SYN-J_gs1inKTfy",
+          "WX1mxXTNHamua4cdsKieg",
+          "s-dx9mR3wUOByE6ovfCIH",
+          "Nn7xbY5iPq3Wlq0tqA43a",
+          "YMqauYujkXn_u0sLKbCI0"
+        ],
+        "ui": {
+          "x": 2025.3636,
+          "y": 2401.2728,
+          "zIndex": 624,
+          "widthName": 99,
+          "widthComment": 60,
+          "color": "#03A9F4"
+        },
+        "meta": {
+          "updateAt": 1773906320802,
+          "createAt": 1773889038282
         }
       }
     },
@@ -6707,6 +6739,106 @@
         "meta": {
           "updateAt": 1772027365875,
           "createAt": 1772027356908
+        }
+      },
+      "6FJhw-SYN-J_gs1inKTfy": {
+        "id": "6FJhw-SYN-J_gs1inKTfy",
+        "tableId": "vkGljxjKl34EWvuKd8Wd-",
+        "name": "idx",
+        "comment": "",
+        "dataType": "int",
+        "default": "",
+        "options": 11,
+        "ui": {
+          "keys": 1,
+          "widthName": 60,
+          "widthComment": 60,
+          "widthDataType": 60,
+          "widthDefault": 60
+        },
+        "meta": {
+          "updateAt": 1773897150587,
+          "createAt": 1773889043794
+        }
+      },
+      "WX1mxXTNHamua4cdsKieg": {
+        "id": "WX1mxXTNHamua4cdsKieg",
+        "tableId": "vkGljxjKl34EWvuKd8Wd-",
+        "name": "title",
+        "comment": "",
+        "dataType": "varchar",
+        "default": "",
+        "options": 8,
+        "ui": {
+          "keys": 0,
+          "widthName": 60,
+          "widthComment": 60,
+          "widthDataType": 60,
+          "widthDefault": 60
+        },
+        "meta": {
+          "updateAt": 1773889052021,
+          "createAt": 1773889048181
+        }
+      },
+      "s-dx9mR3wUOByE6ovfCIH": {
+        "id": "s-dx9mR3wUOByE6ovfCIH",
+        "tableId": "vkGljxjKl34EWvuKd8Wd-",
+        "name": "parameter",
+        "comment": "",
+        "dataType": "jsonb",
+        "default": "",
+        "options": 8,
+        "ui": {
+          "keys": 0,
+          "widthName": 60,
+          "widthComment": 60,
+          "widthDataType": 60,
+          "widthDefault": 60
+        },
+        "meta": {
+          "updateAt": 1773907512634,
+          "createAt": 1773889052616
+        }
+      },
+      "Nn7xbY5iPq3Wlq0tqA43a": {
+        "id": "Nn7xbY5iPq3Wlq0tqA43a",
+        "tableId": "vkGljxjKl34EWvuKd8Wd-",
+        "name": "created_at",
+        "comment": "",
+        "dataType": "timestamp with time zone",
+        "default": "NOW()",
+        "options": 8,
+        "ui": {
+          "keys": 0,
+          "widthName": 63,
+          "widthComment": 60,
+          "widthDataType": 147,
+          "widthDefault": 60
+        },
+        "meta": {
+          "updateAt": 1773906320086,
+          "createAt": 1773906308615
+        }
+      },
+      "YMqauYujkXn_u0sLKbCI0": {
+        "id": "YMqauYujkXn_u0sLKbCI0",
+        "tableId": "vkGljxjKl34EWvuKd8Wd-",
+        "name": "deleted_at",
+        "comment": "",
+        "dataType": "timestamp with time zone",
+        "default": "",
+        "options": 0,
+        "ui": {
+          "keys": 0,
+          "widthName": 62,
+          "widthComment": 60,
+          "widthDataType": 147,
+          "widthDefault": 60
+        },
+        "meta": {
+          "updateAt": 1773906327550,
+          "createAt": 1773906320802
         }
       }
     },
