@@ -19,5 +19,5 @@ fi
 if [ "$USER_CHANGED" != "true" ] && [ "$ADMIN_CHANGED" != "true" ] && [ "$BATCH_CHANGED" != "true" ]; then
     pm2 reload inhu-backend-user-dev
     pm2 reload inhu-backend-admin-dev
-    pm2 reload inhu-backend-batch-dev
+    # pm2 reload inhu-backend-batch-dev
 fi
