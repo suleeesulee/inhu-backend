@@ -9,6 +9,8 @@ import { MagazineSeedHelper } from '@libs/testing/seed/magazine/magazine.seed';
 import { magazineSeedDataList } from './data/magazine.seed';
 import { FreeTagSeedHelper } from '@libs/testing/seed/free-tag/free-tag.seed';
 import { SearchTagSeedHelper } from '@libs/testing/seed/search-tag/search-tag.seed';
+import { PlaceSectionSeedHelper } from '@libs/testing/seed/place-section/place-section';
+import { placeSectionSeedDataList } from './data/place-section.seed';
 
 const prisma = new PrismaService();
 
@@ -23,6 +25,7 @@ async function main() {
   const magazineSeedHelper = new MagazineSeedHelper(prisma);
   const freeTagSeedHelper = new FreeTagSeedHelper(prisma);
   const searchTagSeedHelper = new SearchTagSeedHelper(prisma);
+  const placeSectionSeedHelper = new PlaceSectionSeedHelper(prisma);
 
   /**
    * 사용자 생성
@@ -123,6 +126,13 @@ async function main() {
    */
   for (const magazineData of magazineSeedDataList) {
     await magazineSeedHelper.seed({ ...magazineData, authorIdx: user1.idx });
+  }
+
+  /**
+   * place section 생성
+   */
+  for (const placeSectionData of placeSectionSeedDataList) {
+    await placeSectionSeedHelper.seed({ ...placeSectionData });
   }
 }
 
