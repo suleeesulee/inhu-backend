@@ -1,5 +1,6 @@
-import { MoodCategory, PlaceType } from '@prisma/client';
 import { MainCategory } from '../category/constants/main-category.constant';
+import { MoodCategory } from '../category/constants/mood-category.constant';
+import { PlaceType } from '../place/constants/place-type.constant';
 
 export class MagazineSectionParameter {
   /**
@@ -14,7 +15,7 @@ export class MagazineSectionParameter {
    *
    * @example "time"
    */
-  orderby: 'like' | 'view' | 'time';
+  orderBy: 'like' | 'view' | 'time';
 
   /**
    * 1: 카페

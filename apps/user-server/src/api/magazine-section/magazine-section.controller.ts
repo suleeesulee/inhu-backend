@@ -9,7 +9,7 @@ export class MagazineSectionController {
     private readonly magazineSectionService: MagazineSectionService,
   ) {}
 
-  @Get('/v2/magazine-section/all')
+  @Get('/magazine-section/all')
   public async getMagazineSectionAll(
     @Query() dto: GetMagazineSectionAllDto,
   ): Promise<GetMagazineSectionAllResponseDto> {
