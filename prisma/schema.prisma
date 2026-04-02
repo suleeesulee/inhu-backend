@@ -544,7 +544,7 @@ model PlaceSection {
   @@map("place_section_tb")
 }
 
-model magazineSection {
+model MagazineSection {
   idx         Int       @id @default(autoincrement())
   title       String    @db.VarChar
   parameter   Json
