@@ -1,0 +1,35 @@
+import { MoodCategory, PlaceType } from '@prisma/client';
+import { MainCategory } from '../category/constants/main-category.constant';
+
+export class MagazineSectionParameter {
+  /**
+   * page number
+   *
+   * @example 1
+   */
+  page: number;
+
+  /**
+   * 정렬 옵션
+   *
+   * @example "time"
+   */
+  orderby: 'like' | 'view' | 'time';
+
+  /**
+   * 1: 카페
+   * 2: 음식점
+   * 3: 술집
+   */
+  type?: PlaceType;
+
+  /**
+   * 1 ~ 19 메인 카테고리 리스트
+   */
+  mainCategoryList?: MainCategory[];
+
+  /**
+   * 1 ~ 13 상황 카테고리 리스트
+   */
+  moodCategoryList?: MoodCategory[];
+}
