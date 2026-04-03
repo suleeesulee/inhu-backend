@@ -22,7 +22,7 @@ export class PlaceSectionService {
   public async getPlaceSectionAllV2(
     dto: GetPlaceSectionAllV2Dto,
   ): Promise<GetPlaceSectionAllV2ResponseDto> {
-    const pageSize = 3;
+    const pageSize = 6;
     const placeSectionModelList =
       await this.placeSectionCoreService.getPlaceSectionAll({
         take: pageSize + 1,
