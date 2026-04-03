@@ -97,4 +97,9 @@ export class GetPlaceOverviewInput {
    * undefined: 만원 이하 여부 상관없이 모두 가져오기
    */
   lowPrice?: boolean;
+
+  /**
+   * 우선순위 따라 정렬 여부
+   */
+  priority?: boolean;
 }

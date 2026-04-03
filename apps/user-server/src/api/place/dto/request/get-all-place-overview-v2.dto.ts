@@ -108,4 +108,12 @@ export class GetAllPlaceOverviewV2Dto {
   @ToBoolean()
   @IsBoolean()
   lowPrice?: boolean;
+
+  /**
+   * 우선순위 따라 정렬 여부
+   */
+  @IsOptional()
+  @ToBoolean()
+  @IsBoolean()
+  priority?: boolean;
 }
