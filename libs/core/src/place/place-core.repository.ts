@@ -564,6 +564,7 @@ export class PlaceCoreRepository {
         isClosedOnHoliday: input.isClosedOnHoliday,
         activatedAt: input.activatedAt,
         permanentlyClosedAt: input.permanentlyClosedAt,
+        priority: input.priority,
         placeImageList: input.imgList
           ? {
               updateMany: {

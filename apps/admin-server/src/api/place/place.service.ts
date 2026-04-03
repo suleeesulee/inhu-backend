@@ -25,6 +25,7 @@ import { FreeTagModel } from '@libs/core/free-tag/model/free-tag.model';
 import { SearchTagCoreService } from '@libs/core/search-tag/search-tag-core.service';
 import { SearchTagModel } from '@libs/core/search-tag/model/search-tag.model';
 import { UpdatePlaceSearchTagDto } from './dto/request/update-place-search-tag.dto';
+import { SetPlacePriorityDto } from './dto/request/set-place-pirority.dto';
 
 @Injectable()
 export class PlaceService {
@@ -257,6 +258,21 @@ export class PlaceService {
     ];
     return await this.placeCoreService.updatePlaceByIdx(idx, {
       searchTagIdxList: allSearchTagIdxList,
+    });
+  }
+
+  public async setPlacePriorityByIdx(
+    idx: number,
+    dto: SetPlacePriorityDto,
+  ): Promise<void> {
+    const place = await this.placeCoreService.getPlaceByIdx(idx);
+
+    if (!place) {
+      throw new PlaceNotFoundException('Cannot find place with idx: ' + idx);
+    }
+
+    return await this.placeCoreService.updatePlaceByIdx(idx, {
+      priority: dto.priority,
     });
   }
 
