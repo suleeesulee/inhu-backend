@@ -16,14 +16,16 @@ import { GetMagazineSectionAllResponseDto } from './dto/response/get-magazine-se
 import { AdminAuth } from '@admin/common/decorator/admin-auth.decorator';
 import { Exception } from '@libs/common/decorator/exception.decorator';
 
-@Controller('place-section')
+@Controller('magazine-section')
 export class MagazineSectionController {
-  constructor(private readonly placeSectionService: MagazineSectionService) {}
+  constructor(
+    private readonly magazineSectionService: MagazineSectionService,
+  ) {}
 
   @Get('/all')
   @AdminAuth()
   public async getMagazineSectionAll(): Promise<GetMagazineSectionAllResponseDto> {
-    return await this.placeSectionService.getMagazineSectionAll();
+    return await this.magazineSectionService.getMagazineSectionAll();
   }
 
   @Post()
@@ -31,7 +33,7 @@ export class MagazineSectionController {
   public async createMagazineSection(
     @Body() dto: CreateMagazineSectionDto,
   ): Promise<MagazineSectionEntity> {
-    return await this.placeSectionService.createMagazineSection(dto);
+    return await this.magazineSectionService.createMagazineSection(dto);
   }
 
   @Put('/:idx')
@@ -41,7 +43,7 @@ export class MagazineSectionController {
     @Param('idx', ParseIntPipe) idx: number,
     @Body() dto: UpdateMagazineSectionDto,
   ): Promise<void> {
-    await this.placeSectionService.updateMagazineSection(idx, dto);
+    await this.magazineSectionService.updateMagazineSection(idx, dto);
   }
 
   @Delete('/:idx')
@@ -50,6 +52,6 @@ export class MagazineSectionController {
   public async deleteMagazineSection(
     @Param('idx', ParseIntPipe) idx: number,
   ): Promise<void> {
-    await this.placeSectionService.deleteMagazineSection(idx);
+    await this.magazineSectionService.deleteMagazineSection(idx);
   }
 }

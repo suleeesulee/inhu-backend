@@ -1,29 +1,29 @@
 import { Injectable } from '@nestjs/common';
 import { MagazineSectionCoreRepository } from './magazine-section-core.repository';
 import { MagazineSectionModel } from './model/magazine-section.model';
-import { CreateMagazineSectionInput } from './inputs/create-place-section.input';
-import { UpdateMagazineSectionInput } from './inputs/update-place-section.input';
-import { GetMagazineSectionAllInput } from './inputs/get-place-section-all.input';
+import { GetMagazineSectionAllInput } from './inputs/get-magazine-section-all.input';
+import { CreateMagazineSectionInput } from './inputs/create-magazine-section.input';
+import { UpdateMagazineSectionInput } from './inputs/update-magazine-section.input';
 
 @Injectable()
 export class MagazineSectionCoreService {
   constructor(
-    private readonly placeSectionCoreRepository: MagazineSectionCoreRepository,
+    private readonly magazineSectionCoreRepository: MagazineSectionCoreRepository,
   ) {}
 
   public async getMagazineSectionByIdx(
     idx: number,
   ): Promise<MagazineSectionModel | null> {
-    const placeSection =
-      await this.placeSectionCoreRepository.selectMagazineSectionByIdx(idx);
-    return placeSection && MagazineSectionModel.fromPrisma(placeSection);
+    const magazineSection =
+      await this.magazineSectionCoreRepository.selectMagazineSectionByIdx(idx);
+    return magazineSection && MagazineSectionModel.fromPrisma(magazineSection);
   }
 
   public async getMagazineSectionAll(
     input?: GetMagazineSectionAllInput,
   ): Promise<MagazineSectionModel[]> {
     return (
-      await this.placeSectionCoreRepository.selectMagazineSectionAll(input)
+      await this.magazineSectionCoreRepository.selectMagazineSectionAll(input)
     ).map(MagazineSectionModel.fromPrisma);
   }
 
@@ -31,7 +31,7 @@ export class MagazineSectionCoreService {
     input: CreateMagazineSectionInput,
   ): Promise<MagazineSectionModel> {
     return MagazineSectionModel.fromPrisma(
-      await this.placeSectionCoreRepository.createMagazineSection(input),
+      await this.magazineSectionCoreRepository.createMagazineSection(input),
     );
   }
 
@@ -39,13 +39,15 @@ export class MagazineSectionCoreService {
     idx: number,
     input: UpdateMagazineSectionInput,
   ): Promise<void> {
-    await this.placeSectionCoreRepository.updateMagazineSectionByIdx(
+    await this.magazineSectionCoreRepository.updateMagazineSectionByIdx(
       idx,
       input,
     );
   }
 
   public async deleteMagazineSectionByIdx(idx: number): Promise<void> {
-    await this.placeSectionCoreRepository.softDeleteMagazineSectionByIdx(idx);
+    await this.magazineSectionCoreRepository.softDeleteMagazineSectionByIdx(
+      idx,
+    );
   }
 }
