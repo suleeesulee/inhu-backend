@@ -2,10 +2,11 @@ import { PlaceSectionCoreModule } from '@libs/core/place-section/place-section-c
 import { Module } from '@nestjs/common';
 import { PlaceSectionController } from './place-section.controller';
 import { PlaceSectionService } from './place-section.service';
+import { PlaceSectionV2Controller } from './place-section-v2.controller';
 
 @Module({
   imports: [PlaceSectionCoreModule],
-  controllers: [PlaceSectionController],
+  controllers: [PlaceSectionController, PlaceSectionV2Controller],
   providers: [PlaceSectionService],
   exports: [PlaceSectionService],
 })

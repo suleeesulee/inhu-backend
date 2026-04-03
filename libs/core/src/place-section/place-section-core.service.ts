@@ -3,6 +3,7 @@ import { PlaceSectionCoreRepository } from './place-section-core.repository';
 import { PlaceSectionModel } from './model/place-section.model';
 import { CreatePlaceSectionInput } from './inputs/create-place-section.input';
 import { UpdatePlaceSectionInput } from './inputs/update-place-section.input';
+import { GetPlaceSectionAllInput } from './inputs/get-place-section-all.input';
 
 @Injectable()
 export class PlaceSectionCoreService {
@@ -18,10 +19,12 @@ export class PlaceSectionCoreService {
     return placeSection && PlaceSectionModel.fromPrisma(placeSection);
   }
 
-  public async getPlaceSectionAll(): Promise<PlaceSectionModel[]> {
-    return (await this.placeSectionCoreRepository.selectPlaceSectionAll()).map(
-      PlaceSectionModel.fromPrisma,
-    );
+  public async getPlaceSectionAll(
+    input?: GetPlaceSectionAllInput,
+  ): Promise<PlaceSectionModel[]> {
+    return (
+      await this.placeSectionCoreRepository.selectPlaceSectionAll(input)
+    ).map(PlaceSectionModel.fromPrisma);
   }
 
   public async createPlaceSection(

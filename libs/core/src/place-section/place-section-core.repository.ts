@@ -8,6 +8,7 @@ import {
 import { CreatePlaceSectionInput } from './inputs/create-place-section.input';
 import { UpdatePlaceSectionInput } from './inputs/update-place-section.input';
 import { Prisma } from '@prisma/client';
+import { GetPlaceSectionAllInput } from './inputs/get-place-section-all.input';
 
 @Injectable()
 export class PlaceSectionCoreRepository {
@@ -27,12 +28,19 @@ export class PlaceSectionCoreRepository {
     });
   }
 
-  public async selectPlaceSectionAll(): Promise<SelectPlaceSection[]> {
+  public async selectPlaceSectionAll(
+    input?: GetPlaceSectionAllInput,
+  ): Promise<SelectPlaceSection[]> {
     return await this.txHost.tx.placeSection.findMany({
       ...SELECT_PLACE_SECTION,
       where: {
         deletedAt: null,
       },
+      orderBy: {
+        createdAt: 'desc',
+      },
+      take: input?.take,
+      skip: input?.skip,
     });
   }
 
