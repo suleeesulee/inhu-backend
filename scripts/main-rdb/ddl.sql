@@ -229,6 +229,7 @@ CREATE TABLE place_tb
   bookmark_count        int                      NOT NULL DEFAULT 0,
   road_address_idx      int                      NOT NULL,
   is_closed_on_holiday  boolean                  ,
+  priority              smallint                 NULL,
   created_at            timestamp with time zone NOT NULL DEFAULT NOW(),
   deleted_at            timestamp with time zone,
   permanently_closed_at timestamp with time zone,
