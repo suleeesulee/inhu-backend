@@ -1,4 +1,5 @@
 import { MainCategory } from '../category/constants/main-category.constant';
+import { PlaceType } from '../place/constants/place-type.constant';
 
 export class PlaceSectionParameter {
   /**
@@ -21,6 +22,13 @@ export class PlaceSectionParameter {
    * @example "time"
    */
   orderby?: 'time' | 'review';
+
+  /**
+   * 1: 카페
+   * 2: 음식점
+   * 3: 편의점
+   */
+  type?: PlaceType;
 
   /**
    * 메인 카테고리 리스트
