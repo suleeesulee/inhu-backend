@@ -36,4 +36,15 @@ export class GetAllSearchedPlaceOverviewDto {
   @IsOptional()
   @MaxLength(20)
   searchKeyword?: string;
+
+  /**
+   * 우선순위 따라 정렬 여부
+   *
+   * true: 우선순위 정렬 사용
+   * false: 우선순위 정렬 사용 안함
+   */
+  @IsOptional()
+  @ToBoolean()
+  @IsBoolean()
+  priority?: boolean;
 }

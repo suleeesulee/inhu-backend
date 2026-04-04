@@ -81,6 +81,7 @@ export class PlaceCoreRepository {
     moodCategoryList,
     freeTagList,
     lowPrice,
+    priority,
   }: GetPlaceOverviewInput): Promise<SelectPlaceOverview[]> {
     const now = this.dateUtilService.getNow();
     const todayKst = this.dateUtilService.transformKoreanDate(now);
@@ -110,7 +111,7 @@ export class PlaceCoreRepository {
           this.getPriceFilterWhereClause(lowPrice), // 저렴한 메뉴 필터링
         ],
       },
-      orderBy: this.getOrderByClause({ order, orderBy }),
+      orderBy: this.getOrderByClause({ order, orderBy, priority }),
       take,
       skip,
     });
@@ -420,16 +421,25 @@ export class PlaceCoreRepository {
   private getOrderByClause({
     order = 'desc',
     orderBy = 'time',
-  }: Pick<GetPlaceOverviewInput, 'order' | 'orderBy'>):
+    priority = false,
+  }: Pick<GetPlaceOverviewInput, 'order' | 'orderBy' | 'priority'>):
     | Prisma.PlaceOrderByWithRelationInput
     | Prisma.PlaceOrderByWithRelationInput[] {
+    const baseOrderBy: Prisma.PlaceOrderByWithRelationInput[] = priority
+      ? [{ priority: 'asc' }]
+      : [];
+
     if (orderBy === 'time') {
-      return {
-        idx: order,
-      };
+      return [
+        ...baseOrderBy,
+        {
+          idx: order,
+        },
+      ];
     }
 
     return [
+      ...baseOrderBy,
       {
         [orderBy === 'review' ? 'reviewCount' : 'bookmarkCount']: order,
       },
@@ -554,6 +564,7 @@ export class PlaceCoreRepository {
         isClosedOnHoliday: input.isClosedOnHoliday,
         activatedAt: input.activatedAt,
         permanentlyClosedAt: input.permanentlyClosedAt,
+        priority: input.priority,
         placeImageList: input.imgList
           ? {
               updateMany: {
