@@ -2,6 +2,7 @@ import { IsEnumValue } from '@libs/common/decorator/is-enum-value.decorator';
 import { ToArray } from '@libs/common/decorator/to-array.decorator';
 import { UniqueArray } from '@libs/common/decorator/unique-array.decorator';
 import { MainCategory } from '@libs/core/category/constants/main-category.constant';
+import { PlaceType } from '@libs/core/place/constants/place-type.constant';
 import { Type } from 'class-transformer';
 import {
   IsIn,
@@ -41,6 +42,16 @@ export class CreatePlaceSectionParameterDto {
   @IsOptional()
   @IsIn(['time', 'review'])
   orderby?: 'time' | 'review' = 'time';
+
+  /**
+   * 1: 카페
+   * 2: 음식점
+   * 3: 편의점
+   */
+  @IsOptional()
+  @IsEnumValue(PlaceType)
+  @Type(() => Number)
+  type?: PlaceType;
 
   /**
    * 메인 카테고리 리스트
