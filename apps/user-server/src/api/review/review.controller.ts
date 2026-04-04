@@ -22,7 +22,7 @@ import { Exception } from '@libs/common/decorator/exception.decorator';
 
 @Controller('')
 export class ReviewController {
-  constructor(private reviewService: ReviewService) {}
+  constructor(private readonly reviewService: ReviewService) {}
 
   /**
    * 리뷰 작성 API
@@ -91,5 +91,22 @@ export class ReviewController {
     @User() loginUser: LoginUser,
   ): Promise<void> {
     await this.reviewService.deleteReviewByIdx(reviewIdx, loginUser);
+  }
+
+  /**
+   * 리뷰 상세 조회 API
+   *
+   * @author 민경찬
+   */
+  @Get('/review/:reviewIdx')
+  @LoginAuth()
+  @Exception(400, 'Invalid reviewIdx')
+  @Exception(403, 'Permission denied')
+  @Exception(404, 'Review does not exist')
+  async getReviewByIdx(
+    @Param('reviewIdx', ParseIntPipe) reviewIdx: number,
+    @User() loginUser: LoginUser,
+  ): Promise<ReviewEntity> {
+    return await this.reviewService.getReviewByIdx(reviewIdx, loginUser);
   }
 }

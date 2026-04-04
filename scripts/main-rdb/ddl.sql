@@ -80,6 +80,17 @@ CREATE TABLE magazine_place_tb
   PRIMARY KEY (magazine_idx, place_idx)
 );
 
+CREATE TABLE magazine_section_tb
+(
+  idx          int                      NOT NULL GENERATED ALWAYS AS IDENTITY,
+  title        varchar                  NOT NULL,
+  parameter    jsonb                    NOT NULL,
+  created_at   timestamp with time zone NOT NULL DEFAULT NOW(),
+  activated_at timestamp with time zone,
+  deleted_at   timestamp with time zone,
+  PRIMARY KEY (idx)
+);
+
 CREATE TABLE magazine_tb
 (
   idx                  int                      NOT NULL GENERATED ALWAYS AS IDENTITY,
@@ -198,6 +209,17 @@ CREATE TABLE place_search_tag_mapping_tb
   PRIMARY KEY (search_tag_idx, place_idx)
 );
 
+CREATE TABLE place_section_tb
+(
+  idx          int                      NOT NULL GENERATED ALWAYS AS IDENTITY,
+  title        varchar                  NOT NULL,
+  parameter    jsonb                    NOT NULL,
+  created_at   timestamp with time zone NOT NULL DEFAULT NOW(),
+  activated_at timestamp with time zone,
+  deleted_at   timestamp with time zone,
+  PRIMARY KEY (idx)
+);
+
 CREATE TABLE place_tb
 (
   idx                   int                      NOT NULL GENERATED ALWAYS AS IDENTITY,
@@ -207,6 +229,7 @@ CREATE TABLE place_tb
   bookmark_count        int                      NOT NULL DEFAULT 0,
   road_address_idx      int                      NOT NULL,
   is_closed_on_holiday  boolean                  ,
+  priority              smallint                 NULL,
   created_at            timestamp with time zone NOT NULL DEFAULT NOW(),
   deleted_at            timestamp with time zone,
   permanently_closed_at timestamp with time zone,

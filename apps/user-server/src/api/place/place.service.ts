@@ -52,7 +52,9 @@ export class PlaceService {
       bookmarkUserIdx: undefined,
       mainCategoryList: dto.mainCategoryList,
       moodCategoryList: dto.moodCategoryList,
+      freeTagList: dto.freeTagList,
       lowPrice: dto.lowPrice,
+      priority: dto.priority,
     };
     let placeOverviewModelList: PlaceOverviewModel[];
 
@@ -143,6 +145,7 @@ export class PlaceService {
       permanentlyClosed: false,
       operating: undefined,
       searchKeyword: dto.searchKeyword,
+      priority: dto.priority,
     });
 
     const paginatedList = placeOverviewModelList.slice(0, pageSize);
@@ -193,6 +196,7 @@ export class PlaceService {
       bookmarkUserIdx: undefined,
       mainCategoryList: dto.mainCategoryList,
       moodCategoryList: dto.moodCategoryList,
+      priority: dto.priority,
     };
     let placeOverviewModelList: PlaceOverviewModel[];
 

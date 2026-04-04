@@ -13,6 +13,7 @@ import {
   IsNotEmpty,
   IsNumber,
   IsOptional,
+  IsString,
   MaxLength,
   Min,
 } from 'class-validator';
@@ -90,6 +91,15 @@ export class GetAllPlaceOverviewDto {
   moodCategoryList?: MoodCategory[];
 
   /**
+   * 자유 태그 리스트
+   */
+  @IsOptional()
+  @ToArray()
+  @UniqueArray()
+  @IsString({ each: true })
+  freeTagList?: string[];
+
+  /**
    * 만원 이하 여부
    *
    * true: 만원 이하 메뉴가 있는 장소만
@@ -99,4 +109,15 @@ export class GetAllPlaceOverviewDto {
   @ToBoolean()
   @IsBoolean()
   lowPrice?: boolean;
+
+  /**
+   * 우선순위 따라 정렬 여부
+   *
+   * true: 우선순위 정렬 사용
+   * false: 우선순위 정렬 사용 안함
+   */
+  @IsOptional()
+  @ToBoolean()
+  @IsBoolean()
+  priority?: boolean;
 }

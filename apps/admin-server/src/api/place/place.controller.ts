@@ -27,6 +27,7 @@ import { UpdatePlaceCategoryDto } from './dto/request/update-place-category.dto'
 import { UpdatePlaceFreeTagDto } from './dto/request/update-place-free-tag.dto';
 import { UpdatePlaceSearchTagDto } from './dto/request/update-place-search-tag.dto';
 import { AdminRole } from '../auth/admin-role.enum';
+import { SetPlacePriorityDto } from './dto/request/set-place-pirority.dto';
 
 @Controller('place')
 @ApiTags('Place')
@@ -131,6 +132,21 @@ export class PlaceController {
     @Body() dto: UpdatePlaceSearchTagDto,
   ) {
     return await this.placeService.updatePlaceSearchTagByIdx(idx, dto);
+  }
+
+  /**
+   * 특정 장소 우선순위 설정하기 Endpoint
+   */
+  @Post('/:idx/priority')
+  @Exception(400, 'Invalid place idx or priority data')
+  @Exception(404, 'Place not found')
+  @HttpCode(200)
+  @AdminAuth()
+  public async grantPlacePriorityByIdx(
+    @Param('idx', ParseIntPipe) idx: number,
+    @Body() dto: SetPlacePriorityDto,
+  ) {
+    return await this.placeService.setPlacePriorityByIdx(idx, dto);
   }
 
   /**
