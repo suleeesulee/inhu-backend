@@ -89,7 +89,7 @@ export class SearchTagCoreRepository {
 
     return {
       OR: contentList.map((content) => ({
-        content: { startsWith: content },
+        content: { equals: content },
       })),
     };
   }
