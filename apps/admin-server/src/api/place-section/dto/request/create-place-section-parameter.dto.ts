@@ -35,7 +35,7 @@ export class CreatePlaceSectionParameterDto {
    */
   @IsOptional()
   @IsIn(['asc', 'desc'])
-  order?: 'desc' | 'asc' = 'desc';
+  order: 'desc' | 'asc' = 'desc';
 
   /**
    * 정렬 옵션
@@ -44,7 +44,7 @@ export class CreatePlaceSectionParameterDto {
    */
   @IsOptional()
   @IsIn(['time', 'review'])
-  orderby?: 'time' | 'review' = 'time';
+  orderby: 'time' | 'review' = 'time';
 
   /**
    * 운영 중인 장소만 가져오기

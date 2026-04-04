@@ -2244,6 +2244,7 @@ describe('Place E2E test', () => {
     });
   });
 
+  // TODO: startsWith 이슈 테스트 추가하기
   describe('PUT /place/:idx/search-tag', () => {
     it('200 - successfully updates search tag list to place', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
