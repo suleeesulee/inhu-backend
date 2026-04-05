@@ -15,5 +15,6 @@ import { ConfigModule } from '@nestjs/config';
   ],
   controllers: [PlaceController, PlaceV2Controller],
   providers: [PlaceService],
+  exports: [PlaceService],
 })
 export class PlaceModule {}

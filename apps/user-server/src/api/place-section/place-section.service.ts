@@ -10,19 +10,26 @@ import {
   MagazineSectionItem,
   PlaceSectionItem,
 } from './dto/response/get-place-section-all-v2.response.dto';
+import { PlaceService } from '../place/place.service';
+import { MagazineService } from '../magazine/magazine.service';
+import { GetAllPlaceOverviewDto } from '../place/dto/request/get-all-place-overview.dto';
+import { SectionPlaceOverviewEntity } from './entity/section-place-overview.entity';
+import { GetAllMagazineDto } from '../magazine/dto/request/get-all-magazine.dto';
 
 @Injectable()
 export class PlaceSectionService {
   constructor(
     private readonly placeSectionCoreService: PlaceSectionCoreService,
     private readonly magazineSectionCoreService: MagazineSectionCoreService,
+    private readonly placeService: PlaceService,
+    private readonly magazineService: MagazineService,
   ) {}
 
   public async getPlaceSectionAll(): Promise<GetPlaceSectionAllResponseDto> {
     return {
       placeSectionEntityList: (
         await this.placeSectionCoreService.getPlaceSectionAll()
-      ).map(PlaceSectionEntity.fromModel),
+      ).map((model) => PlaceSectionEntity.fromModel(model)),
     };
   }
 
@@ -45,32 +52,71 @@ export class PlaceSectionService {
       ],
     );
 
-    const paginatedPlaceSectionList = placeSectionModelList
-      .slice(0, PLACE_PAGE_SIZE)
-      .map(PlaceSectionEntity.fromModel);
-    const paginatedMagazineSectionList = magazineSectionModelList
-      .slice(0, MAGAZINE_PAGE_SIZE)
-      .map(MagazineSectionEntity.fromModel);
+    const paginatedPlaceSectionModels = placeSectionModelList.slice(
+      0,
+      PLACE_PAGE_SIZE,
+    );
+    const paginatedMagazineSectionModels = magazineSectionModelList.slice(
+      0,
+      MAGAZINE_PAGE_SIZE,
+    );
 
     const hasNext =
       placeSectionModelList.length > PLACE_PAGE_SIZE ||
       magazineSectionModelList.length > MAGAZINE_PAGE_SIZE;
 
+    const paginatedPlaceSectionList = await Promise.all(
+      paginatedPlaceSectionModels.map(async (model) => {
+        const overviewDto: GetAllPlaceOverviewDto = {
+          ...model.parameter,
+          page: 1,
+        };
+
+        const { placeOverviewList } =
+          await this.placeService.getPlaceOverviewAll(overviewDto);
+
+        const sectionOverviewList = placeOverviewList.map(
+          (place) => new SectionPlaceOverviewEntity(place),
+        );
+
+        return PlaceSectionEntity.fromModel(model, sectionOverviewList);
+      }),
+    );
+
+    const paginatedMagazineSectionList = await Promise.all(
+      paginatedMagazineSectionModels.map(async (model) => {
+        const magazineDto: GetAllMagazineDto = {
+          ...model.parameter,
+          page: 1,
+        };
+
+        const { magazineList } =
+          await this.magazineService.getMagazineAll(magazineDto);
+
+        return MagazineSectionEntity.fromModel(model, magazineList);
+      }),
+    );
+
     const combinedSectionList: (PlaceSectionItem | MagazineSectionItem)[] = [];
 
     for (let i = 0; i < 4; i++) {
       const places = paginatedPlaceSectionList.slice(i * 3, (i + 1) * 3);
-      places.forEach((p) => combinedSectionList.push({ ...p, type: 'PLACE' }));
+      places.forEach((p) =>
+        combinedSectionList.push({ ...p, type: 'PLACE' } as PlaceSectionItem),
+      );
 
       const magazine = paginatedMagazineSectionList[i];
       if (magazine) {
-        combinedSectionList.push({ ...magazine, type: 'MAGAZINE' });
+        combinedSectionList.push({
+          ...magazine,
+          type: 'MAGAZINE',
+        } as MagazineSectionItem);
       }
     }
 
     return {
       hasNext,
-      combinedSectionList: combinedSectionList,
+      combinedSectionList,
     };
   }
 }
