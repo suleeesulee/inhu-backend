@@ -1,8 +1,12 @@
+import { OmitType } from '@nestjs/swagger';
 import { MainCategory } from '../category/constants/main-category.constant';
 import { MoodCategory } from '../category/constants/mood-category.constant';
 import { PlaceType } from '../place/constants/place-type.constant';
+import { GetAllMagazineDto } from '@user/api/magazine/dto/request/get-all-magazine.dto';
 
-export class MagazineSectionParameter {
+export class MagazineSectionParameter extends OmitType(GetAllMagazineDto, [
+  'page',
+]) {
   /**
    * page number
    *
