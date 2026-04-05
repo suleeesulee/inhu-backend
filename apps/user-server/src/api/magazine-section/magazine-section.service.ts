@@ -25,8 +25,8 @@ export class MagazineSectionService {
 
     return {
       hasNext,
-      magazineSectionEntityList: paginatedList.map(
-        MagazineSectionEntity.fromModel,
+      magazineSectionEntityList: paginatedList.map((model) =>
+        MagazineSectionEntity.fromModel(model),
       ),
     };
   }
