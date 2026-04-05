@@ -1,5 +1,6 @@
 import { MagazineSectionModel } from '@libs/core/magazine-section/model/magazine-section.model';
 import { MagazineSectionParameter } from '@libs/core/magazine-section/magazine-section-parameter.type';
+import { SectionMagazineOverviewEntity } from './section-magazine-overview.entity';
 
 export class MagazineSectionEntity {
   /**
@@ -22,6 +23,11 @@ export class MagazineSectionEntity {
   parameter: MagazineSectionParameter;
 
   /**
+   * magazine overview list
+   */
+  magazineOverviewList?: SectionMagazineOverviewEntity[];
+
+  /**
    * 섹션 생성 일자
    */
   createdAt: Date;
@@ -30,11 +36,15 @@ export class MagazineSectionEntity {
     Object.assign(this, data);
   }
 
-  public static fromModel(model: MagazineSectionModel): MagazineSectionEntity {
+  public static fromModel(
+    model: MagazineSectionModel,
+    magazineOverviewList?: SectionMagazineOverviewEntity[],
+  ): MagazineSectionEntity {
     return new MagazineSectionEntity({
       idx: model.idx,
       title: model.title,
       parameter: model.parameter,
+      magazineOverviewList,
       createdAt: model.createdAt,
     });
   }
