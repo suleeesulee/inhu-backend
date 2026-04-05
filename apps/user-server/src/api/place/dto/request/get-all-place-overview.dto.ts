@@ -18,6 +18,7 @@ import {
   Min,
 } from 'class-validator';
 
+// ! 앞으로 추가 되는 모든 필드는 optional로 입력받아야 함.
 export class GetAllPlaceOverviewDto {
   /**
    * page number
