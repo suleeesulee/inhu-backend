@@ -3,7 +3,6 @@ import { PlaceSectionSeedInput } from '@libs/testing/seed/place-section/type/pla
 const placeSection1: PlaceSectionSeedInput = {
   title: '두쫀쿠 맛집',
   parameter: {
-    page: 1,
     order: 'desc',
     orderby: 'time',
     mainCategoryList: [9],
@@ -14,7 +13,6 @@ const placeSection1: PlaceSectionSeedInput = {
 const placeSection2: PlaceSectionSeedInput = {
   title: '버터떡 맛집',
   parameter: {
-    page: 1,
     order: 'desc',
     orderby: 'time',
     mainCategoryList: [10],
@@ -25,7 +23,6 @@ const placeSection2: PlaceSectionSeedInput = {
 const placeSection3: PlaceSectionSeedInput = {
   title: '라멘 맛집',
   parameter: {
-    page: 1,
     order: 'desc',
     orderby: 'time',
     mainCategoryList: [2],
@@ -36,7 +33,6 @@ const placeSection3: PlaceSectionSeedInput = {
 const placeSection4: PlaceSectionSeedInput = {
   title: '중식 맛집',
   parameter: {
-    page: 1,
     order: 'desc',
     orderby: 'time',
     mainCategoryList: [3],
@@ -47,7 +43,6 @@ const placeSection4: PlaceSectionSeedInput = {
 const placeSection5: PlaceSectionSeedInput = {
   title: '분위기 레전드 술집',
   parameter: {
-    page: 1,
     order: 'desc',
     orderby: 'time',
     mainCategoryList: [18],
@@ -58,7 +53,6 @@ const placeSection5: PlaceSectionSeedInput = {
 const placeSection6: PlaceSectionSeedInput = {
   title: '신규 가게',
   parameter: {
-    page: 1,
     order: 'desc',
     orderby: 'time',
     mainCategoryList: [1],
@@ -69,7 +63,6 @@ const placeSection6: PlaceSectionSeedInput = {
 const placeSection7: PlaceSectionSeedInput = {
   title: '혼밥 추천 리스트',
   parameter: {
-    page: 1,
     order: 'desc',
     orderby: 'time',
     mainCategoryList: [4],
@@ -80,7 +73,6 @@ const placeSection7: PlaceSectionSeedInput = {
 const placeSection8: PlaceSectionSeedInput = {
   title: '고수들만 가는 곳',
   parameter: {
-    page: 1,
     order: 'desc',
     orderby: 'time',
     mainCategoryList: [1],
@@ -91,7 +83,6 @@ const placeSection8: PlaceSectionSeedInput = {
 const placeSection9: PlaceSectionSeedInput = {
   title: '여기서 데이트 안 하면 하수임',
   parameter: {
-    page: 1,
     order: 'desc',
     orderby: 'time',
     mainCategoryList: [13],
@@ -102,7 +93,6 @@ const placeSection9: PlaceSectionSeedInput = {
 const placeSection10: PlaceSectionSeedInput = {
   title: '결찰도 포장해서 감',
   parameter: {
-    page: 1,
     order: 'desc',
     orderby: 'time',
     mainCategoryList: [5],
