@@ -17,8 +17,8 @@ export class PlaceSectionSeedHelper extends ISeedHelper<
       title: defaultValue(input.title, faker.lorem.sentence()),
       parameter: defaultValue(input.parameter, {
         page: 1,
-        order: undefined,
-        orderby: undefined,
+        order: 'desc',
+        orderby: 'time',
         mainCategoryList: [],
         freeTagList: [],
       } as PlaceSectionParameter) as FilledSeedInput<PlaceSectionSeedInput>['parameter'],

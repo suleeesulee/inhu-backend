@@ -12,9 +12,9 @@ import {
 } from './dto/response/get-place-section-all-v2.response.dto';
 import { PlaceService } from '../place/place.service';
 import { MagazineService } from '../magazine/magazine.service';
-import { GetAllPlaceOverviewDto } from '../place/dto/request/get-all-place-overview.dto';
 import { SectionPlaceOverviewEntity } from './entity/section-place-overview.entity';
 import { GetAllMagazineDto } from '../magazine/dto/request/get-all-magazine.dto';
+import { GetAllPlaceOverviewV2Dto } from '../place/dto/request/get-all-place-overview-v2.dto';
 
 @Injectable()
 export class PlaceSectionService {
@@ -67,13 +67,13 @@ export class PlaceSectionService {
 
     const paginatedPlaceSectionList = await Promise.all(
       paginatedPlaceSectionModels.map(async (model) => {
-        const overviewDto: GetAllPlaceOverviewDto = {
+        const overviewDto: GetAllPlaceOverviewV2Dto = {
           ...model.parameter,
           page: 1,
         };
 
         const { placeOverviewList } =
-          await this.placeService.getPlaceOverviewAll(overviewDto);
+          await this.placeService.getPlaceOverviewAllV2(overviewDto);
 
         const sectionOverviewList = placeOverviewList.map(
           (place) => new SectionPlaceOverviewEntity(place),
