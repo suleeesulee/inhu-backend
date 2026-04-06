@@ -52,7 +52,6 @@ export class PlaceService {
       bookmarkUserIdx: undefined,
       mainCategoryList: dto.mainCategoryList,
       moodCategoryList: dto.moodCategoryList,
-      freeTagList: dto.freeTagList,
       lowPrice: dto.lowPrice,
       priority: dto.priority,
     };
@@ -196,6 +195,7 @@ export class PlaceService {
       bookmarkUserIdx: undefined,
       mainCategoryList: dto.mainCategoryList,
       moodCategoryList: dto.moodCategoryList,
+      freeTagList: dto.freeTagList,
       priority: dto.priority,
     };
     let placeOverviewModelList: PlaceOverviewModel[];
