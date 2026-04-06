@@ -3,4 +3,5 @@ import { GetAllPlaceOverviewV2Dto } from '@user/api/place/dto/request/get-all-pl
 
 export class PlaceSectionParameter extends OmitType(GetAllPlaceOverviewV2Dto, [
   'page',
+  'priority',
 ]) {}
