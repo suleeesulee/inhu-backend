@@ -790,11 +790,11 @@ export class PlaceCoreRepository {
     return await this.txHost.tx.bookmark.findMany({
       ...SELECT_BOOKMARKED_PLACE_OVERVIEW,
       where: {
+        userIdx,
         place: {
           AND: [
             { deletedAt: null },
             this.getOperatingFilterWhereClause(operating), // 영업중 필터링
-            this.getBookmarkFilterWhereClause(userIdx), // 북마크 필터링
             this.getCoordinateFilterWhereClause(coordinate), // 좌표 필터링
             this.getTypesFilterWhereClause(types), // 타입 필터링
             this.getActivatedAtFilterWhereClause(activated), // 활성화 필터링
