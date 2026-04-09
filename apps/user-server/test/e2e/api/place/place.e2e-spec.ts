@@ -3581,6 +3581,57 @@ describe('Place E2E test', () => {
       expect(place.moodCategoryList[1]).toBe(MoodCategory.DESSERT_HOTSPOT);
     });
 
+    it('200 - successfully get list although others place is bookmarked', async () => {
+      const loginUser = testHelper.loginUsers.user1;
+      const otherUser = testHelper.loginUsers.user2;
+
+      const [placeSeed1, placeSeed2] = await placeSeedHelper.seedAll([
+        {
+          activatedAt: new Date(),
+          name: 'Test Place 1',
+        },
+        {
+          activatedAt: new Date(),
+          name: 'Test Place 2',
+        },
+      ]);
+
+      await bookmarkSeedHelper.seedAll([
+        {
+          placeIdx: placeSeed1.idx,
+          userIdx: loginUser.idx,
+        },
+        {
+          placeIdx: placeSeed2.idx,
+          userIdx: loginUser.idx,
+        },
+        {
+          placeIdx: placeSeed1.idx,
+          userIdx: otherUser.idx,
+        },
+      ]);
+
+      const response = await testHelper
+        .test()
+        .get('/place/bookmarked/all')
+        .query({ page: 1 })
+        .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
+        .expect(200);
+
+      const hasNext: boolean = response.body.hasNext;
+      const placeList: PlaceOverviewEntity[] = response.body.placeOverviewList;
+
+      expect(hasNext).toBe(false);
+      expect(Array.isArray(placeList)).toBe(true);
+      expect(placeList.length).toBe(2);
+
+      const place1 = placeList.find(({ idx }) => idx === placeSeed1.idx);
+      const place2 = placeList.find(({ idx }) => idx === placeSeed2.idx);
+
+      expect(place1).toBeDefined();
+      expect(place2).toBeDefined();
+    });
+
     it('400 - invalid querystring', async () => {
       const loginUser = testHelper.loginUsers.user1;
       const invalidPage = 'invalid page parameter';
