@@ -15,6 +15,7 @@ import { UpdatePlaceSectionDto } from './dto/request/update-place-section.dto';
 import { GetPlaceSectionAllResponseDto } from './dto/response/get-place-section-all.response.dto';
 import { AdminAuth } from '@admin/common/decorator/admin-auth.decorator';
 import { Exception } from '@libs/common/decorator/exception.decorator';
+import { UpdatePlaceSectionSortOrderDto } from './dto/request/update-place-section-sort-order.dto';
 
 @Controller('place-section')
 export class PlaceSectionController {
@@ -42,6 +43,20 @@ export class PlaceSectionController {
     @Body() dto: UpdatePlaceSectionDto,
   ): Promise<void> {
     await this.placeSectionService.updatePlaceSection(idx, dto);
+  }
+
+  /**
+   * place section 순서 수정
+   */
+  @AdminAuth()
+  @Exception(400, 'Invalid sort order')
+  @Exception(404, 'Place section does not exist')
+  @Put('/:idx/sort-order')
+  public async updatePlaceSectionSortOrder(
+    @Param('idx', ParseIntPipe) idx: number,
+    @Body() dto: UpdatePlaceSectionSortOrderDto,
+  ): Promise<void> {
+    return await this.placeSectionService.updatePlaceSectionSortOrder(idx, dto);
   }
 
   @Delete('/:idx')

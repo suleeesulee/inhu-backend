@@ -15,6 +15,7 @@ import { UpdateMagazineSectionDto } from './dto/request/update-magazine-section.
 import { GetMagazineSectionAllResponseDto } from './dto/response/get-magazine-section-all.response.dto';
 import { AdminAuth } from '@admin/common/decorator/admin-auth.decorator';
 import { Exception } from '@libs/common/decorator/exception.decorator';
+import { UpdateMagazineSectionSortOrderDto } from './dto/request/update-magazine-section-sort-order.dto';
 
 @Controller('magazine-section')
 export class MagazineSectionController {
@@ -44,6 +45,23 @@ export class MagazineSectionController {
     @Body() dto: UpdateMagazineSectionDto,
   ): Promise<void> {
     await this.magazineSectionService.updateMagazineSection(idx, dto);
+  }
+
+  /**
+   * magazine section 순서 수정
+   */
+  @AdminAuth()
+  @Exception(400, 'Invalid sort order')
+  @Exception(404, 'Magazine section does not exist')
+  @Put('/:idx/sort-order')
+  public async updateMagazineSectionSortOrder(
+    @Param('idx', ParseIntPipe) idx: number,
+    @Body() dto: UpdateMagazineSectionSortOrderDto,
+  ): Promise<void> {
+    return await this.magazineSectionService.updateMagazineSectionSortOrder(
+      idx,
+      dto,
+    );
   }
 
   @Delete('/:idx')

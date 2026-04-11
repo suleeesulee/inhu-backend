@@ -37,7 +37,7 @@ export class PlaceSectionCoreRepository {
         deletedAt: null,
       },
       orderBy: {
-        createdAt: 'desc',
+        sortOrder: 'asc',
       },
       take: input?.take,
       skip: input?.skip,
@@ -52,6 +52,7 @@ export class PlaceSectionCoreRepository {
       data: {
         title: input.title,
         parameter: input.parameter as unknown as Prisma.InputJsonValue,
+        sortOrder: input.sortOrder,
       },
     });
   }
@@ -64,12 +65,36 @@ export class PlaceSectionCoreRepository {
       data: {
         title: input.title,
         parameter: input.parameter as unknown as Prisma.InputJsonValue,
+        sortOrder: input.sortOrder,
       },
       where: {
         idx,
         deletedAt: null,
       },
     });
+  }
+
+  public async incrementPlaceSectionSortOrder(
+    oldOrder: number,
+    newOrder: number,
+  ): Promise<void> {
+    if (newOrder < oldOrder) {
+      await this.txHost.tx.placeSection.updateMany({
+        where: {
+          sortOrder: { gte: newOrder, lt: oldOrder },
+          deletedAt: null,
+        },
+        data: { sortOrder: { increment: 1 } },
+      });
+    } else if (newOrder > oldOrder) {
+      await this.txHost.tx.placeSection.updateMany({
+        where: {
+          sortOrder: { gt: oldOrder, lte: newOrder },
+          deletedAt: null,
+        },
+        data: { sortOrder: { decrement: 1 } },
+      });
+    }
   }
 
   public async softDeletePlaceSectionByIdx(idx: number): Promise<void> {
@@ -79,6 +104,14 @@ export class PlaceSectionCoreRepository {
       },
       where: {
         idx,
+        deletedAt: null,
+      },
+    });
+  }
+
+  public async getPlaceSectionCount(): Promise<number> {
+    return await this.txHost.tx.placeSection.count({
+      where: {
         deletedAt: null,
       },
     });
