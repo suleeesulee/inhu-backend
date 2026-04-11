@@ -5,6 +5,8 @@ import { GetPlaceSectionAllResponseDto } from './dto/response/get-place-section-
 import { CreatePlaceSectionDto } from './dto/request/create-place-section.dto';
 import { UpdatePlaceSectionDto } from './dto/request/update-place-section.dto';
 import { MagazineSectionCoreService } from '@libs/core/magazine-section/magazine-section-core.service';
+import { Transactional } from '@nestjs-cls/transactional';
+import { UpdatePlaceSectionSortOrderDto } from './dto/request/update-place-section-sort-order.dto';
 
 @Injectable()
 export class PlaceSectionService {
@@ -45,6 +47,35 @@ export class PlaceSectionService {
       await this.placeSectionCoreService.getPlaceSectionByIdx(idx);
     if (!placeSectionModel) {
       throw new NotFoundException(`PlaceSection with idx ${idx} not found`);
+    }
+
+    await this.placeSectionCoreService.updatePlaceSectionByIdx(idx, dto);
+  }
+
+  @Transactional()
+  public async updatePlaceSectionSortOrder(
+    idx: number,
+    dto: UpdatePlaceSectionSortOrderDto,
+  ): Promise<void> {
+    const placeSectionModel =
+      await this.placeSectionCoreService.getPlaceSectionByIdx(idx);
+
+    if (!placeSectionModel) {
+      throw new NotFoundException(`PlaceSection with idx ${idx} not found`);
+    }
+
+    if (dto.sortOrder && dto.sortOrder !== placeSectionModel.sortOrder) {
+      const oldOrder = placeSectionModel.sortOrder;
+      const newOrder = dto.sortOrder;
+
+      await this.placeSectionCoreService.incrementPlaceSectionSortOrder(
+        oldOrder,
+        newOrder,
+      );
+      await this.magazineSectionCoreService.incrementMagazineSectionSortOrder(
+        oldOrder,
+        newOrder,
+      );
     }
 
     await this.placeSectionCoreService.updatePlaceSectionByIdx(idx, dto);

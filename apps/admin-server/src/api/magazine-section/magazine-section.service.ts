@@ -5,6 +5,8 @@ import { GetMagazineSectionAllResponseDto } from './dto/response/get-magazine-se
 import { CreateMagazineSectionDto } from './dto/request/create-magazine-section.dto';
 import { UpdateMagazineSectionDto } from './dto/request/update-magazine-section.dto';
 import { PlaceSectionCoreService } from '@libs/core/place-section/place-section-core.service';
+import { Transactional } from '@nestjs-cls/transactional';
+import { UpdateMagazineSectionSortOrderDto } from './dto/request/update-magazine-section-sort-order.dto';
 
 @Injectable()
 export class MagazineSectionService {
@@ -47,6 +49,35 @@ export class MagazineSectionService {
       await this.magazineSectionCoreService.getMagazineSectionByIdx(idx);
     if (!magazineSectionModel) {
       throw new NotFoundException(`MagazineSection with idx ${idx} not found`);
+    }
+
+    await this.magazineSectionCoreService.updateMagazineSectionByIdx(idx, dto);
+  }
+
+  @Transactional()
+  public async updateMagazineSectionSortOrder(
+    idx: number,
+    dto: UpdateMagazineSectionSortOrderDto,
+  ): Promise<void> {
+    const magazineSectionModel =
+      await this.magazineSectionCoreService.getMagazineSectionByIdx(idx);
+
+    if (!magazineSectionModel) {
+      throw new NotFoundException(`MagazineSection with idx ${idx} not found`);
+    }
+
+    if (dto.sortOrder && dto.sortOrder !== magazineSectionModel.sortOrder) {
+      const oldOrder = magazineSectionModel.sortOrder;
+      const newOrder = dto.sortOrder;
+
+      await this.placeSectionCoreService.incrementPlaceSectionSortOrder(
+        oldOrder,
+        newOrder,
+      );
+      await this.magazineSectionCoreService.incrementMagazineSectionSortOrder(
+        oldOrder,
+        newOrder,
+      );
     }
 
     await this.magazineSectionCoreService.updateMagazineSectionByIdx(idx, dto);

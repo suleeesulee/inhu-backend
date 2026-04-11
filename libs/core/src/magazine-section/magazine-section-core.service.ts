@@ -45,6 +45,16 @@ export class MagazineSectionCoreService {
     );
   }
 
+  public async incrementMagazineSectionSortOrder(
+    oldOrder: number,
+    newOrder: number,
+  ): Promise<void> {
+    await this.magazineSectionCoreRepository.incrementMagazineSectionSortOrder(
+      oldOrder,
+      newOrder,
+    );
+  }
+
   public async deleteMagazineSectionByIdx(idx: number): Promise<void> {
     await this.magazineSectionCoreRepository.softDeleteMagazineSectionByIdx(
       idx,

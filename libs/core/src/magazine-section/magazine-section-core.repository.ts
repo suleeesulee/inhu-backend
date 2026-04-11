@@ -65,12 +65,36 @@ export class MagazineSectionCoreRepository {
       data: {
         title: input.title,
         parameter: input.parameter as unknown as Prisma.InputJsonValue,
+        sortOrder: input.sortOrder,
       },
       where: {
         idx,
         deletedAt: null,
       },
     });
+  }
+
+  public async incrementMagazineSectionSortOrder(
+    oldOrder: number,
+    newOrder: number,
+  ): Promise<void> {
+    if (newOrder < oldOrder) {
+      await this.txHost.tx.magazineSection.updateMany({
+        where: {
+          sortOrder: { gte: newOrder, lt: oldOrder },
+          deletedAt: null,
+        },
+        data: { sortOrder: { increment: 1 } },
+      });
+    } else if (newOrder > oldOrder) {
+      await this.txHost.tx.magazineSection.updateMany({
+        where: {
+          sortOrder: { gt: oldOrder, lte: newOrder },
+          deletedAt: null,
+        },
+        data: { sortOrder: { decrement: 1 } },
+      });
+    }
   }
 
   public async softDeleteMagazineSectionByIdx(idx: number): Promise<void> {

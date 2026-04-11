@@ -42,6 +42,16 @@ export class PlaceSectionCoreService {
     await this.placeSectionCoreRepository.updatePlaceSectionByIdx(idx, input);
   }
 
+  public async incrementPlaceSectionSortOrder(
+    oldOrder: number,
+    newOrder: number,
+  ): Promise<void> {
+    await this.placeSectionCoreRepository.incrementPlaceSectionSortOrder(
+      oldOrder,
+      newOrder,
+    );
+  }
+
   public async deletePlaceSectionByIdx(idx: number): Promise<void> {
     await this.placeSectionCoreRepository.softDeletePlaceSectionByIdx(idx);
   }
