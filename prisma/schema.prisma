@@ -538,6 +538,7 @@ model PlaceSection {
   idx         Int       @id @default(autoincrement())
   title       String    @db.VarChar
   parameter   Json
+  sortOrder   Int       @map("sort_order") @db.SmallInt
   createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
   activatedAt DateTime? @map("activated_at") @db.Timestamptz(6)
   deletedAt   DateTime? @map("deleted_at") @db.Timestamptz(6)
@@ -549,6 +550,7 @@ model MagazineSection {
   idx         Int       @id @default(autoincrement())
   title       String    @db.VarChar
   parameter   Json
+  sortOrder   Int       @map("sort_order") @db.SmallInt
   createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
   activatedAt DateTime? @map("activated_at") @db.Timestamptz(6)
   deletedAt   DateTime? @map("deleted_at") @db.Timestamptz(6)
