@@ -8,4 +8,5 @@ import { PlaceSectionSeedInput } from './place-section-seed.input';
  */
 export type PlaceSectionSeedOutput = FilledSeedInput<PlaceSectionSeedInput> & {
   idx: number;
+  sortOrder: number;
 };

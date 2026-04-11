@@ -37,7 +37,7 @@ export class MagazineSectionCoreRepository {
         deletedAt: null,
       },
       orderBy: {
-        createdAt: 'desc',
+        sortOrder: 'asc',
       },
       take: input?.take,
       skip: input?.skip,
@@ -52,6 +52,7 @@ export class MagazineSectionCoreRepository {
       data: {
         title: input.title,
         parameter: input.parameter as unknown as Prisma.InputJsonValue,
+        sortOrder: input.sortOrder,
       },
     });
   }
@@ -79,6 +80,14 @@ export class MagazineSectionCoreRepository {
       },
       where: {
         idx,
+        deletedAt: null,
+      },
+    });
+  }
+
+  public async getMagazineSectionCount(): Promise<number> {
+    return await this.txHost.tx.magazineSection.count({
+      where: {
         deletedAt: null,
       },
     });

@@ -10,6 +10,7 @@ export class MagazineSectionModel {
   public idx: number;
   public title: string;
   public parameter: MagazineSectionParameter;
+  public sortOrder: number;
   public createdAt: Date;
 
   constructor(data: MagazineSectionModel) {
@@ -23,6 +24,7 @@ export class MagazineSectionModel {
       idx: placeSection.idx,
       title: placeSection.title,
       parameter: placeSection.parameter as unknown as MagazineSectionParameter,
+      sortOrder: placeSection.sortOrder,
       createdAt: placeSection.createdAt,
     });
   }

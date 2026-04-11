@@ -37,7 +37,7 @@ export class PlaceSectionCoreRepository {
         deletedAt: null,
       },
       orderBy: {
-        createdAt: 'desc',
+        sortOrder: 'asc',
       },
       take: input?.take,
       skip: input?.skip,
@@ -52,6 +52,7 @@ export class PlaceSectionCoreRepository {
       data: {
         title: input.title,
         parameter: input.parameter as unknown as Prisma.InputJsonValue,
+        sortOrder: input.sortOrder,
       },
     });
   }
@@ -79,6 +80,14 @@ export class PlaceSectionCoreRepository {
       },
       where: {
         idx,
+        deletedAt: null,
+      },
+    });
+  }
+
+  public async getPlaceSectionCount(): Promise<number> {
+    return await this.txHost.tx.placeSection.count({
+      where: {
         deletedAt: null,
       },
     });

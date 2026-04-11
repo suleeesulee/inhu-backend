@@ -10,6 +10,7 @@ export class PlaceSectionModel {
   public idx: number;
   public title: string;
   public parameter: PlaceSectionParameter;
+  public sortOrder: number;
   public createdAt: Date;
 
   constructor(data: PlaceSectionModel) {
@@ -23,6 +24,7 @@ export class PlaceSectionModel {
       idx: placeSection.idx,
       title: placeSection.title,
       parameter: placeSection.parameter as unknown as PlaceSectionParameter,
+      sortOrder: placeSection.sortOrder,
       createdAt: placeSection.createdAt,
     });
   }

@@ -4,11 +4,13 @@ import { PlaceSectionEntity } from './entity/place-section.entity';
 import { GetPlaceSectionAllResponseDto } from './dto/response/get-place-section-all.response.dto';
 import { CreatePlaceSectionDto } from './dto/request/create-place-section.dto';
 import { UpdatePlaceSectionDto } from './dto/request/update-place-section.dto';
+import { MagazineSectionCoreService } from '@libs/core/magazine-section/magazine-section-core.service';
 
 @Injectable()
 export class PlaceSectionService {
   constructor(
     private readonly placeSectionCoreService: PlaceSectionCoreService,
+    private readonly magazineSectionCoreService: MagazineSectionCoreService,
   ) {}
 
   public async getPlaceSectionAll(): Promise<GetPlaceSectionAllResponseDto> {
@@ -22,8 +24,16 @@ export class PlaceSectionService {
   public async createPlaceSection(
     dto: CreatePlaceSectionDto,
   ): Promise<PlaceSectionEntity> {
+    const magazineSectionCount =
+      await this.magazineSectionCoreService.getMagazineSectionCount();
+    const placeSectionCount =
+      await this.placeSectionCoreService.getPlaceSectionCount();
+
     return await this.placeSectionCoreService
-      .createPlaceSection(dto)
+      .createPlaceSection({
+        ...dto,
+        sortOrder: magazineSectionCount + placeSectionCount + 1,
+      })
       .then(PlaceSectionEntity.fromModel);
   }
 

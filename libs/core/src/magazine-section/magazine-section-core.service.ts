@@ -50,4 +50,8 @@ export class MagazineSectionCoreService {
       idx,
     );
   }
+
+  public async getMagazineSectionCount(): Promise<number> {
+    return await this.magazineSectionCoreRepository.getMagazineSectionCount();
+  }
 }

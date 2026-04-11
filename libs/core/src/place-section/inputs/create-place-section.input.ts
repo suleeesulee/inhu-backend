@@ -8,4 +8,5 @@ import { PlaceSectionParameter } from '../place-section-parameter.type';
 export class CreatePlaceSectionInput {
   title: string;
   parameter: PlaceSectionParameter;
+  sortOrder: number;
 }

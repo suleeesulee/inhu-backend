@@ -45,4 +45,8 @@ export class PlaceSectionCoreService {
   public async deletePlaceSectionByIdx(idx: number): Promise<void> {
     await this.placeSectionCoreRepository.softDeletePlaceSectionByIdx(idx);
   }
+
+  public async getPlaceSectionCount(): Promise<number> {
+    return await this.placeSectionCoreRepository.getPlaceSectionCount();
+  }
 }

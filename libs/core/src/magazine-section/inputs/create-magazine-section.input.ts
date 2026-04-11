@@ -8,4 +8,5 @@ import { MagazineSectionParameter } from '../magazine-section-parameter.type';
 export class CreateMagazineSectionInput {
   title: string;
   parameter: MagazineSectionParameter;
+  sortOrder: number;
 }
