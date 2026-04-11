@@ -9,4 +9,5 @@ import { MagazineSectionSeedInput } from './magazine-section-seed.input';
 export type MagazineSectionSeedOutput =
   FilledSeedInput<MagazineSectionSeedInput> & {
     idx: number;
+    sortOrder: number;
   };

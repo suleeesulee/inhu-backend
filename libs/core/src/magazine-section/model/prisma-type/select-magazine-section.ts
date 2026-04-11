@@ -6,6 +6,7 @@ export const SELECT_MAGAZINE_SECTION =
       idx: true,
       title: true,
       parameter: true,
+      sortOrder: true,
       createdAt: true,
     },
   });
