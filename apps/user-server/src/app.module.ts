@@ -25,7 +25,6 @@ import { ServerExceptionsFilter } from '@libs/common/filters/server-exception.fi
 import { HashModule } from '@libs/common/modules/hash/hash.module';
 import { PlaceSectionModule } from './api/place-section/place-section.module';
 import { MagazineSectionModule } from './api/magazine-section/magazine-section.module';
-import { AdminAccountCoreModule } from '@libs/core/admin-account/admin-account-core.module';
 
 @Module({
   imports: [
@@ -60,7 +59,6 @@ import { AdminAccountCoreModule } from '@libs/core/admin-account/admin-account-c
     HashModule,
     PlaceSectionModule,
     MagazineSectionModule,
-    AdminAccountCoreModule,
   ],
   providers: [
     {

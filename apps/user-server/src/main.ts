@@ -11,8 +11,8 @@ import { getMode } from '@libs/common/utils/get-mode.util';
 import { DiscordWebhookService } from '@libs/common/modules/discord-webhook/discord-webhook.service';
 import { DiscordWebhookContext } from '@libs/common/modules/discord-webhook/constants/discord-webhook-context.enum';
 import * as swStats from 'swagger-stats';
-import { AdminAccountCoreService } from '@libs/core/admin-account/admin-account-core.service';
-import { HashService } from '@libs/common/modules/hash/hash.service';
+import * as basicAuth from 'express-basic-auth';
+import { randomBytes } from 'crypto';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -62,29 +62,28 @@ async function bootstrap() {
   SwaggerModule.setup('api', app, documentFactory, customOptions);
 
   app.use(
+    '/swagger-stats',
+    basicAuth({
+      challenge: true,
+      authorizer: (username: string, password: string): boolean => {
+        const userMatches = basicAuth.safeCompare(
+          username,
+          process.env.SWAGGER_ADMIN_USER || randomBytes(20).toString('hex'),
+        );
+        const passwordMatches = basicAuth.safeCompare(
+          password,
+          process.env.SWAGGER_ADMIN_PASSWORD || randomBytes(20).toString('hex'),
+        );
+
+        return Boolean(Number(userMatches) & Number(passwordMatches));
+      },
+    }),
+  );
+
+  app.use(
     swStats.getMiddleware({
       swaggerSpec: documentFactory,
-      authentication: true,
-      onAuthenticate: async (req, username, password) => {
-        console.log(
-          `[Auth Check] PID: ${process.pid} | Path: ${req.url} | User: ${username}`,
-        );
-        const admin = await app
-          .get(AdminAccountCoreService)
-          .getAdminAccountById(username);
-        if (!admin) {
-          return false;
-        }
-
-        const isPasswordValid = await app
-          .get(HashService)
-          .compare(password, admin.pw);
-        if (isPasswordValid) {
-          return true;
-        }
-
-        return false;
-      },
+      authentication: false,
       timelineBucketDuration: process.env.TIME_LINE_BUCKET_DURATION
         ? Number(process.env.TIME_LINE_BUCKET_DURATION)
         : 60000,
