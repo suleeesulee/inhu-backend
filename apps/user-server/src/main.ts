@@ -66,6 +66,9 @@ async function bootstrap() {
       swaggerSpec: documentFactory,
       authentication: true,
       onAuthenticate: async (req, username, password) => {
+        console.log(
+          `[Auth Check] PID: ${process.pid} | Path: ${req.url} | User: ${username}`,
+        );
         const admin = await app
           .get(AdminAccountCoreService)
           .getAdminAccountById(username);
