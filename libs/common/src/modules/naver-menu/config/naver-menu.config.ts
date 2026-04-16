@@ -21,5 +21,6 @@ export default () => ({
       tabItemSelector: process.env.BOOKING_TAB_ITEM_SELECTOR || '',
       soldOutSelector: process.env.BOOKING_SOLD_OUT_SELECTOR || '',
     },
+    menuDivSelector: process.env.NAVER_MENU_DIV_SELECTOR || '',
   },
 });
