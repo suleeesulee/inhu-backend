@@ -11,6 +11,7 @@ export class NaverMenuService {
   private readonly PUPPETEER_CUSTOM_EXECUTABLE_PATH: string;
   private readonly PUPPETEER_SELECTOR_TIMEOUT: number;
   private readonly strategyMap: Record<string, NaverCrawlingStrategy>;
+  private readonly NAVER_MENU_DIV_SELECTOR: string;
 
   constructor(
     private readonly configService: ConfigService,
@@ -25,6 +26,8 @@ export class NaverMenuService {
       'pcmap.place.naver.com': this.pcmapStrategy,
       'm.booking.naver.com': this.bookingStrategy,
     };
+    this.NAVER_MENU_DIV_SELECTOR =
+      this.configService.get<string>('naverMenu.menuDivSelector') || '';
   }
 
   public async extractNaverMenu(naverPlaceId?: string): Promise<NaverMenu[]> {
@@ -54,7 +57,7 @@ export class NaverMenuService {
       );
 
       try {
-        const menuSelector = 'div.YYh8o.gHymq > a[href*="menu"]';
+        const menuSelector = this.NAVER_MENU_DIV_SELECTOR;
         await this.waitForSelectorWithTimeout(page, menuSelector, 5000);
         await page.click(menuSelector);
       } catch (error) {
