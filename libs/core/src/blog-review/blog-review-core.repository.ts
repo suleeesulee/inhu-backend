@@ -1,7 +1,6 @@
 import { CreateBlogReviewInput } from '@libs/core/blog-review/inputs/create-blog-review.input';
 import { GetBlogReviewAllInput } from '@libs/core/blog-review/inputs/get-blog-review-all.input';
 import { UpdateBlogReviewInput } from '@libs/core/blog-review/inputs/update-blog-review.input';
-import { BlogReviewModel } from '@libs/core/blog-review/model/blog-review.model';
 import {
   SELECT_BLOG_REVIEW,
   SelectBlogReview,
