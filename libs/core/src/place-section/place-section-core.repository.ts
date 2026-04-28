@@ -37,7 +37,7 @@ export class PlaceSectionCoreRepository {
         deletedAt: null,
       },
       orderBy: {
-        sortOrder: 'asc',
+        sortOrder: 'desc',
       },
       take: input?.take,
       skip: input?.skip,
