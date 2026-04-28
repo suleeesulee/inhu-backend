@@ -25,6 +25,7 @@ import { SearchTagModule } from './api/search-tag/search-tag.module';
 import { AdminAccountModule } from './api/admin/admin-account.module';
 import { PlaceSectionModule } from './api/place-section/place-section.module';
 import { MagazineSectionModule } from './api/magazine-section/magazine-section.module';
+import { CombinedSectionModule } from './api/combined-section/combined-section.module';
 
 @Module({
   imports: [
@@ -58,6 +59,7 @@ import { MagazineSectionModule } from './api/magazine-section/magazine-section.m
     AdminAccountModule,
     PlaceSectionModule,
     MagazineSectionModule,
+    CombinedSectionModule,
   ],
   providers: [
     {
