@@ -56,7 +56,7 @@ export class PlaceSectionService {
 
       if (
         placeModel &&
-        (!magazineModel || placeModel.sortOrder < magazineModel.sortOrder)
+        (!magazineModel || placeModel.sortOrder > magazineModel.sortOrder)
       ) {
         mergedModelList.push({ type: 'PLACE' as const, model: placeModel });
         pIndex++;
