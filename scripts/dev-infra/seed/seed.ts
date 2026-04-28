@@ -132,17 +132,17 @@ async function main() {
   }
 
   /**
-   * place section 생성
-   */
-  for (const placeSectionData of placeSectionSeedDataList) {
-    await placeSectionSeedHelper.seed({ ...placeSectionData });
-  }
-
-  /**
    * magazine section 생성
    */
   for (const magazineSectionData of magazineSectionSeedDataList) {
     await magazineSectionSeedHelper.seed({ ...magazineSectionData });
+  }
+
+  /**
+   * place section 생성
+   */
+  for (const placeSectionData of placeSectionSeedDataList) {
+    await placeSectionSeedHelper.seed({ ...placeSectionData });
   }
 }
 
