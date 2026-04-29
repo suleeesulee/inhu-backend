@@ -110,10 +110,6 @@ export class MagazineSectionCoreRepository {
   }
 
   public async getMagazineSectionCount(): Promise<number> {
-    return await this.txHost.tx.magazineSection.count({
-      where: {
-        deletedAt: null,
-      },
-    });
+    return await this.txHost.tx.magazineSection.count();
   }
 }

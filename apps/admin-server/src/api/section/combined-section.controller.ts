@@ -26,7 +26,7 @@ import { PlaceSectionEntity } from './entity/place-section.entity';
 import { UpdatePlaceSectionDto } from './dto/request/update-place-section.dto';
 import { UpdatePlaceSectionSortOrderDto } from './dto/request/update-place-section-sort-order.dto';
 
-@Controller('section')
+@Controller()
 @ApiTags('Section')
 export class CombinedSectionController {
   constructor(
@@ -36,7 +36,7 @@ export class CombinedSectionController {
   /**
    * magazine section과 place section을 모두 조회하는 API
    */
-  @Get('/all')
+  @Get('/section/all')
   @AdminAuth()
   @ApiExtraModels(PlaceSectionItem, MagazineSectionItem)
   public async getCombinedSectionAll(): Promise<GetCombinedSectionAllResponseDto> {
@@ -48,7 +48,7 @@ export class CombinedSectionController {
   /**
    * magazine section 생성
    */
-  @Post()
+  @Post('/magazine-section')
   @AdminAuth()
   public async createMagazineSection(
     @Body() dto: CreateMagazineSectionDto,
@@ -59,7 +59,7 @@ export class CombinedSectionController {
   /**
    * magazine section 수정
    */
-  @Put('/:idx')
+  @Put('/magazine-section/:idx')
   @Exception(404, 'Magazine section not found')
   @AdminAuth()
   public async updateMagazineSection(
@@ -75,7 +75,7 @@ export class CombinedSectionController {
   @AdminAuth()
   @Exception(400, 'Invalid sort order')
   @Exception(404, 'Magazine section does not exist')
-  @Put('/:idx/sort-order')
+  @Put('/magazine-section/:idx/sort-order')
   public async updateMagazineSectionSortOrder(
     @Param('idx', ParseIntPipe) idx: number,
     @Body() dto: UpdateMagazineSectionSortOrderDto,
@@ -89,7 +89,7 @@ export class CombinedSectionController {
   /**
    * magazine section 삭제
    */
-  @Delete('/:idx')
+  @Delete('/magazine-section/:idx')
   @Exception(404, 'Magazine section not found')
   @AdminAuth()
   public async deleteMagazineSection(
@@ -103,7 +103,7 @@ export class CombinedSectionController {
   /**
    * place section 생성
    */
-  @Post()
+  @Post('/place-section')
   @AdminAuth()
   public async createPlaceSection(
     @Body() dto: CreatePlaceSectionDto,
@@ -114,7 +114,7 @@ export class CombinedSectionController {
   /**
    * place section 수정
    */
-  @Put('/:idx')
+  @Put('/place-section/:idx')
   @Exception(404, 'Place section not found')
   @AdminAuth()
   public async updatePlaceSection(
@@ -130,7 +130,7 @@ export class CombinedSectionController {
   @AdminAuth()
   @Exception(400, 'Invalid sort order')
   @Exception(404, 'Place section does not exist')
-  @Put('/:idx/sort-order')
+  @Put('/place-section/:idx/sort-order')
   public async updatePlaceSectionSortOrder(
     @Param('idx', ParseIntPipe) idx: number,
     @Body() dto: UpdatePlaceSectionSortOrderDto,
@@ -144,7 +144,7 @@ export class CombinedSectionController {
   /**
    * place section 삭제
    */
-  @Delete('/:idx')
+  @Delete('/place-section/:idx')
   @Exception(404, 'Place section not found')
   @AdminAuth()
   public async deletePlaceSection(

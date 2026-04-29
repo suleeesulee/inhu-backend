@@ -109,7 +109,7 @@ export class CombinedSectionService {
   }
 
   @Locker({
-    key: (idx: number) => `magazine-section:${idx}:sort-order`,
+    key: (idx: number) => `section:${idx}:sort-order`,
   })
   @Transactional()
   public async updateMagazineSectionSortOrder(
@@ -182,7 +182,7 @@ export class CombinedSectionService {
   }
 
   @Locker({
-    key: (idx: number) => `place-section:${idx}:sort-order`,
+    key: (idx: number) => `section:${idx}:sort-order`,
   })
   @Transactional()
   public async updatePlaceSectionSortOrder(
