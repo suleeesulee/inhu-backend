@@ -1,5 +1,5 @@
-import { MagazineSectionEntity } from '@admin/api/magazine-section/entity/magazine-section.entity';
-import { PlaceSectionEntity } from '@admin/api/place-section/entity/place-section.entity';
+import { MagazineSectionEntity } from '@admin/api/section/entity/magazine-section.entity';
+import { PlaceSectionEntity } from '@admin/api/section/entity/place-section.entity';
 import { ApiProperty, getSchemaPath } from '@nestjs/swagger';
 
 export class PlaceSectionItem extends PlaceSectionEntity {

@@ -110,10 +110,6 @@ export class PlaceSectionCoreRepository {
   }
 
   public async getPlaceSectionCount(): Promise<number> {
-    return await this.txHost.tx.placeSection.count({
-      where: {
-        deletedAt: null,
-      },
-    });
+    return await this.txHost.tx.placeSection.count();
   }
 }
