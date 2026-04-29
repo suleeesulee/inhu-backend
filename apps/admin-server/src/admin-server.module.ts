@@ -23,9 +23,7 @@ import { HashModule } from '@libs/common/modules/hash/hash.module';
 import { FreeTagModule } from './api/free-tag/free-tag.module';
 import { SearchTagModule } from './api/search-tag/search-tag.module';
 import { AdminAccountModule } from './api/admin/admin-account.module';
-import { PlaceSectionModule } from './api/place-section/place-section.module';
-import { MagazineSectionModule } from './api/magazine-section/magazine-section.module';
-import { CombinedSectionModule } from './api/combined-section/combined-section.module';
+import { CombinedSectionModule } from './api/section/combined-section.module';
 
 @Module({
   imports: [
@@ -57,8 +55,6 @@ import { CombinedSectionModule } from './api/combined-section/combined-section.m
     FreeTagModule,
     SearchTagModule,
     AdminAccountModule,
-    PlaceSectionModule,
-    MagazineSectionModule,
     CombinedSectionModule,
   ],
   providers: [
