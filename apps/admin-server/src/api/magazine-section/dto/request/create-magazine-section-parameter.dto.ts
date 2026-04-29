@@ -5,20 +5,9 @@ import { MainCategory } from '@libs/core/category/constants/main-category.consta
 import { MoodCategory } from '@libs/core/category/constants/mood-category.constant';
 import { PlaceType } from '@libs/core/place/constants/place-type.constant';
 import { Type } from 'class-transformer';
-import { IsIn, IsInt, IsNotEmpty, IsOptional, Min } from 'class-validator';
+import { IsIn, IsOptional } from 'class-validator';
 
 export class CreateMagazineSectionParameterDto {
-  /**
-   * page number
-   *
-   * @example 1
-   */
-  @Type(() => Number)
-  @IsNotEmpty()
-  @IsInt()
-  @Min(1)
-  page: number;
-
   /**
    * 정렬 옵션
    *

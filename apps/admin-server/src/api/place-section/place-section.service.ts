@@ -7,6 +7,7 @@ import { UpdatePlaceSectionDto } from './dto/request/update-place-section.dto';
 import { MagazineSectionCoreService } from '@libs/core/magazine-section/magazine-section-core.service';
 import { Transactional } from '@nestjs-cls/transactional';
 import { UpdatePlaceSectionSortOrderDto } from './dto/request/update-place-section-sort-order.dto';
+import { Locker } from '@libs/common/decorator/locker.decorator';
 
 @Injectable()
 export class PlaceSectionService {
@@ -52,6 +53,9 @@ export class PlaceSectionService {
     await this.placeSectionCoreService.updatePlaceSectionByIdx(idx, dto);
   }
 
+  @Locker({
+    key: (idx: number) => `place-section:${idx}:sort-order`,
+  })
   @Transactional()
   public async updatePlaceSectionSortOrder(
     idx: number,
