@@ -6,9 +6,10 @@ import {
   MagazineSectionItem,
   PlaceSectionItem,
 } from './response/get-combined-section-all.response.dto';
-import { ApiExtraModels } from '@nestjs/swagger';
+import { ApiExtraModels, ApiTags } from '@nestjs/swagger';
 
-@Controller('combined-section')
+@Controller('section')
+@ApiTags('Section')
 export class CombinedSectionController {
   constructor(
     private readonly combinedSectionService: CombinedSectionService,
