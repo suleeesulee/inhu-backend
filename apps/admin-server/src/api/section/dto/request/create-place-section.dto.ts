@@ -1,5 +1,6 @@
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsNotEmpty, IsString, ValidateNested } from 'class-validator';
 import { CreatePlaceSectionParameterDto } from './create-place-section-parameter.dto';
+import { Type } from 'class-transformer';
 
 export class CreatePlaceSectionDto {
   /**
@@ -11,5 +12,7 @@ export class CreatePlaceSectionDto {
   @IsString()
   title: string;
 
+  @ValidateNested()
+  @Type(() => CreatePlaceSectionParameterDto)
   parameter: CreatePlaceSectionParameterDto;
 }

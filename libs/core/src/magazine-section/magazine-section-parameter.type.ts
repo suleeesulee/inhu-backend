@@ -8,13 +8,6 @@ export class MagazineSectionParameter extends OmitType(GetAllMagazineDto, [
   'page',
 ]) {
   /**
-   * page number
-   *
-   * @example 1
-   */
-  page: number;
-
-  /**
    * 정렬 옵션
    *
    * @example "time"

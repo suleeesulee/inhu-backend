@@ -30,8 +30,16 @@ export class PlaceSectionSeedHelper extends ISeedHelper<
     input: PlaceSectionSeedInput,
   ): Promise<PlaceSectionSeedOutput> {
     const filledInput = this.generateFilledInputValue(input);
-    const placeSectionCount = await this.prisma.placeSection.count();
-    const magazineSectionCount = await this.prisma.magazineSection.count();
+    const placeSectionCount = await this.prisma.placeSection.count({
+      where: {
+        deletedAt: null,
+      },
+    });
+    const magazineSectionCount = await this.prisma.magazineSection.count({
+      where: {
+        deletedAt: null,
+      },
+    });
 
     const placeSection = await this.prisma.placeSection.create({
       select: { idx: true, sortOrder: true },

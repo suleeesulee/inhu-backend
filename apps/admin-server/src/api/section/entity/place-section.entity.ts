@@ -22,6 +22,13 @@ export class PlaceSectionEntity {
   parameter: PlaceSectionParameter;
 
   /**
+   * 섹션 정렬 순서
+   *
+   * @example 1
+   */
+  sortOrder: number;
+
+  /**
    * 섹션 생성 일자
    */
   createdAt: Date;
@@ -35,6 +42,7 @@ export class PlaceSectionEntity {
       idx: model.idx,
       title: model.title,
       parameter: model.parameter,
+      sortOrder: model.sortOrder,
       createdAt: model.createdAt,
     });
   }

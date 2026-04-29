@@ -37,7 +37,7 @@ export class PlaceSectionCoreRepository {
         deletedAt: null,
       },
       orderBy: {
-        sortOrder: 'asc',
+        sortOrder: 'desc',
       },
       take: input?.take,
       skip: input?.skip,
@@ -76,9 +76,17 @@ export class PlaceSectionCoreRepository {
 
   public async incrementPlaceSectionSortOrder(
     oldOrder: number,
-    newOrder: number,
+    newOrder?: number,
   ): Promise<void> {
-    if (newOrder < oldOrder) {
+    if (!newOrder) {
+      await this.txHost.tx.placeSection.updateMany({
+        where: {
+          sortOrder: { gt: oldOrder },
+          deletedAt: null,
+        },
+        data: { sortOrder: { decrement: 1 } },
+      });
+    } else if (newOrder < oldOrder) {
       await this.txHost.tx.placeSection.updateMany({
         where: {
           sortOrder: { gte: newOrder, lt: oldOrder },
