@@ -86,10 +86,10 @@ export class SectionService {
   public async createMagazineSection(
     dto: CreateMagazineSectionDto,
   ): Promise<MagazineSectionEntity> {
-    const magazineSectionCount =
-      await this.magazineSectionCoreService.getMagazineSectionCount();
-    const placeSectionCount =
-      await this.placeSectionCoreService.getPlaceSectionCount();
+    const [magazineSectionCount, placeSectionCount] = await Promise.all([
+      this.magazineSectionCoreService.getMagazineSectionCount(),
+      this.placeSectionCoreService.getPlaceSectionCount(),
+    ]);
 
     return await this.magazineSectionCoreService
       .createMagazineSection({
@@ -135,14 +135,16 @@ export class SectionService {
       const oldOrder = magazineSectionModel.sortOrder;
       const newOrder = dto.sortOrder;
 
-      await this.placeSectionCoreService.incrementPlaceSectionSortOrder(
-        oldOrder,
-        newOrder,
-      );
-      await this.magazineSectionCoreService.incrementMagazineSectionSortOrder(
-        oldOrder,
-        newOrder,
-      );
+      await Promise.all([
+        this.placeSectionCoreService.incrementPlaceSectionSortOrder(
+          oldOrder,
+          newOrder,
+        ),
+        this.magazineSectionCoreService.incrementMagazineSectionSortOrder(
+          oldOrder,
+          newOrder,
+        ),
+      ]);
     }
 
     await this.magazineSectionCoreService.updateMagazineSectionByIdx(idx, dto);
@@ -159,12 +161,14 @@ export class SectionService {
       throw new NotFoundException(`MagazineSection with idx ${idx} not found`);
     }
 
-    await this.placeSectionCoreService.incrementPlaceSectionSortOrder(
-      magazineSectionModel.sortOrder,
-    );
-    await this.magazineSectionCoreService.incrementMagazineSectionSortOrder(
-      magazineSectionModel.sortOrder,
-    );
+    await Promise.all([
+      this.placeSectionCoreService.incrementPlaceSectionSortOrder(
+        magazineSectionModel.sortOrder,
+      ),
+      this.magazineSectionCoreService.incrementMagazineSectionSortOrder(
+        magazineSectionModel.sortOrder,
+      ),
+    ]);
 
     await this.magazineSectionCoreService.deleteMagazineSectionByIdx(idx);
   }
@@ -178,10 +182,10 @@ export class SectionService {
   public async createPlaceSection(
     dto: CreatePlaceSectionDto,
   ): Promise<PlaceSectionEntity> {
-    const magazineSectionCount =
-      await this.magazineSectionCoreService.getMagazineSectionCount();
-    const placeSectionCount =
-      await this.placeSectionCoreService.getPlaceSectionCount();
+    const [magazineSectionCount, placeSectionCount] = await Promise.all([
+      this.magazineSectionCoreService.getMagazineSectionCount(),
+      this.placeSectionCoreService.getPlaceSectionCount(),
+    ]);
 
     return await this.placeSectionCoreService
       .createPlaceSection({
@@ -227,14 +231,16 @@ export class SectionService {
       const oldOrder = placeSectionModel.sortOrder;
       const newOrder = dto.sortOrder;
 
-      await this.placeSectionCoreService.incrementPlaceSectionSortOrder(
-        oldOrder,
-        newOrder,
-      );
-      await this.magazineSectionCoreService.incrementMagazineSectionSortOrder(
-        oldOrder,
-        newOrder,
-      );
+      await Promise.all([
+        this.placeSectionCoreService.incrementPlaceSectionSortOrder(
+          oldOrder,
+          newOrder,
+        ),
+        this.magazineSectionCoreService.incrementMagazineSectionSortOrder(
+          oldOrder,
+          newOrder,
+        ),
+      ]);
     }
 
     await this.placeSectionCoreService.updatePlaceSectionByIdx(idx, dto);
@@ -251,12 +257,14 @@ export class SectionService {
       throw new NotFoundException(`PlaceSection with idx ${idx} not found`);
     }
 
-    await this.placeSectionCoreService.incrementPlaceSectionSortOrder(
-      placeSectionModel.sortOrder,
-    );
-    await this.magazineSectionCoreService.incrementMagazineSectionSortOrder(
-      placeSectionModel.sortOrder,
-    );
+    await Promise.all([
+      this.placeSectionCoreService.incrementPlaceSectionSortOrder(
+        placeSectionModel.sortOrder,
+      ),
+      this.magazineSectionCoreService.incrementMagazineSectionSortOrder(
+        placeSectionModel.sortOrder,
+      ),
+    ]);
 
     await this.placeSectionCoreService.deletePlaceSectionByIdx(idx);
   }
