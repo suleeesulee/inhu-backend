@@ -9,7 +9,7 @@ import {
   Post,
   Put,
 } from '@nestjs/common';
-import { CombinedSectionService } from './combined-section.service';
+import { SectionService } from './section.service';
 import {
   GetCombinedSectionAllResponseDto,
   MagazineSectionItem,
@@ -28,10 +28,8 @@ import { UpdatePlaceSectionSortOrderDto } from './dto/request/update-place-secti
 
 @Controller()
 @ApiTags('Section')
-export class CombinedSectionController {
-  constructor(
-    private readonly combinedSectionService: CombinedSectionService,
-  ) {}
+export class SectionController {
+  constructor(private readonly sectionService: SectionService) {}
 
   /**
    * magazine section과 place section을 모두 조회하는 API
@@ -40,7 +38,7 @@ export class CombinedSectionController {
   @AdminAuth()
   @ApiExtraModels(PlaceSectionItem, MagazineSectionItem)
   public async getCombinedSectionAll(): Promise<GetCombinedSectionAllResponseDto> {
-    return await this.combinedSectionService.getCombinedSectionAll();
+    return await this.sectionService.getCombinedSectionAll();
   }
 
   // ------------------- Admin API for Magazine Section ------------------ -
@@ -53,7 +51,7 @@ export class CombinedSectionController {
   public async createMagazineSection(
     @Body() dto: CreateMagazineSectionDto,
   ): Promise<MagazineSectionEntity> {
-    return await this.combinedSectionService.createMagazineSection(dto);
+    return await this.sectionService.createMagazineSection(dto);
   }
 
   /**
@@ -66,7 +64,7 @@ export class CombinedSectionController {
     @Param('idx', ParseIntPipe) idx: number,
     @Body() dto: UpdateMagazineSectionDto,
   ): Promise<void> {
-    await this.combinedSectionService.updateMagazineSection(idx, dto);
+    await this.sectionService.updateMagazineSection(idx, dto);
   }
 
   /**
@@ -80,10 +78,7 @@ export class CombinedSectionController {
     @Param('idx', ParseIntPipe) idx: number,
     @Body() dto: UpdateMagazineSectionSortOrderDto,
   ): Promise<void> {
-    return await this.combinedSectionService.updateMagazineSectionSortOrder(
-      idx,
-      dto,
-    );
+    return await this.sectionService.updateMagazineSectionSortOrder(idx, dto);
   }
 
   /**
@@ -95,7 +90,7 @@ export class CombinedSectionController {
   public async deleteMagazineSection(
     @Param('idx', ParseIntPipe) idx: number,
   ): Promise<void> {
-    await this.combinedSectionService.deleteMagazineSection(idx);
+    await this.sectionService.deleteMagazineSection(idx);
   }
 
   // ------------------- Admin API for Place Section ------------------ -
@@ -108,7 +103,7 @@ export class CombinedSectionController {
   public async createPlaceSection(
     @Body() dto: CreatePlaceSectionDto,
   ): Promise<PlaceSectionEntity> {
-    return await this.combinedSectionService.createPlaceSection(dto);
+    return await this.sectionService.createPlaceSection(dto);
   }
 
   /**
@@ -121,7 +116,7 @@ export class CombinedSectionController {
     @Param('idx', ParseIntPipe) idx: number,
     @Body() dto: UpdatePlaceSectionDto,
   ): Promise<void> {
-    await this.combinedSectionService.updatePlaceSection(idx, dto);
+    await this.sectionService.updatePlaceSection(idx, dto);
   }
 
   /**
@@ -135,10 +130,7 @@ export class CombinedSectionController {
     @Param('idx', ParseIntPipe) idx: number,
     @Body() dto: UpdatePlaceSectionSortOrderDto,
   ): Promise<void> {
-    return await this.combinedSectionService.updatePlaceSectionSortOrder(
-      idx,
-      dto,
-    );
+    return await this.sectionService.updatePlaceSectionSortOrder(idx, dto);
   }
 
   /**
@@ -150,6 +142,6 @@ export class CombinedSectionController {
   public async deletePlaceSection(
     @Param('idx', ParseIntPipe) idx: number,
   ): Promise<void> {
-    await this.combinedSectionService.deletePlaceSection(idx);
+    await this.sectionService.deletePlaceSection(idx);
   }
 }

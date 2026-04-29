@@ -18,7 +18,7 @@ import { UpdatePlaceSectionDto } from './dto/request/update-place-section.dto';
 import { UpdatePlaceSectionSortOrderDto } from './dto/request/update-place-section-sort-order.dto';
 
 @Injectable()
-export class CombinedSectionService {
+export class SectionService {
   constructor(
     private readonly magazineSectionCoreService: MagazineSectionCoreService,
     private readonly placeSectionCoreService: PlaceSectionCoreService,
