@@ -15,6 +15,9 @@ export class CombinedSectionController {
     private readonly combinedSectionService: CombinedSectionService,
   ) {}
 
+  /**
+   * magazine section과 place section을 모두 조회하는 API
+   */
   @Get('/all')
   @AdminAuth()
   @ApiExtraModels(PlaceSectionItem, MagazineSectionItem)

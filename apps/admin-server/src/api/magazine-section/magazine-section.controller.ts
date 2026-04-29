@@ -16,19 +16,18 @@ import { GetMagazineSectionAllResponseDto } from './dto/response/get-magazine-se
 import { AdminAuth } from '@admin/common/decorator/admin-auth.decorator';
 import { Exception } from '@libs/common/decorator/exception.decorator';
 import { UpdateMagazineSectionSortOrderDto } from './dto/request/update-magazine-section-sort-order.dto';
+import { ApiTags } from '@nestjs/swagger';
 
 @Controller('magazine-section')
+@ApiTags('Section')
 export class MagazineSectionController {
   constructor(
     private readonly magazineSectionService: MagazineSectionService,
   ) {}
 
-  @Get('/all')
-  @AdminAuth()
-  public async getMagazineSectionAll(): Promise<GetMagazineSectionAllResponseDto> {
-    return await this.magazineSectionService.getMagazineSectionAll();
-  }
-
+  /**
+   * magazine section 생성
+   */
   @Post()
   @AdminAuth()
   public async createMagazineSection(
@@ -37,6 +36,9 @@ export class MagazineSectionController {
     return await this.magazineSectionService.createMagazineSection(dto);
   }
 
+  /**
+   * magazine section 수정
+   */
   @Put('/:idx')
   @Exception(404, 'Magazine section not found')
   @AdminAuth()
@@ -64,6 +66,9 @@ export class MagazineSectionController {
     );
   }
 
+  /**
+   * magazine section 삭제
+   */
   @Delete('/:idx')
   @Exception(404, 'Magazine section not found')
   @AdminAuth()

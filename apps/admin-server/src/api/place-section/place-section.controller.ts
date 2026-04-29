@@ -16,17 +16,16 @@ import { GetPlaceSectionAllResponseDto } from './dto/response/get-place-section-
 import { AdminAuth } from '@admin/common/decorator/admin-auth.decorator';
 import { Exception } from '@libs/common/decorator/exception.decorator';
 import { UpdatePlaceSectionSortOrderDto } from './dto/request/update-place-section-sort-order.dto';
+import { ApiTags } from '@nestjs/swagger';
 
 @Controller('place-section')
+@ApiTags('Section')
 export class PlaceSectionController {
   constructor(private readonly placeSectionService: PlaceSectionService) {}
 
-  @Get('/all')
-  @AdminAuth()
-  public async getPlaceSectionAll(): Promise<GetPlaceSectionAllResponseDto> {
-    return await this.placeSectionService.getPlaceSectionAll();
-  }
-
+  /**
+   * place section 생성
+   */
   @Post()
   @AdminAuth()
   public async createPlaceSection(
@@ -35,6 +34,9 @@ export class PlaceSectionController {
     return await this.placeSectionService.createPlaceSection(dto);
   }
 
+  /**
+   * place section 수정
+   */
   @Put('/:idx')
   @Exception(404, 'Place section not found')
   @AdminAuth()
@@ -59,6 +61,9 @@ export class PlaceSectionController {
     return await this.placeSectionService.updatePlaceSectionSortOrder(idx, dto);
   }
 
+  /**
+   * place section 삭제
+   */
   @Delete('/:idx')
   @Exception(404, 'Place section not found')
   @AdminAuth()

@@ -6,28 +6,9 @@ import { MainCategory } from '@libs/core/category/constants/main-category.consta
 import { MoodCategory } from '@libs/core/category/constants/mood-category.constant';
 import { PlaceType } from '@libs/core/place/constants/place-type.constant';
 import { Type } from 'class-transformer';
-import {
-  IsBoolean,
-  IsIn,
-  IsInt,
-  IsNotEmpty,
-  IsOptional,
-  IsString,
-  Min,
-} from 'class-validator';
+import { IsBoolean, IsIn, IsOptional, IsString } from 'class-validator';
 
 export class CreatePlaceSectionParameterDto {
-  /**
-   * page number
-   *
-   * @example 1
-   */
-  @Type(() => Number)
-  @IsNotEmpty()
-  @IsInt()
-  @Min(1)
-  page: number;
-
   /**
    * 정렬 방향
    *
