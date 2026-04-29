@@ -1,5 +1,6 @@
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsNotEmpty, IsString, ValidateNested } from 'class-validator';
 import { CreateMagazineSectionParameterDto } from './create-magazine-section-parameter.dto';
+import { Type } from 'class-transformer';
 
 export class CreateMagazineSectionDto {
   /**
@@ -11,5 +12,7 @@ export class CreateMagazineSectionDto {
   @IsString()
   title: string;
 
+  @ValidateNested()
+  @Type(() => CreateMagazineSectionParameterDto)
   parameter: CreateMagazineSectionParameterDto;
 }

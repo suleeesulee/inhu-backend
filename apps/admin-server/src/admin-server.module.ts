@@ -23,7 +23,7 @@ import { HashModule } from '@libs/common/modules/hash/hash.module';
 import { FreeTagModule } from './api/free-tag/free-tag.module';
 import { SearchTagModule } from './api/search-tag/search-tag.module';
 import { AdminAccountModule } from './api/admin/admin-account.module';
-import { CombinedSectionModule } from './api/section/combined-section.module';
+import { SectionModule } from './api/section/section.module';
 
 @Module({
   imports: [
@@ -55,7 +55,7 @@ import { CombinedSectionModule } from './api/section/combined-section.module';
     FreeTagModule,
     SearchTagModule,
     AdminAccountModule,
-    CombinedSectionModule,
+    SectionModule,
   ],
   providers: [
     {
