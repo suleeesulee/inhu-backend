@@ -76,9 +76,17 @@ export class MagazineSectionCoreRepository {
 
   public async incrementMagazineSectionSortOrder(
     oldOrder: number,
-    newOrder: number,
+    newOrder?: number,
   ): Promise<void> {
-    if (newOrder < oldOrder) {
+    if (!newOrder) {
+      await this.txHost.tx.magazineSection.updateMany({
+        where: {
+          sortOrder: { gt: oldOrder },
+          deletedAt: null,
+        },
+        data: { sortOrder: { decrement: 1 } },
+      });
+    } else if (newOrder < oldOrder) {
       await this.txHost.tx.magazineSection.updateMany({
         where: {
           sortOrder: { gte: newOrder, lt: oldOrder },
@@ -110,6 +118,10 @@ export class MagazineSectionCoreRepository {
   }
 
   public async getMagazineSectionCount(): Promise<number> {
-    return await this.txHost.tx.magazineSection.count();
+    return await this.txHost.tx.magazineSection.count({
+      where: {
+        deletedAt: null,
+      },
+    });
   }
 }

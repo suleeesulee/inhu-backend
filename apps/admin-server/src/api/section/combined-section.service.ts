@@ -79,6 +79,10 @@ export class CombinedSectionService {
 
   // ------------------- Admin API for Magazine Section ------------------ -
 
+  @Locker({
+    key: (idx: number) => `section:${idx}:sort-order`,
+  })
+  @Transactional()
   public async createMagazineSection(
     dto: CreateMagazineSectionDto,
   ): Promise<MagazineSectionEntity> {
@@ -95,6 +99,10 @@ export class CombinedSectionService {
       .then(MagazineSectionEntity.fromModel);
   }
 
+  @Locker({
+    key: (idx: number) => `section:${idx}:sort-order`,
+  })
+  @Transactional()
   public async updateMagazineSection(
     idx: number,
     dto: UpdateMagazineSectionDto,
@@ -140,6 +148,10 @@ export class CombinedSectionService {
     await this.magazineSectionCoreService.updateMagazineSectionByIdx(idx, dto);
   }
 
+  @Locker({
+    key: (idx: number) => `section:${idx}:sort-order`,
+  })
+  @Transactional()
   public async deleteMagazineSection(idx: number): Promise<void> {
     const magazineSectionModel =
       await this.magazineSectionCoreService.getMagazineSectionByIdx(idx);
@@ -147,11 +159,22 @@ export class CombinedSectionService {
       throw new NotFoundException(`MagazineSection with idx ${idx} not found`);
     }
 
+    await this.placeSectionCoreService.incrementPlaceSectionSortOrder(
+      magazineSectionModel.sortOrder,
+    );
+    await this.magazineSectionCoreService.incrementMagazineSectionSortOrder(
+      magazineSectionModel.sortOrder,
+    );
+
     await this.magazineSectionCoreService.deleteMagazineSectionByIdx(idx);
   }
 
   // ------------------- Admin API for Place Section ------------------ -
 
+  @Locker({
+    key: (idx: number) => `section:${idx}:sort-order`,
+  })
+  @Transactional()
   public async createPlaceSection(
     dto: CreatePlaceSectionDto,
   ): Promise<PlaceSectionEntity> {
@@ -168,6 +191,10 @@ export class CombinedSectionService {
       .then(PlaceSectionEntity.fromModel);
   }
 
+  @Locker({
+    key: (idx: number) => `section:${idx}:sort-order`,
+  })
+  @Transactional()
   public async updatePlaceSection(
     idx: number,
     dto: UpdatePlaceSectionDto,
@@ -213,12 +240,23 @@ export class CombinedSectionService {
     await this.placeSectionCoreService.updatePlaceSectionByIdx(idx, dto);
   }
 
+  @Locker({
+    key: (idx: number) => `section:${idx}:sort-order`,
+  })
+  @Transactional()
   public async deletePlaceSection(idx: number): Promise<void> {
     const placeSectionModel =
       await this.placeSectionCoreService.getPlaceSectionByIdx(idx);
     if (!placeSectionModel) {
       throw new NotFoundException(`PlaceSection with idx ${idx} not found`);
     }
+
+    await this.placeSectionCoreService.incrementPlaceSectionSortOrder(
+      placeSectionModel.sortOrder,
+    );
+    await this.magazineSectionCoreService.incrementMagazineSectionSortOrder(
+      placeSectionModel.sortOrder,
+    );
 
     await this.placeSectionCoreService.deletePlaceSectionByIdx(idx);
   }
