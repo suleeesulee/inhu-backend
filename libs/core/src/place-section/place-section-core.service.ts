@@ -44,7 +44,7 @@ export class PlaceSectionCoreService {
 
   public async incrementPlaceSectionSortOrder(
     oldOrder: number,
-    newOrder: number,
+    newOrder?: number,
   ): Promise<void> {
     await this.placeSectionCoreRepository.incrementPlaceSectionSortOrder(
       oldOrder,
