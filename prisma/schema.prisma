@@ -48,7 +48,7 @@ model Place {
   bookmarkCount                Int                        @default(0) @map("bookmark_count")
   roadAddressIdx               Int                        @map("road_address_idx")
   isClosedOnHoliday            Boolean?                   @map("is_closed_on_holiday")
-  priority                     Int?                       @map("priority") @db.SmallInt
+  priority                     Int?                       @db.SmallInt
   createdAt                    DateTime                   @default(now()) @map("created_at") @db.Timestamptz(6)
   deletedAt                    DateTime?                  @map("deleted_at") @db.Timestamptz(6)
   permanentlyClosedAt          DateTime?                  @map("permanently_closed_at") @db.Timestamptz(6)
@@ -265,8 +265,9 @@ model User {
   deletedAt                 DateTime?               @map("deleted_at") @db.Timestamptz(6)
   adminAccount              AdminAccount?
   bookmarkList              Bookmark[]
+  cafeteriaBookmark         CafeteriaBookmark[]
   magazineLike              MagazineLike[]
-  magazineTb                Magazine[]
+  magazine                  Magazine[]
   placeOwnerList            PlaceOwner[]
   reviewList                Review[]
   service1ResultList        Service1Result[]
@@ -556,4 +557,88 @@ model MagazineSection {
   deletedAt   DateTime? @map("deleted_at") @db.Timestamptz(6)
 
   @@map("magazine_section_tb")
+}
+
+model CafeteriaBookmark {
+  userIdx      Int         @map("user_idx")
+  cafeteriaIdx Int         @map("cafeteria_idx")
+  createdAt    DateTime    @default(now()) @map("created_at") @db.Timestamptz(6)
+  cafeteria    Cafeteria @relation(fields: [cafeteriaIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_cafeteria_tb_to_cafeteria_bookmark_tb")
+  user         User        @relation(fields: [userIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_user_tb_to_cafeteria_bookmark_tb")
+
+  @@id([userIdx, cafeteriaIdx])
+  @@map("cafeteria_bookmark_tb")
+}
+
+model Cafeteria {
+  idx               Int                   @id @default(autoincrement())
+  name              String                @db.VarChar
+  createdAt         DateTime              @default(now()) @map("created_at") @db.Timestamptz(6)
+  cafeteriaBookmark CafeteriaBookmark[]
+  dailyMemo         DailyMemo[]
+  foodStation       FoodStation[]
+
+  @@map("cafeteria_tb")
+}
+
+model DailyMemo {
+  idx          Int         @id @default(autoincrement())
+  cafeteriaIdx Int         @map("cafeteria_idx")
+  content      String      @db.VarChar
+  date         DateTime    @db.Date
+  createdAt    DateTime    @default(now()) @map("created_at") @db.Timestamptz(6)
+  cafeteria  Cafeteria @relation(fields: [cafeteriaIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_cafeteria_tb_to_daily_memo_tb")
+
+  @@map("daily_memo_tb")
+}
+
+model FoodStation {
+  idx          Int            @id @default(autoincrement())
+  cafeteriaIdx Int            @map("cafeteria_idx")
+  mealTypeIdx  Int            @map("meal_type_idx")
+  name         String         @db.VarChar
+  startTime    DateTime       @map("start_time") @db.Time(6)
+  endTime      DateTime       @map("end_time") @db.Time(6)
+  startDate    DateTime       @map("start_date") @db.Date
+  endDate      DateTime       @map("end_date") @db.Date
+  createdAt    DateTime       @default(now()) @map("created_at") @db.Timestamptz(6)
+  cafeteria    Cafeteria      @relation(fields: [cafeteriaIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_cafeteria_tb_to_food_station_tb")
+  mealType     MealType       @relation(fields: [mealTypeIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_meal_type_tb_to_food_station_tb")
+  mealOffering MealOffering[]
+
+  @@map("food_station_tb")
+}
+
+model MealItem {
+  idx             Int          @id @default(autoincrement())
+  mealOfferingIdx Int          @map("meal_offering_idx")
+  name            String       @db.VarChar
+  price           Int?
+  createdAt       DateTime     @default(now()) @map("created_at") @db.Timestamptz(6)
+  mealOffering    MealOffering @relation(fields: [mealOfferingIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_meal_offering_tb_to_meal_item_tb")
+
+  @@map("meal_item_tb")
+}
+
+model MealOffering {
+  idx            Int         @id @default(autoincrement())
+  foodStationIdx Int         @map("food_station_idx")
+  startTime      DateTime    @map("start_time") @db.Time(6)
+  endTime        DateTime    @map("end_time") @db.Time(6)
+  kcal           Int?
+  servedDate     DateTime    @map("served_date") @db.Date
+  createdAt      DateTime    @default(now()) @map("created_at") @db.Timestamptz(6)
+  mealItem       MealItem[]
+  foodStation    FoodStation @relation(fields: [foodStationIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_food_station_tb_to_meal_offering_tb")
+
+  @@map("meal_offering_tb")
+}
+
+model MealType {
+  idx         Int             @id @default(autoincrement())
+  name        String          @db.VarChar
+  createdAt   DateTime        @default(now()) @map("created_at") @db.Timestamptz(6)
+  foodStation FoodStation[]
+
+  @@map("meal_type_tb")
 }
