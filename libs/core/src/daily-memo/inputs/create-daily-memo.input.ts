@@ -1,5 +1,5 @@
 export class CreateDailyMemoInput {
   cafeteriaIdx: number;
   content: string;
-  date: Date;
+  date: string;
 }

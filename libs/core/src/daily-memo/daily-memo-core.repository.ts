@@ -29,13 +29,13 @@ export class DailyMemoCoreRepository {
 
   public async selectDailyMemoByCafeteriaIdxAndDate(
     cafeteriaIdx: number,
-    date: Date,
+    date: string,
   ): Promise<SelectDailyMemo | null> {
     return await this.txHost.tx.dailyMemo.findFirst({
       ...SELECT_DAILY_MEMO,
       where: {
         cafeteriaIdx,
-        date,
+        date: `${date}T00:00:00Z`,
         deletedAt: null,
       },
     });
@@ -49,8 +49,8 @@ export class DailyMemoCoreRepository {
       where: {
         cafeteriaIdx: input.cafeteriaIdx,
         date: {
-          gte: input.startDate,
-          lte: input.endDate,
+          gte: `${input.startDate}T00:00:00Z`,
+          lte: `${input.endDate}T23:59:59Z`,
         },
         deletedAt: null,
       },
@@ -65,7 +65,7 @@ export class DailyMemoCoreRepository {
       data: {
         cafeteriaIdx: input.cafeteriaIdx,
         content: input.content,
-        date: input.date,
+        date: `${input.date}T00:00:00Z`,
       },
     });
   }
@@ -77,7 +77,7 @@ export class DailyMemoCoreRepository {
     await this.txHost.tx.dailyMemo.update({
       data: {
         content: input.content,
-        date: input.date,
+        date: `${input.date}T00:00:00Z`,
       },
       where: {
         idx,

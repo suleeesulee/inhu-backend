@@ -21,7 +21,7 @@ export class DailyMemoCoreService {
 
   public async selectDailyMemoByCafeteriaIdxAndDate(
     cafeteriaIdx: number,
-    date: Date,
+    date: string,
   ): Promise<DailyMemoModel | null> {
     const dailyMemo =
       await this.dailyMemoCoreRepository.selectDailyMemoByCafeteriaIdxAndDate(
