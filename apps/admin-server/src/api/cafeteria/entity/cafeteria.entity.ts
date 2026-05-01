@@ -11,7 +11,7 @@ export class CafeteriaEntity {
   /**
    * 식당 이름
    *
-   * @example "칼국수"
+   * @example "인하대학교 학생식당"
    */
   public name: string;
 
