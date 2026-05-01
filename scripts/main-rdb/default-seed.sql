@@ -72,10 +72,3 @@ INSERT INTO service2_tb (content) VALUES
 
 INSERT INTO withdraw_service_tb (content) VALUES
 ('이용을 잘 안하게 돼요'), ('개인정보 보호를 위해 삭제하고 싶어요'), ('인하대 후문을 떠나게 됐어요'), ('기술적인 오류가 많아서 불편해요'), ('유사한 다른 서비스를 더 자주 이용해요'), ('원하는 기능이 부족해요');
-
-INSERT INTO cafeteria_tb (name) VALUES
-('인하대학교 학생식당'),
-('인하대학교 교직원식당'),
-('인하대학교 생활관식당'),
-('인하공전 학생식당'),
-('인하공전 교직원식당');
