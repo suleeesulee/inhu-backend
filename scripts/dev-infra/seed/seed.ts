@@ -13,6 +13,8 @@ import { PlaceSectionSeedHelper } from '@libs/testing/seed/place-section/place-s
 import { placeSectionSeedDataList } from './data/place-section.seed';
 import { magazineSectionSeedDataList } from './data/magazine-section.seed';
 import { MagazineSectionSeedHelper } from '@libs/testing/seed/magazine-section/magazine-section';
+import { cafeteriaSeedDataList } from './data/cafeteria.seed';
+import { CafeteriaSeedHelper } from '@libs/testing/seed/cafeteria/cafeteria.seed';
 
 const prisma = new PrismaService();
 
@@ -29,6 +31,7 @@ async function main() {
   const searchTagSeedHelper = new SearchTagSeedHelper(prisma);
   const placeSectionSeedHelper = new PlaceSectionSeedHelper(prisma);
   const magazineSectionSeedHelper = new MagazineSectionSeedHelper(prisma);
+  const cafeteriaSeedHelper = new CafeteriaSeedHelper(prisma);
 
   /**
    * 사용자 생성
@@ -143,6 +146,13 @@ async function main() {
    */
   for (const placeSectionData of placeSectionSeedDataList) {
     await placeSectionSeedHelper.seed({ ...placeSectionData });
+  }
+
+  /**
+   * cafeteria 생성
+   */
+  for (const cafeteriaData of cafeteriaSeedDataList) {
+    await cafeteriaSeedHelper.seed({ ...cafeteriaData });
   }
 }
 
