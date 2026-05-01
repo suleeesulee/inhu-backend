@@ -54,6 +54,9 @@ export class DailyMemoCoreRepository {
         },
         deletedAt: null,
       },
+      orderBy: {
+        date: 'asc',
+      },
     });
   }
 

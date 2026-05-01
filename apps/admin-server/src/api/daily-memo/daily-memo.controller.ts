@@ -34,8 +34,8 @@ export class DailyMemoController {
   @Exception(400, 'invalid cafeteria idx or body')
   @AdminAuth()
   public async createDailyMemo(
-    @Param('idx', ParseIntPipe) idx: number,
     @Body() dto: CreateDailyMemoDto,
+    @Param('idx', ParseIntPipe) idx: number,
   ): Promise<DailyMemoEntity> {
     return await this.dailyMemoService.createDailyMemo(idx, dto);
   }

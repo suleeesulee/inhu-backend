@@ -15,7 +15,7 @@ export class CreateDailyMemoDto {
   /**
    * 메모 내용
    *
-   * @example 오늘은 맛있는 점심이 나왔어요!
+   * @example "오늘은 김치찌개가 맛있어요!"
    */
   @IsNotEmpty()
   @IsString()
