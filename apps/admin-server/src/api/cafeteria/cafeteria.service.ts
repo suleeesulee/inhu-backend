@@ -1,5 +1,5 @@
 import { CafeteriaCoreService } from '@libs/core/cafeteria/cafeteria-core.service';
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateCafeteriaDto } from './dto/request/create-cafeteria.dto';
 import { UpdateCafeteriaDto } from './dto/request/update-cafeteria.dto';
 import { CafeteriaEntity } from './entity/cafeteria.entity';
@@ -26,10 +26,20 @@ export class CafeteriaService {
     idx: number,
     dto: UpdateCafeteriaDto,
   ): Promise<void> {
+    const cafeteria = await this.cafeteriaCoreService.getCafeteriaByIdx(idx);
+    if (!cafeteria) {
+      throw new NotFoundException('Cafeteria does not exist');
+    }
+
     return this.cafeteriaCoreService.updateCafeteriaByIdx(idx, dto);
   }
 
   public async deleteCafeteriaByIdx(idx: number): Promise<void> {
+    const cafeteria = await this.cafeteriaCoreService.getCafeteriaByIdx(idx);
+    if (!cafeteria) {
+      throw new NotFoundException('Cafeteria does not exist');
+    }
+
     return this.cafeteriaCoreService.deleteCafeteriaByIdx(idx);
   }
 }

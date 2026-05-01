@@ -12,6 +12,7 @@ import { CafeteriaService } from './cafeteria.service';
 import { AdminAuth } from '@admin/common/decorator/admin-auth.decorator';
 import { CafeteriaEntity } from './entity/cafeteria.entity';
 import { CreateCafeteriaDto } from './dto/request/create-cafeteria.dto';
+import { Exception } from '@libs/common/decorator/exception.decorator';
 
 @Controller('cafeteria')
 export class CafeteriaController {
@@ -41,6 +42,8 @@ export class CafeteriaController {
    * 식당 수정
    */
   @AdminAuth()
+  @Exception(400, 'Invalid idx or request body')
+  @Exception(404, 'Cafeteria does not exist')
   @Put('/:idx')
   public async updateCafeteriaByIdx(
     @Param('idx', ParseIntPipe) idx: number,
@@ -53,6 +56,8 @@ export class CafeteriaController {
    * 식당 삭제
    */
   @AdminAuth()
+  @Exception(400, 'Invalid idx')
+  @Exception(404, 'Cafeteria does not exist')
   @Delete('/:idx')
   public async deleteCafeteriaByIdx(
     @Param('idx', ParseIntPipe) idx: number,
