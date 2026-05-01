@@ -23,6 +23,7 @@ CREATE TABLE cafeteria_bookmark_tb
   user_idx      int                      NOT NULL,
   cafeteria_idx int                      NOT NULL,
   created_at    timestamp with time zone NOT NULL DEFAULT NOW(),
+  deleted_at    timestamp with time zone,
   PRIMARY KEY (user_idx, cafeteria_idx)
 );
 
@@ -31,6 +32,7 @@ CREATE TABLE cafeteria_tb
   idx        int                      NOT NULL GENERATED ALWAYS AS IDENTITY,
   name       varchar                  NOT NULL,
   created_at timestamp with time zone NOT NULL DEFAULT NOW(),
+  deleted_at    timestamp with time zone,
   PRIMARY KEY (idx)
 );
 
@@ -50,6 +52,7 @@ CREATE TABLE daily_memo_tb
   content       varchar                  NOT NULL,
   date          date                     NOT NULL,
   created_at    timestamp with time zone NOT NULL DEFAULT NOW(),
+  deleted_at    timestamp with time zone,
   PRIMARY KEY (idx)
 );
 
@@ -64,6 +67,7 @@ CREATE TABLE food_station_tb
   start_date    date                     NOT NULL,
   end_date      date                     NOT NULL,
   created_at    timestamp with time zone NOT NULL DEFAULT NOW(),
+  deleted_at    timestamp with time zone,
   PRIMARY KEY (idx)
 );
 
@@ -165,6 +169,7 @@ CREATE TABLE meal_item_tb
   name              varchar                  NOT NULL,
   price             int                     ,
   created_at        timestamp with time zone NOT NULL DEFAULT NOW(),
+  deleted_at    timestamp with time zone,
   PRIMARY KEY (idx)
 );
 
@@ -177,6 +182,7 @@ CREATE TABLE meal_offering_tb
   kcal             int                     ,
   served_date      date                     NOT NULL,
   created_at       timestamp with time zone NOT NULL DEFAULT NOW(),
+  deleted_at    timestamp with time zone,
   PRIMARY KEY (idx)
 );
 
@@ -185,6 +191,7 @@ CREATE TABLE meal_type_tb
   idx        int                      NOT NULL GENERATED ALWAYS AS IDENTITY,
   name       varchar                  NOT NULL,
   created_at timestamp with time zone NOT NULL DEFAULT NOW(),
+  deleted_at    timestamp with time zone,
   PRIMARY KEY (idx)
 );
 
