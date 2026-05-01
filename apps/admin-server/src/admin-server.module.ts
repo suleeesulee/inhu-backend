@@ -24,6 +24,7 @@ import { FreeTagModule } from './api/free-tag/free-tag.module';
 import { SearchTagModule } from './api/search-tag/search-tag.module';
 import { AdminAccountModule } from './api/admin/admin-account.module';
 import { SectionModule } from './api/section/section.module';
+import { CafeteriaModule } from './api/cafeteria/cafeteria.module';
 
 @Module({
   imports: [
@@ -56,6 +57,7 @@ import { SectionModule } from './api/section/section.module';
     SearchTagModule,
     AdminAccountModule,
     SectionModule,
+    CafeteriaModule,
   ],
   providers: [
     {

@@ -32,6 +32,9 @@ export class CafeteriaCoreRepository {
       where: {
         deletedAt: null,
       },
+      orderBy: {
+        idx: 'asc',
+      },
     });
   }
 
