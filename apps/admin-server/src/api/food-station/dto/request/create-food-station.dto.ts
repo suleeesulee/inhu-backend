@@ -2,7 +2,7 @@ import { IsEnumValue } from '@libs/common/decorator/is-enum-value.decorator';
 import { IsKoreanDate } from '@libs/common/decorator/is-korean-date.decorator';
 import { IsKoreanTime } from '@libs/common/decorator/is-korean-time.decorator';
 import { MealType } from '@libs/core/food-station/constants/meal-type.constant';
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class CreateFoodStationDto {
   /**
@@ -19,9 +19,9 @@ export class CreateFoodStationDto {
    *
    * @example '한식 코너'
    */
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
-  name: string;
+  name?: string;
 
   /**
    * 기본 운영 시작 시간

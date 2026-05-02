@@ -6,7 +6,7 @@ export class FoodStationModel {
   public idx: number;
   public cafeteriaIdx: number;
   public mealType: MealType;
-  public name: string;
+  public name: string | null;
   public startTime: string;
   public endTime: string;
   public startDate: string;

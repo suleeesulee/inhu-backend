@@ -29,7 +29,7 @@ export class FoodStationEntity {
    *
    * @example '한식 코너'
    */
-  public name: string;
+  public name: string | null;
 
   /**
    * 기본 운영 시작 시간
