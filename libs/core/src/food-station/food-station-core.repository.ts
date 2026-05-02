@@ -55,7 +55,7 @@ export class FoodStationCoreRepository {
       ...SELECT_FOOD_STATION,
       data: {
         cafeteriaIdx: input.cafeteriaIdx,
-        mealTypeIdx: input.mealTypeIdx,
+        mealTypeIdx: input.mealType,
         name: input.name,
         startTime: `1970-01-01T${input.startTime}Z`,
         endTime: `1970-01-01T${input.endTime}Z`,
@@ -75,7 +75,7 @@ export class FoodStationCoreRepository {
         deletedAt: null,
       },
       data: {
-        mealTypeIdx: input.mealTypeIdx,
+        mealTypeIdx: input.mealType,
         name: input.name,
         startTime: `1970-01-01T${input.startTime}Z`,
         endTime: `1970-01-01T${input.endTime}Z`,

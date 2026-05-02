@@ -21,19 +21,16 @@ export class MealOfferingController {
   /**
    * 특정 코너의 특정 날짜 학식 생성
    */
-  @Post('/food-station/:foodStationIdx/meal-offering')
+  @Post('/food-station/:idx/meal-offering')
   @Exception(400, 'invalid food station idx')
   @Exception(404, 'food station not found')
   @Exception(409, 'meal offering already exists for the served date')
   @AdminAuth()
   public async createMealOffering(
-    @Param('foodStationIdx', ParseIntPipe) foodStationIdx: number,
+    @Param('idx', ParseIntPipe) idx: number,
     @Body() dto: CreateMealOfferingDto,
   ): Promise<MealOfferingEntity> {
-    return await this.mealOfferingService.createMealOffering(
-      foodStationIdx,
-      dto,
-    );
+    return await this.mealOfferingService.createMealOffering(idx, dto);
   }
 
   /**
