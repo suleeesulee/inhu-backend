@@ -19,12 +19,14 @@ export class MealOfferingEntity {
   /**
    * 운영 시작 시간
    *
-   * @example: "08:00:00"
+   * @example "08:00:00"
    */
   public startTime: string;
 
   /**
    * 운영 종료 시간
+   *
+   * @example "10:00:00"
    */
   public endTime: string;
 
@@ -37,6 +39,8 @@ export class MealOfferingEntity {
 
   /**
    * 등록된 학식 날짜
+   *
+   * @example "2026-04-20"
    */
   public servedDate: string;
 
