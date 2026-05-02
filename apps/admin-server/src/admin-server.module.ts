@@ -26,6 +26,7 @@ import { AdminAccountModule } from './api/admin/admin-account.module';
 import { SectionModule } from './api/section/section.module';
 import { CafeteriaModule } from './api/cafeteria/cafeteria.module';
 import { DailyMemoModule } from './api/daily-memo/daily-memo.module';
+import { MealOfferingModule } from './api/meal-offering/meal-offering.module';
 
 @Module({
   imports: [
@@ -60,6 +61,7 @@ import { DailyMemoModule } from './api/daily-memo/daily-memo.module';
     SectionModule,
     CafeteriaModule,
     DailyMemoModule,
+    MealOfferingModule,
   ],
   providers: [
     {
