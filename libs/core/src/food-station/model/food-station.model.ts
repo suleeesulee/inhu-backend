@@ -7,10 +7,10 @@ export class FoodStationModel {
   public cafeteriaIdx: number;
   public mealTypeIdx: MealType;
   public name: string;
-  public startTime: Date;
-  public endTime: Date;
-  public startDate: Date;
-  public endDate: Date;
+  public startTime: string;
+  public endTime: string;
+  public startDate: string;
+  public endDate: string;
   public createdAt: Date;
   public mealOfferingList: MealOfferingModel[];
 
@@ -24,10 +24,13 @@ export class FoodStationModel {
       cafeteriaIdx: foodStation.cafeteriaIdx,
       mealTypeIdx: foodStation.mealTypeIdx as MealType,
       name: foodStation.name,
-      startTime: foodStation.startTime,
-      endTime: foodStation.endTime,
-      startDate: foodStation.startDate,
-      endDate: foodStation.endDate,
+      startTime: foodStation.startTime
+        .toISOString()
+        .split('T')[1]
+        .split('.')[0],
+      endTime: foodStation.endTime.toISOString().split('T')[1].split('.')[0],
+      startDate: foodStation.startDate.toISOString().split('T')[0],
+      endDate: foodStation.endDate.toISOString().split('T')[0],
       createdAt: foodStation.createdAt,
       mealOfferingList: foodStation.mealOfferingList.map(
         MealOfferingModel.fromPrisma,

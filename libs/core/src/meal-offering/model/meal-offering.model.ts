@@ -4,10 +4,10 @@ import { SelectMealOffering } from './prisma-type/select-meal-offering';
 export class MealOfferingModel {
   public idx: number;
   public foodStationIdx: number;
-  public startTime: Date;
-  public endTime: Date;
+  public startTime: string;
+  public endTime: string;
   public kcal: number | null;
-  public servedDate: Date;
+  public servedDate: string;
   public createdAt: Date;
   public mealItemList: MealItemModel[];
 
@@ -21,10 +21,13 @@ export class MealOfferingModel {
     return new MealOfferingModel({
       idx: mealOffering.idx,
       foodStationIdx: mealOffering.foodStationIdx,
-      startTime: mealOffering.startTime,
-      endTime: mealOffering.endTime,
+      startTime: mealOffering.startTime
+        .toISOString()
+        .split('T')[1]
+        .split('.')[0],
+      endTime: mealOffering.endTime.toISOString().split('T')[1].split('.')[0],
       kcal: mealOffering.kcal,
-      servedDate: mealOffering.servedDate,
+      servedDate: mealOffering.servedDate.toISOString().split('T')[0],
       createdAt: mealOffering.createdAt,
       mealItemList: mealOffering.mealItemList.map(MealItemModel.fromPrisma),
     });

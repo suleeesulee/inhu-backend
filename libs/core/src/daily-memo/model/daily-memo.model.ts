@@ -4,7 +4,7 @@ export class DailyMemoModel {
   public idx: number;
   public cafeteriaIdx: number;
   public content: string;
-  public date: Date;
+  public date: string;
   public createdAt: Date;
 
   constructor(data: DailyMemoModel) {
@@ -16,7 +16,7 @@ export class DailyMemoModel {
       idx: dailyMemo.idx,
       cafeteriaIdx: dailyMemo.cafeteriaIdx,
       content: dailyMemo.content,
-      date: dailyMemo.date,
+      date: dailyMemo.date.toISOString().split('T')[0],
       createdAt: dailyMemo.createdAt,
     });
   }
