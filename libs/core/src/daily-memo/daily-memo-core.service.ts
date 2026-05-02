@@ -11,15 +11,13 @@ export class DailyMemoCoreService {
     private readonly dailyMemoCoreRepository: DailyMemoCoreRepository,
   ) {}
 
-  public async selectDailyMemoByIdx(
-    idx: number,
-  ): Promise<DailyMemoModel | null> {
+  public async getDailyMemoByIdx(idx: number): Promise<DailyMemoModel | null> {
     const dailyMemo =
       await this.dailyMemoCoreRepository.selectDailyMemoByIdx(idx);
     return dailyMemo && DailyMemoModel.fromPrisma(dailyMemo);
   }
 
-  public async selectDailyMemoByCafeteriaIdxAndDate(
+  public async getDailyMemoByCafeteriaIdxAndDate(
     cafeteriaIdx: number,
     date: string,
   ): Promise<DailyMemoModel | null> {
@@ -31,7 +29,7 @@ export class DailyMemoCoreService {
     return dailyMemo && DailyMemoModel.fromPrisma(dailyMemo);
   }
 
-  public async selectDailyMemoAll(
+  public async getDailyMemoAll(
     input: SelectDailyMemoAllInput,
   ): Promise<DailyMemoModel[]> {
     return (await this.dailyMemoCoreRepository.selectDailyMemoAll(input)).map(

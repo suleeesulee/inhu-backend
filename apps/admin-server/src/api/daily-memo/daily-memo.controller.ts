@@ -22,6 +22,8 @@ export class DailyMemoController {
   constructor(private readonly dailyMemoService: DailyMemoService) {}
 
   @Get('/cafeteria/:idx/daily-memo/all')
+  @Exception(400, 'invalid cafeteria idx or query')
+  @Exception(404, 'cafeteria does not exist')
   @AdminAuth()
   public async getDailyMemoAll(
     @Query() dto: GetDailyMemoAllDto,
@@ -32,6 +34,7 @@ export class DailyMemoController {
 
   @Post('/cafeteria/:idx/daily-memo')
   @Exception(400, 'invalid cafeteria idx or body')
+  @Exception(404, 'cafeteria does not exist')
   @AdminAuth()
   public async createDailyMemo(
     @Body() dto: CreateDailyMemoDto,

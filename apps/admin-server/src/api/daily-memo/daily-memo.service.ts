@@ -1,20 +1,30 @@
 import { DailyMemoCoreService } from '@libs/core/daily-memo/daily-memo-core.service';
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { GetDailyMemoAllDto } from './dto/request/get-daily-memo-all.dto';
 import { DailyMemoEntity } from './entity/daily-memo.entity';
 import { CreateDailyMemoDto } from './dto/request/create-daily-memo.dto';
 import { UpdateDailyMemoDto } from './dto/request/update-daily-memo.dto';
+import { CafeteriaCoreService } from '@libs/core/cafeteria/cafeteria-core.service';
 
 @Injectable()
 export class DailyMemoService {
-  constructor(private readonly dailyMemoCoreService: DailyMemoCoreService) {}
+  constructor(
+    private readonly dailyMemoCoreService: DailyMemoCoreService,
+    private readonly cafeteriaCoreService: CafeteriaCoreService,
+  ) {}
 
   public async getDailyMemoAll(
     cafeteriaIdx: number,
     dto: GetDailyMemoAllDto,
   ): Promise<DailyMemoEntity[]> {
+    const cafeteria =
+      await this.cafeteriaCoreService.getCafeteriaByIdx(cafeteriaIdx);
+    if (!cafeteria) {
+      throw new NotFoundException('Cafeteria does not exist');
+    }
+
     return (
-      await this.dailyMemoCoreService.selectDailyMemoAll({
+      await this.dailyMemoCoreService.getDailyMemoAll({
         cafeteriaIdx,
         ...dto,
       })
@@ -25,6 +35,12 @@ export class DailyMemoService {
     cafeteriaIdx: number,
     dto: CreateDailyMemoDto,
   ): Promise<DailyMemoEntity> {
+    const cafeteria =
+      await this.cafeteriaCoreService.getCafeteriaByIdx(cafeteriaIdx);
+    if (!cafeteria) {
+      throw new NotFoundException('Cafeteria does not exist');
+    }
+
     return DailyMemoEntity.fromModel(
       await this.dailyMemoCoreService.createDailyMemo({ cafeteriaIdx, ...dto }),
     );
@@ -34,18 +50,18 @@ export class DailyMemoService {
     idx: number,
     dto: UpdateDailyMemoDto,
   ): Promise<void> {
-    const dailyMemo = await this.dailyMemoCoreService.selectDailyMemoByIdx(idx);
+    const dailyMemo = await this.dailyMemoCoreService.getDailyMemoByIdx(idx);
     if (!dailyMemo) {
-      throw new Error('Daily memo does not exist');
+      throw new NotFoundException('Daily memo does not exist');
     }
 
     await this.dailyMemoCoreService.updateDailyMemoByIdx(idx, dto);
   }
 
   public async deleteDailyMemoByIdx(idx: number): Promise<void> {
-    const dailyMemo = await this.dailyMemoCoreService.selectDailyMemoByIdx(idx);
+    const dailyMemo = await this.dailyMemoCoreService.getDailyMemoByIdx(idx);
     if (!dailyMemo) {
-      throw new Error('Daily memo does not exist');
+      throw new NotFoundException('Daily memo does not exist');
     }
 
     await this.dailyMemoCoreService.deleteDailyMemoByIdx(idx);
