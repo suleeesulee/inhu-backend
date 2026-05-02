@@ -61,7 +61,7 @@ CREATE TABLE food_station_tb
   idx           int                      NOT NULL GENERATED ALWAYS AS IDENTITY,
   cafeteria_idx int                      NOT NULL,
   meal_type_idx int                      NOT NULL,
-  name          varchar                  NOT NULL,
+  name          varchar                  ,
   start_time    time(6)                  NOT NULL,
   end_time      time(6)                  NOT NULL,
   start_date    date                     NOT NULL,

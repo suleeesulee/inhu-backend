@@ -599,7 +599,7 @@ model FoodStation {
   idx              Int            @id @default(autoincrement())
   cafeteriaIdx     Int            @map("cafeteria_idx")
   mealTypeIdx      Int            @map("meal_type_idx")
-  name             String         @db.VarChar
+  name             String?        @db.VarChar
   startTime        DateTime       @map("start_time") @db.Time(6)
   endTime          DateTime       @map("end_time") @db.Time(6)
   startDate        DateTime       @map("start_date") @db.Date
