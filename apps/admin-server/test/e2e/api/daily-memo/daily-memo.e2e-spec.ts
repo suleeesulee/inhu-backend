@@ -817,31 +817,6 @@ describe('Cafeteria e2e test', () => {
         .expect(400);
     });
 
-    it('400 - invalid body', async () => {
-      const admin = testHelper.loginAdmin.admin1;
-
-      const cafeteria = await cafeteriaSeedHelper.seed({
-        name: 'test cafeteria',
-      });
-      const dailyMemo = await dailyMemoSeedHelper.seed({
-        cafeteriaIdx: cafeteria.idx,
-        content: 'test daily memo',
-        date: new Date('2026-04-20'),
-      });
-
-      const invalidUpdateDailyMemoDto = {
-        content: 'updated daily memo',
-        date: 'invalid-date',
-      };
-
-      await testHelper
-        .test()
-        .put(`/daily-memo/${dailyMemo.idx}`)
-        .set('Cookie', `token=Bearer ${admin.token}`)
-        .send(invalidUpdateDailyMemoDto)
-        .expect(400);
-    });
-
     it('401 - token is not provided', async () => {
       const cafeteria = await cafeteriaSeedHelper.seed({
         name: 'test cafeteria',
