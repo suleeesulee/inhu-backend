@@ -35,6 +35,7 @@ export class DailyMemoController {
   @Post('/cafeteria/:idx/daily-memo')
   @Exception(400, 'invalid cafeteria idx or body')
   @Exception(404, 'cafeteria does not exist')
+  @Exception(409, 'daily memo for the date already exists')
   @AdminAuth()
   public async createDailyMemo(
     @Body() dto: CreateDailyMemoDto,

@@ -1,5 +1,9 @@
 import { DailyMemoCoreService } from '@libs/core/daily-memo/daily-memo-core.service';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { GetDailyMemoAllDto } from './dto/request/get-daily-memo-all.dto';
 import { DailyMemoEntity } from './entity/daily-memo.entity';
 import { CreateDailyMemoDto } from './dto/request/create-daily-memo.dto';
@@ -39,6 +43,15 @@ export class DailyMemoService {
       await this.cafeteriaCoreService.getCafeteriaByIdx(cafeteriaIdx);
     if (!cafeteria) {
       throw new NotFoundException('Cafeteria does not exist');
+    }
+
+    const dailyMemo =
+      await this.dailyMemoCoreService.getDailyMemoByCafeteriaIdxAndDate(
+        cafeteriaIdx,
+        dto.date,
+      );
+    if (dailyMemo) {
+      throw new ConflictException('Daily memo for the date already exists');
     }
 
     return DailyMemoEntity.fromModel(
