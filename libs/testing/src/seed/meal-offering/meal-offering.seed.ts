@@ -19,16 +19,10 @@ export class MealOfferingSeedHelper extends ISeedHelper<
   ): FilledSeedInput<MealOfferingSeedInput> {
     return {
       foodStationIdx: input.foodStationIdx,
-      startTime: defaultValue(
-        input.startTime,
-        faker.date.recent().toISOString(),
-      ),
-      endTime: defaultValue(input.endTime, faker.date.recent().toISOString()),
+      startTime: defaultValue(input.startTime, faker.date.recent()),
+      endTime: defaultValue(input.endTime, faker.date.recent()),
       kcal: defaultValue(input.kcal, null),
-      servedDate: defaultValue(
-        input.servedDate,
-        faker.date.recent().toISOString(),
-      ),
+      servedDate: defaultValue(input.servedDate, faker.date.recent()),
       mealItemList: defaultValue(input.mealItemList, [
         {
           name: faker.word.noun({ length: { min: 1, max: 20 } }),
@@ -49,10 +43,10 @@ export class MealOfferingSeedHelper extends ISeedHelper<
       select: { idx: true },
       data: {
         foodStationIdx: filledInput.foodStationIdx,
-        startTime: this.transformKoreanTime(new Date(filledInput.startTime)),
-        endTime: this.transformKoreanTime(new Date(filledInput.endTime)),
+        startTime: this.transformKoreanTime(filledInput.startTime),
+        endTime: this.transformKoreanTime(filledInput.endTime),
         kcal: filledInput.kcal,
-        servedDate: this.transformKoreanDate(new Date(filledInput.servedDate)),
+        servedDate: this.transformKoreanDate(filledInput.servedDate),
         mealItemList: filledInput.mealItemList
           ? {
               createMany: {

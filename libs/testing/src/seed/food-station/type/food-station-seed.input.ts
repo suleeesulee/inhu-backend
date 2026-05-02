@@ -9,17 +9,17 @@ export type FoodStationSeedInput = {
   cafeteriaIdx: number;
   mealType?: MealType;
   name?: string | null;
-  startTime?: string;
-  endTime?: string;
-  startDate?: string;
-  endDate?: string;
+  startTime?: Date;
+  endTime?: Date;
+  startDate?: Date;
+  endDate?: Date;
   mealOfferingList?:
     | {
         foodStationIdx: number;
-        startTime?: string;
-        endTime?: string;
+        startTime?: Date;
+        endTime?: Date;
         kcal?: number | null;
-        servedDate?: string;
+        servedDate?: Date;
         mealItemList?: {
           name?: string;
           price?: number;

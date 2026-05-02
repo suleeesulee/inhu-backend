@@ -26,32 +26,17 @@ export class FoodStationSeedHelper extends ISeedHelper<
         input.name,
         faker.word.noun({ length: { min: 5, max: 20 } }),
       ),
-      startTime: defaultValue(
-        input.startTime,
-        faker.date.recent().toISOString(),
-      ),
-      endTime: defaultValue(input.endTime, faker.date.recent().toISOString()),
-      startDate: defaultValue(
-        input.startDate,
-        faker.date.recent().toISOString(),
-      ),
-      endDate: defaultValue(input.endDate, faker.date.soon().toISOString()),
+      startTime: defaultValue(input.startTime, faker.date.recent()),
+      endTime: defaultValue(input.endTime, faker.date.recent()),
+      startDate: defaultValue(input.startDate, faker.date.recent()),
+      endDate: defaultValue(input.endDate, faker.date.soon()),
       mealOfferingList: defaultValue(
         input.mealOfferingList?.map((offering) => ({
           foodStationIdx: offering.foodStationIdx,
-          startTime: defaultValue(
-            offering.startTime,
-            faker.date.recent().toISOString(),
-          ),
-          endTime: defaultValue(
-            offering.endTime,
-            faker.date.recent().toISOString(),
-          ),
+          startTime: defaultValue(offering.startTime, faker.date.recent()),
+          endTime: defaultValue(offering.endTime, faker.date.recent()),
           kcal: defaultValue(offering.kcal, null),
-          servedDate: defaultValue(
-            offering.servedDate,
-            faker.date.recent().toISOString(),
-          ),
+          servedDate: defaultValue(offering.servedDate, faker.date.recent()),
           mealItemList: defaultValue(
             offering.mealItemList?.map((item) => ({
               name: defaultValue(item.name, faker.word.noun()),
@@ -72,28 +57,23 @@ export class FoodStationSeedHelper extends ISeedHelper<
     input: FoodStationSeedInput,
   ): Promise<FoodStationSeedOutput> {
     const filledInput = this.generateFilledInputValue(input);
-
     const foodStation = await this.prisma.foodStation.create({
       select: { idx: true },
       data: {
         cafeteriaIdx: filledInput.cafeteriaIdx,
         mealTypeIdx: filledInput.mealType,
         name: filledInput.name,
-        startTime: this.transformKoreanTime(new Date(filledInput.startTime)),
-        endTime: this.transformKoreanTime(new Date(filledInput.endTime)),
-        startDate: this.transformKoreanDate(new Date(filledInput.startDate)),
-        endDate: this.transformKoreanDate(new Date(filledInput.endDate)),
+        startTime: this.transformKoreanTime(filledInput.startTime),
+        endTime: this.transformKoreanTime(filledInput.endTime),
+        startDate: this.transformKoreanDate(filledInput.startDate),
+        endDate: this.transformKoreanDate(filledInput.endDate),
         mealOfferingList: filledInput.mealOfferingList
           ? {
               create: filledInput.mealOfferingList.map((offering) => ({
-                startTime: this.transformKoreanTime(
-                  new Date(offering.startTime),
-                ),
-                endTime: this.transformKoreanTime(new Date(offering.endTime)),
+                startTime: this.transformKoreanTime(offering.startTime),
+                endTime: this.transformKoreanTime(offering.endTime),
                 kcal: offering.kcal,
-                servedDate: this.transformKoreanDate(
-                  new Date(offering.servedDate),
-                ),
+                servedDate: this.transformKoreanDate(offering.servedDate),
                 deletedAt: offering.deletedAt,
                 mealItemList: {
                   createMany: {

@@ -5,10 +5,10 @@
  */
 export type MealOfferingSeedInput = {
   foodStationIdx: number;
-  startTime?: string;
-  endTime?: string;
+  startTime?: Date;
+  endTime?: Date;
   kcal?: number | null;
-  servedDate?: string;
+  servedDate?: Date;
   mealItemList?: {
     name?: string;
     price?: number;
