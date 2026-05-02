@@ -2,9 +2,10 @@ import { DailyMemoCoreModule } from '@libs/core/daily-memo/daily-memo-core.modul
 import { Module } from '@nestjs/common';
 import { DailyMemoController } from './daily-memo.controller';
 import { DailyMemoService } from './daily-memo.service';
+import { CafeteriaCoreModule } from '@libs/core/cafeteria/cafeteria-core.module';
 
 @Module({
-  imports: [DailyMemoCoreModule],
+  imports: [DailyMemoCoreModule, CafeteriaCoreModule],
   controllers: [DailyMemoController],
   providers: [DailyMemoService],
 })
