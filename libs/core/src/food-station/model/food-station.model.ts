@@ -5,7 +5,7 @@ import { MealType } from '../constants/meal-type.constant';
 export class FoodStationModel {
   public idx: number;
   public cafeteriaIdx: number;
-  public mealTypeIdx: MealType;
+  public mealType: MealType;
   public name: string;
   public startTime: string;
   public endTime: string;
@@ -22,7 +22,7 @@ export class FoodStationModel {
     return new FoodStationModel({
       idx: foodStation.idx,
       cafeteriaIdx: foodStation.cafeteriaIdx,
-      mealTypeIdx: foodStation.mealTypeIdx as MealType,
+      mealType: foodStation.mealTypeIdx as MealType,
       name: foodStation.name,
       startTime: foodStation.startTime
         .toISOString()

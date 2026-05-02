@@ -10,13 +10,6 @@ export class MealOfferingEntity {
   public idx: number;
 
   /**
-   * 식당 식별 번호
-   *
-   * @example 1
-   */
-  public foodStationIdx: number;
-
-  /**
    * 운영 시작 시간
    *
    * @example "08:00:00"
@@ -61,7 +54,6 @@ export class MealOfferingEntity {
   public static fromModel(model: MealOfferingModel): MealOfferingEntity {
     return new MealOfferingEntity({
       idx: model.idx,
-      foodStationIdx: model.foodStationIdx,
       startTime: model.startTime,
       endTime: model.endTime,
       kcal: model.kcal,

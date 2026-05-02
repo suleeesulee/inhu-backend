@@ -1,4 +1,6 @@
 import { MealOfferingEntity } from '@admin/api/meal-offering/entity/meal-offering.entity';
+import { MealType } from '@libs/core/food-station/constants/meal-type.constant';
+import { FoodStationModel } from '@libs/core/food-station/model/food-station.model';
 
 export class FoodStationEntity {
   /**
@@ -20,7 +22,7 @@ export class FoodStationEntity {
    *
    * 1: 조식, 2: 중식, 3: 석식
    */
-  public mealTypeIdx: number;
+  public mealType: MealType;
 
   /**
    * 코너 이름
@@ -71,11 +73,11 @@ export class FoodStationEntity {
     Object.assign(this, data);
   }
 
-  public static fromModel(model: FoodStationEntity): FoodStationEntity {
+  public static fromModel(model: FoodStationModel): FoodStationEntity {
     return new FoodStationEntity({
       idx: model.idx,
       cafeteriaIdx: model.cafeteriaIdx,
-      mealTypeIdx: model.mealTypeIdx,
+      mealType: model.mealType,
       name: model.name,
       startTime: model.startTime,
       endTime: model.endTime,

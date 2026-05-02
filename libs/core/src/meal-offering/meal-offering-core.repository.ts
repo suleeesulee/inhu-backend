@@ -74,10 +74,14 @@ export class MealOfferingCoreRepository {
       },
       data: {
         foodStationIdx: input.foodStationIdx,
-        startTime: `1970-01-01T${input.startTime}Z`,
-        endTime: `1970-01-01T${input.endTime}Z`,
+        startTime: input.startTime
+          ? `1970-01-01T${input.startTime}Z`
+          : undefined,
+        endTime: input.endTime ? `1970-01-01T${input.endTime}Z` : undefined,
         kcal: input.kcal,
-        servedDate: `${input.servedDate}T00:00:00Z`,
+        servedDate: input.servedDate
+          ? `${input.servedDate}T00:00:00Z`
+          : undefined,
         mealItemList: input.mealItemList
           ? {
               deleteMany: {},

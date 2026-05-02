@@ -77,10 +77,12 @@ export class FoodStationCoreRepository {
       data: {
         mealTypeIdx: input.mealType,
         name: input.name,
-        startTime: `1970-01-01T${input.startTime}Z`,
-        endTime: `1970-01-01T${input.endTime}Z`,
-        startDate: `${input.startDate}T00:00:00Z`,
-        endDate: `${input.endDate}T23:59:59Z`,
+        startTime: input.startTime
+          ? `1970-01-01T${input.startTime}Z`
+          : undefined,
+        endTime: input.endTime ? `1970-01-01T${input.endTime}Z` : undefined,
+        startDate: input.startDate ? `${input.startDate}T00:00:00Z` : undefined,
+        endDate: input.endDate ? `${input.endDate}T23:59:59Z` : undefined,
       },
     });
   }

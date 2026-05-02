@@ -22,6 +22,9 @@ import { UpdateFoodStationDto } from './dto/request/update-food-station.dto';
 export class FoodStationController {
   constructor(private readonly foodStationService: FoodStationService) {}
 
+  /**
+   * 특정 식당의 일자 범위에 해당하는 코너 전체 조회
+   */
   @Get('cafeteria/:idx/food-station/all')
   @Exception(400, 'invalid cafeteria idx')
   @Exception(404, 'cafeteria not found')
@@ -33,6 +36,9 @@ export class FoodStationController {
     return this.foodStationService.getFoodStationAll(idx, dto);
   }
 
+  /**
+   * 특정 식당의 코너 생성
+   */
   @Post('cafeteria/:idx/food-station')
   @Exception(400, 'invalid cafeteria idx')
   @Exception(404, 'cafeteria not found')
@@ -44,6 +50,9 @@ export class FoodStationController {
     return this.foodStationService.createFoodStation(idx, dto);
   }
 
+  /**
+   * 특정 코너 수정
+   */
   @Put('food-station/:idx')
   @Exception(400, 'invalid food station idx')
   @Exception(404, 'food station not found')
@@ -55,6 +64,9 @@ export class FoodStationController {
     return this.foodStationService.updateFoodStationByIdx(idx, dto);
   }
 
+  /**
+   * 특정 코너 삭제
+   */
   @Delete('food-station/:idx')
   @Exception(400, 'invalid food station idx')
   @Exception(404, 'food station not found')
