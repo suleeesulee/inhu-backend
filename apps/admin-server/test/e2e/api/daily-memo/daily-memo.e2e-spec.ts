@@ -1,7 +1,6 @@
 import { AdminServerModule } from '@admin/admin-server.module';
 import { TestHelper } from '../../setup/test.helper';
 import { CafeteriaSeedHelper } from '@libs/testing/seed/cafeteria/cafeteria.seed';
-import { CafeteriaCoreService } from '@libs/core/cafeteria/cafeteria-core.service';
 import { DailyMemoSeedHelper } from '@libs/testing/seed/daily-memo/daily-memo.seed';
 import { GetDailyMemoAllDto } from '@admin/api/daily-memo/dto/request/get-daily-memo-all.dto';
 import { DailyMemoCoreService } from '@libs/core/daily-memo/daily-memo-core.service';
@@ -697,7 +696,6 @@ describe('Cafeteria e2e test', () => {
 
       const updateDailyMemoDto = {
         content: 'updated daily memo',
-        date: '2026-04-20',
       };
 
       await testHelper
@@ -718,7 +716,7 @@ describe('Cafeteria e2e test', () => {
       expect(updatedDailyMemo).not.toBeNull();
       expect(updatedDailyMemo.content).toBe(updateDailyMemoDto.content);
       expect(new Date(updatedDailyMemo.date)).toStrictEqual(
-        new Date(updateDailyMemoDto.date),
+        new Date(dailyMemo.date),
       );
     });
 
@@ -736,7 +734,6 @@ describe('Cafeteria e2e test', () => {
 
       const updateDailyMemoDto = {
         content: 'updated daily memo',
-        date: '2026-04-20',
       };
 
       await testHelper
@@ -757,7 +754,7 @@ describe('Cafeteria e2e test', () => {
       expect(updatedDailyMemo).not.toBeNull();
       expect(updatedDailyMemo.content).toBe(updateDailyMemoDto.content);
       expect(new Date(updatedDailyMemo.date)).toStrictEqual(
-        new Date(updateDailyMemoDto.date),
+        new Date(dailyMemo.date),
       );
     });
 
@@ -775,7 +772,6 @@ describe('Cafeteria e2e test', () => {
 
       const updateDailyMemoDto = {
         content: 'updated daily memo',
-        date: '2026-04-20',
       };
 
       await testHelper
@@ -796,7 +792,7 @@ describe('Cafeteria e2e test', () => {
       expect(updatedDailyMemo).not.toBeNull();
       expect(updatedDailyMemo.content).toBe(updateDailyMemoDto.content);
       expect(new Date(updatedDailyMemo.date)).toStrictEqual(
-        new Date(updateDailyMemoDto.date),
+        new Date(dailyMemo.date),
       );
     });
 
