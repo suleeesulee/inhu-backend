@@ -25,6 +25,7 @@ import { SearchTagModule } from './api/search-tag/search-tag.module';
 import { AdminAccountModule } from './api/admin/admin-account.module';
 import { SectionModule } from './api/section/section.module';
 import { CafeteriaModule } from './api/cafeteria/cafeteria.module';
+import { DailyMemoModule } from './api/daily-memo/daily-memo.module';
 
 @Module({
   imports: [
@@ -58,6 +59,7 @@ import { CafeteriaModule } from './api/cafeteria/cafeteria.module';
     AdminAccountModule,
     SectionModule,
     CafeteriaModule,
+    DailyMemoModule,
   ],
   providers: [
     {
