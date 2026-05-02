@@ -72,3 +72,8 @@ INSERT INTO service2_tb (content) VALUES
 
 INSERT INTO withdraw_service_tb (content) VALUES
 ('이용을 잘 안하게 돼요'), ('개인정보 보호를 위해 삭제하고 싶어요'), ('인하대 후문을 떠나게 됐어요'), ('기술적인 오류가 많아서 불편해요'), ('유사한 다른 서비스를 더 자주 이용해요'), ('원하는 기능이 부족해요');
+
+INSERT INTO meal_type_tb (idx, content) VALUES
+(1, '조식'),
+(2, '중식'),
+(3, '석식');
