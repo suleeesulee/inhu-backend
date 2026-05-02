@@ -8230,7 +8230,7 @@
         "comment": "",
         "dataType": "int",
         "default": "",
-        "options": 11,
+        "options": 10,
         "ui": {
           "keys": 1,
           "widthName": 60,
@@ -8239,14 +8239,14 @@
           "widthDefault": 60
         },
         "meta": {
-          "updateAt": 1777640169475,
+          "updateAt": 1777735289365,
           "createAt": 1777640161662
         }
       },
       "YSEPxak65JZMAGnUGEVa7": {
         "id": "YSEPxak65JZMAGnUGEVa7",
         "tableId": "Vi57VGqgU50qJ6U3Qz3zn",
-        "name": "name",
+        "name": "content",
         "comment": "",
         "dataType": "varchar",
         "default": "",
@@ -8259,7 +8259,7 @@
           "widthDefault": 60
         },
         "meta": {
-          "updateAt": 1777640180202,
+          "updateAt": 1777735383420,
           "createAt": 1777640176350
         }
       },

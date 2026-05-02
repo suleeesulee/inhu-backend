@@ -641,8 +641,8 @@ model MealOffering {
 }
 
 model MealType {
-  idx         Int           @id @default(autoincrement())
-  name        String        @db.VarChar
+  idx         Int           @id
+  content     String        @db.VarChar
   createdAt   DateTime      @default(now()) @map("created_at") @db.Timestamptz(6)
   deletedAt   DateTime?     @map("deleted_at") @db.Timestamptz(6)
   foodStation FoodStation[]
