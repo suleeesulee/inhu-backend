@@ -34,12 +34,8 @@ export class FoodStationCoreRepository {
       ...SELECT_FOOD_STATION,
       where: {
         cafeteriaIdx: input.cafeteriaIdx,
-        startDate: {
-          gte: `${input.startDate}T00:00:00Z`,
-        },
-        endDate: {
-          lte: `${input.endDate}T23:59:59Z`,
-        },
+        startDate: `${input.startDate}T00:00:00Z`,
+        endDate: `${input.endDate}T00:00:00Z`,
         deletedAt: null,
       },
       orderBy: {
