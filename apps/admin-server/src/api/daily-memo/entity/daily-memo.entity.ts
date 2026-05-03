@@ -27,7 +27,7 @@ export class DailyMemoEntity {
    *
    * @example "2026-04-26"
    */
-  public date: Date;
+  public date: string;
 
   /**
    * 메모 등록 일시

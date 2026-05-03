@@ -80,7 +80,7 @@ export class DailyMemoCoreRepository {
     await this.txHost.tx.dailyMemo.update({
       data: {
         content: input.content,
-        date: `${input.date}T00:00:00Z`,
+        date: input.date ? `${input.date}T00:00:00Z` : undefined,
       },
       where: {
         idx,
