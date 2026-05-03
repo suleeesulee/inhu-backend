@@ -39,7 +39,7 @@ export class FoodStationEntity {
   /**
    * 코너에 등록된 학식 리스트
    */
-  public mealOfferingList: MealOfferingEntity[];
+  public mealOffering: MealOfferingEntity;
 
   constructor(data: FoodStationEntity) {
     Object.assign(this, data);
@@ -52,9 +52,7 @@ export class FoodStationEntity {
       mealType: model.mealType,
       name: model.name,
       createdAt: model.createdAt,
-      mealOfferingList: model.mealOfferingList.map(
-        MealOfferingEntity.fromModel,
-      ),
+      mealOffering: MealOfferingEntity.fromModel(model.mealOfferingList[0]),
     });
   }
 }
