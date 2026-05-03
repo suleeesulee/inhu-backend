@@ -13,7 +13,12 @@ export const SELECT_FOOD_STATION =
       startDate: true,
       endDate: true,
       createdAt: true,
-      mealOfferingList: SELECT_MEAL_OFFERING,
+      mealOfferingList: {
+        select: SELECT_MEAL_OFFERING.select,
+        where: {
+          deletedAt: null,
+        },
+      },
     },
   });
 
