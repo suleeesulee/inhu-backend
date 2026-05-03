@@ -44,6 +44,27 @@ export class FoodStationCoreRepository {
     });
   }
 
+  public async selectFoodStationByCafeteriaIdxAndServedData(
+    cafeteriaIdx: number,
+    servedDate: string,
+  ): Promise<SelectFoodStation[]> {
+    return await this.txHost.tx.foodStation.findMany({
+      ...SELECT_FOOD_STATION,
+      where: {
+        cafeteriaIdx,
+        deletedAt: null,
+        mealOfferingList: {
+          some: {
+            servedDate: `${servedDate}T00:00:00Z`,
+          },
+        },
+      },
+      orderBy: {
+        startTime: 'asc',
+      },
+    });
+  }
+
   public async insertFoodStation(
     input: CreateFoodStationInput,
   ): Promise<SelectFoodStation> {
