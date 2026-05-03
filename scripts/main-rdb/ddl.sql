@@ -18,12 +18,56 @@ CREATE TABLE break_time_tb
   PRIMARY KEY (idx)
 );
 
+CREATE TABLE cafeteria_bookmark_tb
+(
+  user_idx      int                      NOT NULL,
+  cafeteria_idx int                      NOT NULL,
+  created_at    timestamp with time zone NOT NULL DEFAULT NOW(),
+  deleted_at    timestamp with time zone,
+  PRIMARY KEY (user_idx, cafeteria_idx)
+);
+
+CREATE TABLE cafeteria_tb
+(
+  idx        int                      NOT NULL GENERATED ALWAYS AS IDENTITY,
+  name       varchar                  NOT NULL,
+  created_at timestamp with time zone NOT NULL DEFAULT NOW(),
+  deleted_at    timestamp with time zone,
+  PRIMARY KEY (idx)
+);
+
 CREATE TABLE closed_day_tb
 (
   idx       int      NOT NULL GENERATED ALWAYS AS IDENTITY,
   place_idx int      NOT NULL,
   day       smallint NOT NULL,
   week      smallint NOT NULL,
+  PRIMARY KEY (idx)
+);
+
+CREATE TABLE daily_memo_tb
+(
+  idx           int                      NOT NULL GENERATED ALWAYS AS IDENTITY,
+  cafeteria_idx int                      NOT NULL,
+  content       varchar                  NOT NULL,
+  date          date                     NOT NULL,
+  created_at    timestamp with time zone NOT NULL DEFAULT NOW(),
+  deleted_at    timestamp with time zone,
+  PRIMARY KEY (idx)
+);
+
+CREATE TABLE food_station_tb
+(
+  idx           int                      NOT NULL GENERATED ALWAYS AS IDENTITY,
+  cafeteria_idx int                      NOT NULL,
+  meal_type_idx int                      NOT NULL,
+  name          varchar                  ,
+  start_time    time(6)                  NOT NULL,
+  end_time      time(6)                  NOT NULL,
+  start_date    date                     NOT NULL,
+  end_date      date                     NOT NULL,
+  created_at    timestamp with time zone NOT NULL DEFAULT NOW(),
+  deleted_at    timestamp with time zone,
   PRIMARY KEY (idx)
 );
 
@@ -115,6 +159,39 @@ CREATE TABLE main_category_tb
   content    varchar                  NOT NULL,
   created_at timestamp with time zone NOT NULL DEFAULT NOW(),
   deleted_at timestamp with time zone,
+  PRIMARY KEY (idx)
+);
+
+CREATE TABLE meal_item_tb
+(
+  idx               int                      NOT NULL GENERATED ALWAYS AS IDENTITY,
+  meal_offering_idx int                      NOT NULL,
+  name              varchar                  NOT NULL,
+  price             int                     ,
+  created_at        timestamp with time zone NOT NULL DEFAULT NOW(),
+  deleted_at    timestamp with time zone,
+  PRIMARY KEY (idx)
+);
+
+CREATE TABLE meal_offering_tb
+(
+  idx              int                      NOT NULL GENERATED ALWAYS AS IDENTITY,
+  food_station_idx int                      NOT NULL,
+  start_time       time(6)                  NOT NULL,
+  end_time         time(6)                  NOT NULL,
+  kcal             int                     ,
+  served_date      date                     NOT NULL,
+  created_at       timestamp with time zone NOT NULL DEFAULT NOW(),
+  deleted_at    timestamp with time zone,
+  PRIMARY KEY (idx)
+);
+
+CREATE TABLE meal_type_tb
+(
+  idx        int                      NOT NULL,
+  content    varchar                  NOT NULL,
+  created_at timestamp with time zone NOT NULL DEFAULT NOW(),
+  deleted_at    timestamp with time zone,
   PRIMARY KEY (idx)
 );
 
@@ -715,3 +792,38 @@ ALTER TABLE magazine_tb
   ADD CONSTRAINT FK_user_tb_TO_magazine_tb
     FOREIGN KEY (author_idx)
     REFERENCES user_tb (idx);
+
+ALTER TABLE food_station_tb
+  ADD CONSTRAINT FK_cafeteria_tb_TO_food_station_tb
+    FOREIGN KEY (cafeteria_idx)
+    REFERENCES cafeteria_tb (idx);
+
+ALTER TABLE meal_offering_tb
+  ADD CONSTRAINT FK_food_station_tb_TO_meal_offering_tb
+    FOREIGN KEY (food_station_idx)
+    REFERENCES food_station_tb (idx);
+
+ALTER TABLE daily_memo_tb
+  ADD CONSTRAINT FK_cafeteria_tb_TO_daily_memo_tb
+    FOREIGN KEY (cafeteria_idx)
+    REFERENCES cafeteria_tb (idx);
+
+ALTER TABLE cafeteria_bookmark_tb
+  ADD CONSTRAINT FK_user_tb_TO_cafeteria_bookmark_tb
+    FOREIGN KEY (user_idx)
+    REFERENCES user_tb (idx);
+
+ALTER TABLE cafeteria_bookmark_tb
+  ADD CONSTRAINT FK_cafeteria_tb_TO_cafeteria_bookmark_tb
+    FOREIGN KEY (cafeteria_idx)
+    REFERENCES cafeteria_tb (idx);
+
+ALTER TABLE meal_item_tb
+  ADD CONSTRAINT FK_meal_offering_tb_TO_meal_item_tb
+    FOREIGN KEY (meal_offering_idx)
+    REFERENCES meal_offering_tb (idx);
+
+ALTER TABLE food_station_tb
+  ADD CONSTRAINT FK_meal_type_tb_TO_food_station_tb
+    FOREIGN KEY (meal_type_idx)
+    REFERENCES meal_type_tb (idx);
