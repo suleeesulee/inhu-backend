@@ -34,7 +34,7 @@ export class MealOfferingController {
   }
 
   /**
-   * 학식 정보 수정
+   * 학식 정보 수정 (특정 메뉴들을 삭제하고 싶은 경우 mealItemList에 해당 메뉴들을 제외한 채 보내면 됨)
    */
   @Put('/meal-offering/:idx')
   @Exception(400, 'invalid meal offering idx')

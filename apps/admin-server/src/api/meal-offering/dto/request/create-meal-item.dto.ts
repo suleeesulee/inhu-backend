@@ -14,6 +14,8 @@ export class CreateMealItemDto {
   /**
    * 메뉴 가격
    *
+   * - update할 때 undefined인 경우, 해당 메뉴의 가격 정보가 사라진 것으로 간주
+   *
    * @example 3000
    */
   @IsOptional()
