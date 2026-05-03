@@ -27,6 +27,18 @@ export class FoodStationCoreService {
     ).map(FoodStationModel.fromPrisma);
   }
 
+  public async getFoodStationByCafeteriaIdxAndServedDate(
+    cafeteriaIdx: number,
+    servedDate: string,
+  ): Promise<FoodStationModel[]> {
+    return (
+      await this.foodStationCoreRepository.selectFoodStationByCafeteriaIdxAndServedData(
+        cafeteriaIdx,
+        servedDate,
+      )
+    ).map(FoodStationModel.fromPrisma);
+  }
+
   public async createFoodStation(
     input: CreateFoodStationInput,
   ): Promise<FoodStationModel> {

@@ -70,6 +70,9 @@ CREATE TABLE food_station_tb
   deleted_at    timestamp with time zone,
   PRIMARY KEY (idx)
 );
+CREATE INDEX idx_food_station_cafeteria_date 
+  ON food_station_tb (cafeteria_idx, start_date, end_date)
+  WHERE deleted_at IS NULL;
 
 CREATE TABLE free_tag_tb
 (

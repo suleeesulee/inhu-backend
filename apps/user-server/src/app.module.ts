@@ -26,6 +26,7 @@ import { HashModule } from '@libs/common/modules/hash/hash.module';
 import { PlaceSectionModule } from './api/place-section/place-section.module';
 import { MagazineSectionModule } from './api/magazine-section/magazine-section.module';
 import { AdminAccountCoreModule } from '@libs/core/admin-account/admin-account-core.module';
+import { FoodStationModule } from './api/food-station/food-station.module';
 
 @Module({
   imports: [
@@ -61,6 +62,7 @@ import { AdminAccountCoreModule } from '@libs/core/admin-account/admin-account-c
     PlaceSectionModule,
     MagazineSectionModule,
     AdminAccountCoreModule,
+    FoodStationModule,
   ],
   providers: [
     {
