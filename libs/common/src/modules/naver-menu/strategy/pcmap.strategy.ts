@@ -92,9 +92,7 @@ export class PcmapStrategy extends NaverCrawlingStrategy {
         timeout,
       });
     } catch (error) {
-      throw new NotFoundException(
-        `크롤링 타임아웃: 셀렉터('${selector}')를 찾지 못했습니다.`,
-      );
+      console.log('더이상 더보기 버튼이 존재하지 않아 넘어갑니다.');
     }
 
     let btn = await page.$(selector);
