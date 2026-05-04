@@ -126,7 +126,7 @@ export class MagazineController {
   @AdminAuth(AdminRole.MagazineAdmin)
   @Put(':idx')
   @Exception(400, 'Invalid magazine idx')
-  @Exception(403, 'Admin is not the author of magazine')
+  // @Exception(403, 'Admin is not the author of magazine')
   @Exception(404, 'Magazine not found')
   @HttpCode(200)
   public async updateMagazineByIdx(

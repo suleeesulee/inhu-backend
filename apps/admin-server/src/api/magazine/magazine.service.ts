@@ -118,6 +118,7 @@ export class MagazineService {
     });
   }
 
+  // ! 기존에 magazine admin인 경우 동일 인물만 수정하게 했는데 magazine admin이면 수정 가능하게 임시 변경함. 괜찮은 방법인지 고민할 필요있음
   public async updateMagazineByIdx(
     idx: number,
     dto: UpdateMagazineByIdxDto,
@@ -128,14 +129,14 @@ export class MagazineService {
       throw new NotFoundException(`Magazine not found for idx: ${idx}`);
     }
 
-    if (
-      admin.role === AdminRole.MagazineAdmin &&
-      magazine.authorIdx !== admin.idx
-    ) {
-      throw new ForbiddenException(
-        `Admin idx: ${admin.idx} is not the author of magazine idx: ${idx}`,
-      );
-    }
+    // if (
+    //   admin.role === AdminRole.MagazineAdmin &&
+    //   magazine.authorIdx !== admin.idx
+    // ) {
+    //   throw new ForbiddenException(
+    //     `Admin idx: ${admin.idx} is not the author of magazine idx: ${idx}`,
+    //   );
+    // }
 
     const extractedPlaceIdxList = this.extractAllPlaceIdxFromText(
       dto.content ?? magazine.content,
@@ -171,14 +172,14 @@ export class MagazineService {
       throw new NotFoundException(`Magazine not found for idx: ${idx}`);
     }
 
-    if (
-      admin.role === AdminRole.MagazineAdmin &&
-      magazine.authorIdx !== admin.idx
-    ) {
-      throw new ForbiddenException(
-        `Admin idx: ${admin.idx} is not the author of magazine idx: ${idx}`,
-      );
-    }
+    // if (
+    //   admin.role === AdminRole.MagazineAdmin &&
+    //   magazine.authorIdx !== admin.idx
+    // ) {
+    //   throw new ForbiddenException(
+    //     `Admin idx: ${admin.idx} is not the author of magazine idx: ${idx}`,
+    //   );
+    // }
 
     return await this.magazineCoreService.updateMagazineByIdx(idx, {
       ...dto,
@@ -195,14 +196,14 @@ export class MagazineService {
       throw new NotFoundException(`Magazine not found for idx: ${idx}`);
     }
 
-    if (
-      admin.role === AdminRole.MagazineAdmin &&
-      magazine.authorIdx !== admin.idx
-    ) {
-      throw new ForbiddenException(
-        `Admin idx: ${admin.idx} is not the author of magazine idx: ${idx}`,
-      );
-    }
+    // if (
+    //   admin.role === AdminRole.MagazineAdmin &&
+    //   magazine.authorIdx !== admin.idx
+    // ) {
+    //   throw new ForbiddenException(
+    //     `Admin idx: ${admin.idx} is not the author of magazine idx: ${idx}`,
+    //   );
+    // }
 
     await this.magazineCoreService.deleteMagazineByIdx(idx);
   }
