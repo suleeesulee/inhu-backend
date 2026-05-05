@@ -6,6 +6,7 @@ import { CafeteriaCoreService } from '@libs/core/cafeteria/cafeteria-core.servic
 import { GetFoodStationResponseDto } from './dto/response/get-food-station.response.dto';
 import { DailyMemoEntity } from './entity/daily-memo.entity';
 import { FoodStationEntity } from './entity/food-station.entity';
+import { CafeteriaEntity } from './entity/cafeteria.entity';
 
 @Injectable()
 export class FoodStationService {
@@ -14,6 +15,12 @@ export class FoodStationService {
     private readonly dailyMemoCoreService: DailyMemoCoreService,
     private readonly cafeteriaCoreService: CafeteriaCoreService,
   ) {}
+
+  public async getCafeteriaAll(): Promise<CafeteriaEntity[]> {
+    return (await this.cafeteriaCoreService.getCafeteriaAll()).map(
+      CafeteriaEntity.fromModel,
+    );
+  }
 
   public async getFoodStation(
     cafeteriaIdx: number,
