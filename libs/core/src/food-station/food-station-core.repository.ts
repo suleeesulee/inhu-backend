@@ -5,6 +5,7 @@ import {
   SELECT_FOOD_STATION,
   SelectFoodStation,
 } from './model/prisma-type/select-food-station';
+import { SELECT_MEAL_OFFERING } from '@libs/core/meal-offering/model/prisma-type/select-meal-offering';
 import { GetFoodStationAllInput } from './inputs/get-food-station-all.input';
 import { CreateFoodStationInput } from './inputs/create-food-station.input';
 import { UpdateFoodStationInput } from './inputs/update-food-station.input';
@@ -49,7 +50,16 @@ export class FoodStationCoreRepository {
     servedDate: string,
   ): Promise<SelectFoodStation[]> {
     return await this.txHost.tx.foodStation.findMany({
-      ...SELECT_FOOD_STATION,
+      select: {
+        ...SELECT_FOOD_STATION.select,
+        mealOfferingList: {
+          select: SELECT_MEAL_OFFERING.select,
+          where: {
+            deletedAt: null,
+            servedDate: `${servedDate}T00:00:00Z`,
+          },
+        },
+      },
       where: {
         cafeteriaIdx,
         deletedAt: null,
@@ -62,7 +72,7 @@ export class FoodStationCoreRepository {
       orderBy: {
         startTime: 'asc',
       },
-    });
+    }) as SelectFoodStation[];
   }
 
   public async insertFoodStation(
