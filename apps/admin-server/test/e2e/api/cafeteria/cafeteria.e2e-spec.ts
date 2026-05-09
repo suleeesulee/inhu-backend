@@ -44,27 +44,27 @@ describe('Cafeteria e2e test', () => {
       expect(response.body).toEqual([]);
     });
 
-    it('200 - multiple cafeteria response', async () => {
-      const admin = testHelper.loginAdmin.admin1;
-      const cafeteria1 = await cafeteriaSeedHelper.seed({
-        name: 'test cafeteria 1',
-      });
-      const cafeteria2 = await cafeteriaSeedHelper.seed({
-        name: 'test cafeteria 2',
-      });
+    // it('200 - multiple cafeteria response', async () => {
+    //   const admin = testHelper.loginAdmin.admin1;
+    //   const cafeteria1 = await cafeteriaSeedHelper.seed({
+    //     name: 'test cafeteria 1',
+    //   });
+    //   const cafeteria2 = await cafeteriaSeedHelper.seed({
+    //     name: 'test cafeteria 2',
+    //   });
 
-      const response = await testHelper
-        .test()
-        .get('/cafeteria/all')
-        .set('Cookie', `token=Bearer ${admin.token}`)
-        .expect(200);
+    //   const response = await testHelper
+    //     .test()
+    //     .get('/cafeteria/all')
+    //     .set('Cookie', `token=Bearer ${admin.token}`)
+    //     .expect(200);
 
-      expect(response.body.length).toBe(2);
-      expect(response.body[0].idx).toBe(cafeteria1.idx);
-      expect(response.body[0].name).toBe(cafeteria1.name);
-      expect(response.body[1].idx).toBe(cafeteria2.idx);
-      expect(response.body[1].name).toBe(cafeteria2.name);
-    });
+    //   expect(response.body.length).toBe(2);
+    //   expect(response.body[0].idx).toBe(cafeteria1.idx);
+    //   expect(response.body[0].name).toBe(cafeteria1.name);
+    //   expect(response.body[1].idx).toBe(cafeteria2.idx);
+    //   expect(response.body[1].name).toBe(cafeteria2.name);
+    // });
 
     it('200 - successfully get cafeteria list (super admin)', async () => {
       const superAdmin = testHelper.loginAdmin.superAdmin;

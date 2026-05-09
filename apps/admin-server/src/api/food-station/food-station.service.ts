@@ -145,17 +145,23 @@ export class FoodStationService {
     cafeteriaIdx: number,
     dto: CrawlingFoodStationDto,
   ): Promise<FoodStationEntity[]> {
-    const { gubun, strDate, endDate } = dto;
-    if (!gubun || !strDate || !endDate) {
+    const { target, startDate, endDate } = dto;
+    if (!target || !startDate || !endDate) {
       throw new BadRequestException(
-        '필수 파라미터(gubun, strDate, endDate)가 누락되었습니다.',
+        '필수 파라미터(target, startDate, endDate)가 누락되었습니다.',
       );
     }
 
     const params = new URLSearchParams();
-    params.append('gubun', gubun);
-    params.append('strDate', strDate);
-    params.append('endDate', endDate);
+    params.append('gubun', target);
+    params.append(
+      'strDate',
+      `${startDate.slice(0, 4)}${startDate.slice(5, 7)}${startDate.slice(8, 10)}`,
+    );
+    params.append(
+      'endDate',
+      `${endDate.slice(0, 4)}${endDate.slice(5, 7)}${endDate.slice(8, 10)}`,
+    );
 
     const apiUrl = 'https://www.inhatc.ac.kr/haksa/kr/getHaksaFoodMenuList.do';
     const headers = {

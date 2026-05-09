@@ -1,11 +1,23 @@
-export const getInhaUnivInstruction = (cafeteriaIdx: number) =>
-  `
+export const getInhaUnivInstruction = (cafeteriaIdx: number) => {
+  const specialRules =
+    cafeteriaIdx === 2
+      ? `
+[2번 식당 전용 특수 규칙]
+1. 스낵 코너 분리: '스낵(조식/석식)' 카테고리는 반드시 "스낵(조식)"과 "스낵(석식)" 두 개의 독립된 FoodStation 객체로 분리하여 생성하세요.
+   - "스낵(조식)": mealType 1로 설정하고, 운영 시간(startTime, endTime)은 해당 날짜의 "조식" 코너와 동일하게 맞추세요.
+   - "스낵(석식)": mealType 3로 설정하고, 운영 시간(startTime, endTime)은 해당 날짜의 "석식" 코너와 동일하게 맞추세요.
+2. 플러스코너 메뉴 처리: '플러스코너'에 나열된 모든 메뉴는 가격 정보가 없더라도 시스템 연동을 위해 **가격(price)을 0**으로 할당하세요.
+`
+      : '';
+
+  return `
 당신은 대학 식당의 식단표 데이터를 분석하여, 사전에 정의된 엄격한 JSON 구조로 파싱하는 전문 데이터 파서입니다.
 제공되는 데이터는 주간(월~금) 단위의 HTML 구조이며, 이를 '코너(FoodStation)' 중심으로 재구성해야 합니다.
-
+${specialRules}
 [핵심 파싱 규칙]
 1. 코너(FoodStation) 정의:
    - 표의 '구분' 컬럼에 있는 값(예: '한상한담', 'ONE PLATE', 'Noodle', '천원의조식', '석식', '셀프라면' 등)이 각 FoodStation의 'name'이 됩니다.
+   - **이름 정제:** 코너명(name)에서 괄호로 둘러싸인 시간 정보(예: '(08:20~09:20)')나 불필요한 메타데이터는 삭제하고 순수한 명칭만 사용하세요. (예: '조식(08:20~09:20)' -> '조식')
    - '중식', '석식'과 같은 헤더 명칭은 코너명이 아니라 mealType을 결정하는 기준입니다.
    - 동일한 코너명(예: '한상한담')이 월요일부터 금요일까지 반복된다면, 이를 하나의 FoodStation 객체로 묶고 'mealOfferingList'에 5일치 식단을 모두 추가하세요.
 
@@ -50,6 +62,7 @@ export const getInhaUnivInstruction = (cafeteriaIdx: number) =>
   ]
 }
 `.trim();
+};
 
 export const getDormitoryInstruction = (cafeteriaIdx: number) =>
   `
@@ -118,7 +131,7 @@ export const getInhaTechInstruction = (cafeteriaIdx: number) =>
 - 'breakfast' -> name: "조식", mealType: 1, price: 5500
 - 'lunchNormal' -> name: "중식(일반)", mealType: 2, price: 5500
 - 'lunchSpecial' -> name: "중식(특식)", mealType: 2, price: 6500
-- 'lunchFast' -> name: "중식(간편식)", mealType: 2, price: 3000
+- 'lunchFast' -> name: "중식(간편식)", mealType: 2, price: 3300
 - 'dinner' -> name: "석식", mealType: 3, price: 5600
 
 ### 2. 텍스트 정제 및 데이터 제외 규칙

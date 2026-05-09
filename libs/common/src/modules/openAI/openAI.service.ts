@@ -18,7 +18,8 @@ export class OpenAIService {
     instructions: string,
   ): Promise<T> {
     const response = await this.client.responses.create({
-      model: 'gpt-5.4-mini-2026-03-17',
+      // model: 'gpt-5.4-mini-2026-03-17',
+      model: 'gpt-5',
       instructions,
       input: [
         {
@@ -31,7 +32,7 @@ export class OpenAIService {
             {
               type: 'input_image',
               image_url: imagePath,
-              detail: 'low',
+              detail: 'high',
             },
           ],
         },
