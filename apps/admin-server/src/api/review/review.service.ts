@@ -19,8 +19,6 @@ export class ReviewService {
     reviewList: ReviewEntity[];
     hasNext: boolean;
   }> {
-    this.validateRequiredFilters(dto);
-
     const pageSize = 10;
     const take = pageSize + 1;
     const skip = (dto.page - 1) * pageSize;
@@ -37,16 +35,6 @@ export class ReviewService {
         .map((review) => ReviewEntity.fromModel(review)),
       hasNext: reviewModelList.length > pageSize,
     };
-  }
-
-  private validateRequiredFilters(
-    dto: Pick<GetAllReviewDto, 'placeIdx' | 'userIdx'>,
-  ): void {
-    if (!dto.placeIdx && !dto.userIdx) {
-      throw new ForbiddenException(
-        'You must filter by either placeIdx or userIdx',
-      );
-    }
   }
 
   public async getReviewByIdx(idx: number): Promise<ReviewEntity> {
