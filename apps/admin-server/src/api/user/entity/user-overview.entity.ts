@@ -1,48 +1,23 @@
 import { UserForAdminModel } from '@libs/core/user/model/user-for-admin.model';
-import { UserProviderEntity } from './user-provider.entity';
+import { PickType } from '@nestjs/swagger';
+import { UserEntity } from './user.entity';
 
-export class UserOverviewEntity {
-  /**
-   * 사용자 식별자
-   *
-   * @example 1
-   */
-  idx: number;
-
-  /**
-   * 사용자 닉네임
-   *
-   * @example "heeju"
-   */
-  nickname: string;
-
-  /**
-   * 프로필 이미지 경로
-   *
-   * @example "/profile/image.jpg"
-   */
-  profileImagePath: string | null;
-
-  /**
-   * 권한 인증처
-   */
-  provider: UserProviderEntity | null;
-
+export class UserOverviewEntity extends PickType(UserEntity, [
+  'idx',
+  'nickname',
+  'profileImagePath',
+  'provider',
+  'createdAt',
+] as const) {
   /**
    * 사용자가 작성한 리뷰 개수
    *
    * @example 12
    */
-  reviewCount: number;
-
-  /**
-   * 계정 생성일
-   *
-   * @example "2025-07-25T14:49:21.451Z"
-   */
-  createdAt: Date;
+  public reviewCount: number;
 
   constructor(data: UserOverviewEntity) {
+    super();
     Object.assign(this, data);
   }
 
