@@ -229,77 +229,77 @@ describe('Cafeteria e2e test', () => {
       expect(foodStationResponse.mealOfferingList).toHaveLength(2);
     });
 
-    // it('200 - get multiple food stations and multiple meal offerings', async () => {
-    //   const admin = testHelper.loginAdmin.admin1;
-    //   const now = testHelper.mockTodayTime('10:00');
+    it('200 - get multiple food stations and multiple meal offerings', async () => {
+      const admin = testHelper.loginAdmin.admin1;
+      const now = testHelper.mockTodayTime('10:00');
 
-    //   const cafeteria = await cafeteriaSeedHelper.seed({
-    //     name: 'test cafeteria',
-    //   });
-    //   const foodStation1 = await foodStationSeedHelper.seed({
-    //     cafeteriaIdx: cafeteria.idx,
-    //     mealType: MealType.MEAL_BREAKFAST,
-    //     name: 'test food station 1',
-    //     startTime: now.new('08:00'),
-    //     endTime: now.new('10:00'),
-    //     startDate: new Date('2026-04-20'),
-    //     endDate: new Date('2026-04-26'),
-    //   });
-    //   const foodStation2 = await foodStationSeedHelper.seed({
-    //     cafeteriaIdx: cafeteria.idx,
-    //     mealType: MealType.MEAL_LUNCH,
-    //     name: 'test food station 2',
-    //     startTime: now.new('11:00'),
-    //     endTime: now.new('14:00'),
-    //     startDate: new Date('2026-04-20'),
-    //     endDate: new Date('2026-04-26'),
-    //   });
-    //   await mealOfferingSeedHelper.seedAll([
-    //     {
-    //       foodStationIdx: foodStation1.idx,
-    //       startTime: now.new('08:00'),
-    //       endTime: now.new('10:00'),
-    //       kcal: 500,
-    //       servedDate: new Date('2026-04-20'),
-    //       mealItemList: [
-    //         {
-    //           name: 'test meal item 1',
-    //           price: 3000,
-    //         },
-    //       ],
-    //     },
-    //     {
-    //       foodStationIdx: foodStation2.idx,
-    //       startTime: now.new('11:00'),
-    //       endTime: now.new('14:00'),
-    //       kcal: 700,
-    //       servedDate: new Date('2026-04-20'),
-    //       mealItemList: [
-    //         {
-    //           name: 'test meal item 2',
-    //           price: 4000,
-    //         },
-    //       ],
-    //     },
-    //   ]);
+      const cafeteria = await cafeteriaSeedHelper.seed({
+        name: 'test cafeteria',
+      });
+      const foodStation1 = await foodStationSeedHelper.seed({
+        cafeteriaIdx: cafeteria.idx,
+        mealType: MealType.MEAL_BREAKFAST,
+        name: 'test food station 1',
+        startTime: now.new('08:00'),
+        endTime: now.new('10:00'),
+        startDate: new Date('2026-04-20'),
+        endDate: new Date('2026-04-26'),
+      });
+      const foodStation2 = await foodStationSeedHelper.seed({
+        cafeteriaIdx: cafeteria.idx,
+        mealType: MealType.MEAL_LUNCH,
+        name: 'test food station 2',
+        startTime: now.new('11:00'),
+        endTime: now.new('14:00'),
+        startDate: new Date('2026-04-20'),
+        endDate: new Date('2026-04-26'),
+      });
+      await mealOfferingSeedHelper.seedAll([
+        {
+          foodStationIdx: foodStation1.idx,
+          startTime: now.new('08:00'),
+          endTime: now.new('10:00'),
+          kcal: 500,
+          servedDate: new Date('2026-04-20'),
+          mealItemList: [
+            {
+              name: 'test meal item 1',
+              price: 3000,
+            },
+          ],
+        },
+        {
+          foodStationIdx: foodStation2.idx,
+          startTime: now.new('11:00'),
+          endTime: now.new('14:00'),
+          kcal: 700,
+          servedDate: new Date('2026-04-20'),
+          mealItemList: [
+            {
+              name: 'test meal item 2',
+              price: 4000,
+            },
+          ],
+        },
+      ]);
 
-    //   const getFoodStationAllDto: GetFoodStationAllDto = {
-    //     startDate: '2026-04-20',
-    //     endDate: '2026-04-26',
-    //   };
+      const getFoodStationAllDto: GetFoodStationAllDto = {
+        startDate: '2026-04-20',
+        endDate: '2026-04-26',
+      };
 
-    //   const response = await testHelper
-    //     .test()
-    //     .get(`/cafeteria/${cafeteria.idx}/food-station/all`)
-    //     .set('Cookie', `token=Bearer ${admin.token}`)
-    //     .query(getFoodStationAllDto)
-    //     .expect(200);
+      const response = await testHelper
+        .test()
+        .get(`/cafeteria/${cafeteria.idx}/food-station/all`)
+        .set('Cookie', `token=Bearer ${admin.token}`)
+        .query(getFoodStationAllDto)
+        .expect(200);
 
-    //   const foodStationList: FoodStationEntity[] =
-    //     response.body.foodStationList;
+      const foodStationList: FoodStationEntity[] =
+        response.body.foodStationList;
 
-    //   expect(foodStationList).toHaveLength(2);
-    // });
+      expect(foodStationList).toHaveLength(2);
+    });
 
     it('400 - invalid cafeteria idx', async () => {
       const admin = testHelper.loginAdmin.admin1;
