@@ -162,8 +162,31 @@ jobs:
           ssh -o StrictHostKeyChecking=no -i key.pem $USER@$HOST << 'EOF'
             cd ~/inhu-backend
             . ~/inhu-backend/bash-scripts/load-nvm-script.sh
-            tar -xzf deploy-user.tar.gz
+
+            DEPLOY_TEMP="deploy_temp_$(date +%s)"
+            mkdir -p $DEPLOY_TEMP
+
+            tar -xzf deploy-user.tar.gz -C $DEPLOY_TEMP
             rm deploy-user.tar.gz
-            npm ci
+
+            cd $DEPLOY_TEMP
+            npm ci --production
+            npx prisma generate
+            cd ..
+
+            mkdir -p dist/apps/user-server
+            mv dist/apps/user-server dist/apps/user-server_old || true
+            mv $DEPLOY_TEMP/dist/apps/user-server dist/apps/user-server
+
+            mv node_modules node_modules_old || true
+            mv $DEPLOY_TEMP/node_modules ./node_modules
+
+            mv prisma prisma_old || true
+            mv $DEPLOY_TEMP/prisma ./prisma
+
+            cp $DEPLOY_TEMP/package.json $DEPLOY_TEMP/package-lock.json ./
+
             pm2 reload inhu-backend
+
+            rm -rf $DEPLOY_TEMP dist/apps/user-server_old node_modules_old prisma_old
           EOF

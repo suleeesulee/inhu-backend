@@ -3,23 +3,7 @@ set -e
 cd ~/inhu-backend
 
 if [ "$DEPENDENCY_CHANGED" = "true" ]; then
-  echo "Dependencies changed. Running atomic npm install..."
-  # 1. Create temporary directory for atomic npm install
-  NPM_TEMP="npm_temp_$(date +%s)"
-  mkdir -p "$NPM_TEMP"
-  cp package.json package-lock.json "$NPM_TEMP/"
-
-  # 2. Install dependencies in temporary directory
-  cd "$NPM_TEMP"
   npm ci
-  cd ..
-
-  # 3. Atomic switch of node_modules
-  mv node_modules node_modules_old || true
-  mv "$NPM_TEMP/node_modules" ./node_modules
-
-  # 4. Cleanup
-  rm -rf "$NPM_TEMP" node_modules_old
 fi
 
 if [ "$DB_DOWN_FLAG" = "true" ]; then
