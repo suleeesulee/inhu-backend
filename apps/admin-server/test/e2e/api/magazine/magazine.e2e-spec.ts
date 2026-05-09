@@ -1204,39 +1204,39 @@ describe('Magazine e2e test', () => {
         .expect(403);
     });
 
-    it('403 - admin is not the author of magazine (activate)', async () => {
-      const magazineAdmin1 = await testHelper.loginAdmin.magazineAdmin1;
-      const magazineAdmin2 = await testHelper.loginAdmin.magazineAdmin2;
-      const magazineSeed = await magazineSeedHelper.seed({
-        authorIdx: magazineAdmin1.idx,
-        deletedAt: null,
-        activatedAt: new Date(),
-      });
+    // it('403 - admin is not the author of magazine (activate)', async () => {
+    //   const magazineAdmin1 = await testHelper.loginAdmin.magazineAdmin1;
+    //   const magazineAdmin2 = await testHelper.loginAdmin.magazineAdmin2;
+    //   const magazineSeed = await magazineSeedHelper.seed({
+    //     authorIdx: magazineAdmin1.idx,
+    //     deletedAt: null,
+    //     activatedAt: new Date(),
+    //   });
 
-      await testHelper
-        .test()
-        .post(`/magazine/${magazineSeed.idx}/activate`)
-        .set('Cookie', `token=Bearer ${magazineAdmin2.token}`)
-        .send({ activate: true })
-        .expect(403);
-    });
+    //   await testHelper
+    //     .test()
+    //     .post(`/magazine/${magazineSeed.idx}/activate`)
+    //     .set('Cookie', `token=Bearer ${magazineAdmin2.token}`)
+    //     .send({ activate: true })
+    //     .expect(403);
+    // });
 
-    it('403 - admin is not the author of magazine (deactivate)', async () => {
-      const magazineAdmin1 = await testHelper.loginAdmin.magazineAdmin1;
-      const magazineAdmin2 = await testHelper.loginAdmin.magazineAdmin2;
-      const magazineSeed = await magazineSeedHelper.seed({
-        authorIdx: magazineAdmin1.idx,
-        deletedAt: null,
-        activatedAt: new Date(),
-      });
+    // it('403 - admin is not the author of magazine (deactivate)', async () => {
+    //   const magazineAdmin1 = await testHelper.loginAdmin.magazineAdmin1;
+    //   const magazineAdmin2 = await testHelper.loginAdmin.magazineAdmin2;
+    //   const magazineSeed = await magazineSeedHelper.seed({
+    //     authorIdx: magazineAdmin1.idx,
+    //     deletedAt: null,
+    //     activatedAt: new Date(),
+    //   });
 
-      await testHelper
-        .test()
-        .post(`/magazine/${magazineSeed.idx}/activate`)
-        .set('Cookie', `token=Bearer ${magazineAdmin2.token}`)
-        .send({ activate: false })
-        .expect(403);
-    });
+    //   await testHelper
+    //     .test()
+    //     .post(`/magazine/${magazineSeed.idx}/activate`)
+    //     .set('Cookie', `token=Bearer ${magazineAdmin2.token}`)
+    //     .send({ activate: false })
+    //     .expect(403);
+    // });
 
     it('404 - magazine not found (activate)', async () => {
       const loginUser = testHelper.loginAdmin.admin1;

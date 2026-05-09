@@ -100,14 +100,14 @@ export class MagazineService {
       throw new NotFoundException(`Magazine not found for idx: ${idx}`);
     }
 
-    if (
-      admin.role === AdminRole.MagazineAdmin &&
-      magazine.authorIdx !== admin.idx
-    ) {
-      throw new ForbiddenException(
-        `Admin idx: ${admin.idx} is not the author of magazine idx: ${idx}`,
-      );
-    }
+    // if (
+    //   admin.role === AdminRole.MagazineAdmin &&
+    //   magazine.authorIdx !== admin.idx
+    // ) {
+    //   throw new ForbiddenException(
+    //     `Admin idx: ${admin.idx} is not the author of magazine idx: ${idx}`,
+    //   );
+    // }
 
     if (isActivate && magazine.activatedAt) {
       throw new ConflictException(`Magazine is already activated: ${idx}`);
