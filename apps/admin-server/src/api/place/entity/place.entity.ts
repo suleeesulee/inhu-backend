@@ -18,8 +18,6 @@ import { MainCategory } from '@libs/core/category/constants/main-category.consta
 import { MoodCategory } from '@libs/core/category/constants/mood-category.constant';
 import { UniqueArray } from '@libs/common/decorator/unique-array.decorator';
 import { ToArray } from '@libs/common/decorator/to-array.decorator';
-import { Type } from 'class-transformer';
-import { TrimStringArray } from '@libs/common/decorator/trim-string-array.decorator';
 import { FreeTagEntity } from '@admin/api/free-tag/entity/free-tag.entity';
 import { SearchTagEntity } from '@admin/api/search-tag/entity/search-tag.entity';
 

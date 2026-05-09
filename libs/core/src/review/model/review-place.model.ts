@@ -14,6 +14,7 @@ export class ReviewPlaceModel extends PickType(PlaceModel, [
   'name',
   'roadAddress',
   'type',
+  'imgPathList',
 ]) {
   constructor(data: ReviewPlaceModel) {
     super();
@@ -28,6 +29,7 @@ export class ReviewPlaceModel extends PickType(PlaceModel, [
       type: place.placeTypeMappingList.map(
         ({ placeTypeIdx }) => placeTypeIdx,
       )[0] as PlaceType,
+      imgPathList: place.placeImageList.map(({ path }) => path),
     });
   }
 }

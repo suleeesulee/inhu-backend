@@ -1,5 +1,9 @@
 import { ReviewCoreService } from '@libs/core/review/review-core.service';
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { GetAllReviewDto } from './dto/request/get-all-review.dto';
 import { ReviewEntity } from './entity/review.entity';
 
@@ -43,5 +47,15 @@ export class ReviewService {
         'You must filter by either placeIdx or userIdx',
       );
     }
+  }
+
+  public async getReviewByIdx(idx: number): Promise<ReviewEntity> {
+    const review = await this.reviewCoreService.getReviewByIdx(idx);
+
+    if (!review) {
+      throw new NotFoundException('Cannot find review');
+    }
+
+    return ReviewEntity.fromModel(review);
   }
 }
