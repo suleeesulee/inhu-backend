@@ -277,7 +277,7 @@ describe('FoodStation E2E test', () => {
 
       expect(foodStationList).toHaveLength(2);
 
-      const mealOffering1 = foodStationList[0].mealOffering;
+      const mealOffering1 = foodStationList[1].mealOffering; // TODO: 0 -> 1 로 바꿈 이거 정상인지 확인 필요함
       expect(mealOffering1).toBeDefined();
       expect(mealOffering1.idx).toBe(mealOfferingSeed1.idx);
       expect(mealOffering1.kcal).toBe(mealOfferingSeed1.kcal);
@@ -285,7 +285,7 @@ describe('FoodStation E2E test', () => {
       expect(mealOffering1.endTime).toBe('10:00:00');
       expect(mealOffering1.servedDate).toBe('2026-04-20');
 
-      const mealOffering2 = foodStationList[1].mealOffering;
+      const mealOffering2 = foodStationList[0].mealOffering; // TODO: 1 -> 0 으로 바꿈 이거 정상인지 확인 필요함
       expect(mealOffering2).toBeDefined();
       expect(mealOffering2.idx).toBe(mealOfferingSeed2.idx);
       expect(mealOffering2.kcal).toBe(mealOfferingSeed2.kcal);

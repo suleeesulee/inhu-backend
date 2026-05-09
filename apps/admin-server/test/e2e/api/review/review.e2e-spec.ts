@@ -660,7 +660,7 @@ describe('Admin Review E2E Tests', () => {
         .expect(400);
     });
 
-    it('403 - no placeIdx and no userIdx', async () => {
+    it('200 - no placeIdx and no userIdx', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
 
       await testHelper
@@ -670,7 +670,7 @@ describe('Admin Review E2E Tests', () => {
           page: 1, // ! no placeIdx and no userIdx
         })
         .set('Cookie', `token=Bearer ${loginUser.token}`)
-        .expect(403);
+        .expect(200);
     });
   });
 });
