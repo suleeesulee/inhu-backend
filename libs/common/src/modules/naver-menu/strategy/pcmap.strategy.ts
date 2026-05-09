@@ -27,15 +27,13 @@ export class PcmapStrategy extends NaverCrawlingStrategy {
     };
   }
 
-  public async crawl(page: Page, timeout: number): Promise<NaverMenu[]> {
-    await this.expandAllMenus(page, timeout);
+  public async crawl(page: Page): Promise<NaverMenu[]> {
+    await this.expandAllMenus(page);
 
     const selector = this.selectors;
     const liSelector = selector.liSelector;
     try {
-      await page.waitForSelector(liSelector, {
-        timeout,
-      });
+      await page.waitForSelector(liSelector);
     } catch (error) {
       throw new NotFoundException(
         `크롤링 타임아웃: 셀렉터('${liSelector}')를 찾지 못했습니다.`,
@@ -84,13 +82,11 @@ export class PcmapStrategy extends NaverCrawlingStrategy {
   /**
    * 메뉴 펼쳐서 더보기 버튼을 모두 클릭하는 메서드
    */
-  private async expandAllMenus(page: Page, timeout: number): Promise<void> {
+  private async expandAllMenus(page: Page): Promise<void> {
     const selector = this.selectors.expandButtonSelector;
 
     try {
-      await page.waitForSelector(selector, {
-        timeout,
-      });
+      await page.waitForSelector(selector);
     } catch (error) {
       console.log('더이상 더보기 버튼이 존재하지 않아 넘어갑니다.');
     }
