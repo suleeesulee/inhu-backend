@@ -19,12 +19,16 @@ import { UpdateMagazineByIdxDto } from './dto/request/update-magazine-by-idx.dto
 import { UpdateMagazineCategoryDto } from './dto/request/update-magazine-category.dto';
 import { LoginAdmin } from '@admin/common/types/login-admin';
 import { AdminRole } from '../auth/admin-role.enum';
+import { RecommendDescriptionDto } from './dto/request/recommend-description.dto';
+import { DescriptionRecommendResponseDto } from './dto/response/description-recommend.response.dto';
+import { OpenAIService } from '@libs/common/modules/openAI/openAI.service';
 
 @Injectable()
 export class MagazineService {
   constructor(
     private readonly magazineCoreService: MagazineCoreService,
     private readonly placeCoreService: PlaceCoreService,
+    private readonly openAIService: OpenAIService,
   ) {}
 
   public async getMagazineByIdx(idx: number): Promise<MagazineEntity> {
@@ -116,6 +120,37 @@ export class MagazineService {
     await this.magazineCoreService.updateMagazineByIdx(idx, {
       activate: isActivate,
     });
+  }
+
+  public async recommendDescription(
+    dto: RecommendDescriptionDto,
+  ): Promise<DescriptionRecommendResponseDto> {
+    const promptText = `
+[데이터 정보]
+- 제목: ${dto.title}
+- 내용: ${dto.content.slice(0, 200)}
+- 추가 요청: "${dto.prompt}"
+    `.trim();
+
+    const instructions = `
+당신은 베테랑 매거진 에디터입니다.
+주어진 [데이터 정보]와 [추가 요청사항]을 반영하여 매거진 소개글을 작성하세요.
+
+[작성 규칙]
+1. 핵심 요약: 제목과 내용의 핵심을 꿰뚫으면서도 이미지와 어울리는 문장을 만드세요.
+2. 요청 반영: [추가 요청사항]에 적힌 내용을 적절히 반영하되, 내용의 사실관계를 왜곡하지 마세요.
+3. 길이 제약: 공백 포함 50자 내외의 한 문장으로 작성하세요.
+4. 언어: 자연스러운 한국어로 작성하세요.
+5. 형식: 부연 설명 없이 완성된 문장 하나만 출력하세요.
+    `.trim();
+
+    return {
+      description: await this.openAIService.completeWithImage<string>(
+        promptText,
+        `https://inhu-files.s3.ap-northeast-2.amazonaws.com/${dto.thumbnailImagePath}`,
+        instructions,
+      ),
+    };
   }
 
   // ! 기존에 magazine admin인 경우 동일 인물만 수정하게 했는데 magazine admin이면 수정 가능하게 임시 변경함. 괜찮은 방법인지 고민할 필요있음

@@ -1,6 +1,5 @@
 export default () => ({
   naverMenu: {
-    executablePath: process.env.PUPPETEER_CUSTOM_EXECUTABLE_PATH || '',
     selectorTimeout: Number(process.env.PUPPETEER_SELECTOR_TIMEOUT),
     pcmap: {
       liSelector: process.env.PCMAP_LI_SELECTOR || '',

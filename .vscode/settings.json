@@ -8,5 +8,6 @@
     "Timestamptz"
   ],
   "prisma.pinToPrisma6": true,
-  "prisma.schemaPath": "./prisma/schema.prisma"
+  "prisma.schemaPath": "./prisma/schema.prisma",
+  "js/ts.tsdk.path": "node_modules/typescript/lib"
 }

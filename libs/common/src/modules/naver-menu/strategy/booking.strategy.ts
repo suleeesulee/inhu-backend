@@ -33,13 +33,11 @@ export class BookingStrategy extends NaverCrawlingStrategy {
     };
   }
 
-  public async crawl(page: Page, timeout: number): Promise<NaverMenu[]> {
-    await this.showSoldOutMenus(this.selectors.soldOutSelector, page, timeout);
+  public async crawl(page: Page): Promise<NaverMenu[]> {
+    await this.showSoldOutMenus(this.selectors.soldOutSelector, page);
 
     try {
-      await page.waitForSelector(this.selectors.rootDivSelector, {
-        timeout,
-      });
+      await page.waitForSelector(this.selectors.rootDivSelector);
     } catch (error) {
       throw new NotFoundException(
         `크롤링 타임아웃: 셀렉터('${this.selectors.rootDivSelector}')를 찾지 못했습니다.`,
@@ -65,9 +63,7 @@ export class BookingStrategy extends NaverCrawlingStrategy {
 
         const liSelector = this.selectors.liSelector;
         try {
-          await page.waitForSelector(liSelector, {
-            timeout,
-          });
+          await page.waitForSelector(liSelector);
         } catch (error) {
           throw new NotFoundException(
             `크롤링 타임아웃: 셀렉터('${liSelector}')를 찾지 못했습니다.`,
@@ -84,14 +80,9 @@ export class BookingStrategy extends NaverCrawlingStrategy {
     return this.removeDuplicateMenu(menuList);
   }
 
-  private async showSoldOutMenus(
-    selector: string,
-    page: Page,
-    timeout: number,
-  ): Promise<void> {
+  private async showSoldOutMenus(selector: string, page: Page): Promise<void> {
     try {
       const checkbox = await page.waitForSelector(selector, {
-        timeout,
         visible: true,
       });
 

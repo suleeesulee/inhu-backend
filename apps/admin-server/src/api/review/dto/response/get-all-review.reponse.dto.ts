@@ -12,4 +12,6 @@ export class GetAllReviewResponseDto {
    * 리뷰 목록 data
    */
   reviewList: ReviewEntity[];
+
+  totalCount: number;
 }

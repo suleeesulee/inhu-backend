@@ -17,6 +17,7 @@ import { GetFoodStationAllResponseDto } from './dto/response/get-food-station-al
 import { CreateFoodStationDto } from './dto/request/create-food-station.dto';
 import { FoodStationEntity } from './entity/food-station.entity';
 import { UpdateFoodStationDto } from './dto/request/update-food-station.dto';
+import { CrawlingFoodStationDto } from './dto/request/crawlingFoodStation.dto';
 
 @Controller('')
 export class FoodStationController {
@@ -48,6 +49,20 @@ export class FoodStationController {
     @Body() dto: CreateFoodStationDto,
   ): Promise<FoodStationEntity> {
     return this.foodStationService.createFoodStation(idx, dto);
+  }
+
+  /**
+   * 학식 자동으로 불러오기
+   */
+  @Post('cafeteria/:idx/food-station/crawling')
+  @Exception(400, 'invalid cafeteria idx')
+  @Exception(404, 'cafeteria not found')
+  @AdminAuth()
+  public async crawlingFoodStation(
+    @Param('idx', ParseIntPipe) idx: number,
+    @Body() dto: CrawlingFoodStationDto,
+  ): Promise<FoodStationEntity[]> {
+    return this.foodStationService.crawlingFoodStation(idx, dto);
   }
 
   /**
