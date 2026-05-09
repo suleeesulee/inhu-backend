@@ -18,6 +18,7 @@ export class ReviewService {
   public async getAllReview(dto: GetAllReviewDto): Promise<{
     reviewList: ReviewEntity[];
     hasNext: boolean;
+    totalCount: number;
   }> {
     const pageSize = 10;
     const take = pageSize + 1;
@@ -28,11 +29,17 @@ export class ReviewService {
       skip,
       ...dto,
     });
+    const totalCount = await this.reviewCoreService.getAllReviewCount({
+      take,
+      skip,
+      ...dto,
+    });
 
     return {
       reviewList: reviewModelList
         .slice(0, pageSize)
         .map((review) => ReviewEntity.fromModel(review)),
+      totalCount,
       hasNext: reviewModelList.length > pageSize,
     };
   }
