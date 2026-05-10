@@ -80,8 +80,6 @@ export class FoodStationService {
 
     if (cafeteriaIdx === 1 || cafeteriaIdx === 2) {
       return this.crawlingInhaUniv(cafeteriaIdx, dto.url);
-    } else if (cafeteriaIdx === 3) {
-      return this.crawlingDormitory(cafeteriaIdx, dto.url);
     } else if (cafeteriaIdx === 4 || cafeteriaIdx === 5) {
       return this.crawlingInhaTech(cafeteriaIdx, dto);
     } else {
