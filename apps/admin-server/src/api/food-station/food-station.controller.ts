@@ -53,6 +53,12 @@ export class FoodStationController {
 
   /**
    * 학식 자동으로 불러오기
+   *
+   * - 1: 인하대 학생식당
+   * - 2: 인하대 교직원식당
+   * - 3: 인하대 기숙사식당 (현재 크롤링 지원 X)
+   * - 4: 인하공전 학생식당
+   * - 5: 인하공전 교직원식당
    */
   @Post('cafeteria/:idx/food-station/crawling')
   @Exception(400, 'invalid cafeteria idx')
