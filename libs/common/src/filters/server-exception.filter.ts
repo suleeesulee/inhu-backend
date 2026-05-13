@@ -8,10 +8,14 @@ import { BaseExceptionFilter } from '@nestjs/core';
 import { Request } from 'express';
 import { DiscordWebhookService } from '../modules/discord-webhook/discord-webhook.service';
 import { DiscordWebhookContext } from '../modules/discord-webhook/constants/discord-webhook-context.enum';
+import { MetricService } from '../modules/metric/metric.service';
 
 @Catch()
 export class ServerExceptionsFilter extends BaseExceptionFilter {
-  constructor(private readonly discordWebhookService: DiscordWebhookService) {
+  constructor(
+    private readonly discordWebhookService: DiscordWebhookService,
+    private readonly metricService: MetricService,
+  ) {
     super();
   }
 
@@ -24,9 +28,16 @@ export class ServerExceptionsFilter extends BaseExceptionFilter {
         ? exception.getStatus()
         : HttpStatus.INTERNAL_SERVER_ERROR;
 
+    const labels = {
+      controller: 'GlobalFilter',
+      handler: request.url,
+      method: request.method,
+      error: status.toString(),
+    };
+    this.metricService.incrementFailureCounter(labels);
+
     if (status >= 500) {
       const envServiceName = process.env.SERVICE_NAME;
-
       let webhookContext: DiscordWebhookContext = DiscordWebhookContext.UNKNOWN;
 
       if (
@@ -39,7 +50,6 @@ export class ServerExceptionsFilter extends BaseExceptionFilter {
 
       const errorObj =
         exception instanceof Error ? exception : new Error(String(exception));
-
       const message = `Path: [${request.method}] ${request.url}`;
 
       this.discordWebhookService

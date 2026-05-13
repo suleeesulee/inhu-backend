@@ -28,6 +28,10 @@ import { CafeteriaModule } from './api/cafeteria/cafeteria.module';
 import { DailyMemoModule } from './api/daily-memo/daily-memo.module';
 import { MealOfferingModule } from './api/meal-offering/meal-offering.module';
 import { FoodStationModule } from './api/food-station/food-station.module';
+import { MetricModule } from '@libs/common/modules/metric/metric.module';
+import { APP_INTERCEPTOR } from '@nestjs/core';
+import { MetricInterceptor } from '@libs/common/interceptors/metric.interceptor';
+import { PrometheusApiModule } from './api/prometheus/prometheus.module';
 
 @Module({
   imports: [
@@ -64,11 +68,17 @@ import { FoodStationModule } from './api/food-station/food-station.module';
     DailyMemoModule,
     MealOfferingModule,
     FoodStationModule,
+    MetricModule,
+    PrometheusApiModule,
   ],
   providers: [
     {
       provide: 'APP_FILTER',
       useClass: ServerExceptionsFilter,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: MetricInterceptor,
     },
   ],
 })

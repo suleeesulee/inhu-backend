@@ -53,6 +53,7 @@
     "@nestjs/swagger": "^11.2.0",
     "@prisma/client": "^6.12.0",
     "@toss/nestjs-aop": "^2.1.7",
+    "@willsoto/nestjs-prometheus": "^6.1.0",
     "axios": "^1.10.0",
     "bcrypt": "^6.0.0",
     "cheerio": "^1.1.2",
@@ -64,11 +65,11 @@
     "kafkajs": "^2.2.4",
     "nestjs-cls": "^6.0.1",
     "openai": "^6.37.0",
+    "prom-client": "^15.1.3",
     "puppeteer": "^24.29.1",
     "redlock": "^5.0.0-beta.2",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.2",
-    "swagger-stats": "^0.99.7",
     "uuid": "^11.1.0"
   },
   "devDependencies": {
