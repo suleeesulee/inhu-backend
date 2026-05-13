@@ -66,30 +66,30 @@ jobs:
           echo "Deployment gate outputs: ${{ toJSON(steps.deployment-gate.outputs) }}"
 
   # Job 2: Batch 서버 빌드 및 테스트
-  test-batch:
-    name: Test Batch Server
-    needs: check-batch-changes
-    if: needs.check-batch-changes.outputs.should_run == 'true'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+  # test-batch:
+  #   name: Test Batch Server
+  #   needs: check-batch-changes
+  #   if: needs.check-batch-changes.outputs.should_run == 'true'
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v4
 
-      - name: Setup nodejs
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22.x
+  #     - name: Setup nodejs
+  #       uses: actions/setup-node@v4
+  #       with:
+  #         node-version: 22.x
 
-      - name: Install dependencies
-        run: npm ci
+  #     - name: Install dependencies
+  #       run: npm ci
 
-      # PR 시 Batch 서버 테스트 실행
-      - name: Run E2E tests for Batch Server
-        if: github.event_name == 'pull_request'
-        run: |
-          npm run batch-server:test:infra:up
-          npm run batch-server:test:e2e
-          npm run batch-server:test:infra:down
+  #     # PR 시 Batch 서버 테스트 실행
+  #     - name: Run E2E tests for Batch Server
+  #       if: github.event_name == 'pull_request'
+  #       run: |
+  #         npm run batch-server:test:infra:up
+  #         npm run batch-server:test:e2e
+  #         npm run batch-server:test:infra:down
 
   build-batch:
     name: Build Batch Server

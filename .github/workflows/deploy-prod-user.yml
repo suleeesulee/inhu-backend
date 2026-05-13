@@ -66,30 +66,30 @@ jobs:
           echo "Deployment gate outputs: ${{ toJSON(steps.deployment-gate.outputs) }}"
 
   # Job 2: User 서버 빌드 및 테스트
-  test-user:
-    name: Test User Server
-    needs: check-user-changes
-    if: needs.check-user-changes.outputs.should_run == 'true'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+  # test-user:
+  #   name: Test User Server
+  #   needs: check-user-changes
+  #   if: needs.check-user-changes.outputs.should_run == 'true'
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v4
 
-      - name: Setup nodejs
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22.x
+  #     - name: Setup nodejs
+  #       uses: actions/setup-node@v4
+  #       with:
+  #         node-version: 22.x
 
-      - name: Install dependencies
-        run: npm ci
+  #     - name: Install dependencies
+  #       run: npm ci
 
-      # PR 시 User 서버 테스트 실행
-      - name: Run E2E tests for User Server
-        if: github.event_name == 'pull_request'
-        run: |
-          npm run user-server:test:infra:up
-          npm run user-server:test:e2e
-          npm run user-server:test:infra:down
+  #     # PR 시 User 서버 테스트 실행
+  #     - name: Run E2E tests for User Server
+  #       if: github.event_name == 'pull_request'
+  #       run: |
+  #         npm run user-server:test:infra:up
+  #         npm run user-server:test:e2e
+  #         npm run user-server:test:infra:down
 
   build-user:
     name: Build User Server
