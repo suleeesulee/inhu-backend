@@ -73,7 +73,6 @@ export class MetricService implements OnModuleInit {
 
   // 실패 횟수 상승시키기
   incrementFailureCounter(labels: Record<string, string>) {
-    console.log('Incrementing failure counter with labels:', labels);
     this.failureCounter.labels(labels).inc(1);
   }
 
