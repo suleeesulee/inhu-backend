@@ -27,14 +27,14 @@ export class PinnedMagazineService {
       throw new NotFoundException(`Magazine not found for idx: ${idx}`);
     }
 
-    if (
-      admin.role === AdminRole.MagazineAdmin &&
-      magazine.authorIdx !== admin.idx
-    ) {
-      throw new ForbiddenException(
-        `Admin idx: ${admin.idx} is not the author of magazine idx: ${idx}`,
-      );
-    }
+    // if (
+    //   admin.role === AdminRole.MagazineAdmin &&
+    //   magazine.authorIdx !== admin.idx
+    // ) {
+    //   throw new ForbiddenException(
+    //     `Admin idx: ${admin.idx} is not the author of magazine idx: ${idx}`,
+    //   );
+    // }
 
     const pinnedMagazine =
       await this.pinnedMagazineCoreService.getPinnedMagazineByIdx(idx);
