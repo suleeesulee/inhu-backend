@@ -27,6 +27,10 @@ import { PlaceSectionModule } from './api/place-section/place-section.module';
 import { MagazineSectionModule } from './api/magazine-section/magazine-section.module';
 import { AdminAccountCoreModule } from '@libs/core/admin-account/admin-account-core.module';
 import { FoodStationModule } from './api/food-station/food-station.module';
+import { APP_INTERCEPTOR } from '@nestjs/core';
+import { MetricInterceptor } from '@libs/common/interceptors/metric.interceptor';
+import { MetricModule } from '@libs/common/modules/metric/metric.module';
+import { PrometheusApiModule } from './api/prometheus/prometheus.module';
 
 @Module({
   imports: [
@@ -63,11 +67,17 @@ import { FoodStationModule } from './api/food-station/food-station.module';
     MagazineSectionModule,
     AdminAccountCoreModule,
     FoodStationModule,
+    MetricModule,
+    PrometheusApiModule,
   ],
   providers: [
     {
       provide: 'APP_FILTER',
       useClass: ServerExceptionsFilter,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: MetricInterceptor,
     },
   ],
 })
