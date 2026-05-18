@@ -31,6 +31,7 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
 import { MetricInterceptor } from '@libs/common/interceptors/metric.interceptor';
 import { MetricModule } from '@libs/common/modules/metric/metric.module';
 import { PrometheusApiModule } from './api/prometheus/prometheus.module';
+import { UserMailModule } from './api/mail/user-mail.module';
 
 @Module({
   imports: [
@@ -69,6 +70,7 @@ import { PrometheusApiModule } from './api/prometheus/prometheus.module';
     FoodStationModule,
     MetricModule,
     PrometheusApiModule,
+    UserMailModule,
   ],
   providers: [
     {
