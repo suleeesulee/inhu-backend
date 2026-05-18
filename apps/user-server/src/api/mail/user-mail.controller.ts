@@ -1,19 +1,33 @@
-import { Controller, Post } from '@nestjs/common';
+import { Body, Controller, Post } from '@nestjs/common';
 import { UserMailService } from './user-mail.service';
 import { User } from '@user/common/decorator/user.decorator';
 import { LoginUser } from '@user/common/types/LoginUser';
+import { SendVerificationCodeDto } from './dto/request/send-verification-code.dto';
+import { VerifyCodeDto } from './dto/request/verify-code.dto';
 
 @Controller('')
 export class UserMailController {
   constructor(private readonly userMailService: UserMailService) {}
 
   @Post('univ-verification/send-code')
-  async sendVerificationEmail(@User() loginUser: LoginUser) {
-    return await this.userMailService.sendVerificationEmail(loginUser.idx, ' ');
+  async sendVerificationCode(
+    @Body() sendVerificationCodeDto: SendVerificationCodeDto,
+    @User() loginUser: LoginUser,
+  ) {
+    return await this.userMailService.sendVerificationCode(
+      loginUser.idx,
+      sendVerificationCodeDto.email,
+    );
   }
 
   @Post('univ-verification/verify-code')
-  async verifyCode(@User() loginUser: LoginUser) {
-    return await this.userMailService.verifyCode(loginUser.idx, ' ');
+  async verifyCode(
+    @Body() verifyCodeDto: VerifyCodeDto,
+    @User() loginUser: LoginUser,
+  ) {
+    return await this.userMailService.verifyCode(
+      loginUser.idx,
+      verifyCodeDto.code,
+    );
   }
 }
