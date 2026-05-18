@@ -456,6 +456,7 @@ CREATE TABLE user_tb
   nickname           varchar                  NOT NULL,
   profile_image_path varchar                 ,
   platform           varchar                  NOT NULL DEFAULT 'unknown',
+  is_school_verified boolean                  NOT NULL DEFAULT false,
   created_at         timestamp with time zone NOT NULL DEFAULT NOW(),
   deleted_at         timestamp with time zone,
   PRIMARY KEY (idx)
