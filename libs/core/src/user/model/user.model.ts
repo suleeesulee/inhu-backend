@@ -48,6 +48,13 @@ export class UserModel {
    */
   type: UserType;
 
+  /**
+   * 학교 인증 여부
+   *
+   * @example false
+   */
+  isSchoolVerified: boolean;
+
   constructor(data: UserModel) {
     Object.assign(this, data);
   }
@@ -63,6 +70,7 @@ export class UserModel {
         : null,
       type:
         user.placeOwnerList.length > 0 ? UserType.PLACE_OWNER : UserType.USER,
+      isSchoolVerified: user.isSchoolVerified,
     });
   }
 }
