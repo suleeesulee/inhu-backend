@@ -10,6 +10,9 @@ import { LoginAuth } from '@user/common/decorator/login-auth.decorator';
 export class UserMailController {
   constructor(private readonly userMailService: UserMailService) {}
 
+  /**
+   * 대학 인증 코드 이메일로 발송
+   */
   @LoginAuth()
   @Post('univ-verification/send-code')
   async sendVerificationCode(
@@ -22,6 +25,9 @@ export class UserMailController {
     );
   }
 
+  /**
+   * 대학 인증 코드 검증
+   */
   @LoginAuth()
   @Post('univ-verification/verify-code')
   async verifyCode(
