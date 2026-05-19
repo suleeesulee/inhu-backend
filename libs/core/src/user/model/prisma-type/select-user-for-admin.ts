@@ -7,6 +7,7 @@ export const SELECT_USER_FOR_ADMIN = Prisma.validator<Prisma.UserDefaultArgs>()(
       idx: true,
       nickname: true,
       profileImagePath: true,
+      isSchoolVerified: true,
       createdAt: true,
       userProvider: SELECT_USER_PROVIDER,
       _count: {
