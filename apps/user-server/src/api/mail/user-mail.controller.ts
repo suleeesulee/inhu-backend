@@ -13,7 +13,7 @@ export class UserMailController {
   async sendVerificationCode(
     @Body() sendVerificationCodeDto: SendVerificationCodeDto,
     @User() loginUser: LoginUser,
-  ) {
+  ): Promise<void> {
     return await this.userMailService.sendVerificationCode(
       loginUser.idx,
       sendVerificationCodeDto.email,
@@ -24,7 +24,7 @@ export class UserMailController {
   async verifyCode(
     @Body() verifyCodeDto: VerifyCodeDto,
     @User() loginUser: LoginUser,
-  ) {
+  ): Promise<boolean> {
     return await this.userMailService.verifyCode(
       loginUser.idx,
       verifyCodeDto.code,

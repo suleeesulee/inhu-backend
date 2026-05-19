@@ -11,7 +11,7 @@ export class UserMailService {
     private readonly userCoreService: UserCoreService,
   ) {}
 
-  async sendVerificationCode(userIdx: number, email: string) {
+  async sendVerificationCode(userIdx: number, email: string): Promise<void> {
     if (!email.endsWith('inha.edu')) {
       throw new ForbiddenException('인하대학교 이메일만 사용할 수 있습니다.');
     }
