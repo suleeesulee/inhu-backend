@@ -1,5 +1,3 @@
-import { UserForAdminModel } from '@libs/core/user/model/user-for-admin.model';
-import { UserOverviewEntity } from './user-overview.entity';
 import { UserProviderEntity } from './user-provider.entity';
 import { UserModel } from '@libs/core/user/model/user.model';
 
@@ -31,6 +29,13 @@ export class UserEntity {
   public provider: UserProviderEntity | null;
 
   /**
+   * 학교 인증 여부
+   *
+   * @example false
+   */
+  public isSchoolVerified: boolean;
+
+  /**
    * 계정 생성일
    *
    * @example "2025-07-25T14:49:21.451Z"
@@ -47,6 +52,7 @@ export class UserEntity {
       nickname: model.nickname,
       profileImagePath: model.profileImagePath,
       provider: model.provider,
+      isSchoolVerified: model.isSchoolVerified,
       createdAt: model.createdAt,
     });
   }

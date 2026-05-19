@@ -41,6 +41,13 @@ export class UserForAdminModel {
   reviewCount: number;
 
   /**
+   * 학교 인증 여부
+   *
+   * @example false
+   */
+  isSchoolVerified: boolean;
+
+  /**
    * 계정 생성일
    *
    * @example "2025-07-25T14:49:21.451Z"
@@ -60,6 +67,7 @@ export class UserForAdminModel {
         ? UserProviderModel.fromPrisma(user.userProvider)
         : null,
       reviewCount: user._count.reviewList,
+      isSchoolVerified: user.isSchoolVerified,
       createdAt: user.createdAt,
     });
   }
