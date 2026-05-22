@@ -105,6 +105,7 @@ export class UserCoreRepository {
       data: {
         nickname: input.nickname,
         profileImagePath: input.profileImagePath,
+        isSchoolVerified: input.isSchoolVerified,
       },
       where: { idx, deletedAt: null },
     });

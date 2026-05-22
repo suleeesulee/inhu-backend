@@ -8,4 +8,9 @@ import { CreateUserInput } from './create-user.input';
  */
 export class UpdateUserInput extends PartialType(
   PickType(CreateUserInput, ['nickname', 'profileImagePath']),
-) {}
+) {
+  /**
+   * 학교 인증 여부
+   */
+  isSchoolVerified?: boolean;
+}
