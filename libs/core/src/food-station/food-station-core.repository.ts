@@ -49,7 +49,7 @@ export class FoodStationCoreRepository {
     cafeteriaIdx: number,
     servedDate: string,
   ): Promise<SelectFoodStation[]> {
-    return await this.txHost.tx.foodStation.findMany({
+    return (await this.txHost.tx.foodStation.findMany({
       select: {
         ...SELECT_FOOD_STATION.select,
         mealOfferingList: {
@@ -66,13 +66,14 @@ export class FoodStationCoreRepository {
         mealOfferingList: {
           some: {
             servedDate: `${servedDate}T00:00:00Z`,
+            deletedAt: null,
           },
         },
       },
       orderBy: {
         startTime: 'asc',
       },
-    }) as SelectFoodStation[];
+    })) as SelectFoodStation[];
   }
 
   public async insertFoodStation(
