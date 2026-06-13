@@ -62,7 +62,7 @@ export class NaverMenuService {
    */
   private async gotoNaverPlacePage(url: string, page: Page) {
     try {
-      await page.goto(url);
+      await page.goto(url, { waitUntil: 'networkidle2' });
     } catch (error) {
       throw new NotFoundException('네이버 메뉴 페이지 이동에 실패했습니다.');
     }
