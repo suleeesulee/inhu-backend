@@ -30,8 +30,10 @@ export class NaverMenuService {
       const url = new URL(
         `https://pcmap.place.naver.com/restaurant/${naverPlaceId}`,
       ).toString();
+      console.log(`네이버 플레이스 페이지로 이동: ${url}`);
 
       await this.gotoNaverPlacePage(url, page);
+      console.log('현재 페이지 URL:', page.url());
 
       await this.waitForSelectorWithTimeout(page, '#app-root');
 
@@ -40,9 +42,10 @@ export class NaverMenuService {
         await this.waitForSelectorWithTimeout(page, menuSelector);
         await page.click(menuSelector);
       } catch (error) {
-        console.log('메뉴가 존재하지 않습니다.');
+        console.log('메뉴가 존재하지 않습니다.', error);
         return [];
       }
+      console.log('현재 페이지 URL (메뉴 클릭 후):', page.url());
 
       const strategy = this.strategyMap[new URL(page.url()).hostname];
       if (!strategy) {

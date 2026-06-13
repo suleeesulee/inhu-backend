@@ -28,8 +28,16 @@ export class PuppeteerService {
 
     try {
       const page = await browser.newPage();
+      page.on('console', (msg) =>
+        console.log(`[BROWSER CONSOLE] ${msg.text()}`),
+      );
+      page.on('error', (err) => console.log(`[BROWSERCRASH] ${err.message}`));
+      page.on('pageerror', (err) => console.log(`[BROWSERPAGE ERROR] ${err}`));
       page.setDefaultTimeout(this.PUPPETEER_SELECTOR_TIMEOUT);
       return await callback(page);
+    } catch (err) {
+      console.log(`[BROWSER ERROR] ${err.message}`);
+      throw err;
     } finally {
       await browser.close();
     }

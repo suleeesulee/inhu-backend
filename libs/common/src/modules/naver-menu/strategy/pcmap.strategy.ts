@@ -94,9 +94,13 @@ export class PcmapStrategy extends NaverCrawlingStrategy {
     let btn = await page.$(selector);
 
     while (btn) {
-      await btn.click();
-      await new Promise((resolve) => setTimeout(resolve, 100));
-      btn = await page.$(selector);
+      try {
+        await btn.click();
+        await new Promise((resolve) => setTimeout(resolve, 500));
+        btn = await page.$(selector);
+      } catch (err) {
+        break;
+      }
     }
   }
 }
