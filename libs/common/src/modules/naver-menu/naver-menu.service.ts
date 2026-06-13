@@ -36,6 +36,10 @@ export class NaverMenuService {
       console.log('현재 페이지 URL:', page.url());
 
       await this.waitForSelectorWithTimeout(page, '#app-root');
+      await page.screenshot({
+        path: `error_${naverPlaceId}.png`,
+        fullPage: true,
+      });
 
       try {
         const menuSelector = this.NAVER_MENU_DIV_SELECTOR;
