@@ -59,6 +59,7 @@ export class BookingStrategy extends NaverCrawlingStrategy {
           continue;
         }
 
+        await this.randomDelay(400, 800);
         await tab.click();
 
         const liSelector = this.selectors.liSelector;
@@ -88,8 +89,7 @@ export class BookingStrategy extends NaverCrawlingStrategy {
 
       if (checkbox) {
         await checkbox.evaluate((el) => el.scrollIntoView());
-
-        await new Promise((res) => setTimeout(res, 500));
+        await this.randomDelay(300, 700);
         await checkbox.click();
       }
     } catch (err) {
@@ -101,17 +101,22 @@ export class BookingStrategy extends NaverCrawlingStrategy {
     await page.evaluate(async () => {
       await new Promise<void>((resolve) => {
         let totalHeight = 0;
-        const distance = 100;
-        const timer = setInterval(() => {
+
+        const scroll = () => {
+          const distance = Math.floor(Math.random() * 100) + 50;
           const scrollHeight = document.body.scrollHeight;
           window.scrollBy(0, distance);
           totalHeight += distance;
 
           if (totalHeight >= scrollHeight) {
-            clearInterval(timer);
             resolve();
+          } else {
+            const delay = Math.floor(Math.random() * 30) + 20;
+            setTimeout(scroll, delay);
           }
-        }, 10);
+        };
+
+        scroll();
       });
     });
   }

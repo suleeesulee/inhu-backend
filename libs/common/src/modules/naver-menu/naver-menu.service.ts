@@ -36,6 +36,7 @@ export class NaverMenuService {
       console.log('현재 페이지 URL:', page.url());
 
       await this.waitForSelectorWithTimeout(page, '#app-root');
+      await new Promise((r) => setTimeout(r, 800 + Math.random() * 1000));
       await page.screenshot({
         path: `error_${naverPlaceId}.png`,
         fullPage: true,
@@ -44,6 +45,7 @@ export class NaverMenuService {
       try {
         const menuSelector = this.NAVER_MENU_DIV_SELECTOR;
         await this.waitForSelectorWithTimeout(page, menuSelector);
+        await new Promise((r) => setTimeout(r, 300 + Math.random() * 500));
         await page.click(menuSelector);
       } catch (error) {
         console.log('메뉴가 존재하지 않습니다.', error);
@@ -66,7 +68,7 @@ export class NaverMenuService {
    */
   private async gotoNaverPlacePage(url: string, page: Page) {
     try {
-      await page.goto(url, { waitUntil: 'networkidle2' });
+      await page.goto(url, { waitUntil: 'domcontentloaded' });
     } catch (error) {
       throw new NotFoundException('네이버 메뉴 페이지 이동에 실패했습니다.');
     }
