@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import puppeteer, { Page } from 'puppeteer';
+import { Page } from 'puppeteer';
+import puppeteer from 'puppeteer-extra';
+import StealthPlugin = require('puppeteer-extra-plugin-stealth');
 
 @Injectable()
 export class PuppeteerService {
@@ -12,11 +14,13 @@ export class PuppeteerService {
       this.configService.get('puppeteer.customExecutablePath') || '';
     this.PUPPETEER_SELECTOR_TIMEOUT =
       this.configService.get('puppeteer.selectorTimeout') || 30000;
+
+    puppeteer.use(StealthPlugin());
   }
 
   public async execute<T>(callback: (page: Page) => Promise<T>): Promise<T> {
     const browser = await puppeteer.launch({
-      headless: 'shell',
+      headless: true,
       executablePath: this.PUPPETEER_CUSTOM_EXECUTABLE_PATH,
       args: [
         '--no-sandbox',
@@ -28,10 +32,8 @@ export class PuppeteerService {
 
     try {
       const page = await browser.newPage();
-      await page.setUserAgent({
-        userAgent:
-          'Mozilla/5.0 (Macintosh; Intel Mac OS X10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
-      });
+      await page.setViewport({ width: 1920, height: 1080 });
+
       page.on('console', (msg) =>
         console.log(`[BROWSER CONSOLE] ${msg.text()}`),
       );
