@@ -33,6 +33,7 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
 import { MetricInterceptor } from '@libs/common/interceptors/metric.interceptor';
 import { PrometheusApiModule } from './api/prometheus/prometheus.module';
 import { Ga4Module } from '@libs/common/modules/ga4/ga4.module';
+import { StatisticModule } from './api/statistic/statistic.module';
 
 @Module({
   imports: [
@@ -71,7 +72,7 @@ import { Ga4Module } from '@libs/common/modules/ga4/ga4.module';
     FoodStationModule,
     MetricModule,
     PrometheusApiModule,
-    Ga4Module,
+    StatisticModule,
   ],
   providers: [
     {

@@ -97,9 +97,11 @@ export class Ga4Service {
       limit: 100,
     });
 
-    return response.rows?.map((row) => ({
-      screenName: row.dimensionValues?.[0]?.value,
-      count: Number(row.metricValues?.[0]?.value),
-    }));
+    return (
+      response.rows?.map((row) => ({
+        screenName: row.dimensionValues?.[0]?.value,
+        count: Number(row.metricValues?.[0]?.value),
+      })) || []
+    );
   }
 }

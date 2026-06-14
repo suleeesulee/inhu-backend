@@ -7,6 +7,6 @@ import { Ga4Service } from './ga4.service';
   imports: [ConfigModule.forFeature(ga4Config)],
   controllers: [],
   providers: [Ga4Service],
-  exports: [],
+  exports: [Ga4Service],
 })
 export class Ga4Module {}
