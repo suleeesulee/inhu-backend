@@ -10,6 +10,7 @@ import { AdminServerModule } from './admin-server.module';
 import { getMode } from '@libs/common/utils/get-mode.util';
 import { DiscordWebhookService } from '@libs/common/modules/discord-webhook/discord-webhook.service';
 import { DiscordWebhookContext } from '@libs/common/modules/discord-webhook/constants/discord-webhook-context.enum';
+import { Ga4Service } from '@libs/common/modules/ga4/ga4.service';
 
 async function bootstrap() {
   const app = await NestFactory.create(AdminServerModule);
