@@ -69,4 +69,37 @@ export class Ga4Service {
 
     return map;
   }
+
+  /**
+   * 페이지 조회수
+   */
+  public async getScreenViewRankingByMonth() {
+    const [response] = await this.analyticsDataClient.runReport({
+      property: `properties/${this.PROPERTY_ID}`,
+      dateRanges: [{ startDate: '30daysAgo', endDate: 'today' }],
+      dimensions: [{ name: 'customEvent:screen_name' }],
+      metrics: [{ name: 'eventCount' }],
+      dimensionFilter: {
+        filter: {
+          fieldName: 'eventName',
+          stringFilter: {
+            matchType: 'EXACT',
+            value: 'app_screen_view',
+          },
+        },
+      },
+      orderBys: [
+        {
+          metric: { metricName: 'eventCount' },
+          desc: true,
+        },
+      ],
+      limit: 100,
+    });
+
+    return response.rows?.map((row) => ({
+      screenName: row.dimensionValues?.[0]?.value,
+      count: Number(row.metricValues?.[0]?.value),
+    }));
+  }
 }
