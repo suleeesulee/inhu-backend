@@ -85,11 +85,11 @@ export class PcmapStrategy extends NaverCrawlingStrategy {
   private async expandAllMenus(page: Page): Promise<void> {
     const selector = this.selectors.expandButtonSelector;
 
-    // try {
-    //   await page.waitForSelector(selector);
-    // } catch (error) {
-    //   console.log('더이상 더보기 버튼이 존재하지 않아 넘어갑니다.');
-    // }
+    try {
+      await page.waitForSelector(selector);
+    } catch (error) {
+      console.log('더이상 더보기 버튼이 존재하지 않아 넘어갑니다.');
+    }
 
     let btn = await page.$(selector);
 
