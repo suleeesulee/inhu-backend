@@ -37,10 +37,6 @@ export class NaverMenuService {
 
       await this.waitForSelectorWithTimeout(page, '#app-root');
       await new Promise((r) => setTimeout(r, 3000 + Math.random() * 2000));
-      await page.screenshot({
-        path: `error_${naverPlaceId}.png`,
-        fullPage: true,
-      });
 
       try {
         const menuSelector = this.NAVER_MENU_DIV_SELECTOR;
