@@ -22,6 +22,10 @@ export class PuppeteerService {
   }
 
   public async execute<T>(callback: (page: Page) => Promise<T>): Promise<T> {
+    console.log(
+      'puppeteer executable path:',
+      this.PUPPETEER_CUSTOM_EXECUTABLE_PATH,
+    );
     const browser = await puppeteer.launch({
       headless: true,
       executablePath: this.PUPPETEER_CUSTOM_EXECUTABLE_PATH,
