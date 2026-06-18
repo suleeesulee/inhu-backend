@@ -13,8 +13,8 @@ import { S3Service } from '@libs/common/modules/s3/s3.service';
 import { v4 as uuidv4 } from 'uuid';
 import { S3Folder } from '@libs/common/modules/s3/constants/s3-folder.constants';
 import { MenuCrawlingDto } from './dto/request/menu-crawling.dto';
-import { ConfigService } from '@nestjs/config';
 import { UpdateMenuIsMainDto } from './dto/request/update-menu-is-main.dto';
+import { NaverMenuWorkerService } from './naver-menu-worker.service';
 
 @Injectable()
 export class MenuService {
@@ -23,6 +23,7 @@ export class MenuService {
     private readonly placeCoreService: PlaceCoreService,
     private readonly reviewCoreService: ReviewCoreService,
     private readonly naverMenuService: NaverMenuService,
+    private readonly naverMenuWorkerService: NaverMenuWorkerService,
     private readonly s3Service: S3Service,
   ) {}
 
@@ -71,9 +72,9 @@ export class MenuService {
   public async crawlingNaverMenuViaPlaceUrl(
     dto: MenuCrawlingDto,
   ): Promise<NaverMenuEntity[]> {
-    const naverMenuList = await this.naverMenuService.extractNaverMenu(
-      dto.naverPlaceId,
-    );
+    const naverMenuList = this.naverMenuWorkerService.isEnabled()
+      ? await this.naverMenuWorkerService.extractNaverMenu(dto.naverPlaceId)
+      : await this.naverMenuService.extractNaverMenu(dto.naverPlaceId);
 
     return await Promise.all(
       naverMenuList.map(async (menu) =>

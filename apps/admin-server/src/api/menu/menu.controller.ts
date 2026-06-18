@@ -8,6 +8,7 @@ import {
   Post,
   Put,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { MenuService } from './menu.service';
 import { GetAllMenuDto } from './dto/request/get-all-menu.dto';
@@ -22,10 +23,16 @@ import { NaverMenuEntity } from './entity/naver-menu.entity';
 import { MenuCrawlingDto } from './dto/request/menu-crawling.dto';
 import { UpdateMenuIsMainDto } from './dto/request/update-menu-is-main.dto';
 import { AdminRole } from '../auth/admin-role.enum';
+import { NaverMenu } from '@libs/common/modules/naver-menu/naver-menu';
+import { NaverMenuService } from '@libs/common/modules/naver-menu/naver-menu.service';
+import { InternalNaverMenuAuthGuard } from './internal-naver-menu-auth.guard';
 
 @Controller()
 export class MenuController {
-  constructor(private readonly menuService: MenuService) {}
+  constructor(
+    private readonly menuService: MenuService,
+    private readonly naverMenuService: NaverMenuService,
+  ) {}
 
   /**
    * 메뉴 목록 보기
@@ -69,6 +76,17 @@ export class MenuController {
     @Body() dto: MenuCrawlingDto,
   ): Promise<NaverMenuEntity[]> {
     return await this.menuService.crawlingNaverMenuViaPlaceUrl(dto);
+  }
+
+  /**
+   * 라즈베리에서 네이버 메뉴 크롤링하는 api. 운영서버만이 호출할 수 있고 그 외에는 호출할 수 없도록 차단됨.
+   */
+  @UseGuards(InternalNaverMenuAuthGuard)
+  @Post('/internal/naver-menu/crawling')
+  public async crawlingNaverMenu(
+    @Body() dto: MenuCrawlingDto,
+  ): Promise<NaverMenu[]> {
+    return await this.naverMenuService.extractNaverMenu(dto.naverPlaceId);
   }
 
   /**
