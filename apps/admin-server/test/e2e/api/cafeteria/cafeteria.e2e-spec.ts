@@ -714,6 +714,78 @@ describe('Cafeteria e2e test', () => {
         .expect(404);
     });
 
+    it('201 - food station, meal offering, meal item, daily memo가 모두 toCafeteria로 복사됨', async () => {
+      const admin = testHelper.loginAdmin.admin1;
+      const fromCafeteria = await cafeteriaSeedHelper.seed({
+        name: 'from cafeteria',
+      });
+      const toCafeteria = await cafeteriaSeedHelper.seed({
+        name: 'to cafeteria',
+      });
+
+      const itemName = 'test menu item';
+      const memoContent = 'test memo content';
+
+      await foodStationSeedHelper.seed({
+        cafeteriaIdx: fromCafeteria.idx,
+        mealType: MealType.MEAL_LUNCH,
+        startDate: new Date('2024-01-01'),
+        endDate: new Date('2024-01-07'),
+        mealOfferingList: [
+          {
+            foodStationIdx: 0,
+            servedDate: new Date('2024-01-01'),
+            mealItemList: [{ name: itemName, price: 5000 }],
+          },
+        ],
+      });
+
+      await dailyMemoSeedHelper.seed({
+        cafeteriaIdx: fromCafeteria.idx,
+        content: memoContent,
+        date: new Date('2024-01-01'),
+      });
+
+      await testHelper
+        .test()
+        .post(`/cafeteria/${toCafeteria.idx}/copy`)
+        .set('Cookie', `token=Bearer ${admin.token}`)
+        .send({
+          startDate: '2024-01-01',
+          endDate: '2024-01-07',
+          fromIdx: fromCafeteria.idx,
+        })
+        .expect(201);
+
+      const prisma = testHelper.getPrisma();
+
+      const copiedStations = await prisma.foodStation.findMany({
+        where: { cafeteriaIdx: toCafeteria.idx, deletedAt: null },
+        include: {
+          mealOfferingList: {
+            where: { deletedAt: null },
+            include: {
+              mealItemList: { where: { deletedAt: null } },
+            },
+          },
+        },
+      });
+
+      expect(copiedStations.length).toBe(1);
+      expect(copiedStations[0].mealOfferingList.length).toBe(1);
+      expect(copiedStations[0].mealOfferingList[0].mealItemList.length).toBe(1);
+      expect(copiedStations[0].mealOfferingList[0].mealItemList[0].name).toBe(
+        itemName,
+      );
+
+      const copiedMemos = await prisma.dailyMemo.findMany({
+        where: { cafeteriaIdx: toCafeteria.idx, deletedAt: null },
+      });
+
+      expect(copiedMemos.length).toBe(1);
+      expect(copiedMemos[0].content).toBe(memoContent);
+    });
+
     it('404 - fromIdx에 해당하는 식당이 존재하지 않음', async () => {
       const admin = testHelper.loginAdmin.admin1;
       const toCafeteria = await cafeteriaSeedHelper.seed({
