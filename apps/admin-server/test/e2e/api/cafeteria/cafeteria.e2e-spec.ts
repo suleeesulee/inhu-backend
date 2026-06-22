@@ -1,11 +1,16 @@
 import { AdminServerModule } from '@admin/admin-server.module';
 import { TestHelper } from '../../setup/test.helper';
 import { CafeteriaSeedHelper } from '@libs/testing/seed/cafeteria/cafeteria.seed';
+import { FoodStationSeedHelper } from '@libs/testing/seed/food-station/food-station.seed';
+import { DailyMemoSeedHelper } from '@libs/testing/seed/daily-memo/daily-memo.seed';
 import { CafeteriaCoreService } from '@libs/core/cafeteria/cafeteria-core.service';
+import { MealType } from '@libs/core/food-station/constants/meal-type.constant';
 
 describe('Cafeteria e2e test', () => {
   const testHelper = TestHelper.create(AdminServerModule);
   const cafeteriaSeedHelper = testHelper.seedHelper(CafeteriaSeedHelper);
+  const foodStationSeedHelper = testHelper.seedHelper(FoodStationSeedHelper);
+  const dailyMemoSeedHelper = testHelper.seedHelper(DailyMemoSeedHelper);
 
   beforeEach(async () => {
     await testHelper.init();
@@ -513,6 +518,217 @@ describe('Cafeteria e2e test', () => {
         .test()
         .delete('/cafeteria/9999')
         .set('Cookie', `token=Bearer ${admin.token}`)
+        .expect(404);
+    });
+  });
+
+  describe('POST /cafeteria/:copyToCafeteriaIdx/copy', () => {
+    it('201 - date 범위 밖 데이터는 복사되지 않음', async () => {
+      const admin = testHelper.loginAdmin.admin1;
+      const fromCafeteria = await cafeteriaSeedHelper.seed({
+        name: 'from cafeteria',
+      });
+      const toCafeteria = await cafeteriaSeedHelper.seed({
+        name: 'to cafeteria',
+      });
+
+      // 범위 내 food station (2024-01-01)
+      await foodStationSeedHelper.seed({
+        cafeteriaIdx: fromCafeteria.idx,
+        mealType: MealType.MEAL_LUNCH,
+        startDate: new Date('2024-01-01'),
+        endDate: new Date('2024-01-01'),
+        mealOfferingList: [
+          {
+            foodStationIdx: 0,
+            servedDate: new Date('2024-01-01'),
+          },
+        ],
+      });
+
+      // 범위 밖 food station (2024-01-02)
+      await foodStationSeedHelper.seed({
+        cafeteriaIdx: fromCafeteria.idx,
+        mealType: MealType.MEAL_LUNCH,
+        startDate: new Date('2024-01-02'),
+        endDate: new Date('2024-01-02'),
+        mealOfferingList: [
+          {
+            foodStationIdx: 0,
+            servedDate: new Date('2024-01-02'),
+          },
+        ],
+      });
+
+      await testHelper
+        .test()
+        .post(`/cafeteria/${toCafeteria.idx}/copy`)
+        .set('Cookie', `token=Bearer ${admin.token}`)
+        .send({
+          startDate: '2024-01-01',
+          endDate: '2024-01-01',
+          fromIdx: fromCafeteria.idx,
+        })
+        .expect(201);
+
+      const prisma = testHelper.getPrisma();
+      const copiedStations = await prisma.foodStation.findMany({
+        where: { cafeteriaIdx: toCafeteria.idx, deletedAt: null },
+      });
+
+      expect(copiedStations.length).toBe(1);
+    });
+
+    it('201 - fromIdx의 데이터만 복사되고 다른 식당 데이터는 복사되지 않음', async () => {
+      const admin = testHelper.loginAdmin.admin1;
+      const fromCafeteria = await cafeteriaSeedHelper.seed({
+        name: 'from cafeteria',
+      });
+      const otherCafeteria = await cafeteriaSeedHelper.seed({
+        name: 'other cafeteria',
+      });
+      const toCafeteria = await cafeteriaSeedHelper.seed({
+        name: 'to cafeteria',
+      });
+
+      await foodStationSeedHelper.seed({
+        cafeteriaIdx: fromCafeteria.idx,
+        mealType: MealType.MEAL_LUNCH,
+        startDate: new Date('2024-01-01'),
+        endDate: new Date('2024-01-01'),
+      });
+
+      // 다른 식당의 같은 날짜 데이터
+      await foodStationSeedHelper.seed({
+        cafeteriaIdx: otherCafeteria.idx,
+        mealType: MealType.MEAL_LUNCH,
+        startDate: new Date('2024-01-01'),
+        endDate: new Date('2024-01-01'),
+      });
+
+      await testHelper
+        .test()
+        .post(`/cafeteria/${toCafeteria.idx}/copy`)
+        .set('Cookie', `token=Bearer ${admin.token}`)
+        .send({
+          startDate: '2024-01-01',
+          endDate: '2024-01-01',
+          fromIdx: fromCafeteria.idx,
+        })
+        .expect(201);
+
+      const prisma = testHelper.getPrisma();
+      const copiedStations = await prisma.foodStation.findMany({
+        where: { cafeteriaIdx: toCafeteria.idx, deletedAt: null },
+      });
+
+      expect(copiedStations.length).toBe(1);
+      expect(copiedStations[0].cafeteriaIdx).toBe(toCafeteria.idx);
+    });
+
+    it('409 - toCafeteria에 이미 food station 데이터가 존재하면 복사 불가', async () => {
+      const admin = testHelper.loginAdmin.admin1;
+      const fromCafeteria = await cafeteriaSeedHelper.seed({
+        name: 'from cafeteria',
+      });
+      const toCafeteria = await cafeteriaSeedHelper.seed({
+        name: 'to cafeteria',
+      });
+
+      await foodStationSeedHelper.seed({
+        cafeteriaIdx: fromCafeteria.idx,
+        mealType: MealType.MEAL_LUNCH,
+        startDate: new Date('2024-01-01'),
+        endDate: new Date('2024-01-01'),
+      });
+
+      // toCafeteria에 이미 같은 날짜 데이터 존재
+      await foodStationSeedHelper.seed({
+        cafeteriaIdx: toCafeteria.idx,
+        mealType: MealType.MEAL_LUNCH,
+        startDate: new Date('2024-01-01'),
+        endDate: new Date('2024-01-01'),
+      });
+
+      await testHelper
+        .test()
+        .post(`/cafeteria/${toCafeteria.idx}/copy`)
+        .set('Cookie', `token=Bearer ${admin.token}`)
+        .send({
+          startDate: '2024-01-01',
+          endDate: '2024-01-01',
+          fromIdx: fromCafeteria.idx,
+        })
+        .expect(409);
+    });
+
+    it('409 - toCafeteria에 이미 daily memo 데이터가 존재하면 복사 불가', async () => {
+      const admin = testHelper.loginAdmin.admin1;
+      const fromCafeteria = await cafeteriaSeedHelper.seed({
+        name: 'from cafeteria',
+      });
+      const toCafeteria = await cafeteriaSeedHelper.seed({
+        name: 'to cafeteria',
+      });
+
+      await foodStationSeedHelper.seed({
+        cafeteriaIdx: fromCafeteria.idx,
+        mealType: MealType.MEAL_LUNCH,
+        startDate: new Date('2024-01-01'),
+        endDate: new Date('2024-01-01'),
+      });
+
+      // toCafeteria에 이미 같은 날짜 daily memo 존재
+      await dailyMemoSeedHelper.seed({
+        cafeteriaIdx: toCafeteria.idx,
+        date: new Date('2024-01-01'),
+      });
+
+      await testHelper
+        .test()
+        .post(`/cafeteria/${toCafeteria.idx}/copy`)
+        .set('Cookie', `token=Bearer ${admin.token}`)
+        .send({
+          startDate: '2024-01-01',
+          endDate: '2024-01-01',
+          fromIdx: fromCafeteria.idx,
+        })
+        .expect(409);
+    });
+
+    it('404 - copyToCafeteriaIdx에 해당하는 식당이 존재하지 않음', async () => {
+      const admin = testHelper.loginAdmin.admin1;
+      const fromCafeteria = await cafeteriaSeedHelper.seed({
+        name: 'from cafeteria',
+      });
+
+      await testHelper
+        .test()
+        .post('/cafeteria/9999/copy')
+        .set('Cookie', `token=Bearer ${admin.token}`)
+        .send({
+          startDate: '2024-01-01',
+          endDate: '2024-01-01',
+          fromIdx: fromCafeteria.idx,
+        })
+        .expect(404);
+    });
+
+    it('404 - fromIdx에 해당하는 식당이 존재하지 않음', async () => {
+      const admin = testHelper.loginAdmin.admin1;
+      const toCafeteria = await cafeteriaSeedHelper.seed({
+        name: 'to cafeteria',
+      });
+
+      await testHelper
+        .test()
+        .post(`/cafeteria/${toCafeteria.idx}/copy`)
+        .set('Cookie', `token=Bearer ${admin.token}`)
+        .send({
+          startDate: '2024-01-01',
+          endDate: '2024-01-01',
+          fromIdx: 9999,
+        })
         .expect(404);
     });
   });
