@@ -4,6 +4,7 @@ import { DailyMemoModel } from './model/daily-memo.model';
 import { SelectDailyMemoAllInput } from './inputs/select-daily-memo-all.input';
 import { CreateDailyMemoInput } from './inputs/create-daily-memo.input';
 import { UpdateDailyMemoInput } from './inputs/update-daily-memo.input';
+import { CopyDataToOtherCafeteriaInput } from './inputs/copy-data-to-other-cafeteria.input';
 
 @Injectable()
 export class DailyMemoCoreService {
@@ -54,5 +55,21 @@ export class DailyMemoCoreService {
 
   public async deleteDailyMemoByIdx(idx: number): Promise<void> {
     await this.dailyMemoCoreRepository.softDeleteDailyMemoByIdx(idx);
+  }
+
+  public async copyDataToOtherCafeteria(
+    fromCafeteriaIdx: number,
+    toCafeteriaIdx: number,
+    input: CopyDataToOtherCafeteriaInput,
+  ): Promise<void> {
+    const memos = await this.dailyMemoCoreRepository.selectDailyMemosForCopy(
+      fromCafeteriaIdx,
+      input.startDate,
+      input.endDate,
+    );
+    await this.dailyMemoCoreRepository.insertDailyMemosForCopy(
+      toCafeteriaIdx,
+      memos,
+    );
   }
 }
