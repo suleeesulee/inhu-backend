@@ -12,6 +12,7 @@ import { CafeteriaService } from './cafeteria.service';
 import { AdminAuth } from '@admin/common/decorator/admin-auth.decorator';
 import { CafeteriaEntity } from './entity/cafeteria.entity';
 import { CreateCafeteriaDto } from './dto/request/create-cafeteria.dto';
+import { CopyCafeteriaDataDto } from './dto/request/copy-cafeteria-data.dto';
 import { Exception } from '@libs/common/decorator/exception.decorator';
 
 @Controller('cafeteria')
@@ -63,5 +64,20 @@ export class CafeteriaController {
     @Param('idx', ParseIntPipe) idx: number,
   ): Promise<void> {
     return await this.cafeteriaService.deleteCafeteriaByIdx(idx);
+  }
+
+  /**
+   * 특정 식당의 코너와 메뉴 그리고 메모 데이터 복사해서 추가하기 (이전 데이터를 삭제하지는 않음)
+   */
+  @AdminAuth()
+  @Exception(400, 'Invalid idx')
+  @Exception(404, 'Cafeteria does not exist')
+  @Exception(409, 'Already exist some data in cafeteria idx')
+  @Post('/:copyToCafeteriaIdx/copy')
+  public async copyData(
+    @Param('copyToCafeteriaIdx', ParseIntPipe) copyToCafeteriaIdx: number,
+    @Body() dto: CopyCafeteriaDataDto,
+  ): Promise<void> {
+    return await this.cafeteriaService.copyData(copyToCafeteriaIdx, dto);
   }
 }

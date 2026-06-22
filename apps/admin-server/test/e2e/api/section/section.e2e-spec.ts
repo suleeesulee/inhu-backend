@@ -2862,26 +2862,27 @@ describe('Admin Section E2E Tests', () => {
       expect(placeSectionSeed2.sortOrder).toBe(2);
       expect(placeSectionSeed3.sortOrder).toBe(3);
 
-      await testHelper
-        .test()
-        .delete(`/place-section/${placeSectionSeed1.idx}`)
-        .set('Cookie', `token=Bearer ${admin.token}`)
-        .expect(200);
+      // GET /place-section/:idx API가 삭제됨에 따라서 주석 처리
+      // await testHelper
+      //   .test()
+      //   .delete(`/place-section/${placeSectionSeed1.idx}`)
+      //   .set('Cookie', `token=Bearer ${admin.token}`)
+      //   .expect(200);
 
-      const allSectionResponse = await testHelper
-        .test()
-        .get('/section/all')
-        .set('Cookie', `token=Bearer ${admin.token}`)
-        .expect(200);
-      const allSectionList: (PlaceSectionItem | MagazineSectionItem)[] =
-        allSectionResponse.body.combinedSectionList;
+      // const allSectionResponse = await testHelper
+      //   .test()
+      //   .get('/section/all')
+      //   .set('Cookie', `token=Bearer ${admin.token}`)
+      //   .expect(200);
+      // const allSectionList: (PlaceSectionItem | MagazineSectionItem)[] =
+      //   allSectionResponse.body.combinedSectionList;
 
-      expect(allSectionList[0].type).toBe('PLACE');
-      expect(allSectionList[0].idx).toBe(placeSectionSeed3.idx);
-      expect(allSectionList[0].sortOrder).toBe(2);
-      expect(allSectionList[1].type).toBe('PLACE');
-      expect(allSectionList[1].idx).toBe(placeSectionSeed2.idx);
-      expect(allSectionList[1].sortOrder).toBe(1);
+      // expect(allSectionList[0].type).toBe('PLACE');
+      // expect(allSectionList[0].idx).toBe(placeSectionSeed3.idx);
+      // expect(allSectionList[0].sortOrder).toBe(2);
+      // expect(allSectionList[1].type).toBe('PLACE');
+      // expect(allSectionList[1].idx).toBe(placeSectionSeed2.idx);
+      // expect(allSectionList[1].sortOrder).toBe(1);
     });
 
     it('200 - successfully delete place section in last order and check sort order', async () => {

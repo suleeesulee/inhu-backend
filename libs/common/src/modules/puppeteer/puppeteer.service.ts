@@ -22,10 +22,6 @@ export class PuppeteerService {
   }
 
   public async execute<T>(callback: (page: Page) => Promise<T>): Promise<T> {
-    console.log(
-      'puppeteer executable path:',
-      this.PUPPETEER_CUSTOM_EXECUTABLE_PATH,
-    );
     const browser = await puppeteer.launch({
       headless: true,
       executablePath: this.PUPPETEER_CUSTOM_EXECUTABLE_PATH,
@@ -34,7 +30,6 @@ export class PuppeteerService {
         '--disable-setuid-sandbox',
         '--disable-gpu',
         '--no-zygote',
-        `--proxy-server=${this.PUPPETEER_PROXY_SERVER}`,
       ],
     });
 
@@ -45,8 +40,6 @@ export class PuppeteerService {
       page.on('console', (msg) =>
         console.log(`[BROWSER CONSOLE] ${msg.text()}`),
       );
-      page.on('error', (err) => console.log(`[BROWSERCRASH] ${err.message}`));
-      page.on('pageerror', (err) => console.log(`[BROWSERPAGE ERROR] ${err}`));
       page.setDefaultTimeout(this.PUPPETEER_SELECTOR_TIMEOUT);
       return await callback(page);
     } catch (err) {

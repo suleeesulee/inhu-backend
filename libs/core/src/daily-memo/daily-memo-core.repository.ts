@@ -100,4 +100,38 @@ export class DailyMemoCoreRepository {
       },
     });
   }
+
+  public async selectDailyMemosForCopy(
+    fromCafeteriaIdx: number,
+    startDate: string,
+    endDate: string,
+  ): Promise<{ content: string; date: Date }[]> {
+    return await this.txHost.tx.dailyMemo.findMany({
+      select: {
+        content: true,
+        date: true,
+      },
+      where: {
+        cafeteriaIdx: fromCafeteriaIdx,
+        deletedAt: null,
+        date: {
+          gte: `${startDate}T00:00:00Z`,
+          lte: `${endDate}T00:00:00Z`,
+        },
+      },
+    });
+  }
+
+  public async insertDailyMemosForCopy(
+    toCafeteriaIdx: number,
+    memos: { content: string; date: Date }[],
+  ): Promise<void> {
+    await this.txHost.tx.dailyMemo.createMany({
+      data: memos.map((memo) => ({
+        cafeteriaIdx: toCafeteriaIdx,
+        content: memo.content,
+        date: memo.date,
+      })),
+    });
+  }
 }
