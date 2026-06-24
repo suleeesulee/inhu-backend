@@ -49,6 +49,13 @@ export class UserModel {
   type: UserType;
 
   /**
+   * 학교 이메일
+   *
+   * @example "user@university.edu"
+   */
+  schoolEmail: string | null;
+
+  /**
    * 학교 인증 여부
    *
    * @example false
@@ -70,6 +77,7 @@ export class UserModel {
         : null,
       type:
         user.placeOwnerList.length > 0 ? UserType.PLACE_OWNER : UserType.USER,
+      schoolEmail: user.schoolEmail,
       isSchoolVerified: user.isSchoolVerified,
     });
   }

@@ -41,6 +41,13 @@ export class UserForAdminModel {
   reviewCount: number;
 
   /**
+   * 학교 이메일
+   *
+   * @example "user@university.edu"
+   */
+  schoolEmail: string | null;
+
+  /**
    * 학교 인증 여부
    *
    * @example false
@@ -67,6 +74,7 @@ export class UserForAdminModel {
         ? UserProviderModel.fromPrisma(user.userProvider)
         : null,
       reviewCount: user._count.reviewList,
+      schoolEmail: user.schoolEmail,
       isSchoolVerified: user.isSchoolVerified,
       createdAt: user.createdAt,
     });
