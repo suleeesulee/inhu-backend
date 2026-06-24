@@ -50,6 +50,18 @@ export class UserCoreRepository {
     });
   }
 
+  public async selectUserBySchoolEmail(
+    schoolEmail: string,
+  ): Promise<SelectUser | null> {
+    return this.txHost.tx.user.findFirst({
+      ...SELECT_USER,
+      where: {
+        deletedAt: null,
+        schoolEmail,
+      },
+    });
+  }
+
   public async selectUserAll(
     input: GetAllUsersInput,
   ): Promise<SelectUserForAdmin[]> {

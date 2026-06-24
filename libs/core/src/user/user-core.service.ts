@@ -41,6 +41,15 @@ export class UserCoreService {
     return user && UserModel.fromPrisma(user);
   }
 
+  public async getUserBySchoolEmail(
+    schoolEmail: string,
+  ): Promise<UserModel | null> {
+    const user =
+      await this.userCoreRepository.selectUserBySchoolEmail(schoolEmail);
+
+    return user && UserModel.fromPrisma(user);
+  }
+
   public async getUserAll(
     input: GetAllUsersInput,
   ): Promise<UserForAdminModel[]> {
