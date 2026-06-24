@@ -117,6 +117,7 @@ export class UserCoreRepository {
       data: {
         nickname: input.nickname,
         profileImagePath: input.profileImagePath,
+        schoolEmail: input.schoolEmail,
         isSchoolVerified: input.isSchoolVerified,
       },
       where: { idx, deletedAt: null },
