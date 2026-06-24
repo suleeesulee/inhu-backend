@@ -7,6 +7,7 @@ export class UserOverviewEntity extends PickType(UserEntity, [
   'nickname',
   'profileImagePath',
   'provider',
+  'schoolEmail',
   'isSchoolVerified',
   'createdAt',
 ] as const) {
@@ -28,6 +29,7 @@ export class UserOverviewEntity extends PickType(UserEntity, [
       nickname: model.nickname,
       profileImagePath: model.profileImagePath,
       provider: model.provider,
+      schoolEmail: model.schoolEmail,
       isSchoolVerified: model.isSchoolVerified,
       reviewCount: model.reviewCount,
       createdAt: model.createdAt,
