@@ -66,7 +66,7 @@ export class UserModel {
     Object.assign(this, data);
   }
 
-  static fromPrisma(user: SelectUser): UserModel {
+  static fromPrisma(user: SelectUser, schoolEmail: string | null): UserModel {
     return new UserModel({
       idx: user.idx,
       nickname: user.nickname,
@@ -77,7 +77,7 @@ export class UserModel {
         : null,
       type:
         user.placeOwnerList.length > 0 ? UserType.PLACE_OWNER : UserType.USER,
-      schoolEmail: user.schoolEmail,
+      schoolEmail,
       isSchoolVerified: user.isSchoolVerified,
     });
   }
