@@ -452,14 +452,15 @@ CREATE TABLE user_provider_tb
 
 CREATE TABLE user_tb
 (
-  idx                int                      NOT NULL GENERATED ALWAYS AS IDENTITY,
-  nickname           varchar                  NOT NULL,
-  profile_image_path varchar                 ,
-  platform           varchar                  NOT NULL DEFAULT 'unknown',
-  school_email       varchar                 ,
-  is_school_verified boolean                  NOT NULL DEFAULT false,
-  created_at         timestamp with time zone NOT NULL DEFAULT NOW(),
-  deleted_at         timestamp with time zone,
+  idx                    int                      NOT NULL GENERATED ALWAYS AS IDENTITY,
+  nickname               varchar                  NOT NULL,
+  profile_image_path     varchar                 ,
+  platform               varchar                  NOT NULL DEFAULT 'unknown',
+  school_email_encrypted varchar                 ,
+  school_email_hash      varchar                 ,
+  is_school_verified     boolean                  NOT NULL DEFAULT false,
+  created_at             timestamp with time zone NOT NULL DEFAULT NOW(),
+  deleted_at             timestamp with time zone,
   PRIMARY KEY (idx)
 );
 
