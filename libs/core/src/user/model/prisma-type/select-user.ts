@@ -7,6 +7,7 @@ export const SELECT_USER = Prisma.validator<Prisma.UserDefaultArgs>()({
     idx: true,
     nickname: true,
     profileImagePath: true,
+    schoolEmailEncrypted: true,
     isSchoolVerified: true,
     createdAt: true,
     userProvider: SELECT_USER_PROVIDER,

@@ -1,4 +1,3 @@
-import { DiscordWebhookService } from '@libs/common/modules/discord-webhook/discord-webhook.service';
 import { UserType } from '@libs/core/user/constants/user-type.enum';
 import { UserCoreService } from '@libs/core/user/user-core.service';
 import { PlaceOwnerSeedHelper } from '@libs/testing/seed/place-owner/place-owner.seed';
@@ -36,25 +35,28 @@ describe('User E2E test', () => {
       expect(responseBody).toHaveProperty('idx');
       expect(responseBody).toHaveProperty('nickname');
       expect(responseBody).toHaveProperty('profileImagePath');
+      expect(responseBody).toHaveProperty('schoolEmail');
+      expect(responseBody).toHaveProperty('isSchoolVerified');
       expect(responseBody).toHaveProperty('createdAt');
       expect(responseBody).toHaveProperty('provider');
       expect(responseBody).toHaveProperty('type');
 
       expect(responseBody.idx).toEqual(loginUser.idx);
 
-      const user = await testHelper.getPrisma().user.findUniqueOrThrow({
-        where: { idx: loginUser.idx },
-        select: {
-          nickname: true,
-          profileImagePath: true,
-          userProvider: { select: { name: true } },
-          createdAt: true,
-        },
-      });
-      expect(responseBody.nickname).toEqual(user.nickname);
-      expect(responseBody.profileImagePath).toEqual(user.profileImagePath);
-      expect(responseBody.provider).toEqual(user.userProvider?.name);
-      expect(new Date(responseBody.createdAt)).toEqual(user.createdAt);
+      const userModel = await testHelper
+        .get(UserCoreService)
+        .getUserByIdx(loginUser.idx);
+      if (!userModel) {
+        throw new Error('User not found in database');
+      }
+
+      expect(responseBody.nickname).toEqual(userModel.nickname);
+      expect(responseBody.profileImagePath).toEqual(userModel.profileImagePath);
+      expect(responseBody.schoolEmail).toEqual(userModel.schoolEmail);
+      expect(responseBody.isSchoolVerified).toEqual(userModel.isSchoolVerified);
+      expect(loginUser.schoolEmail).toEqual(userModel.schoolEmail);
+      expect(responseBody.provider).toEqual(userModel.provider?.provider);
+      expect(new Date(responseBody.createdAt)).toEqual(userModel.createdAt);
       expect(responseBody.type).toEqual(UserType.USER);
     });
 
