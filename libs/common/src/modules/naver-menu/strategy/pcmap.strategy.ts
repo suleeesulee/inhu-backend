@@ -14,6 +14,7 @@ export class PcmapStrategy extends NaverCrawlingStrategy {
     contentSelector: string;
     imageSelector: string;
   };
+  private readonly expandTimeout: number;
 
   constructor(private readonly configService: ConfigService) {
     super();
@@ -25,6 +26,8 @@ export class PcmapStrategy extends NaverCrawlingStrategy {
       contentSelector: 'div.okI98',
       imageSelector: 'img.K0PDV',
     };
+    this.expandTimeout =
+      this.configService.get<number>('naverMenu.pcmap.expandTimeout') || 10000;
   }
 
   public async crawl(page: Page): Promise<NaverMenu[]> {
@@ -86,7 +89,7 @@ export class PcmapStrategy extends NaverCrawlingStrategy {
     const selector = this.selectors.expandButtonSelector;
 
     try {
-      await page.waitForSelector(selector);
+      await page.waitForSelector(selector, { timeout: this.expandTimeout });
     } catch (error) {
       console.log('더이상 더보기 버튼이 존재하지 않아 넘어갑니다.');
     }

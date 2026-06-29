@@ -8,6 +8,7 @@ export default () => ({
       priceSelector: process.env.PCMAP_PRICE_SELECTOR || '',
       contentSelector: process.env.PCMAP_CONTENT_SELECTOR || '',
       imageSelector: process.env.PCMAP_IMAGE_SELECTOR || '',
+      expandTimeout: Number(process.env.PCMAP_EXPAND_TIMEOUT) || 10000,
     },
     booking: {
       rootDivSelector: process.env.BOOKING_ROOT_DIV_SELECTOR || '',
