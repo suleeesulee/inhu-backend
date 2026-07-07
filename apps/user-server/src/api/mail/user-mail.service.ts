@@ -74,7 +74,6 @@ export class UserMailService {
     await this.redisService.del(this.getTokenKey(userIdx));
     await this.userCoreService.updateUserByIdx(userIdx, {
       schoolEmail: email,
-      isSchoolVerified: true,
     });
 
     return true;

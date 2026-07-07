@@ -57,7 +57,9 @@ export class UserCoreRepository {
       ...SELECT_USER,
       where: {
         deletedAt: null,
-        schoolEmailHash,
+        userEmail: {
+          schoolEmailHash,
+        },
       },
     });
   }
@@ -120,9 +122,21 @@ export class UserCoreRepository {
       data: {
         nickname: input.nickname,
         profileImagePath: input.profileImagePath,
-        schoolEmailEncrypted: input.schoolEmailEncrypted,
-        schoolEmailHash: input.schoolEmailHash,
-        isSchoolVerified: input.isSchoolVerified,
+        userEmail:
+          input.schoolEmailEncrypted && input.schoolEmailHash
+            ? {
+                upsert: {
+                  create: {
+                    schoolEmailEncrypted: input.schoolEmailEncrypted,
+                    schoolEmailHash: input.schoolEmailHash,
+                  },
+                  update: {
+                    schoolEmailEncrypted: input.schoolEmailEncrypted,
+                    schoolEmailHash: input.schoolEmailHash,
+                  },
+                },
+              }
+            : undefined,
       },
       where: { idx, deletedAt: null },
     });

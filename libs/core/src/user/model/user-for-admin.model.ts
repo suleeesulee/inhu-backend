@@ -78,7 +78,7 @@ export class UserForAdminModel {
         : null,
       reviewCount: user._count.reviewList,
       schoolEmail,
-      isSchoolVerified: user.isSchoolVerified,
+      isSchoolVerified: user.userEmail !== null,
       createdAt: user.createdAt,
     });
   }

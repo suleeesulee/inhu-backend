@@ -98,8 +98,8 @@ export class UserCoreService {
   private toUserModel(user: SelectUser): UserModel {
     return UserModel.fromPrisma(
       user,
-      user.schoolEmailEncrypted
-        ? this.cryptoService.decrypt(user.schoolEmailEncrypted)
+      user.userEmail?.schoolEmailEncrypted
+        ? this.cryptoService.decrypt(user.userEmail.schoolEmailEncrypted)
         : null,
     );
   }
@@ -107,8 +107,8 @@ export class UserCoreService {
   private toUserForAdminModel(user: SelectUserForAdmin): UserForAdminModel {
     return UserForAdminModel.fromPrisma(
       user,
-      user.schoolEmailEncrypted
-        ? this.cryptoService.decrypt(user.schoolEmailEncrypted)
+      user.userEmail?.schoolEmailEncrypted
+        ? this.cryptoService.decrypt(user.userEmail.schoolEmailEncrypted)
         : null,
     );
   }

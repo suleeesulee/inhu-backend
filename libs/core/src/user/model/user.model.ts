@@ -78,7 +78,7 @@ export class UserModel {
       type:
         user.placeOwnerList.length > 0 ? UserType.PLACE_OWNER : UserType.USER,
       schoolEmail,
-      isSchoolVerified: user.isSchoolVerified,
+      isSchoolVerified: user.userEmail !== null,
     });
   }
 }

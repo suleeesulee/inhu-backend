@@ -36,13 +36,16 @@ export class LoginUserHelper {
               snsId: 'user-1-sns-id-000123',
             },
           },
-          schoolEmailEncrypted: testHelper
-            .get(CryptoService)
-            .encrypt(user1SchoolEmail),
-          schoolEmailHash: testHelper
-            .get(CryptoService)
-            .hmacDigest(user1SchoolEmail),
-          isSchoolVerified: true,
+          userEmail: {
+            create: {
+              schoolEmailEncrypted: testHelper
+                .get(CryptoService)
+                .encrypt(user1SchoolEmail),
+              schoolEmailHash: testHelper
+                .get(CryptoService)
+                .hmacDigest(user1SchoolEmail),
+            },
+          },
         },
       }),
       testHelper.getPrisma().user.create({
@@ -55,13 +58,16 @@ export class LoginUserHelper {
               snsId: 'user-2-sns-id-000123',
             },
           },
-          schoolEmailEncrypted: testHelper
-            .get(CryptoService)
-            .encrypt(user2SchoolEmail),
-          schoolEmailHash: testHelper
-            .get(CryptoService)
-            .hmacDigest(user2SchoolEmail),
-          isSchoolVerified: true,
+          userEmail: {
+            create: {
+              schoolEmailEncrypted: testHelper
+                .get(CryptoService)
+                .encrypt(user2SchoolEmail),
+              schoolEmailHash: testHelper
+                .get(CryptoService)
+                .hmacDigest(user2SchoolEmail),
+            },
+          },
         },
       }),
     ]);
