@@ -13,9 +13,4 @@ export class UpdateUserInput extends PartialType(
    * 학교 이메일
    */
   schoolEmail?: string;
-
-  /**
-   * 학교 인증 여부
-   */
-  isSchoolVerified?: boolean;
 }
