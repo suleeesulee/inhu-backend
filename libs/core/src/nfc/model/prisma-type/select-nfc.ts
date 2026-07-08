@@ -1,6 +1,6 @@
 import { Prisma } from '@prisma/client';
 
-const SELECT_NFC = Prisma.validator<Prisma.NfcDefaultArgs>()({
+export const SELECT_NFC = Prisma.validator<Prisma.NfcDefaultArgs>()({
   select: {
     idx: true,
     placeIdx: true,

@@ -1,7 +1,38 @@
 import { Injectable } from '@nestjs/common';
 import { NfcCoreRepository } from './nfc-core.repository';
+import { NfcModel } from './model/nfc.model';
+import { CreateNfcInput } from './inputs/create-nfc.input';
+import { UpdateNfcInput } from './inputs/update-nfc.input';
 
 @Injectable()
 export class NfcCoreService {
   constructor(private readonly nfcCoreRepository: NfcCoreRepository) {}
+
+  public async getNfcByIdx(idx: number): Promise<NfcModel | null> {
+    const nfc = await this.nfcCoreRepository.selectNfcByIdx(idx);
+    return nfc && NfcModel.fromPrisma(nfc);
+  }
+
+  public async getNfcByPlaceIdx(placeIdx: number): Promise<NfcModel | null> {
+    const nfc = await this.nfcCoreRepository.selectNfcByPlaceIdx(placeIdx);
+    return nfc && NfcModel.fromPrisma(nfc);
+  }
+
+  public async getNfcAll(): Promise<NfcModel[]> {
+    return (await this.nfcCoreRepository.selectNfcAll()).map(
+      NfcModel.fromPrisma,
+    );
+  }
+
+  public async createNfc(input: CreateNfcInput): Promise<NfcModel> {
+    return NfcModel.fromPrisma(await this.nfcCoreRepository.insertNfc(input));
+  }
+
+  public async updateNfc(idx: number, input: UpdateNfcInput): Promise<void> {
+    await this.nfcCoreRepository.updateNfc(idx, input);
+  }
+
+  public async deleteNfc(idx: number): Promise<void> {
+    await this.nfcCoreRepository.softDeleteNfc(idx);
+  }
 }
