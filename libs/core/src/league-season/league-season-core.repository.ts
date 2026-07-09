@@ -1,10 +1,81 @@
 import { TransactionHost } from '@nestjs-cls/transactional';
 import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-prisma';
 import { Injectable } from '@nestjs/common';
+import {
+  SELECT_LEAGUE_SEASON,
+  SelectLeagueSeason,
+} from './model/prisma-type/select-league-season';
+import { CreateLeagueSeasonInput } from './inputs/create-league-season.input';
+import { UpdateLeagueSeasonInput } from './inputs/update-league-season.input';
 
 @Injectable()
 export class LeagueSeasonCoreRepository {
   constructor(
     private readonly txHost: TransactionHost<TransactionalAdapterPrisma>,
   ) {}
+
+  public async getLeagueSeasonByIdx(
+    idx: number,
+  ): Promise<SelectLeagueSeason | null> {
+    return await this.txHost.tx.leagueSeason.findUnique({
+      ...SELECT_LEAGUE_SEASON,
+      where: {
+        idx,
+      },
+    });
+  }
+
+  public async getLeagueSeasonAll(): Promise<SelectLeagueSeason[]> {
+    return await this.txHost.tx.leagueSeason.findMany({
+      ...SELECT_LEAGUE_SEASON,
+    });
+  }
+
+  public async insertLeagueSeason(
+    input: CreateLeagueSeasonInput,
+  ): Promise<SelectLeagueSeason> {
+    return await this.txHost.tx.leagueSeason.create({
+      ...SELECT_LEAGUE_SEASON,
+      data: {
+        name: input.name,
+        startAt: input.startAt,
+        endAt: input.endAt,
+        rewardOptionList: {
+          createMany: {
+            data: input.rewardOptionList.map((rewardOption) => ({
+              rewardIdx: rewardOption.rewardIdx,
+              targetRank: rewardOption.targetRank,
+            })),
+          },
+        },
+      },
+    });
+  }
+
+  public async updateLeagueSeasonByIdx(
+    idx: number,
+    input: UpdateLeagueSeasonInput,
+  ): Promise<void> {
+    await this.txHost.tx.leagueSeason.update({
+      where: {
+        idx,
+      },
+      data: {
+        name: input.name,
+        startAt: input.startAt,
+        endAt: input.endAt,
+        rewardOptionList: input.rewardOptionList
+          ? {
+              deleteMany: {},
+              createMany: {
+                data: input.rewardOptionList.map((rewardOption) => ({
+                  rewardIdx: rewardOption.rewardIdx,
+                  targetRank: rewardOption.targetRank,
+                })),
+              },
+            }
+          : undefined,
+      },
+    });
+  }
 }
