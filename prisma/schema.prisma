@@ -675,7 +675,7 @@ model LeagueSeason {
   createdAt              DateTime               @default(now()) @map("created_at") @db.Timestamptz(6)
   finalizedAt            DateTime?              @map("finalized_at") @db.Timestamptz(6)
   leagueSeasonResultList LeagueSeasonResult[]
-  rewardOptionList       RewardOption[]
+  rewardOptionList       LeagueRewardOption[]
 
   @@map("league_season_tb")
 }
@@ -706,7 +706,7 @@ model PlaceVisit {
   @@map("place_visit_tb")
 }
 
-model RewardOption {
+model LeagueRewardOption {
   id              String          @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
   leagueSeasonIdx Int             @map("league_season_idx")
   rewardIdx       Int             @map("reward_idx")
@@ -726,7 +726,7 @@ model Reward {
   activatedAt      DateTime?        @map("activated_at") @db.Timestamptz(6)
   createdAt        DateTime         @default(now()) @map("created_at") @db.Timestamptz(6)
   deletedAt        DateTime?        @map("deleted_at") @db.Timestamptz(6)
-  rewardOptionList RewardOption[]
+  rewardOptionList LeagueRewardOption[]
   userRewardList   UserReward[]
 
   @@map("reward_tb")

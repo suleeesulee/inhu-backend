@@ -2070,7 +2070,7 @@
       },
       "d5_Rf8s01S_-dx4xXrBlX": {
         "id": "d5_Rf8s01S_-dx4xXrBlX",
-        "name": "reward_option_tb",
+        "name": "league_reward_option_tb",
         "comment": "",
         "columnIds": [
           "Ty_fmBHMsdDJLQ5tnYLvy",
@@ -2096,12 +2096,12 @@
           "x": 3608.8965,
           "y": 3314.7217,
           "zIndex": 1107,
-          "widthName": 102,
+          "widthName": 146,
           "widthComment": 60,
           "color": "#FF0000"
         },
         "meta": {
-          "updateAt": 1783413563773,
+          "updateAt": 1783592264520,
           "createAt": 1782892229076
         }
       },
