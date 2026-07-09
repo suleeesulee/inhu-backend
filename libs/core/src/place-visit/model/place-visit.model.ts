@@ -1,3 +1,4 @@
+import { PlaceVisitPlaceModel } from './place-visit-place.model';
 import { SelectPlaceVisit } from './prisma-type/select-place-visit';
 
 export class PlaceVisitModel {
@@ -22,6 +23,11 @@ export class PlaceVisitModel {
   public score: number;
 
   /**
+   * 방문 장소 정보
+   */
+  public place: PlaceVisitPlaceModel;
+
+  /**
    * 생성 시간
    */
   public createdAt: Date;
@@ -36,6 +42,7 @@ export class PlaceVisitModel {
       userIdx: placeVisit.userIdx,
       nfcIdx: placeVisit.nfcIdx,
       score: placeVisit.score,
+      place: PlaceVisitPlaceModel.fromPrisma(placeVisit.nfc.place),
       createdAt: placeVisit.createdAt,
     });
   }

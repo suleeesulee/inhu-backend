@@ -1,4 +1,5 @@
 import { Prisma } from '@prisma/client';
+import { SELECT_PLACE_VISIT_PLACE } from './select-place-visit-place';
 
 export const SELECT_PLACE_VISIT =
   Prisma.validator<Prisma.PlaceVisitDefaultArgs>()({
@@ -8,6 +9,11 @@ export const SELECT_PLACE_VISIT =
       nfcIdx: true,
       score: true,
       createdAt: true,
+      nfc: {
+        select: {
+          place: SELECT_PLACE_VISIT_PLACE,
+        },
+      },
     },
   });
 
