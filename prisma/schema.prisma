@@ -743,14 +743,14 @@ model UserEmail {
 }
 
 model UserReward {
-  id                    String               @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
-  rewardIdx             Int                  @map("reward_idx")
-  leagueSeasonResultIdx String               @map("league_season_result_idx") @db.Uuid
-  createdAt             DateTime             @default(now()) @map("created_at") @db.Timestamptz(6)
-  selectedAt            DateTime?            @map("selected_at") @db.Timestamptz(6)
-  issuedAt              DateTime?            @map("issued_at") @db.Timestamptz(6)
-  leagueSeasonResult    LeagueSeasonResult @relation(fields: [leagueSeasonResultIdx], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_league_season_result_tb_to_user_reward_tb")
-  reward                Reward             @relation(fields: [rewardIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_reward_tb_to_user_reward_tb")
+  id                   String             @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  rewardIdx            Int?               @map("reward_idx")
+  leagueSeasonResultId String             @map("league_season_result_id") @db.Uuid
+  createdAt            DateTime           @default(now()) @map("created_at") @db.Timestamptz(6)
+  selectedAt           DateTime?          @map("selected_at") @db.Timestamptz(6)
+  issuedAt             DateTime?          @map("issued_at") @db.Timestamptz(6)
+  leagueSeasonResult   LeagueSeasonResult @relation(fields: [leagueSeasonResultId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_league_season_result_tb_to_user_reward_tb")
+  reward               Reward?            @relation(fields: [rewardIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_reward_tb_to_user_reward_tb")
 
   @@map("user_reward_tb")
 }

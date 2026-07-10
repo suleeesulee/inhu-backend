@@ -548,12 +548,12 @@ CREATE TABLE user_provider_tb
 
 CREATE TABLE user_reward_tb
 (
-  id                        uuid                     NOT NULL DEFAULT uuid_generate_v4(),
-  reward_idx                int                      NOT NULL,
-  league_season_result_idx uuid                     NOT NULL,
-  created_at                timestamp with time zone NOT NULL DEFAULT NOW(),
-  selected_at               timestamp with time zone,
-  issued_at                 timestamp with time zone,
+  id                      uuid                     NOT NULL DEFAULT uuid_generate_v4(),
+  reward_idx              int                      ,
+  league_season_result_id uuid                     NOT NULL,
+  created_at              timestamp with time zone NOT NULL DEFAULT NOW(),
+  selected_at             timestamp with time zone,
+  issued_at               timestamp with time zone,
   PRIMARY KEY (id)
 );
 
@@ -963,7 +963,7 @@ ALTER TABLE league_season_result_tb
 
 ALTER TABLE user_reward_tb
   ADD CONSTRAINT FK_league_season_result_tb_TO_user_reward_tb
-    FOREIGN KEY (league_season_result_idx)
+    FOREIGN KEY (league_season_result_id)
     REFERENCES league_season_result_tb (id);
 
 ALTER TABLE league_reward_option_tb

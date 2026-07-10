@@ -9530,20 +9530,20 @@
       "p5dMDgIVQGpWjdN5Uf-9S": {
         "id": "p5dMDgIVQGpWjdN5Uf-9S",
         "tableId": "tEa70GIY_vOxgvYoE8juT",
-        "name": "league_season_result_idx",
+        "name": "league_season_result_id",
         "comment": "",
         "dataType": "uuid",
         "default": "",
         "options": 8,
         "ui": {
           "keys": 2,
-          "widthName": 149,
+          "widthName": 143,
           "widthComment": 60,
           "widthDataType": 60,
           "widthDefault": 60
         },
         "meta": {
-          "updateAt": 1783414168804,
+          "updateAt": 1783667930169,
           "createAt": 1782542712322
         }
       },
@@ -9934,7 +9934,7 @@
         "comment": "",
         "dataType": "int",
         "default": "",
-        "options": 8,
+        "options": 0,
         "ui": {
           "keys": 2,
           "widthName": 64,
@@ -9943,7 +9943,7 @@
           "widthDefault": 60
         },
         "meta": {
-          "updateAt": 1783316181511,
+          "updateAt": 1783667934194,
           "createAt": 1783316177151
         }
       },
@@ -12249,7 +12249,7 @@
         "id": "rwB2_fU_rYoZ3RS9UK6E0",
         "identification": false,
         "relationshipType": 16,
-        "startRelationshipType": 2,
+        "startRelationshipType": 1,
         "start": {
           "tableId": "he8bpSbzIr1g31Y8KkoBM",
           "columnIds": [
@@ -12264,7 +12264,7 @@
           "columnIds": [
             "8OY0awLfmFC2j7u7mdfhQ"
           ],
-          "x": 4442.442300000001,
+          "x": 4436.442300000001,
           "y": 3929.7089,
           "direction": 2
         },
