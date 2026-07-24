@@ -7,6 +7,7 @@ import {
 } from './model/prisma-type/select-managed-user';
 import { CreateManagedUserInput } from './inputs/create-managed-user.input';
 import { UpdateManagedUserInput } from './inputs/update-managed-user.input';
+import { GetManagedUserOverviewInput } from './inputs/get-managed-user-overview.input';
 
 @Injectable()
 export class ManagedUserCoreRepository {
@@ -23,10 +24,14 @@ export class ManagedUserCoreRepository {
     });
   }
 
-  public async selectManagedUserAll(): Promise<SelectManagedUser[]> {
+  public async selectManagedUserAll(
+    input: GetManagedUserOverviewInput,
+  ): Promise<SelectManagedUser[]> {
     return await this.txHost.tx.user.findMany({
       select: SELECT_MANAGED_USER.select,
       where: { deletedAt: null, adminAccount: null, userProvider: null },
+      skip: input.skip,
+      take: input.take,
     });
   }
 
