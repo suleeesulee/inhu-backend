@@ -35,6 +35,14 @@ export class ManagedUserCoreRepository {
     });
   }
 
+  public async selectManagedUserCount(
+    input: GetManagedUserOverviewInput,
+  ): Promise<number> {
+    return await this.txHost.tx.user.count({
+      where: { deletedAt: null, adminAccount: null, userProvider: null },
+    });
+  }
+
   public async insertManagedUser(
     input: CreateManagedUserInput,
   ): Promise<SelectManagedUser> {

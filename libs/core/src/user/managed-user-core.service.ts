@@ -28,6 +28,12 @@ export class ManagedUserCoreService {
     ).map(ManagedUserModel.formPrisma);
   }
 
+  public async getManagedUserCount(
+    input: GetManagedUserOverviewInput,
+  ): Promise<number> {
+    return await this.managedUserCoreRepository.selectManagedUserCount(input);
+  }
+
   public async createManagedUser(
     input: CreateManagedUserInput,
   ): Promise<ManagedUserModel> {
