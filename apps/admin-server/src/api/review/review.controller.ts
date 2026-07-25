@@ -91,6 +91,7 @@ export class ReviewController {
    * @author jochong
    */
   @Put('/review/:idx')
+  @AdminAuth(AdminRole.SuperAdmin)
   @Exception(400, 'Invalid review idx or body')
   @Exception(403, 'Permission Denied')
   @Exception(404, 'place does not exist')

@@ -7,7 +7,6 @@ import {
   IsString,
   Length,
 } from 'class-validator';
-import { Trim } from '@user/common/decorator/trim.decorator';
 import { UniqueArray } from '@libs/common/decorator/unique-array.decorator';
 
 /**
@@ -25,7 +24,6 @@ export class CreateReviewDto {
    *
    * @example '정말 맛있어요.'
    */
-  @Trim()
   @IsString()
   @IsNotEmpty()
   @Length(3, 400)
