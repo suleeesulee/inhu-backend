@@ -1,9 +1,12 @@
 import {
+  Body,
   Controller,
   Delete,
   Get,
   Param,
   ParseIntPipe,
+  Post,
+  Put,
   Query,
 } from '@nestjs/common';
 import { ReviewService } from './review.service';
@@ -12,8 +15,13 @@ import { GetAllReviewResponseDto } from './dto/response/get-all-review.reponse.d
 import { GetAllReviewDto } from './dto/request/get-all-review.dto';
 import { Exception } from '@libs/common/decorator/exception.decorator';
 import { ReviewEntity } from './entity/review.entity';
+import { AdminRole } from '../auth/admin-role.enum';
+import { ApiTags } from '@nestjs/swagger';
+import { CreateReviewDto } from './dto/request/create-review.dto';
+import { UpdateReviewDto } from './dto/request/update-review.dto';
 
 @Controller()
+@ApiTags('Review')
 export class ReviewController {
   constructor(private readonly reviewService: ReviewService) {}
 
@@ -58,5 +66,38 @@ export class ReviewController {
     @Param('idx', ParseIntPipe) idx: number,
   ): Promise<ReviewEntity> {
     return await this.reviewService.getReviewByIdx(idx);
+  }
+
+  /**
+   * 리뷰 생성하기
+   *
+   * @author jochong
+   */
+  @Post('/place/:placeIdx')
+  @AdminAuth(AdminRole.SuperAdmin)
+  @Exception(400, 'Invalid place idx or body')
+  @Exception(403, 'Permission Denied')
+  @Exception(404, 'place does not exist')
+  async createReview(
+    @Param('placeIdx', ParseIntPipe) placeIdx: number,
+    @Body() dto: CreateReviewDto,
+  ): Promise<ReviewEntity> {
+    return await this.reviewService.createReview(placeIdx, dto.userIdx, dto);
+  }
+
+  /**
+   * 리뷰 수정하기
+   *
+   * @author jochong
+   */
+  @Put('/review/:idx')
+  @Exception(400, 'Invalid review idx or body')
+  @Exception(403, 'Permission Denied')
+  @Exception(404, 'place does not exist')
+  async updateReview(
+    @Param('idx', ParseIntPipe) reviewIdx: number,
+    @Body() dto: UpdateReviewDto,
+  ) {
+    return await this.reviewService.updateReviewByIdx(reviewIdx, dto);
   }
 }
