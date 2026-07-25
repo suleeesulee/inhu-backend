@@ -30,6 +30,7 @@ export class ManagedUserCoreRepository {
     return await this.txHost.tx.user.findMany({
       select: SELECT_MANAGED_USER.select,
       where: { deletedAt: null, adminAccount: null, userProvider: null },
+      orderBy: { idx: 'desc' },
       skip: input.skip,
       take: input.take,
     });

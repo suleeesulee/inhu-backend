@@ -20,7 +20,7 @@ import { GetManagedUserAllResponseDto } from './dto/response/get-managed-user-re
 import { Exception } from '@libs/common/decorator/exception.decorator';
 import { UpdateManagedUserDto } from './dto/request/update-managed-user.dto';
 
-@Controller('managed-user')
+@Controller()
 @ApiTags('Managed User')
 export class ManagedUserController {
   constructor(private readonly managedUserService: ManagedUserService) {}
