@@ -98,6 +98,36 @@ CREATE TABLE keyword_tb
   PRIMARY KEY (idx)
 );
 
+CREATE TABLE league_season_result_tb
+(
+  id                uuid                     NOT NULL DEFAULT uuid_generate_v4(),
+  league_season_idx int                      NOT NULL,
+  user_idx          int                      NOT NULL,
+  final_score       int                      NOT NULL,
+  created_at        timestamp with time zone NOT NULL DEFAULT NOW(),
+  PRIMARY KEY (id)
+);
+
+CREATE INDEX idx_league_season_result_season_score
+  ON league_season_result_tb (league_season_idx, final_score DESC, user_idx);
+CREATE INDEX idx_league_season_result_user_created
+  ON league_season_result_tb (user_idx, created_at DESC);
+
+CREATE TABLE league_season_tb
+(
+  idx          int                      NOT NULL GENERATED ALWAYS AS IDENTITY,
+  name         varchar                  NOT NULL,
+  start_at     timestamp with time zone NOT NULL,
+  end_at       timestamp with time zone NOT NULL,
+  created_at   timestamp with time zone NOT NULL DEFAULT NOW(),
+  finalized_at timestamp with time zone,
+  PRIMARY KEY (idx)
+);
+
+CREATE INDEX idx_league_season_unfinalized_end
+  ON league_season_tb (end_at)
+  WHERE finalized_at IS NULL;
+
 CREATE TABLE magazine_like_tb
 (
   magazine_idx int                      NOT NULL,
@@ -230,6 +260,21 @@ CREATE TABLE mood_category_tb
   PRIMARY KEY (idx)
 );
 
+CREATE TABLE nfc_tb
+(
+  idx          int                      NOT NULL GENERATED ALWAYS AS IDENTITY,
+  place_idx    int                      NOT NULL,
+  score        int                      NOT NULL,
+  token_hash   varchar                  NOT NULL,
+  activated_at timestamp with time zone,
+  created_at   timestamp with time zone NOT NULL DEFAULT NOW(),
+  deleted_at   timestamp with time zone,
+  PRIMARY KEY (idx)
+);
+
+CREATE INDEX idx_nfc_place_deleted
+  ON nfc_tb (place_idx, deleted_at);
+
 CREATE TABLE operating_hour_tb
 (
   idx       int      NOT NULL GENERATED ALWAYS AS IDENTITY,
@@ -356,11 +401,53 @@ CREATE TABLE place_type_tb
   PRIMARY KEY (idx)
 );
 
+CREATE TABLE place_visit_tb
+(
+  id         uuid                     NOT NULL DEFAULT uuid_generate_v4(),
+  user_idx   int                      NOT NULL,
+  nfc_idx    int                      NOT NULL,
+  score      int                      NOT NULL,
+  created_at timestamp with time zone NOT NULL DEFAULT NOW(),
+  PRIMARY KEY (id)
+);
+
+CREATE INDEX idx_place_visit_created_user
+  ON place_visit_tb (created_at, user_idx);
+CREATE INDEX idx_place_visit_user_created
+  ON place_visit_tb (user_idx, created_at DESC);
+CREATE INDEX idx_place_visit_nfc_created
+  ON place_visit_tb (nfc_idx, created_at DESC);
+
 CREATE TABLE review_image_tb
 (
   idx        int     NOT NULL GENERATED ALWAYS AS IDENTITY,
   review_idx int     NOT NULL,
   image_path varchar NOT NULL,
+  PRIMARY KEY (idx)
+);
+
+CREATE TABLE reward_option_tb
+(
+  id                uuid                     NOT NULL DEFAULT uuid_generate_v4(),
+  league_season_idx int                      NOT NULL,
+  reward_idx        int                      NOT NULL,
+  target_rank       int                      NOT NULL,
+  created_at        timestamp with time zone NOT NULL DEFAULT NOW(),
+  deleted_at        timestamp with time zone,
+  PRIMARY KEY (id)
+);
+
+CREATE INDEX idx_reward_option_reward
+  ON reward_option_tb (reward_idx);
+
+CREATE TABLE reward_tb
+(
+  idx          int                      NOT NULL GENERATED ALWAYS AS IDENTITY,
+  name         varchar                  NOT NULL,
+  image_path   varchar                 ,
+  activated_at timestamp with time zone,
+  created_at   timestamp with time zone NOT NULL DEFAULT NOW(),
+  deleted_at   timestamp with time zone,
   PRIMARY KEY (idx)
 );
 
@@ -442,6 +529,15 @@ CREATE TABLE service2_tb
   PRIMARY KEY (idx)
 );
 
+CREATE TABLE user_email_tb
+(
+  idx                    int                      NOT NULL,
+  school_email_encrypted varchar                  NOT NULL,
+  school_email_hash      varchar                  NOT NULL,
+  created_at             timestamp with time zone NOT NULL DEFAULT NOW(),
+  PRIMARY KEY (idx)
+);
+
 CREATE TABLE user_provider_tb
 (
   idx    int     NOT NULL,
@@ -450,15 +546,31 @@ CREATE TABLE user_provider_tb
   PRIMARY KEY (idx)
 );
 
+CREATE TABLE user_reward_tb
+(
+  id                        uuid                     NOT NULL DEFAULT uuid_generate_v4(),
+  reward_idx                int                      NOT NULL,
+  league_season_result_idx uuid                     NOT NULL,
+  created_at                timestamp with time zone NOT NULL DEFAULT NOW(),
+  selected_at               timestamp with time zone,
+  issued_at                 timestamp with time zone,
+  PRIMARY KEY (id)
+);
+
+CREATE INDEX idx_user_reward_reward
+  ON user_reward_tb (reward_idx);
+
 CREATE TABLE user_tb
 (
-  idx                int                      NOT NULL GENERATED ALWAYS AS IDENTITY,
-  nickname           varchar                  NOT NULL,
-  profile_image_path varchar                 ,
-  platform           varchar                  NOT NULL DEFAULT 'unknown',
-  is_school_verified boolean                  NOT NULL DEFAULT false,
-  created_at         timestamp with time zone NOT NULL DEFAULT NOW(),
-  deleted_at         timestamp with time zone,
+  idx                    int                      NOT NULL GENERATED ALWAYS AS IDENTITY,
+  nickname               varchar                  NOT NULL,
+  profile_image_path     varchar                 ,
+  platform               varchar                  NOT NULL DEFAULT 'unknown',
+  school_email_encrypted varchar                 ,
+  school_email_hash      varchar                 ,
+  is_school_verified     boolean                  NOT NULL DEFAULT false,
+  created_at             timestamp with time zone NOT NULL DEFAULT NOW(),
+  deleted_at             timestamp with time zone,
   PRIMARY KEY (idx)
 );
 
@@ -831,3 +943,53 @@ ALTER TABLE food_station_tb
   ADD CONSTRAINT FK_meal_type_tb_TO_food_station_tb
     FOREIGN KEY (meal_type_idx)
     REFERENCES meal_type_tb (idx);
+
+ALTER TABLE nfc_tb
+  ADD CONSTRAINT FK_place_tb_TO_nfc_tb
+    FOREIGN KEY (place_idx)
+    REFERENCES place_tb (idx);
+
+ALTER TABLE place_visit_tb
+  ADD CONSTRAINT FK_user_tb_TO_place_visit_tb
+    FOREIGN KEY (user_idx)
+    REFERENCES user_tb (idx);
+
+ALTER TABLE league_season_result_tb
+  ADD CONSTRAINT FK_league_season_tb_TO_league_season_result_tb
+    FOREIGN KEY (league_season_idx)
+    REFERENCES league_season_tb (idx);
+
+ALTER TABLE league_season_result_tb
+  ADD CONSTRAINT FK_user_tb_TO_league_season_result_tb
+    FOREIGN KEY (user_idx)
+    REFERENCES user_tb (idx);
+
+ALTER TABLE user_reward_tb
+  ADD CONSTRAINT FK_league_season_result_tb_TO_user_reward_tb
+    FOREIGN KEY (league_season_result_idx)
+    REFERENCES league_season_result_tb (id);
+
+ALTER TABLE reward_option_tb
+  ADD CONSTRAINT FK_league_season_tb_TO_reward_option_tb
+    FOREIGN KEY (league_season_idx)
+    REFERENCES league_season_tb (idx);
+
+ALTER TABLE reward_option_tb
+  ADD CONSTRAINT FK_reward_tb_TO_reward_option_tb
+    FOREIGN KEY (reward_idx)
+    REFERENCES reward_tb (idx);
+
+ALTER TABLE place_visit_tb
+  ADD CONSTRAINT FK_nfc_tb_TO_place_visit_tb
+    FOREIGN KEY (nfc_idx)
+    REFERENCES nfc_tb (idx);
+
+ALTER TABLE user_reward_tb
+  ADD CONSTRAINT FK_reward_tb_TO_user_reward_tb
+    FOREIGN KEY (reward_idx)
+    REFERENCES reward_tb (idx);
+
+ALTER TABLE user_email_tb
+  ADD CONSTRAINT FK_user_tb_TO_user_email_tb
+    FOREIGN KEY (idx)
+    REFERENCES user_tb (idx);

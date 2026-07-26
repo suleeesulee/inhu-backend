@@ -29,6 +29,13 @@ export class UserEntity {
   public provider: UserProviderEntity | null;
 
   /**
+   * 학교 이메일
+   *
+   * @example "user@university.edu"
+   */
+  public schoolEmail: string | null;
+
+  /**
    * 학교 인증 여부
    *
    * @example false
@@ -52,6 +59,7 @@ export class UserEntity {
       nickname: model.nickname,
       profileImagePath: model.profileImagePath,
       provider: model.provider,
+      schoolEmail: model.schoolEmail,
       isSchoolVerified: model.isSchoolVerified,
       createdAt: model.createdAt,
     });

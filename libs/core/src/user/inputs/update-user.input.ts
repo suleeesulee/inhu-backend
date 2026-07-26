@@ -10,7 +10,7 @@ export class UpdateUserInput extends PartialType(
   PickType(CreateUserInput, ['nickname', 'profileImagePath']),
 ) {
   /**
-   * 학교 인증 여부
+   * 학교 이메일
    */
-  isSchoolVerified?: boolean;
+  schoolEmail?: string;
 }

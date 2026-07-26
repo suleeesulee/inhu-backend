@@ -34,6 +34,10 @@ export class NaverMenuService {
       await this.gotoNaverPlacePage(url, page);
 
       await this.waitForSelectorWithTimeout(page, '#app-root');
+      await page.screenshot({
+        path: `error_${naverPlaceId}.png`,
+        fullPage: true,
+      });
       await new Promise((r) => setTimeout(r, 3000 + Math.random() * 2000));
 
       try {

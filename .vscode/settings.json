@@ -9,5 +9,13 @@
   ],
   "prisma.pinToPrisma6": true,
   "prisma.schemaPath": "./prisma/schema.prisma",
-  "js/ts.tsdk.path": "node_modules/typescript/lib"
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "typescript.enablePromptUseWorkspaceTsdk": true,
+  "editor.quickSuggestions": {
+    "other": true,
+    "comments": false,
+    "strings": true
+  },
+  "editor.suggestOnTriggerCharacters": true,
+  "editor.inlineSuggest.enabled": true
 }

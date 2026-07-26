@@ -59,6 +59,7 @@ model Place {
   closedDayList                ClosedDay[]
   magazinePlaceList            MagazinePlace[]
   menuList                     Menu[]
+  nfcList                      Nfc[]
   operatingHourList            OperatingHour[]
   pickedPlace                  PickedPlace?
   placeFreeTagMappingList      PlaceFreeTagMapping[]
@@ -261,18 +262,23 @@ model User {
   nickname                  String                  @db.VarChar
   profileImagePath          String?                 @map("profile_image_path") @db.VarChar
   platform                  String                  @default("unknown") @db.VarChar
+  schoolEmailEncrypted      String?                 @map("school_email_encrypted") @db.VarChar
+  schoolEmailHash           String?                 @map("school_email_hash") @db.VarChar
   isSchoolVerified          Boolean                 @default(false) @map("is_school_verified")
   createdAt                 DateTime                @default(now()) @map("created_at") @db.Timestamptz(6)
   deletedAt                 DateTime?               @map("deleted_at") @db.Timestamptz(6)
   adminAccount              AdminAccount?
   bookmarkList              Bookmark[]
   cafeteriaBookmark         CafeteriaBookmark[]
+  leagueSeasonResultList    LeagueSeasonResult[]
   magazineLike              MagazineLike[]
   magazine                  Magazine[]
   placeOwnerList            PlaceOwner[]
+  placeVisitList            PlaceVisit[]
   reviewList                Review[]
   service1ResultList        Service1Result[]
   service2ResultList        Service2Result[]
+  userEmail                 UserEmail?
   userProvider              UserProvider?
   withdrawServiceResultList WithdrawServiceResult[]
 
@@ -649,4 +655,105 @@ model MealType {
   foodStationList FoodStation[]
 
   @@map("meal_type_tb")
+}
+
+model LeagueSeasonResult {
+  id              String          @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  leagueSeasonIdx Int             @map("league_season_idx")
+  userIdx         Int             @map("user_idx")
+  finalScore      Int             @map("final_score")
+  createdAt       DateTime        @default(now()) @map("created_at") @db.Timestamptz(6)
+  leagueSeason    LeagueSeason @relation(fields: [leagueSeasonIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_league_season_tb_to_league_season_result_tb")
+  user            User            @relation(fields: [userIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_user_tb_to_league_season_result_tb")
+  userRewardList  UserReward[]
+
+  @@map("league_season_result_tb")
+}
+
+model LeagueSeason {
+  idx                    Int                    @id @default(autoincrement())
+  name                   String                 @db.VarChar
+  startAt                DateTime               @map("start_at") @db.Timestamptz(6)
+  endAt                  DateTime               @map("end_at") @db.Timestamptz(6)
+  createdAt              DateTime               @default(now()) @map("created_at") @db.Timestamptz(6)
+  finalizedAt            DateTime?              @map("finalized_at") @db.Timestamptz(6)
+  leagueSeasonResultList LeagueSeasonResult[]
+  rewardOptionList       RewardOption[]
+
+  @@map("league_season_tb")
+}
+
+model Nfc {
+  idx            Int            @id @default(autoincrement())
+  placeIdx       Int            @map("place_idx")
+  score          Int
+  tokenHash      String         @map("token_hash") @db.VarChar
+  activatedAt    DateTime?      @map("activated_at") @db.Timestamptz(6)
+  createdAt      DateTime       @default(now()) @map("created_at") @db.Timestamptz(6)
+  deletedAt      DateTime?      @map("deleted_at") @db.Timestamptz(6)
+  place          Place          @relation(fields: [placeIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_place_tb_to_nfc_tb")
+  placeVisitList PlaceVisit[]
+
+  @@map("nfc_tb")
+}
+
+model PlaceVisit {
+  id        String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  userIdx   Int      @map("user_idx")
+  nfcIdx    Int      @map("nfc_idx")
+  score     Int
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  nfc       Nfc    @relation(fields: [nfcIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_nfc_tb_to_place_visit_tb")
+  user      User     @relation(fields: [userIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_user_tb_to_place_visit_tb")
+
+  @@map("place_visit_tb")
+}
+
+model RewardOption {
+  id              String          @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  leagueSeasonIdx Int             @map("league_season_idx")
+  rewardIdx       Int             @map("reward_idx")
+  targetRank      Int             @map("target_rank")
+  createdAt       DateTime        @default(now()) @map("created_at") @db.Timestamptz(6)
+  deletedAt       DateTime?       @map("deleted_at") @db.Timestamptz(6)
+  leagueSeason    LeagueSeason @relation(fields: [leagueSeasonIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_league_season_tb_to_reward_option_tb")
+  reward          Reward        @relation(fields: [rewardIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_reward_tb_to_reward_option_tb")
+
+  @@map("reward_option_tb")
+}
+
+model Reward {
+  idx              Int              @id @default(autoincrement())
+  name             String           @db.VarChar
+  imagePath        String?          @map("image_path") @db.VarChar
+  activatedAt      DateTime?        @map("activated_at") @db.Timestamptz(6)
+  createdAt        DateTime         @default(now()) @map("created_at") @db.Timestamptz(6)
+  deletedAt        DateTime?        @map("deleted_at") @db.Timestamptz(6)
+  rewardOptionList RewardOption[]
+  userRewardList   UserReward[]
+
+  @@map("reward_tb")
+}
+
+model UserEmail {
+  idx                  Int      @id
+  schoolEmailEncrypted String   @map("school_email_encrypted") @db.VarChar
+  schoolEmailHash      String   @map("school_email_hash") @db.VarChar
+  createdAt            DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  user                 User     @relation(fields: [idx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_user_tb_to_user_email_tb")
+
+  @@map("user_email_tb")
+}
+
+model UserReward {
+  id                    String               @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  rewardIdx             Int                  @map("reward_idx")
+  leagueSeasonResultIdx String               @map("league_season_result_idx") @db.Uuid
+  createdAt             DateTime             @default(now()) @map("created_at") @db.Timestamptz(6)
+  selectedAt            DateTime?            @map("selected_at") @db.Timestamptz(6)
+  issuedAt              DateTime?            @map("issued_at") @db.Timestamptz(6)
+  leagueSeasonResult    LeagueSeasonResult @relation(fields: [leagueSeasonResultIdx], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_league_season_result_tb_to_user_reward_tb")
+  reward                Reward             @relation(fields: [rewardIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_reward_tb_to_user_reward_tb")
+
+  @@map("user_reward_tb")
 }
