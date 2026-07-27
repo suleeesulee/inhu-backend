@@ -30,7 +30,7 @@ jobs:
       # User 서버 변경 감지
       - name: Check for User Service Changes
         id: user-filter
-        uses: tj-actions/changed-files@v44
+        uses: tj-actions/changed-files@v46
         with:
           files: |
             apps/user-server/**
@@ -42,7 +42,7 @@ jobs:
       # Admin 서버 변경 감지
       - name: Check for Admin Service Changes
         id: admin-filter
-        uses: tj-actions/changed-files@v44
+        uses: tj-actions/changed-files@v46
         with:
           files: |
             apps/admin-server/**
@@ -54,7 +54,7 @@ jobs:
       # Batch 서버 변경 감지
       - name: Check for Batch Service Changes
         id: batch-filter
-        uses: tj-actions/changed-files@v44
+        uses: tj-actions/changed-files@v46
         with:
           files: |
             apps/batch-server/**
@@ -66,7 +66,7 @@ jobs:
       # package.json  변경 감지
       - name: Check for dependency Changes
         id: dependency-check
-        uses: tj-actions/changed-files@v44
+        uses: tj-actions/changed-files@v46
         with:
           files: |
             package.json
@@ -75,7 +75,7 @@ jobs:
       # 실제 배포 트리거 파일 변경 감지
       - name: Check for deployable Changes
         id: deployment-gate
-        uses: tj-actions/changed-files@v44
+        uses: tj-actions/changed-files@v46
         with:
           files: |
             .github/workflows/deploy-dev-infra.yml
@@ -96,7 +96,7 @@ jobs:
       # DB infra 관련 변경 감지
       - name: Check for database infrastructure Changes
         id: db-check
-        uses: tj-actions/changed-files@v44
+        uses: tj-actions/changed-files@v46
         with:
           files: |
             scripts/dev-infra/**
