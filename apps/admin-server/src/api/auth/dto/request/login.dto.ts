@@ -4,7 +4,7 @@ export class LoginDto {
   /**
    * 관리자 id
    *
-   * @example "12345"
+   * @example "admin"
    */
   @IsString()
   id: string;
@@ -12,7 +12,7 @@ export class LoginDto {
   /**
    * 관리자 비밀번호
    *
-   * @example "12345"
+   * @example "1234"
    */
   @IsString()
   pw: string;
