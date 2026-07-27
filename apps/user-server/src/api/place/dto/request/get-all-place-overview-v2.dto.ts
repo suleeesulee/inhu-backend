@@ -12,9 +12,11 @@ import {
   IsInt,
   IsNotEmpty,
   IsOptional,
+  IsString,
   Min,
 } from 'class-validator';
 
+// ! 앞으로 추가 되는 모든 필드는 optional로 입력받아야 함.
 export class GetAllPlaceOverviewV2Dto {
   /**
    * page number
@@ -79,25 +81,7 @@ export class GetAllPlaceOverviewV2Dto {
   type?: PlaceType;
 
   /**
-   * 1: 밥집
-   * 2: 일식
-   * 3: 중식
-   * 4: 양식
-   * 5: 분식
-   * 6: 아시안
-   * 7: 패스트푸드
-   * 8: 고기
-   * 9: 베이커리
-   * 10: 샌드위치
-   * 11: 디저트
-   * 12: 아이스크림
-   * 13: 붕어빵
-   * 14: 테이크아웃
-   * 15: 이자카야
-   * 16: 요리주점
-   * 17: 맥주
-   * 18: 바
-   * 19: 밥술집
+   * 1 ~ 19 메인 카테고리 리스트
    */
   @IsOptional()
   @ToArray()
@@ -107,16 +91,7 @@ export class GetAllPlaceOverviewV2Dto {
   mainCategoryList?: MainCategory[];
 
   /**
-   * 분위기 카테고리 리스트
-   *
-   * 1: 혼밥
-   * 2: 데이트
-   * 3: 단체
-   * 4: 분위기맛집
-   * 5: 카공맛집
-   * 6: 디저트맛집
-   * 7: 혼술
-   * 8: 갓성비안주
+   * 1 ~ 13 상황 카테고리 리스트
    */
   @IsOptional()
   @ToArray()
@@ -124,4 +99,35 @@ export class GetAllPlaceOverviewV2Dto {
   @IsEnumValue(MoodCategory, { each: true })
   @Type(() => Number)
   moodCategoryList?: MoodCategory[];
+
+  /**
+   * 자유 태그 리스트
+   */
+  @IsOptional()
+  @ToArray()
+  @UniqueArray()
+  @IsString({ each: true })
+  freeTagList?: string[];
+
+  /**
+   * 만원 이하 여부
+   *
+   * true: 만원 이하 메뉴가 있는 장소만
+   * undefined: 만원 이하 여부 상관없이 모두 가져오기
+   */
+  @IsOptional()
+  @ToBoolean()
+  @IsBoolean()
+  lowPrice?: boolean;
+
+  /**
+   * 우선순위 따라 정렬 여부
+   *
+   * true: 우선순위 정렬 사용
+   * false: 우선순위 정렬 사용 안함
+   */
+  @IsOptional()
+  @ToBoolean()
+  @IsBoolean()
+  priority?: boolean;
 }

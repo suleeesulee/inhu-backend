@@ -8,10 +8,13 @@ import { BookmarkSeedHelper } from '@libs/testing/seed/bookmark/bookmark.seed';
 import { MenuSeedHelper } from '@libs/testing/seed/menu/menu.seed';
 import { PlaceOwnerSeedHelper } from '@libs/testing/seed/place-owner/place-owner.seed';
 import { PlaceSeedHelper } from '@libs/testing/seed/place/place.seed';
+import { SearchTagSeedHelper } from '@libs/testing/seed/search-tag/search-tag.seed';
 import { GetAllPlaceOverviewResponseDto } from '@user/api/place/dto/response/get-all-place-overview-response.dto';
 import { PlaceMarkerEntity } from '@user/api/place/entity/place-marker.entity';
 import { PlaceOverviewEntity } from '@user/api/place/entity/place-overview.entity';
 import { PlaceEntity } from '@user/api/place/entity/place.entity';
+import { RouletteItemEntity } from '@user/api/place/entity/roulette-item.entity';
+import { PlaceService } from '@user/api/place/place.service';
 import { AppModule } from '@user/app.module';
 import { TestHelper } from 'apps/user-server/test/e2e/setup/test.helper';
 
@@ -21,6 +24,7 @@ describe('Place E2E test', () => {
   const bookmarkSeedHelper = testHelper.seedHelper(BookmarkSeedHelper);
   const menuSeedHelper = testHelper.seedHelper(MenuSeedHelper);
   const placeOwnerSeedHelper = testHelper.seedHelper(PlaceOwnerSeedHelper);
+  const searchTagSeedHelper = testHelper.seedHelper(SearchTagSeedHelper);
 
   beforeEach(async () => {
     await testHelper.init();
@@ -57,7 +61,10 @@ describe('Place E2E test', () => {
           },
         ],
         type: PlaceType.CAFE,
-        mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
+        mainCategoryList: [
+          MainCategory.BAKERY,
+          MainCategory.BUNGEOPPANG_WAFFLE,
+        ],
         moodCategoryList: [
           MoodCategory.STUDY_FRIENDLY,
           MoodCategory.DESSERT_HOTSPOT,
@@ -90,7 +97,7 @@ describe('Place E2E test', () => {
       expect(place.imagePathList.sort()).toEqual(place.imagePathList.sort());
       expect(place.type).toBe(placeSeed.type);
       expect(place.mainCategoryList[0]).toBe(MainCategory.BAKERY);
-      expect(place.mainCategoryList[1]).toBe(MainCategory.BUNGEOPPANG);
+      expect(place.mainCategoryList[1]).toBe(MainCategory.BUNGEOPPANG_WAFFLE);
       expect(place.moodCategoryList[0]).toBe(MoodCategory.STUDY_FRIENDLY);
       expect(place.moodCategoryList[1]).toBe(MoodCategory.DESSERT_HOTSPOT);
     });
@@ -577,6 +584,392 @@ describe('Place E2E test', () => {
         (n) => !names1.slice(2).includes(n),
       );
       expect(names2.sort()).toStrictEqual(remaining.sort());
+    });
+
+    it('200 - lowPrice filtering check', async () => {
+      const [
+        place1,
+        place2,
+        place3,
+        place4,
+        place5,
+        place6,
+        place7,
+        place8,
+        place9,
+        place10,
+        place11,
+        place12,
+      ] = await placeSeedHelper.seedAll([
+        {
+          // place1:
+          name: '만원 이하 메뉴가 있는 가게1 + 만원 초과 메뉴도 있는 가게',
+          activatedAt: new Date(),
+        },
+        {
+          // place2
+          name: '만원 이하 메뉴가 있는 가게2',
+          activatedAt: new Date(),
+        },
+        {
+          // place3
+          name: '만원 이하 메뉴가 있는 가게3 + 만원 초과 메뉴도 있는 가게',
+          activatedAt: new Date(),
+        },
+        {
+          // place4
+          name: '만원 이하 메뉴가 있는 가게4',
+          activatedAt: new Date(),
+        },
+        {
+          // place5
+          name: '만원 이하 메뉴가 없는 가게1',
+          activatedAt: new Date(),
+        },
+        {
+          // place6
+          name: '만원 이하 메뉴가 없는 가게2',
+          activatedAt: new Date(),
+        },
+        {
+          // place7
+          name: '만원 이하 메뉴가 없는 가게3',
+          activatedAt: new Date(),
+        },
+        {
+          // place8
+          name: '만원 이하 메뉴가 없는 가게4',
+          activatedAt: new Date(),
+        },
+        {
+          // place9
+          name: '메뉴가 없는 가게1',
+          activatedAt: new Date(),
+        },
+        {
+          // place10
+          name: '메뉴가 없는 가게2',
+          activatedAt: new Date(),
+        },
+        {
+          // place11
+          name: '메뉴가 없는 가게3',
+          activatedAt: new Date(),
+        },
+        {
+          // place12
+          name: '메뉴가 없는 가게4',
+          activatedAt: new Date(),
+        },
+      ]);
+
+      await menuSeedHelper.seedAll([
+        {
+          placeIdx: place1.idx,
+          price: 9000,
+          isMain: true,
+        },
+        {
+          placeIdx: place1.idx,
+          price: 15000,
+          isMain: true,
+        },
+        {
+          placeIdx: place2.idx,
+          price: 8000,
+          isMain: true,
+        },
+        {
+          placeIdx: place3.idx,
+          price: 7000,
+          isMain: true,
+        },
+        {
+          placeIdx: place3.idx,
+          price: 20000,
+          isMain: true,
+        },
+        {
+          placeIdx: place4.idx,
+          price: 6000,
+          isMain: true,
+        },
+        {
+          placeIdx: place5.idx,
+          price: 11000,
+          isMain: true,
+        },
+        {
+          placeIdx: place6.idx,
+          price: 12000,
+          isMain: true,
+        },
+        {
+          placeIdx: place7.idx,
+          price: 13000,
+          isMain: true,
+        },
+        {
+          placeIdx: place8.idx,
+          price: 14000,
+          isMain: true,
+        },
+      ]);
+
+      const response = await testHelper
+        .test()
+        .get('/place/all')
+        .query({
+          page: 1,
+          lowPrice: true,
+        })
+        .expect(200);
+
+      const placeList: PlaceOverviewEntity[] = response.body.placeOverviewList;
+
+      expect(response.body.hasNext).toBe(false);
+      expect(placeList.map(({ name }) => name).sort()).toStrictEqual(
+        [place1.name, place2.name, place3.name, place4.name].sort(),
+      );
+    });
+
+    it('200 - lowPrice && operating === true filtering check', async () => {
+      const now = testHelper.mockTodayTime('10:00');
+
+      const [
+        place1,
+        place2,
+        place3,
+        place4,
+        place5,
+        place6,
+        place7,
+        place8,
+        place9,
+        place10,
+        place11,
+        place12,
+      ] = await placeSeedHelper.seedAll([
+        {
+          // place1:
+          name: '만원 이하 메뉴가 있는 가게1 + 만원 초과 메뉴도 있는 가게 + 운영 중',
+          activatedAt: new Date(),
+          operatingHourList: [
+            {
+              day: now.day(),
+              startAt: now.before('4h'),
+              endAt: now.after('1h'),
+            },
+          ],
+        },
+        {
+          // place2
+          name: '만원 이하 메뉴가 있는 가게2 + 만원 초과 메뉴도 있는 가게',
+          activatedAt: new Date(),
+          operatingHourList: [
+            {
+              day: now.day(),
+              startAt: now.before('4h'),
+              endAt: now.before('1h'),
+            },
+          ],
+        },
+        {
+          // place3
+          name: '만원 이하 메뉴가 있는 가게3 + 만원 초과 메뉴도 있는 가게 + 운영 중',
+          activatedAt: new Date(),
+          operatingHourList: [
+            {
+              day: now.day(),
+              startAt: now.before('4h'),
+              endAt: now.after('1h'),
+            },
+          ],
+        },
+        {
+          // place4
+          name: '만원 이하 메뉴가 있는 가게4',
+          activatedAt: new Date(),
+          operatingHourList: [
+            {
+              day: now.day(),
+              startAt: now.before('4h'),
+              endAt: now.before('1h'),
+            },
+          ],
+        },
+        {
+          // place5
+          name: '만원 이하 메뉴가 없는 가게1 + 운영 중',
+          activatedAt: new Date(),
+          operatingHourList: [
+            {
+              day: now.day(),
+              startAt: now.before('4h'),
+              endAt: now.after('1h'),
+            },
+          ],
+        },
+        {
+          // place6
+          name: '만원 이하 메뉴가 없는 가게2 + 운영 중',
+          activatedAt: new Date(),
+          operatingHourList: [
+            {
+              day: now.day(),
+              startAt: now.before('4h'),
+              endAt: now.after('1h'),
+            },
+          ],
+        },
+        {
+          // place7
+          name: '만원 이하 메뉴가 없는 가게3',
+          activatedAt: new Date(),
+          operatingHourList: [
+            {
+              day: now.day(),
+              startAt: now.before('4h'),
+              endAt: now.before('1h'),
+            },
+          ],
+        },
+        {
+          // place8
+          name: '만원 이하 메뉴가 없는 가게4',
+          activatedAt: new Date(),
+          operatingHourList: [
+            {
+              day: now.day(),
+              startAt: now.before('4h'),
+              endAt: now.before('1h'),
+            },
+          ],
+        },
+        {
+          // place9
+          name: '메뉴가 없는 가게1 + 운영 중',
+          activatedAt: new Date(),
+          operatingHourList: [
+            {
+              day: now.day(),
+              startAt: now.before('4h'),
+              endAt: now.after('1h'),
+            },
+          ],
+        },
+        {
+          // place10
+          name: '메뉴가 없는 가게2 + 운영 중',
+          activatedAt: new Date(),
+          operatingHourList: [
+            {
+              day: now.day(),
+              startAt: now.before('4h'),
+              endAt: now.after('1h'),
+            },
+          ],
+        },
+        {
+          // place11
+          name: '메뉴가 없는 가게3',
+          activatedAt: new Date(),
+          operatingHourList: [
+            {
+              day: now.day(),
+              startAt: now.before('4h'),
+              endAt: now.before('1h'),
+            },
+          ],
+        },
+        {
+          // place12
+          name: '메뉴가 없는 가게4',
+          activatedAt: new Date(),
+          operatingHourList: [
+            {
+              day: now.day(),
+              startAt: now.before('4h'),
+              endAt: now.before('1h'),
+            },
+          ],
+        },
+      ]);
+
+      await menuSeedHelper.seedAll([
+        {
+          placeIdx: place1.idx,
+          price: 9000,
+          isMain: true,
+        },
+        {
+          placeIdx: place1.idx,
+          price: 15000,
+          isMain: true,
+        },
+        {
+          placeIdx: place2.idx,
+          price: 8000,
+          isMain: true,
+        },
+        {
+          placeIdx: place2.idx,
+          price: 15000,
+          isMain: true,
+        },
+        {
+          placeIdx: place3.idx,
+          price: 7000,
+          isMain: true,
+        },
+        {
+          placeIdx: place3.idx,
+          price: 20000,
+          isMain: true,
+        },
+        {
+          placeIdx: place4.idx,
+          price: 6000,
+          isMain: true,
+        },
+        {
+          placeIdx: place5.idx,
+          price: 11000,
+          isMain: true,
+        },
+        {
+          placeIdx: place6.idx,
+          price: 12000,
+          isMain: true,
+        },
+        {
+          placeIdx: place7.idx,
+          price: 13000,
+          isMain: true,
+        },
+        {
+          placeIdx: place8.idx,
+          price: 14000,
+          isMain: true,
+        },
+      ]);
+
+      const response = await testHelper
+        .test()
+        .get('/place/all')
+        .query({
+          page: 1,
+          lowPrice: true,
+          operating: true,
+        })
+        .expect(200);
+
+      const placeList: PlaceOverviewEntity[] = response.body.placeOverviewList;
+
+      expect(response.body.hasNext).toBe(false);
+      expect(placeList.map(({ name }) => name).sort()).toStrictEqual(
+        [place1.name, place3.name].sort(),
+      );
     });
 
     it('200 - break time filtering check', async () => {
@@ -1268,17 +1661,23 @@ describe('Place E2E test', () => {
         {
           activatedAt: new Date(),
           name: 'place1: 베이커리, 붕어빵',
-          mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
+          mainCategoryList: [
+            MainCategory.BAKERY,
+            MainCategory.BUNGEOPPANG_WAFFLE,
+          ],
         },
         {
           activatedAt: new Date(),
           name: 'place2: 붕어빵, 샌드위치',
-          mainCategoryList: [MainCategory.BUNGEOPPANG, MainCategory.SANDWICH],
+          mainCategoryList: [
+            MainCategory.BUNGEOPPANG_WAFFLE,
+            MainCategory.SANDWICH_SALAD,
+          ],
         },
         {
           activatedAt: new Date(),
           name: 'place3: 샌드위치, 디저트',
-          mainCategoryList: [MainCategory.SANDWICH, MainCategory.DESSERT],
+          mainCategoryList: [MainCategory.SANDWICH_SALAD, MainCategory.DESSERT],
         },
       ]);
 
@@ -1302,17 +1701,23 @@ describe('Place E2E test', () => {
         {
           activatedAt: new Date(),
           name: 'place1: 베이커리, 붕어빵',
-          mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
+          mainCategoryList: [
+            MainCategory.BAKERY,
+            MainCategory.BUNGEOPPANG_WAFFLE,
+          ],
         },
         {
           activatedAt: new Date(),
           name: 'place2: 붕어빵, 샌드위치',
-          mainCategoryList: [MainCategory.BUNGEOPPANG, MainCategory.SANDWICH],
+          mainCategoryList: [
+            MainCategory.BUNGEOPPANG_WAFFLE,
+            MainCategory.SANDWICH_SALAD,
+          ],
         },
         {
           activatedAt: new Date(),
           name: 'place3: 샌드위치, 디저트',
-          mainCategoryList: [MainCategory.SANDWICH, MainCategory.DESSERT],
+          mainCategoryList: [MainCategory.SANDWICH_SALAD, MainCategory.DESSERT],
         },
       ]);
 
@@ -1321,7 +1726,7 @@ describe('Place E2E test', () => {
         .get('/place/all')
         .query({
           page: 1,
-          mainCategoryList: [MainCategory.BUNGEOPPANG],
+          mainCategoryList: [MainCategory.BUNGEOPPANG_WAFFLE],
         })
         .expect(200);
 
@@ -1337,17 +1742,23 @@ describe('Place E2E test', () => {
         {
           activatedAt: new Date(),
           name: 'place1: 베이커리, 붕어빵',
-          mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
+          mainCategoryList: [
+            MainCategory.BAKERY,
+            MainCategory.BUNGEOPPANG_WAFFLE,
+          ],
         },
         {
           activatedAt: new Date(),
           name: 'place2: 붕어빵, 샌드위치',
-          mainCategoryList: [MainCategory.BUNGEOPPANG, MainCategory.SANDWICH],
+          mainCategoryList: [
+            // MainCategory.BUNGEOPPANG_WAFFLE,
+            MainCategory.SANDWICH_SALAD,
+          ],
         },
         {
           activatedAt: new Date(),
           name: 'place3: 샌드위치, 디저트',
-          mainCategoryList: [MainCategory.SANDWICH, MainCategory.DESSERT],
+          mainCategoryList: [MainCategory.SANDWICH_SALAD, MainCategory.DESSERT],
         },
       ]);
 
@@ -1356,7 +1767,10 @@ describe('Place E2E test', () => {
         .get('/place/all')
         .query({
           page: 1,
-          mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
+          mainCategoryList: [
+            MainCategory.BAKERY,
+            MainCategory.BUNGEOPPANG_WAFFLE,
+          ],
         })
         .expect(200);
 
@@ -1367,22 +1781,72 @@ describe('Place E2E test', () => {
       );
     });
 
+    it('200 - main category filtering check (multiple conditions, multiple matched)', async () => {
+      const [place1, place2, place3] = await placeSeedHelper.seedAll([
+        {
+          activatedAt: new Date(),
+          name: 'place1: 베이커리, 붕어빵',
+          mainCategoryList: [
+            MainCategory.BAKERY,
+            MainCategory.BUNGEOPPANG_WAFFLE,
+          ],
+        },
+        {
+          activatedAt: new Date(),
+          name: 'place2: 붕어빵, 샌드위치',
+          mainCategoryList: [
+            MainCategory.BUNGEOPPANG_WAFFLE,
+            MainCategory.SANDWICH_SALAD,
+          ],
+        },
+        {
+          activatedAt: new Date(),
+          name: 'place3: 샌드위치, 디저트',
+          mainCategoryList: [MainCategory.SANDWICH_SALAD, MainCategory.DESSERT],
+        },
+      ]);
+
+      const response = await testHelper
+        .test()
+        .get('/place/all')
+        .query({
+          page: 1,
+          mainCategoryList: [
+            MainCategory.BAKERY,
+            MainCategory.BUNGEOPPANG_WAFFLE,
+          ],
+        })
+        .expect(200);
+
+      const placeList: PlaceOverviewEntity[] = response.body.placeOverviewList;
+
+      expect(placeList.map(({ idx }) => idx).sort()).toStrictEqual(
+        [place1.idx, place2.idx].sort(),
+      );
+    });
+
     it('200 - main category filtering check (single condition, single matched)', async () => {
       const [place1, place2, place3] = await placeSeedHelper.seedAll([
         {
           activatedAt: new Date(),
           name: 'place1: 베이커리, 붕어빵',
-          mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
+          mainCategoryList: [
+            MainCategory.BAKERY,
+            MainCategory.BUNGEOPPANG_WAFFLE,
+          ],
         },
         {
           activatedAt: new Date(),
           name: 'place2: 붕어빵, 샌드위치',
-          mainCategoryList: [MainCategory.BUNGEOPPANG, MainCategory.SANDWICH],
+          mainCategoryList: [
+            MainCategory.BUNGEOPPANG_WAFFLE,
+            MainCategory.SANDWICH_SALAD,
+          ],
         },
         {
           activatedAt: new Date(),
           name: 'place3: 샌드위치, 디저트',
-          mainCategoryList: [MainCategory.SANDWICH, MainCategory.DESSERT],
+          mainCategoryList: [MainCategory.SANDWICH_SALAD, MainCategory.DESSERT],
         },
       ]);
 
@@ -1407,17 +1871,23 @@ describe('Place E2E test', () => {
         {
           activatedAt: new Date(),
           name: 'place1: 베이커리, 붕어빵',
-          mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
+          mainCategoryList: [
+            MainCategory.BAKERY,
+            MainCategory.BUNGEOPPANG_WAFFLE,
+          ],
         },
         {
           activatedAt: new Date(),
           name: 'place2: 붕어빵, 샌드위치',
-          mainCategoryList: [MainCategory.BUNGEOPPANG, MainCategory.SANDWICH],
+          mainCategoryList: [
+            MainCategory.BUNGEOPPANG_WAFFLE,
+            MainCategory.SANDWICH_SALAD,
+          ],
         },
         {
           activatedAt: new Date(),
           name: 'place3: 샌드위치, 디저트',
-          mainCategoryList: [MainCategory.SANDWICH, MainCategory.DESSERT],
+          mainCategoryList: [MainCategory.SANDWICH_SALAD, MainCategory.DESSERT],
         },
       ]);
 
@@ -1441,17 +1911,23 @@ describe('Place E2E test', () => {
         {
           activatedAt: new Date(),
           name: 'place1: 베이커리, 붕어빵',
-          mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
+          mainCategoryList: [
+            MainCategory.BAKERY,
+            MainCategory.BUNGEOPPANG_WAFFLE,
+          ],
         },
         {
           activatedAt: new Date(),
           name: 'place2: 붕어빵, 샌드위치',
-          mainCategoryList: [MainCategory.BUNGEOPPANG, MainCategory.SANDWICH],
+          mainCategoryList: [
+            MainCategory.BUNGEOPPANG_WAFFLE,
+            MainCategory.SANDWICH_SALAD,
+          ],
         },
         {
           activatedAt: new Date(),
           name: 'place3: 샌드위치, 디저트',
-          mainCategoryList: [MainCategory.SANDWICH, MainCategory.DESSERT],
+          mainCategoryList: [MainCategory.SANDWICH_SALAD, MainCategory.DESSERT],
         },
       ]);
 
@@ -1460,7 +1936,7 @@ describe('Place E2E test', () => {
         .get('/place/all')
         .query({
           page: 1,
-          mainCategoryList: [MainCategory.BAKERY, MainCategory.FAST_FOOD],
+          mainCategoryList: [MainCategory.CAFE_COFFEE, MainCategory.FAST_FOOD],
         })
         .expect(200);
 
@@ -1475,25 +1951,31 @@ describe('Place E2E test', () => {
         {
           activatedAt: new Date(),
           name: 'place1: 베이커리, 붕어빵',
-          mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
+          mainCategoryList: [
+            MainCategory.BAKERY,
+            MainCategory.BUNGEOPPANG_WAFFLE,
+          ],
           moodCategoryList: [
             MoodCategory.COST_EFFECTIVE,
-            MoodCategory.BAR_DATE,
+            MoodCategory.SOLO_DRINKING,
           ],
         },
         {
           activatedAt: new Date(),
           name: 'place2: 붕어빵, 샌드위치',
-          mainCategoryList: [MainCategory.BUNGEOPPANG, MainCategory.SANDWICH],
+          mainCategoryList: [
+            MainCategory.BUNGEOPPANG_WAFFLE,
+            MainCategory.SANDWICH_SALAD,
+          ],
           moodCategoryList: [
-            MoodCategory.BAR_DATE,
+            MoodCategory.SOLO_DRINKING,
             MoodCategory.DESSERT_HOTSPOT,
           ],
         },
         {
           activatedAt: new Date(),
           name: 'place3: 샌드위치, 디저트',
-          mainCategoryList: [MainCategory.SANDWICH, MainCategory.DESSERT],
+          mainCategoryList: [MainCategory.SANDWICH_SALAD, MainCategory.DESSERT],
           moodCategoryList: [
             MoodCategory.DESSERT_HOTSPOT,
             MoodCategory.GOOD_ATMOSPHERE,
@@ -1523,25 +2005,31 @@ describe('Place E2E test', () => {
         {
           activatedAt: new Date(),
           name: 'place1: 베이커리, 붕어빵',
-          mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
+          mainCategoryList: [
+            MainCategory.BAKERY,
+            MainCategory.BUNGEOPPANG_WAFFLE,
+          ],
           moodCategoryList: [
             MoodCategory.COST_EFFECTIVE,
-            MoodCategory.BAR_DATE,
+            MoodCategory.SOLO_DRINKING,
           ],
         },
         {
           activatedAt: new Date(),
           name: 'place2: 붕어빵, 샌드위치',
-          mainCategoryList: [MainCategory.BUNGEOPPANG, MainCategory.SANDWICH],
+          mainCategoryList: [
+            MainCategory.BUNGEOPPANG_WAFFLE,
+            MainCategory.SANDWICH_SALAD,
+          ],
           moodCategoryList: [
-            MoodCategory.BAR_DATE,
+            MoodCategory.SOLO_DRINKING,
             MoodCategory.DESSERT_HOTSPOT,
           ],
         },
         {
           activatedAt: new Date(),
           name: 'place3: 샌드위치, 디저트',
-          mainCategoryList: [MainCategory.SANDWICH, MainCategory.DESSERT],
+          mainCategoryList: [MainCategory.SANDWICH_SALAD, MainCategory.DESSERT],
           moodCategoryList: [
             MoodCategory.DESSERT_HOTSPOT,
             MoodCategory.GOOD_ATMOSPHERE,
@@ -1554,8 +2042,8 @@ describe('Place E2E test', () => {
         .get('/place/all')
         .query({
           page: 1,
-          mainCategoryList: [MainCategory.BUNGEOPPANG],
-          moodCategoryList: [MoodCategory.BAR_DATE],
+          mainCategoryList: [MainCategory.BUNGEOPPANG_WAFFLE],
+          moodCategoryList: [MoodCategory.SOLO_DRINKING],
         })
         .expect(200);
 
@@ -1571,25 +2059,31 @@ describe('Place E2E test', () => {
         {
           activatedAt: new Date(),
           name: 'place1: 베이커리, 붕어빵',
-          mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
+          mainCategoryList: [
+            MainCategory.BAKERY,
+            MainCategory.BUNGEOPPANG_WAFFLE,
+          ],
           moodCategoryList: [
             MoodCategory.COST_EFFECTIVE,
-            MoodCategory.BAR_DATE,
+            MoodCategory.SOLO_DRINKING,
           ],
         },
         {
           activatedAt: new Date(),
           name: 'place2: 붕어빵, 샌드위치',
-          mainCategoryList: [MainCategory.BUNGEOPPANG, MainCategory.SANDWICH],
+          mainCategoryList: [
+            MainCategory.BUNGEOPPANG_WAFFLE,
+            MainCategory.SANDWICH_SALAD,
+          ],
           moodCategoryList: [
-            MoodCategory.BAR_GROUP_GATHERING,
+            // MoodCategory.SOLO_DRINKING,
             MoodCategory.DESSERT_HOTSPOT,
           ],
         },
         {
           activatedAt: new Date(),
           name: 'place3: 샌드위치, 디저트',
-          mainCategoryList: [MainCategory.SANDWICH, MainCategory.DESSERT],
+          mainCategoryList: [MainCategory.SANDWICH_SALAD, MainCategory.DESSERT],
           moodCategoryList: [
             MoodCategory.DESSERT_HOTSPOT,
             MoodCategory.GOOD_ATMOSPHERE,
@@ -1602,10 +2096,13 @@ describe('Place E2E test', () => {
         .get('/place/all')
         .query({
           page: 1,
-          mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
+          mainCategoryList: [
+            MainCategory.BAKERY,
+            MainCategory.BUNGEOPPANG_WAFFLE,
+          ],
           moodCategoryList: [
             MoodCategory.COST_EFFECTIVE,
-            MoodCategory.BAR_DATE,
+            MoodCategory.SOLO_DRINKING,
           ],
         })
         .expect(200);
@@ -1622,25 +2119,31 @@ describe('Place E2E test', () => {
         {
           activatedAt: new Date(),
           name: 'place1: 베이커리, 붕어빵',
-          mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
+          mainCategoryList: [
+            MainCategory.BAKERY,
+            MainCategory.BUNGEOPPANG_WAFFLE,
+          ],
           moodCategoryList: [
             MoodCategory.COST_EFFECTIVE,
-            MoodCategory.BAR_DATE,
+            MoodCategory.SOLO_DRINKING,
           ],
         },
         {
           activatedAt: new Date(),
           name: 'place2: 붕어빵, 샌드위치',
-          mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
+          mainCategoryList: [
+            MainCategory.BAKERY,
+            MainCategory.BUNGEOPPANG_WAFFLE,
+          ],
           moodCategoryList: [
-            MoodCategory.BAR_DATE,
+            MoodCategory.SOLO_DRINKING,
             MoodCategory.DESSERT_HOTSPOT,
           ],
         },
         {
           activatedAt: new Date(),
           name: 'place3: 샌드위치, 디저트',
-          mainCategoryList: [MainCategory.SANDWICH, MainCategory.DESSERT],
+          mainCategoryList: [MainCategory.SANDWICH_SALAD, MainCategory.DESSERT],
           moodCategoryList: [
             MoodCategory.DESSERT_HOTSPOT,
             MoodCategory.GOOD_ATMOSPHERE,
@@ -1653,10 +2156,13 @@ describe('Place E2E test', () => {
         .get('/place/all')
         .query({
           page: 1,
-          mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
+          mainCategoryList: [
+            MainCategory.BAKERY,
+            MainCategory.BUNGEOPPANG_WAFFLE,
+          ],
           moodCategoryList: [
             MoodCategory.COST_EFFECTIVE,
-            MoodCategory.BAR_DATE,
+            MoodCategory.SOLO_DRINKING,
           ],
         })
         .expect(200);
@@ -1673,25 +2179,31 @@ describe('Place E2E test', () => {
         {
           activatedAt: new Date(),
           name: 'place1: 베이커리, 붕어빵',
-          mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
+          mainCategoryList: [
+            MainCategory.BAKERY,
+            MainCategory.BUNGEOPPANG_WAFFLE,
+          ],
           moodCategoryList: [
             MoodCategory.COST_EFFECTIVE,
-            MoodCategory.BAR_DATE,
+            MoodCategory.SOLO_DRINKING,
           ],
         },
         {
           activatedAt: new Date(),
           name: 'place2: 붕어빵, 샌드위치',
-          mainCategoryList: [MainCategory.BUNGEOPPANG, MainCategory.SANDWICH],
+          mainCategoryList: [
+            MainCategory.BUNGEOPPANG_WAFFLE,
+            MainCategory.SANDWICH_SALAD,
+          ],
           moodCategoryList: [
-            MoodCategory.BAR_DATE,
+            MoodCategory.SOLO_DRINKING,
             MoodCategory.DESSERT_HOTSPOT,
           ],
         },
         {
           activatedAt: new Date(),
           name: 'place3: 샌드위치, 디저트',
-          mainCategoryList: [MainCategory.SANDWICH, MainCategory.DESSERT],
+          mainCategoryList: [MainCategory.SANDWICH_SALAD, MainCategory.DESSERT],
           moodCategoryList: [
             MoodCategory.DESSERT_HOTSPOT,
             MoodCategory.GOOD_ATMOSPHERE,
@@ -1720,25 +2232,31 @@ describe('Place E2E test', () => {
         {
           activatedAt: new Date(),
           name: 'place1: 베이커리, 붕어빵',
-          mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
+          mainCategoryList: [
+            MainCategory.BAKERY,
+            MainCategory.BUNGEOPPANG_WAFFLE,
+          ],
           moodCategoryList: [
             MoodCategory.COST_EFFECTIVE,
-            MoodCategory.BAR_DATE,
+            MoodCategory.SOLO_DRINKING,
           ],
         },
         {
           activatedAt: new Date(),
           name: 'place2: 붕어빵, 샌드위치',
-          mainCategoryList: [MainCategory.BUNGEOPPANG, MainCategory.SANDWICH],
+          mainCategoryList: [
+            MainCategory.CAFE_COFFEE,
+            MainCategory.SANDWICH_SALAD,
+          ],
           moodCategoryList: [
-            MoodCategory.BAR_DATE,
+            MoodCategory.SOLO_DRINKING,
             MoodCategory.DESSERT_HOTSPOT,
           ],
         },
         {
           activatedAt: new Date(),
           name: 'place3: 샌드위치, 디저트',
-          mainCategoryList: [MainCategory.SANDWICH, MainCategory.DESSERT],
+          mainCategoryList: [MainCategory.SANDWICH_SALAD, MainCategory.DESSERT],
           moodCategoryList: [
             MoodCategory.DESSERT_HOTSPOT,
             MoodCategory.GOOD_ATMOSPHERE,
@@ -1751,7 +2269,10 @@ describe('Place E2E test', () => {
         .get('/place/all')
         .query({
           page: 1,
-          mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
+          mainCategoryList: [
+            MainCategory.BAKERY,
+            MainCategory.BUNGEOPPANG_WAFFLE,
+          ],
           moodCategoryList: [
             MoodCategory.GOOD_ATMOSPHERE,
             MoodCategory.DESSERT_HOTSPOT,
@@ -1848,6 +2369,12 @@ describe('Place E2E test', () => {
             count: 8,
           },
         ],
+        typeList: [PlaceType.RESTAURANT, PlaceType.CAFE],
+        mainCategoryList: [MainCategory.KOREAN, MainCategory.BAKERY],
+        moodCategoryList: [
+          MoodCategory.GOOD_ATMOSPHERE,
+          MoodCategory.DESSERT_HOTSPOT,
+        ],
       });
 
       const response = await testHelper
@@ -1872,6 +2399,8 @@ describe('Place E2E test', () => {
       expect(place.bookmark).toBe(false);
       expect(place.imagePathList.sort()).toEqual(place.imagePathList.sort());
       expect(place.type).toBe(placeSeed.type);
+      expect(place.mainCategoryList).toEqual(placeSeed.mainCategoryList);
+      expect(place.moodCategoryList).toEqual(placeSeed.moodCategoryList);
     });
 
     it('200 - orderby time check', async () => {
@@ -2743,6 +3272,239 @@ describe('Place E2E test', () => {
 
       expect(places).toStrictEqual([]);
     });
+
+    it('200 - check searchKeyword filtering single search tag content', async () => {
+      const [searchTag1, searchTag2, searchTag3, searchTag4] =
+        await searchTagSeedHelper.seedAll([
+          { content: 'search tag 1' },
+          { content: 'search tag 2' },
+          { content: 'search tag 3' },
+          { content: 'search tag 4' },
+        ]);
+
+      const [place1, place2, place3] = await placeSeedHelper.seedAll([
+        {
+          name: 'place 1',
+          activatedAt: new Date(),
+          searchTagIdxList: [searchTag1.idx, searchTag2.idx],
+        },
+        {
+          name: 'place 2',
+          activatedAt: new Date(),
+          searchTagIdxList: [searchTag3.idx],
+        },
+        {
+          name: 'place 3',
+          activatedAt: new Date(),
+          searchTagIdxList: [searchTag4.idx],
+        },
+      ]);
+
+      await menuSeedHelper.seedAll([
+        {
+          placeIdx: place1.idx,
+          name: 'menu 1',
+          content: 'content 1',
+        },
+        {
+          placeIdx: place2.idx,
+          name: 'menu 2',
+          content: 'content 2',
+        },
+        {
+          placeIdx: place3.idx,
+          name: 'menu 3',
+          content: 'content 3',
+        },
+      ]);
+
+      const response = await testHelper
+        .test()
+        .get('/place/marker/all')
+        .query({
+          searchKeyword: 'search tag 3',
+        })
+        .expect(200);
+
+      const places: PlaceMarkerEntity[] = response.body.placeMarkerList;
+
+      expect(places.map(({ idx }) => idx)).toStrictEqual([place2.idx]);
+    });
+
+    it('200 - check searchKeyword filtering multiple search tag content', async () => {
+      const [searchTag1, searchTag2, searchTag3, searchTag4] =
+        await searchTagSeedHelper.seedAll([
+          { content: 'search tag 1' },
+          { content: 'search tag 2' },
+          { content: 'search tag 3' },
+          { content: 'search tag 4' },
+        ]);
+
+      const [place1, place2, place3] = await placeSeedHelper.seedAll([
+        {
+          name: 'place 1',
+          activatedAt: new Date(),
+          searchTagIdxList: [searchTag1.idx, searchTag2.idx],
+        },
+        {
+          name: 'place 2',
+          activatedAt: new Date(),
+          searchTagIdxList: [searchTag2.idx, searchTag3.idx],
+        },
+        {
+          name: 'place 3',
+          activatedAt: new Date(),
+          searchTagIdxList: [searchTag3.idx, searchTag4.idx],
+        },
+      ]);
+
+      await menuSeedHelper.seedAll([
+        {
+          placeIdx: place1.idx,
+          name: 'menu 1',
+          content: 'content 1',
+        },
+        {
+          placeIdx: place2.idx,
+          name: 'menu 2',
+          content: 'content 2',
+        },
+        {
+          placeIdx: place3.idx,
+          name: 'menu 3',
+          content: 'content 3',
+        },
+      ]);
+
+      const response = await testHelper
+        .test()
+        .get('/place/marker/all')
+        .query({
+          searchKeyword: 'search tag 2',
+        })
+        .expect(200);
+
+      const places: PlaceMarkerEntity[] = response.body.placeMarkerList;
+
+      expect(places.map(({ idx }) => idx).sort()).toStrictEqual(
+        [place1.idx, place2.idx].sort(),
+      );
+    });
+
+    it('200 - check searchKeyword filtering multiple search tag prefix content', async () => {
+      const [searchTag1, searchTag2, searchTag3, searchTag4] =
+        await searchTagSeedHelper.seedAll([
+          { content: 'search tag 1' },
+          { content: 'search tag 2' },
+          { content: 'search tag 3' },
+          { content: 'search tag 4' },
+        ]);
+
+      const [place1, place2, place3] = await placeSeedHelper.seedAll([
+        {
+          name: 'place 1',
+          activatedAt: new Date(),
+          searchTagIdxList: [searchTag1.idx, searchTag2.idx],
+        },
+        {
+          name: 'place 2',
+          activatedAt: new Date(),
+          searchTagIdxList: [searchTag2.idx, searchTag3.idx],
+        },
+        {
+          name: 'place 3',
+          activatedAt: new Date(),
+          searchTagIdxList: [searchTag3.idx, searchTag4.idx],
+        },
+      ]);
+
+      await menuSeedHelper.seedAll([
+        {
+          placeIdx: place1.idx,
+          name: 'menu 1',
+          content: 'content 1',
+        },
+        {
+          placeIdx: place2.idx,
+          name: 'menu 2',
+          content: 'content 2',
+        },
+        {
+          placeIdx: place3.idx,
+          name: 'menu 3',
+          content: 'content 3',
+        },
+      ]);
+
+      const response = await testHelper
+        .test()
+        .get('/place/marker/all')
+        .query({
+          searchKeyword: 'search',
+        })
+        .expect(200);
+
+      const places: PlaceMarkerEntity[] = response.body.placeMarkerList;
+
+      expect(places.map(({ idx }) => idx).sort()).toStrictEqual(
+        [place1.idx, place2.idx, place3.idx].sort(),
+      );
+    });
+
+    it('200 - check searchKeyword filtering (do not exist menu content)', async () => {
+      const [searchTag1, searchTag2, searchTag3, searchTag4] =
+        await searchTagSeedHelper.seedAll([
+          { content: 'search tag 1' },
+          { content: 'search tag 2' },
+          { content: 'search tag 3' },
+          { content: 'search tag 4' },
+        ]);
+
+      const [place1, place2, place3] = await placeSeedHelper.seedAll([
+        {
+          name: 'place 1',
+          activatedAt: new Date(),
+        },
+        {
+          name: 'place 2',
+          activatedAt: new Date(),
+        },
+        {
+          name: 'place 3',
+          activatedAt: new Date(),
+        },
+      ]);
+
+      await menuSeedHelper.seedAll([
+        {
+          placeIdx: place1.idx,
+          name: 'menu 1',
+          content: 'content 1',
+        },
+        {
+          placeIdx: place2.idx,
+          name: 'menu 2',
+          content: 'content 2',
+        },
+        {
+          placeIdx: place3.idx,
+          name: 'menu 3',
+          content: 'content 3',
+        },
+      ]);
+
+      const response = await testHelper
+        .test()
+        .get('/place/marker/all')
+        .query({
+          searchKeyword: 'not exist',
+        })
+        .expect(200);
+
+      const places: PlaceMarkerEntity[] = response.body.placeMarkerList;
+
+      expect(places).toStrictEqual([]);
+    });
   });
 
   describe('GET /place/bookmarked/all', () => {
@@ -2773,7 +3535,10 @@ describe('Place E2E test', () => {
             count: 8,
           },
         ],
-        mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
+        mainCategoryList: [
+          MainCategory.BAKERY,
+          MainCategory.BUNGEOPPANG_WAFFLE,
+        ],
         moodCategoryList: [
           MoodCategory.STUDY_FRIENDLY,
           MoodCategory.DESSERT_HOTSPOT,
@@ -2811,9 +3576,60 @@ describe('Place E2E test', () => {
       expect(place.bookmark).toBe(true);
       expect(place.imagePathList.sort()).toEqual(place.imagePathList.sort());
       expect(place.mainCategoryList[0]).toBe(MainCategory.BAKERY);
-      expect(place.mainCategoryList[1]).toBe(MainCategory.BUNGEOPPANG);
+      expect(place.mainCategoryList[1]).toBe(MainCategory.BUNGEOPPANG_WAFFLE);
       expect(place.moodCategoryList[0]).toBe(MoodCategory.STUDY_FRIENDLY);
       expect(place.moodCategoryList[1]).toBe(MoodCategory.DESSERT_HOTSPOT);
+    });
+
+    it('200 - successfully get list although others place is bookmarked', async () => {
+      const loginUser = testHelper.loginUsers.user1;
+      const otherUser = testHelper.loginUsers.user2;
+
+      const [placeSeed1, placeSeed2] = await placeSeedHelper.seedAll([
+        {
+          activatedAt: new Date(),
+          name: 'Test Place 1',
+        },
+        {
+          activatedAt: new Date(),
+          name: 'Test Place 2',
+        },
+      ]);
+
+      await bookmarkSeedHelper.seedAll([
+        {
+          placeIdx: placeSeed1.idx,
+          userIdx: loginUser.idx,
+        },
+        {
+          placeIdx: placeSeed2.idx,
+          userIdx: loginUser.idx,
+        },
+        {
+          placeIdx: placeSeed1.idx,
+          userIdx: otherUser.idx,
+        },
+      ]);
+
+      const response = await testHelper
+        .test()
+        .get('/place/bookmarked/all')
+        .query({ page: 1 })
+        .set('Authorization', `Bearer ${loginUser.app.accessToken}`)
+        .expect(200);
+
+      const hasNext: boolean = response.body.hasNext;
+      const placeList: PlaceOverviewEntity[] = response.body.placeOverviewList;
+
+      expect(hasNext).toBe(false);
+      expect(Array.isArray(placeList)).toBe(true);
+      expect(placeList.length).toBe(2);
+
+      const place1 = placeList.find(({ idx }) => idx === placeSeed1.idx);
+      const place2 = placeList.find(({ idx }) => idx === placeSeed2.idx);
+
+      expect(place1).toBeDefined();
+      expect(place2).toBeDefined();
     });
 
     it('400 - invalid querystring', async () => {
@@ -2943,7 +3759,10 @@ describe('Place E2E test', () => {
             week: 2,
           },
         ],
-        mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
+        mainCategoryList: [
+          MainCategory.BAKERY,
+          MainCategory.BUNGEOPPANG_WAFFLE,
+        ],
         moodCategoryList: [
           MoodCategory.STUDY_FRIENDLY,
           MoodCategory.DESSERT_HOTSPOT,
@@ -2995,7 +3814,7 @@ describe('Place E2E test', () => {
       expect(place.closedDayList[1].day).toBe(DayOfWeek.SAT);
       expect(place.closedDayList[1].week).toBe(2);
       expect(place.mainCategoryList[0]).toBe(MainCategory.BAKERY);
-      expect(place.mainCategoryList[1]).toBe(MainCategory.BUNGEOPPANG);
+      expect(place.mainCategoryList[1]).toBe(MainCategory.BUNGEOPPANG_WAFFLE);
       expect(place.moodCategoryList[0]).toBe(MoodCategory.STUDY_FRIENDLY);
       expect(place.moodCategoryList[1]).toBe(MoodCategory.DESSERT_HOTSPOT);
     });
@@ -3072,6 +3891,441 @@ describe('Place E2E test', () => {
       const place: PlaceEntity = response.body;
 
       expect(place.bookmark).toBe(true);
+    });
+  });
+
+  describe('GET /roulette-item', () => {
+    it('field check', async () => {
+      const placeSeed = await placeSeedHelper.seed({
+        activatedAt: new Date(),
+        roadAddress: {
+          name: 'test road address',
+          detail: 'detail',
+          addressX: 127.0,
+          addressY: 37.0,
+        },
+        placeImgList: ['/place/test-image1.png', '/place/test-image2.png'],
+        type: PlaceType.CAFE,
+        mainCategoryList: [
+          MainCategory.BAKERY,
+          MainCategory.BUNGEOPPANG_WAFFLE,
+        ],
+        moodCategoryList: [
+          MoodCategory.STUDY_FRIENDLY,
+          MoodCategory.DESSERT_HOTSPOT,
+        ],
+      });
+
+      const response = await testHelper
+        .test()
+        .get('/roulette-item')
+        .query({
+          // operating: true,
+          type: PlaceType.CAFE,
+          mainCategoryList: [MainCategory.BAKERY],
+          moodCategoryList: [MoodCategory.STUDY_FRIENDLY],
+        })
+        .expect(200);
+
+      const place: RouletteItemEntity = response.body.rouletteItemList[0];
+
+      expect(place.idx).toBe(placeSeed.idx);
+      expect(place.name).toBe(placeSeed.name);
+      expect(place.roadAddress.name).toBe(placeSeed.roadAddress.name);
+      expect(place.roadAddress.detail).toBe(placeSeed.roadAddress.detail);
+      expect(place.roadAddress.addressX).toBe(placeSeed.roadAddress.addressX);
+      expect(place.roadAddress.addressY).toBe(placeSeed.roadAddress.addressY);
+      expect(place.imagePathList.sort()).toEqual(placeSeed.placeImgList.sort());
+    });
+
+    it('weight check', async () => {
+      const [place1, place2, place3, place4] = await placeSeedHelper.seedAll([
+        {
+          name: 'place 1',
+          activatedAt: new Date(),
+          type: PlaceType.CAFE,
+          mainCategoryList: [MainCategory.BAKERY],
+        },
+        {
+          name: 'place 2',
+          activatedAt: new Date(),
+          type: PlaceType.CAFE,
+          mainCategoryList: [MainCategory.BAKERY],
+        },
+        {
+          name: 'place 3',
+          activatedAt: new Date(),
+          type: PlaceType.CAFE,
+          mainCategoryList: [MainCategory.BAKERY],
+        },
+        {
+          name: 'place 4',
+          activatedAt: new Date(),
+          type: PlaceType.CAFE,
+          mainCategoryList: [MainCategory.BAKERY],
+        },
+      ]);
+
+      const targetPlaceIdxList = [place1.idx, place3.idx];
+      const multiplier = 3;
+
+      const placeService = testHelper.get(PlaceService);
+      (placeService as any).TARGET_PLACE_IDX_LIST = targetPlaceIdxList;
+      (placeService as any).MULTIPLIER = multiplier;
+
+      const response = await testHelper
+        .test()
+        .get('/roulette-item')
+        .query({
+          type: PlaceType.CAFE,
+          mainCategoryList: [MainCategory.BAKERY],
+        })
+        .expect(200);
+
+      const rouletteItemList: RouletteItemEntity[] =
+        response.body.rouletteItemList;
+
+      expect(
+        rouletteItemList.find((item) => item.idx === place1.idx)?.weight,
+      ).toBe(multiplier);
+      expect(
+        rouletteItemList.find((item) => item.idx === place3.idx)?.weight,
+      ).toBe(multiplier);
+      expect(
+        rouletteItemList.find((item) => item.idx === place2.idx)?.weight,
+      ).toBe(1);
+      expect(
+        rouletteItemList.find((item) => item.idx === place4.idx)?.weight,
+      ).toBe(1);
+    });
+
+    it('operating filter check (operating === true)', async () => {
+      const now = testHelper.mockTodayTime('10:00');
+
+      const [place1, place2, place3, place4, place5] =
+        await placeSeedHelper.seedAll([
+          {
+            // place1:
+            name: '오늘 시간에 운영 중인 가게',
+            activatedAt: new Date(),
+            operatingHourList: [
+              {
+                day: now.day(),
+                startAt: now.before('4h'),
+                endAt: now.after('1h'),
+              },
+            ],
+            type: PlaceType.CAFE,
+            mainCategoryList: [MainCategory.BAKERY],
+          },
+          {
+            // place2
+            name: '내일 시간에 운영 중인 가게',
+            activatedAt: new Date(),
+            operatingHourList: [
+              {
+                day: now.dayAfter(1),
+                startAt: now.after('1h'),
+                endAt: now.after('2h'),
+              },
+            ],
+            type: PlaceType.CAFE,
+            mainCategoryList: [MainCategory.BAKERY],
+          },
+          {
+            // place3
+            name: '운영 정보가 없는 가게',
+            activatedAt: new Date(),
+          },
+          {
+            // place4
+            name: '오늘 운영하지만 앞으로 두 시간 뒤에 운영할 가게',
+            activatedAt: new Date(),
+            operatingHourList: [
+              {
+                day: now.day(),
+                startAt: now.after('2h'),
+                endAt: now.after('4h'),
+              },
+            ],
+            type: PlaceType.CAFE,
+            mainCategoryList: [MainCategory.BAKERY],
+          },
+          {
+            // place5
+            name: '오늘 지금 시간에 운영하되 오늘 운영 정보가 하나 더 있는 가게',
+            activatedAt: new Date(),
+            operatingHourList: [
+              {
+                day: now.day(),
+                startAt: now.before('1h'),
+                endAt: now.after('2h'),
+              },
+              {
+                day: now.day(),
+                startAt: now.before('2h'),
+                endAt: now.before('1h'),
+              },
+            ],
+            type: PlaceType.CAFE,
+            mainCategoryList: [MainCategory.BAKERY],
+          },
+        ]);
+
+      const response = await testHelper
+        .test()
+        .get('/roulette-item')
+        .query({
+          operating: true,
+          type: PlaceType.CAFE,
+          mainCategoryList: [MainCategory.BAKERY],
+        })
+        .expect(200);
+
+      const rouletteItemList: RouletteItemEntity[] =
+        response.body.rouletteItemList;
+
+      const rouletteItemIdxSet = new Set(
+        rouletteItemList.map((item) => item.idx),
+      );
+
+      expect(rouletteItemIdxSet.has(place1.idx)).toBe(true);
+      expect(rouletteItemIdxSet.has(place5.idx)).toBe(true);
+      expect(rouletteItemIdxSet.has(place2.idx)).toBe(false);
+      expect(rouletteItemIdxSet.has(place3.idx)).toBe(false);
+      expect(rouletteItemIdxSet.has(place4.idx)).toBe(false);
+    });
+
+    it('operating filter check (operating === undefined)', async () => {
+      const now = testHelper.mockTodayTime('10:00');
+
+      const [place1, place2, place3, place4, place5] =
+        await placeSeedHelper.seedAll([
+          {
+            // place1:
+            name: '오늘 시간에 운영 중인 가게',
+            activatedAt: new Date(),
+            operatingHourList: [
+              {
+                day: now.day(),
+                startAt: now.before('4h'),
+                endAt: now.after('1h'),
+              },
+            ],
+            type: PlaceType.CAFE,
+            mainCategoryList: [MainCategory.BAKERY],
+          },
+          {
+            // place2
+            name: '내일 시간에 운영 중인 가게',
+            activatedAt: new Date(),
+            operatingHourList: [
+              {
+                day: now.dayAfter(1),
+                startAt: now.after('1h'),
+                endAt: now.after('2h'),
+              },
+            ],
+            type: PlaceType.CAFE,
+            mainCategoryList: [MainCategory.BAKERY],
+          },
+          {
+            // place3
+            name: '운영 정보가 없는 가게',
+            activatedAt: new Date(),
+          },
+          {
+            // place4
+            name: '오늘 운영하지만 앞으로 두 시간 뒤에 운영할 가게',
+            activatedAt: new Date(),
+            operatingHourList: [
+              {
+                day: now.day(),
+                startAt: now.after('2h'),
+                endAt: now.after('4h'),
+              },
+            ],
+            type: PlaceType.CAFE,
+            mainCategoryList: [MainCategory.BAKERY],
+          },
+          {
+            // place5
+            name: '오늘 지금 시간에 운영하되 오늘 운영 정보가 하나 더 있는 가게',
+            activatedAt: new Date(),
+            operatingHourList: [
+              {
+                day: now.day(),
+                startAt: now.before('1h'),
+                endAt: now.after('2h'),
+              },
+              {
+                day: now.day(),
+                startAt: now.before('2h'),
+                endAt: now.before('1h'),
+              },
+            ],
+            type: PlaceType.CAFE,
+            mainCategoryList: [MainCategory.BAKERY],
+          },
+        ]);
+
+      const response = await testHelper
+        .test()
+        .get('/roulette-item')
+        .query({
+          type: PlaceType.CAFE,
+          mainCategoryList: [MainCategory.BAKERY],
+        })
+        .expect(200);
+
+      const rouletteItemList: RouletteItemEntity[] =
+        response.body.rouletteItemList;
+
+      const rouletteItemIdxSet = new Set(
+        rouletteItemList.map((item) => item.idx),
+      );
+
+      expect(rouletteItemIdxSet.has(place1.idx)).toBe(true);
+      expect(rouletteItemIdxSet.has(place2.idx)).toBe(true);
+      expect(rouletteItemIdxSet.has(place3.idx)).toBe(false);
+      expect(rouletteItemIdxSet.has(place4.idx)).toBe(true);
+      expect(rouletteItemIdxSet.has(place5.idx)).toBe(true);
+    });
+
+    it('type filter check', async () => {
+      const [place1, place2, place3] = await placeSeedHelper.seedAll([
+        {
+          name: 'place 1',
+          activatedAt: new Date(),
+          type: PlaceType.CAFE,
+          mainCategoryList: [MainCategory.BAKERY],
+        },
+        {
+          name: 'place 2',
+          activatedAt: new Date(),
+          type: PlaceType.RESTAURANT,
+          mainCategoryList: [MainCategory.BAKERY],
+        },
+        {
+          name: 'place 3',
+          activatedAt: new Date(),
+          type: PlaceType.BAR,
+          mainCategoryList: [MainCategory.BAKERY],
+        },
+      ]);
+
+      const response = await testHelper
+        .test()
+        .get('/roulette-item')
+        .query({
+          type: PlaceType.CAFE,
+          mainCategoryList: [MainCategory.BAKERY],
+        })
+        .expect(200);
+
+      const rouletteItemList: RouletteItemEntity[] =
+        response.body.rouletteItemList;
+
+      const rouletteItemIdxSet = new Set(
+        rouletteItemList.map((item) => item.idx),
+      );
+
+      expect(rouletteItemIdxSet.has(place1.idx)).toBe(true);
+      expect(rouletteItemIdxSet.has(place2.idx)).toBe(false);
+      expect(rouletteItemIdxSet.has(place3.idx)).toBe(false);
+    });
+
+    it('mainCategoryList filter check', async () => {
+      const [place1, place2, place3] = await placeSeedHelper.seedAll([
+        {
+          name: 'place 1',
+          activatedAt: new Date(),
+          type: PlaceType.CAFE,
+          mainCategoryList: [MainCategory.BAKERY, MainCategory.DESSERT],
+        },
+        {
+          name: 'place 2',
+          activatedAt: new Date(),
+          type: PlaceType.CAFE,
+          mainCategoryList: [MainCategory.BAKERY],
+        },
+        {
+          name: 'place 3',
+          activatedAt: new Date(),
+          type: PlaceType.CAFE,
+          mainCategoryList: [MainCategory.ICE_CREAM_BINGSU],
+        },
+      ]);
+
+      const response = await testHelper
+        .test()
+        .get('/roulette-item')
+        .query({
+          type: PlaceType.CAFE,
+          mainCategoryList: [MainCategory.BAKERY],
+        })
+        .expect(200);
+
+      const rouletteItemList: RouletteItemEntity[] =
+        response.body.rouletteItemList;
+
+      const rouletteItemIdxSet = new Set(
+        rouletteItemList.map((item) => item.idx),
+      );
+
+      expect(rouletteItemIdxSet.has(place1.idx)).toBe(true);
+      expect(rouletteItemIdxSet.has(place2.idx)).toBe(true);
+      expect(rouletteItemIdxSet.has(place3.idx)).toBe(false);
+    });
+
+    it('moodCategoryList filter check', async () => {
+      const [place1, place2, place3] = await placeSeedHelper.seedAll([
+        {
+          name: 'place 1',
+          activatedAt: new Date(),
+          type: PlaceType.CAFE,
+          mainCategoryList: [MainCategory.BAKERY],
+          moodCategoryList: [
+            MoodCategory.DESSERT_HOTSPOT,
+            MoodCategory.STUDY_FRIENDLY,
+          ],
+        },
+        {
+          name: 'place 2',
+          activatedAt: new Date(),
+          type: PlaceType.CAFE,
+          mainCategoryList: [MainCategory.BAKERY],
+          moodCategoryList: [MoodCategory.STUDY_FRIENDLY],
+        },
+        {
+          name: 'place 3',
+          activatedAt: new Date(),
+          type: PlaceType.CAFE,
+          mainCategoryList: [MainCategory.BAKERY],
+          moodCategoryList: [MoodCategory.SOLO_DINING],
+        },
+      ]);
+
+      const response = await testHelper
+        .test()
+        .get('/roulette-item')
+        .query({
+          type: PlaceType.CAFE,
+          mainCategoryList: [MainCategory.BAKERY],
+          moodCategoryList: [MoodCategory.STUDY_FRIENDLY],
+        })
+        .expect(200);
+
+      const rouletteItemList: RouletteItemEntity[] =
+        response.body.rouletteItemList;
+
+      const rouletteItemIdxSet = new Set(
+        rouletteItemList.map((item) => item.idx),
+      );
+
+      expect(rouletteItemIdxSet.has(place1.idx)).toBe(true);
+      expect(rouletteItemIdxSet.has(place2.idx)).toBe(true);
+      expect(rouletteItemIdxSet.has(place3.idx)).toBe(false);
     });
   });
 

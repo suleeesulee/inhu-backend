@@ -7,17 +7,17 @@ if [ "$DEPENDENCY_CHANGED" = "true" ]; then
 fi
 
 if [ "$DB_DOWN_FLAG" = "true" ]; then
-    npm run dev-infra:down
-    npm run dev-infra:up
+    npm run dev-infra:psql:down
+    npm run dev-infra:psql:up
     until docker exec inhu-dev-postgres psql -U inhu_admin -d inhu -c "SELECT 1;" >/dev/null 2>&1; do
         sleep 1
     done
-    npx prisma generate
+    npm run prisma:generate
     npm run seed
 fi
 
 if [ "$USER_CHANGED" != "true" ] && [ "$ADMIN_CHANGED" != "true" ] && [ "$BATCH_CHANGED" != "true" ]; then
     pm2 reload inhu-backend-user-dev
     pm2 reload inhu-backend-admin-dev
-    pm2 reload inhu-backend-batch-dev
+    # pm2 reload inhu-backend-batch-dev
 fi

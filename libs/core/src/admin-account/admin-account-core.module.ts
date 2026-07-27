@@ -12,4 +12,4 @@ import { Module } from '@nestjs/common';
   providers: [AdminAccountCoreService, AdminAccountCoreRepository],
   exports: [AdminAccountCoreService],
 })
-export class AdminAccountModule {}
+export class AdminAccountCoreModule {}

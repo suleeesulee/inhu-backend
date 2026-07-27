@@ -1,4 +1,5 @@
 import { BookmarkSeedInput } from '@libs/testing/seed/bookmark/type/bookmark-seed.input';
+import { MagazineSeedInput } from '@libs/testing/seed/magazine/type/magazine-seed.input';
 import { MenuSeedInput } from '@libs/testing/seed/menu/type/menu-seed.input';
 import { PickedPlaceSeedInput } from '@libs/testing/seed/picked-place/type/picked-place-seed.input';
 import { PlaceSeedInput } from '@libs/testing/seed/place/type/place-seed.input';
@@ -21,6 +22,8 @@ export type BookmarkTestCaseInput = Omit<
   userKey: 'user1' | 'user2';
 };
 export type PickedPlaceTestCaseInput = Omit<PickedPlaceSeedInput, 'placeIdx'>;
+
+export type MagazineTestCaseInput = Omit<MagazineSeedInput, 'authorIdx'>;
 
 /**
  * 장소를 시딩하기 위한 데이터 타입

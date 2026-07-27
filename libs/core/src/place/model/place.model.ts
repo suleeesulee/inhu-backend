@@ -8,6 +8,8 @@ import { PlaceWeeklyClosedDayModel } from './place-weekly-closed-day.model';
 import { KeywordModel } from '@libs/core/keyword/model/keyword.model';
 import { MainCategory } from '@libs/core/category/constants/main-category.constant';
 import { MoodCategory } from '@libs/core/category/constants/mood-category.constant';
+import { FreeTagModel } from '@libs/core/free-tag/model/free-tag.model';
+import { SearchTagModel } from '@libs/core/search-tag/model/search-tag.model';
 
 /**
  * 장소 모델
@@ -106,6 +108,10 @@ export class PlaceModel {
 
   public typeList: PlaceType[];
 
+  public freeTagList: FreeTagModel[];
+
+  public searchTagList: SearchTagModel[];
+
   constructor(data: PlaceModel) {
     Object.assign(this, data);
   }
@@ -145,6 +151,12 @@ export class PlaceModel {
       ),
       typeList: place.placeTypeMappingList.map(
         ({ placeTypeIdx }) => placeTypeIdx as PlaceType,
+      ),
+      freeTagList: place.placeFreeTagMappingList.map(({ freeTag }) =>
+        FreeTagModel.fromPrisma(freeTag),
+      ),
+      searchTagList: place.placeSearchTagMappingList.map(({ searchTag }) =>
+        SearchTagModel.fromPrisma(searchTag),
       ),
     });
   }

@@ -14,6 +14,8 @@ import { DiscordWebhookContext } from '@libs/common/modules/discord-webhook/cons
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  app.enableShutdownHooks();
+
   app.enableCors({
     origin: process.env.CORS_ORIGIN?.split(' '),
     credentials: true,
@@ -57,5 +59,9 @@ async function bootstrap() {
   SwaggerModule.setup('api', app, documentFactory, customOptions);
 
   await app.listen(process.env.PORT ?? 3000);
+
+  if (process.send) {
+    process.send('ready');
+  }
 }
 bootstrap();

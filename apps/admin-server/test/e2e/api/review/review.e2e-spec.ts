@@ -4,10 +4,15 @@ import { GetAllReviewResponseDto } from '@admin/api/review/dto/response/get-all-
 import { PlaceSeedHelper } from '@libs/testing/seed/place/place.seed';
 import { ReviewSeedHelper } from '@libs/testing/seed/review/review.seed';
 import { UserSeedHelper } from '@libs/testing/seed/user/user.seed';
+import { ManagedUserSeedHelper } from '@libs/testing/seed/user/managed-user.seed';
+import { ReviewEntity } from '@admin/api/review/entity/review.entity';
+import { CreateReviewDto } from '@admin/api/review/dto/request/create-review.dto';
+import { UpdateReviewDto } from '@admin/api/review/dto/request/update-review.dto';
 
 describe('Admin Review E2E Tests', () => {
   const testHelper = TestHelper.create(AdminServerModule);
   const placeSeedHelper = testHelper.seedHelper(PlaceSeedHelper);
+  const managedUserSeedHelper = testHelper.seedHelper(ManagedUserSeedHelper);
   const reviewSeedHelper = testHelper.seedHelper(ReviewSeedHelper);
   const userSeedHelper = testHelper.seedHelper(UserSeedHelper);
 
@@ -169,6 +174,7 @@ describe('Admin Review E2E Tests', () => {
 
     it('500 - transaction failure', async () => {
       const adminUser = testHelper.loginAdmin.admin1;
+      testHelper.mockDiscordWebhookSendErrorMessage();
 
       const user = await userSeedHelper.seed({
         nickname: 'testUser',
@@ -659,7 +665,7 @@ describe('Admin Review E2E Tests', () => {
         .expect(400);
     });
 
-    it('403 - no placeIdx and no userIdx', async () => {
+    it('200 - no placeIdx and no userIdx', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
 
       await testHelper
@@ -669,7 +675,420 @@ describe('Admin Review E2E Tests', () => {
           page: 1, // ! no placeIdx and no userIdx
         })
         .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .expect(200);
+    });
+  });
+
+  describe('POST /place/:placeIdx', () => {
+    it('201 - should create a review for a managed user', async () => {
+      const loginUser = testHelper.loginAdmin.superAdmin;
+
+      const managedUser = await managedUserSeedHelper.seed({
+        nickname: 'reviewWriter',
+      });
+
+      const place = await placeSeedHelper.seed({
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+
+      const dto: CreateReviewDto = {
+        userIdx: managedUser.idx,
+        content: '정말 맛있는 곳이에요!',
+        imagePathList: ['/review/sample-image.jpg'],
+        keywordIdxList: [1],
+      };
+
+      const response = await testHelper
+        .test()
+        .post(`/place/${place.idx}`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send(dto)
+        .expect(201);
+
+      const body = response.body as ReviewEntity;
+
+      expect(body.idx).toBeDefined();
+      expect(body.content).toBe(dto.content);
+      expect(body.imagePathList).toStrictEqual(dto.imagePathList);
+      expect(body.keywordList.map(({ idx }) => idx)).toStrictEqual(
+        dto.keywordIdxList,
+      );
+      expect(body.author.idx).toBe(managedUser.idx);
+      expect(body.place.idx).toBe(place.idx);
+    });
+
+    it('401 - no access token provided', async () => {
+      const place = await placeSeedHelper.seed({
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+
+      const dto: CreateReviewDto = {
+        userIdx: 1,
+        content: '토큰 없이 요청',
+        imagePathList: [],
+        keywordIdxList: [],
+      };
+
+      await testHelper.test().post(`/place/${place.idx}`).send(dto).expect(401);
+    });
+
+    it('403 - request with just admin permission (not SuperAdmin)', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+
+      const managedUser = await managedUserSeedHelper.seed({});
+
+      const place = await placeSeedHelper.seed({
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+
+      const dto: CreateReviewDto = {
+        userIdx: managedUser.idx,
+        content: '어드민 권한으로 요청',
+        imagePathList: [],
+        keywordIdxList: [],
+      };
+
+      await testHelper
+        .test()
+        .post(`/place/${place.idx}`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send(dto)
         .expect(403);
+    });
+
+    it('403 - userIdx is not a managed user', async () => {
+      const loginUser = testHelper.loginAdmin.superAdmin;
+
+      // social(userProvider)이 있는 일반 유저 → managed user가 아님
+      const standardUser = await userSeedHelper.seed({
+        nickname: 'standardUser',
+      });
+
+      const place = await placeSeedHelper.seed({
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+
+      const dto: CreateReviewDto = {
+        userIdx: standardUser.idx,
+        content: '일반 유저로 리뷰 생성 시도',
+        imagePathList: [],
+        keywordIdxList: [],
+      };
+
+      await testHelper
+        .test()
+        .post(`/place/${place.idx}`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send(dto)
+        .expect(403);
+    });
+
+    it('404 - place does not exist', async () => {
+      const loginUser = testHelper.loginAdmin.superAdmin;
+
+      const managedUser = await managedUserSeedHelper.seed({});
+      const nonExistentPlaceIdx = 99999;
+
+      const dto: CreateReviewDto = {
+        userIdx: managedUser.idx,
+        content: '존재하지 않는 장소에 리뷰',
+        imagePathList: [],
+        keywordIdxList: [],
+      };
+
+      await testHelper
+        .test()
+        .post(`/place/${nonExistentPlaceIdx}`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send(dto)
+        .expect(404);
+    });
+
+    it('400 - content is too short (less than 3 chars)', async () => {
+      const loginUser = testHelper.loginAdmin.superAdmin;
+
+      const managedUser = await managedUserSeedHelper.seed({});
+
+      const place = await placeSeedHelper.seed({
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+
+      const dto = {
+        userIdx: managedUser.idx,
+        content: 'ab', // ! 3자 미만
+        imagePathList: [],
+        keywordIdxList: [],
+      };
+
+      await testHelper
+        .test()
+        .post(`/place/${place.idx}`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send(dto)
+        .expect(400);
+    });
+
+    it('400 - imagePathList exceeds max size (5)', async () => {
+      const loginUser = testHelper.loginAdmin.superAdmin;
+
+      const managedUser = await managedUserSeedHelper.seed({});
+
+      const place = await placeSeedHelper.seed({
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+
+      const dto = {
+        userIdx: managedUser.idx,
+        content: '이미지가 5개를 초과합니다',
+        imagePathList: [
+          '/review/img1.jpg',
+          '/review/img2.jpg',
+          '/review/img3.jpg',
+          '/review/img4.jpg',
+          '/review/img5.jpg',
+          '/review/img6.jpg', // ! 6개
+        ],
+        keywordIdxList: [],
+      };
+
+      await testHelper
+        .test()
+        .post(`/place/${place.idx}`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send(dto)
+        .expect(400);
+    });
+
+    it('400 - invalid placeIdx type', async () => {
+      const loginUser = testHelper.loginAdmin.superAdmin;
+
+      const dto: CreateReviewDto = {
+        userIdx: 1,
+        content: '잘못된 placeIdx 타입',
+        imagePathList: [],
+        keywordIdxList: [],
+      };
+
+      await testHelper
+        .test()
+        .post('/place/invalid')
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send(dto)
+        .expect(400);
+    });
+  });
+
+  describe('PUT /review/:idx', () => {
+    it('200 - should update a review written by a managed user', async () => {
+      const loginUser = testHelper.loginAdmin.superAdmin;
+
+      const managedUser = await managedUserSeedHelper.seed({
+        nickname: 'managedWriter',
+      });
+
+      const place = await placeSeedHelper.seed({
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+
+      const originalReview = await reviewSeedHelper.seed({
+        placeIdx: place.idx,
+        userIdx: managedUser.idx,
+        content: '원본 리뷰 내용입니다.',
+        reviewImgList: ['/review/original.jpg'],
+        keywordIdxList: [1],
+      });
+
+      const dto: UpdateReviewDto = {
+        content: '수정된 리뷰 내용입니다.',
+        imagePathList: ['/review/updated.jpg'],
+        keywordIdxList: [2],
+      };
+
+      await testHelper
+        .test()
+        .put(`/review/${originalReview.idx}`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send(dto)
+        .expect(200);
+
+      // 수정 반영 확인
+      const updatedReview = await testHelper
+        .getPrisma()
+        .review.findUniqueOrThrow({
+          where: { idx: originalReview.idx },
+        });
+
+      expect(updatedReview.content).toBe(dto.content);
+    });
+
+    it('401 - no access token provided', async () => {
+      const managedUser = await managedUserSeedHelper.seed({});
+
+      const place = await placeSeedHelper.seed({
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+
+      const review = await reviewSeedHelper.seed({
+        placeIdx: place.idx,
+        userIdx: managedUser.idx,
+        content: '원본 리뷰 내용입니다.',
+        reviewImgList: [],
+        keywordIdxList: [1],
+      });
+
+      const dto: UpdateReviewDto = {
+        content: '토큰 없이 수정 시도',
+        imagePathList: [],
+        keywordIdxList: [],
+      };
+
+      await testHelper
+        .test()
+        .put(`/review/${review.idx}`)
+        .send(dto)
+        .expect(401);
+    });
+
+    it('403 - request with just admin permission (not SuperAdmin)', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+
+      const managedUser = await managedUserSeedHelper.seed({});
+
+      const place = await placeSeedHelper.seed({
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+
+      const review = await reviewSeedHelper.seed({
+        placeIdx: place.idx,
+        userIdx: managedUser.idx,
+        content: '원본 리뷰 내용입니다.',
+        reviewImgList: [],
+        keywordIdxList: [1],
+      });
+
+      const dto: UpdateReviewDto = {
+        content: '어드민 권한으로 수정 시도',
+        imagePathList: [],
+        keywordIdxList: [],
+      };
+
+      await testHelper
+        .test()
+        .put(`/review/${review.idx}`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send(dto)
+        .expect(403);
+    });
+
+    it('403 - review author is not a managed user', async () => {
+      const loginUser = testHelper.loginAdmin.superAdmin;
+
+      // social 유저 → managed user가 아님
+      const standardUser = await userSeedHelper.seed({
+        nickname: 'standardWriter',
+      });
+
+      const place = await placeSeedHelper.seed({
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+
+      const review = await reviewSeedHelper.seed({
+        placeIdx: place.idx,
+        userIdx: standardUser.idx,
+        content: '일반 유저가 작성한 리뷰입니다.',
+        reviewImgList: [],
+        keywordIdxList: [1],
+      });
+
+      const dto: UpdateReviewDto = {
+        content: '수정 시도합니다.',
+        imagePathList: [],
+        keywordIdxList: [],
+      };
+
+      await testHelper
+        .test()
+        .put(`/review/${review.idx}`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send(dto)
+        .expect(403);
+    });
+
+    it('404 - review does not exist', async () => {
+      const loginUser = testHelper.loginAdmin.superAdmin;
+      const nonExistentIdx = 99999;
+
+      const dto: UpdateReviewDto = {
+        content: '존재하지 않는 리뷰 수정 시도',
+        imagePathList: [],
+        keywordIdxList: [],
+      };
+
+      await testHelper
+        .test()
+        .put(`/review/${nonExistentIdx}`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send(dto)
+        .expect(404);
+    });
+
+    it('400 - content is too short (less than 3 chars)', async () => {
+      const loginUser = testHelper.loginAdmin.superAdmin;
+
+      const managedUser = await managedUserSeedHelper.seed({});
+
+      const place = await placeSeedHelper.seed({
+        deletedAt: null,
+        activatedAt: new Date(),
+      });
+
+      const review = await reviewSeedHelper.seed({
+        placeIdx: place.idx,
+        userIdx: managedUser.idx,
+        content: '원본 내용입니다.',
+        reviewImgList: [],
+        keywordIdxList: [1],
+      });
+
+      const dto = {
+        content: 'ab', // ! 3자 미만
+        imagePathList: [],
+        keywordIdxList: [],
+      };
+
+      await testHelper
+        .test()
+        .put(`/review/${review.idx}`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send(dto)
+        .expect(400);
+    });
+
+    it('400 - invalid review idx type', async () => {
+      const loginUser = testHelper.loginAdmin.superAdmin;
+
+      const dto: UpdateReviewDto = {
+        content: '잘못된 idx 타입',
+        imagePathList: [],
+        keywordIdxList: [],
+      };
+
+      await testHelper
+        .test()
+        .put('/review/invalid')
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send(dto)
+        .expect(400);
     });
   });
 });

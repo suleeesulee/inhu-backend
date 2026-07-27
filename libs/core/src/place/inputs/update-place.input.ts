@@ -13,4 +13,7 @@ export class UpdatePlaceInput extends PartialType(CreatePlaceInput) {
   typeList?: PlaceType[];
   mainCategoryList?: MainCategory[];
   moodCategoryList?: MoodCategory[];
+  freeTagIdxList?: number[];
+  searchTagIdxList?: number[];
+  priority?: number | null;
 }

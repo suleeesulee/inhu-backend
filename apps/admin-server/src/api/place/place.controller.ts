@@ -24,6 +24,10 @@ import { CreateBiWeeklyClosedDayDto } from './dto/request/create-bi-weekly-close
 import { RunBiWeeklyClosedDayCronJobDto } from './dto/request/run-bi-weekly-closed-day-cron-job.dto';
 import { RunBiWeeklyClosedDayCronJobResponseDto } from './dto/response/run-bi-weekly-closed-day-cron-job.response.dto';
 import { UpdatePlaceCategoryDto } from './dto/request/update-place-category.dto';
+import { UpdatePlaceFreeTagDto } from './dto/request/update-place-free-tag.dto';
+import { UpdatePlaceSearchTagDto } from './dto/request/update-place-search-tag.dto';
+import { AdminRole } from '../auth/admin-role.enum';
+import { SetPlacePriorityDto } from './dto/request/set-place-pirority.dto';
 
 @Controller('place')
 @ApiTags('Place')
@@ -38,7 +42,7 @@ export class PlaceController {
    */
   @Get()
   @Exception(400, 'Invalid place overview request')
-  @AdminAuth()
+  @AdminAuth(AdminRole.MagazineAdmin)
   public async getPlaceOverviewAll(
     @Query() dto: GetPlaceOverviewDto,
   ): Promise<GetPlaceOverviewAllResponseDto> {
@@ -51,7 +55,7 @@ export class PlaceController {
   @Get('/:idx')
   @Exception(400, 'Invalid place idx')
   @Exception(404, 'Place not found')
-  @AdminAuth()
+  @AdminAuth(AdminRole.MagazineAdmin)
   public async getPlaceByIdx(
     @Param('idx', ParseIntPipe) idx: number,
   ): Promise<PlaceEntity> {
@@ -98,6 +102,51 @@ export class PlaceController {
     @Body() dto: UpdatePlaceCategoryDto,
   ) {
     return await this.placeService.updatePlaceCategoryByIdx(idx, dto);
+  }
+
+  /**
+   * 특정 장소 자유 태그 수정하기 Endpoint
+   */
+  @Put('/:idx/free-tag')
+  @Exception(400, 'Invalid place idx or free tag data')
+  @Exception(404, 'Place not found')
+  @HttpCode(200)
+  @AdminAuth()
+  public async updatePlaceFreeTagByIdx(
+    @Param('idx', ParseIntPipe) idx: number,
+    @Body() dto: UpdatePlaceFreeTagDto,
+  ) {
+    return await this.placeService.updatePlaceFreeTagByIdx(idx, dto);
+  }
+
+  /**
+   * 특정 장소 검색 태그 수정하기 Endpoint
+   */
+  @Put('/:idx/search-tag')
+  @Exception(400, 'Invalid place idx or search tag data')
+  @Exception(404, 'Place not found')
+  @HttpCode(200)
+  @AdminAuth()
+  public async updatePlaceSearchTagByIdx(
+    @Param('idx', ParseIntPipe) idx: number,
+    @Body() dto: UpdatePlaceSearchTagDto,
+  ) {
+    return await this.placeService.updatePlaceSearchTagByIdx(idx, dto);
+  }
+
+  /**
+   * 특정 장소 우선순위 설정하기 Endpoint
+   */
+  @Post('/:idx/priority')
+  @Exception(400, 'Invalid place idx or priority data')
+  @Exception(404, 'Place not found')
+  @HttpCode(200)
+  @AdminAuth()
+  public async grantPlacePriorityByIdx(
+    @Param('idx', ParseIntPipe) idx: number,
+    @Body() dto: SetPlacePriorityDto,
+  ) {
+    return await this.placeService.setPlacePriorityByIdx(idx, dto);
   }
 
   /**

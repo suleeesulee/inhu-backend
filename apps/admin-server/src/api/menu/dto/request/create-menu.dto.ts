@@ -1,10 +1,10 @@
 import { ToBoolean } from '@libs/common/decorator/to-boolean.decorator';
 import {
+  IsBoolean,
   IsNotEmpty,
   IsNumber,
   IsOptional,
   IsString,
-  Min,
 } from 'class-validator';
 
 export class CreateMenuDto {
@@ -48,5 +48,16 @@ export class CreateMenuDto {
    */
   @IsOptional()
   @ToBoolean()
-  isFlexible: boolean;
+  @IsBoolean()
+  isFlexible?: boolean;
+
+  /**
+   * 대표 메뉴 여부
+   * @example true
+   * @default true
+   */
+  @IsOptional()
+  @ToBoolean()
+  @IsBoolean()
+  isMain?: boolean = true;
 }

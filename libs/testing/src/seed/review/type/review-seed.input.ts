@@ -8,6 +8,6 @@ export type ReviewSeedInput = {
   placeIdx: number;
   deletedAt?: Date | null;
   content?: string;
-  reviewImgList?: [string, ...string[]] | null;
+  reviewImgList?: string[] | null;
   keywordIdxList?: [number, ...number[]] | null;
 };

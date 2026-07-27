@@ -11,6 +11,7 @@ export const SELECT_MENU = Prisma.validator<Prisma.MenuDefaultArgs>()({
     imagePath: true,
     isFlexible: true,
     sortOrder: true,
+    isMain: true,
     createdAt: true,
     reviewList: {
       select: {

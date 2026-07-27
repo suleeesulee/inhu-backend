@@ -33,6 +33,7 @@ jobs:
 
   # 2. Admin 서버 배포
   deploy-admin:
+    concurrency: raspberry-pi-deploy
     runs-on: ubuntu-latest
     needs: build-admin
     steps:

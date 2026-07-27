@@ -3,9 +3,16 @@ import { PlaceService } from '@admin/api/place/place.service';
 import { PlaceCoreModule } from '@libs/core/place/place-core.module';
 import { Logger, Module } from '@nestjs/common';
 import { KakaoAddressModule } from '@libs/modules/kakao-address/kakao-address.module';
+import { FreeTagCoreModule } from '@libs/core/free-tag/free-tag-core.module';
+import { SearchTagCoreModule } from '@libs/core/search-tag/search-tag-core.module';
 
 @Module({
-  imports: [PlaceCoreModule, KakaoAddressModule],
+  imports: [
+    PlaceCoreModule,
+    KakaoAddressModule,
+    FreeTagCoreModule,
+    SearchTagCoreModule,
+  ],
   controllers: [PlaceController],
   providers: [PlaceService, Logger],
   exports: [],

@@ -25,6 +25,8 @@ import { GetPlaceMarkerInput } from './inputs/get-place-overview-marker.input';
 import { SelectPlaceWeeklyClosedDay } from './model/prisma-type/select-place-weekly-closed-day';
 import { MainCategory } from '../category/constants/main-category.constant';
 import { MoodCategory } from '../category/constants/mood-category.constant';
+import { GetOperatingPlaceCountInput } from './inputs/get-operating-place-count.input';
+import { GetRouletteItemInput } from './inputs/get-roulette-item-all.input';
 
 @Injectable()
 export class PlaceCoreRepository {
@@ -77,6 +79,9 @@ export class PlaceCoreRepository {
     searchKeyword,
     mainCategoryList,
     moodCategoryList,
+    freeTagList,
+    lowPrice,
+    priority,
   }: GetPlaceOverviewInput): Promise<SelectPlaceOverview[]> {
     const now = this.dateUtilService.getNow();
     const todayKst = this.dateUtilService.transformKoreanDate(now);
@@ -102,9 +107,11 @@ export class PlaceCoreRepository {
           this.getSearchKeywordWhereClause(searchKeyword), // 검색 키워드 필터링
           this.getMainCategoryFilterWhereClause(mainCategoryList), // 메인 카테고리 필터링
           this.getMoodCategoryFilterWhereClause(moodCategoryList), // 분위기 카테고리 필터링
+          this.getFreeTagFilterWhereClause(freeTagList), // 자유 태그 필터링
+          this.getPriceFilterWhereClause(lowPrice), // 저렴한 메뉴 필터링
         ],
       },
-      orderBy: this.getOrderByClause({ order, orderBy }),
+      orderBy: this.getOrderByClause({ order, orderBy, priority }),
       take,
       skip,
     });
@@ -164,10 +171,22 @@ export class PlaceCoreRepository {
     });
   }
 
-  public async selectOperatingPlaceCount(): Promise<number> {
+  public async selectOperatingPlaceCount(
+    input: GetOperatingPlaceCountInput,
+  ): Promise<number> {
     return await this.txHost.tx.place.count({
       where: {
-        AND: [{ deletedAt: null }, this.getOperatingFilterWhereClause(true)],
+        AND: [
+          { deletedAt: null },
+          this.getOperatingFilterWhereClause(true),
+          this.getTypesFilterWhereClause(input.types),
+          this.getActivatedAtFilterWhereClause(true),
+          this.getPermanentlyClosedFilterWhereClause(false),
+          this.getMainCategoryFilterWhereClause(input.mainCategoryList),
+          this.getMoodCategoryFilterWhereClause(input.moodCategoryList),
+          this.getFreeTagFilterWhereClause(input.freeTagList),
+          this.getPriceFilterWhereClause(input.lowPrice),
+        ],
       },
     });
   }
@@ -219,16 +238,21 @@ export class PlaceCoreRepository {
         {
           menuList: {
             some: {
+              deletedAt: null,
               OR: [
-                {
-                  name: { contains: trimmedSearchKeyword },
-                },
-                {
-                  content: {
-                    contains: trimmedSearchKeyword,
-                  },
-                },
+                { name: { contains: trimmedSearchKeyword } },
+                { content: { contains: trimmedSearchKeyword } },
               ],
+            },
+          },
+        },
+        {
+          placeSearchTagMappingList: {
+            some: {
+              searchTag: {
+                deletedAt: null,
+                content: { startsWith: trimmedSearchKeyword },
+              },
             },
           },
         },
@@ -340,7 +364,7 @@ export class PlaceCoreRepository {
     }
 
     return {
-      AND: mainCategoryList.map((category) => ({
+      OR: mainCategoryList.map((category) => ({
         placeMainCategoryMappingList: {
           some: { mainCategoryIdx: category },
         },
@@ -364,6 +388,22 @@ export class PlaceCoreRepository {
     };
   }
 
+  private getFreeTagFilterWhereClause(
+    freeTagList?: string[],
+  ): Prisma.PlaceWhereInput {
+    if (freeTagList === undefined || freeTagList.length === 0) {
+      return {};
+    }
+
+    return {
+      OR: freeTagList.map((name) => ({
+        placeFreeTagMappingList: {
+          some: { freeTag: { content: name } },
+        },
+      })),
+    };
+  }
+
   private getActivatedAtFilterWhereClause(
     activated?: boolean,
   ): Prisma.PlaceWhereInput {
@@ -381,16 +421,25 @@ export class PlaceCoreRepository {
   private getOrderByClause({
     order = 'desc',
     orderBy = 'time',
-  }: Pick<GetPlaceOverviewInput, 'order' | 'orderBy'>):
+    priority = false,
+  }: Pick<GetPlaceOverviewInput, 'order' | 'orderBy' | 'priority'>):
     | Prisma.PlaceOrderByWithRelationInput
     | Prisma.PlaceOrderByWithRelationInput[] {
+    const baseOrderBy: Prisma.PlaceOrderByWithRelationInput[] = priority
+      ? [{ priority: 'asc' }]
+      : [];
+
     if (orderBy === 'time') {
-      return {
-        idx: order,
-      };
+      return [
+        ...baseOrderBy,
+        {
+          idx: order,
+        },
+      ];
     }
 
     return [
+      ...baseOrderBy,
       {
         [orderBy === 'review' ? 'reviewCount' : 'bookmarkCount']: order,
       },
@@ -398,6 +447,23 @@ export class PlaceCoreRepository {
         idx: 'desc',
       },
     ];
+  }
+
+  private getPriceFilterWhereClause(
+    lowPrice?: boolean,
+  ): Prisma.PlaceWhereInput {
+    if (lowPrice === undefined || !lowPrice) {
+      return {};
+    }
+
+    return {
+      menuList: {
+        some: {
+          price: { lte: 10000 },
+          isMain: true,
+        },
+      },
+    };
   }
 
   public async insertPlace(input: CreatePlaceInput): Promise<SelectPlace> {
@@ -498,6 +564,7 @@ export class PlaceCoreRepository {
         isClosedOnHoliday: input.isClosedOnHoliday,
         activatedAt: input.activatedAt,
         permanentlyClosedAt: input.permanentlyClosedAt,
+        priority: input.priority,
         placeImageList: input.imgList
           ? {
               updateMany: {
@@ -614,6 +681,26 @@ export class PlaceCoreRepository {
               },
             }
           : undefined,
+        placeFreeTagMappingList: input.freeTagIdxList
+          ? {
+              deleteMany: {},
+              createMany: {
+                data: input.freeTagIdxList.map((freeTagIdx) => ({
+                  freeTagIdx,
+                })),
+              },
+            }
+          : undefined,
+        placeSearchTagMappingList: input.searchTagIdxList
+          ? {
+              deleteMany: {},
+              createMany: {
+                data: input.searchTagIdxList.map((searchTagIdx) => ({
+                  searchTagIdx,
+                })),
+              },
+            }
+          : undefined,
       },
       where: { idx, deletedAt: null },
     });
@@ -703,11 +790,11 @@ export class PlaceCoreRepository {
     return await this.txHost.tx.bookmark.findMany({
       ...SELECT_BOOKMARKED_PLACE_OVERVIEW,
       where: {
+        userIdx,
         place: {
           AND: [
             { deletedAt: null },
             this.getOperatingFilterWhereClause(operating), // 영업중 필터링
-            this.getBookmarkFilterWhereClause(userIdx), // 북마크 필터링
             this.getCoordinateFilterWhereClause(coordinate), // 좌표 필터링
             this.getTypesFilterWhereClause(types), // 타입 필터링
             this.getActivatedAtFilterWhereClause(activated), // 활성화 필터링

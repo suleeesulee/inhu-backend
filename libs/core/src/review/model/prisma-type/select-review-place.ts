@@ -18,6 +18,17 @@ export const SELECT_REVIEW_PLACE = Prisma.validator<Prisma.PlaceDefaultArgs>()({
         placeTypeIdx: true,
       },
     },
+    placeImageList: {
+      select: {
+        path: true,
+      },
+      where: {
+        deletedAt: null,
+      },
+      orderBy: {
+        idx: 'asc',
+      },
+    },
   },
 });
 

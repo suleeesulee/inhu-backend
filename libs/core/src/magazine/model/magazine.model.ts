@@ -11,6 +11,11 @@ export class MagazineModel {
   public idx: number;
 
   /**
+   * 매거진 작성자 식별자
+   */
+  public authorIdx: number;
+
+  /**
    * 매거진 제목
    */
   public title: string;
@@ -87,6 +92,7 @@ export class MagazineModel {
   public static fromPrisma(magazine: SelectMagazine): MagazineModel {
     return new MagazineModel({
       idx: magazine.idx,
+      authorIdx: magazine.authorIdx,
       title: magazine.title,
       description: magazine.description,
       content: magazine.content,

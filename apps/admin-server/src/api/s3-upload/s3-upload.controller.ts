@@ -6,12 +6,17 @@ import { PresignedUrlEntity } from '@admin/api/s3-upload/entity/presigned-url.en
 import { CreatePlaceImagePresignedUrlsDto } from '@admin/api/s3-upload/dto/request/create-place-image-presigned-url.dto';
 import { ApiBadRequestResponse, ApiTags } from '@nestjs/swagger';
 import { CreateMagazineImagePresignedUrlsDto } from './dto/request/create-magazine-image-presigned-url.dto';
+import { AdminRole } from '../auth/admin-role.enum';
+import { CreateProfileImagePresignedUrlDto } from './dto/request/create-profile-image-presigned-url.dto';
 
 @Controller('s3-upload')
 @ApiTags('s3-upload')
 export class S3UploadController {
   constructor(private readonly s3UploadService: S3UploadService) {}
 
+  /**
+   * 배너 이미지 Presigned URL 생성
+   */
   @Post('/banner-image/presigned-url')
   @HttpCode(201)
   @ApiBadRequestResponse({
@@ -28,6 +33,9 @@ export class S3UploadController {
     );
   }
 
+  /**
+   * 메뉴 이미지 Presigned URL 생성
+   */
   @Post('/menu-image/presigned-url')
   @HttpCode(201)
   @ApiBadRequestResponse({
@@ -44,6 +52,9 @@ export class S3UploadController {
     );
   }
 
+  /**
+   * 장소 이미지 Presigned URL 생성
+   */
   @Post('/place-image/presigned-urls')
   @HttpCode(201)
   @ApiBadRequestResponse({
@@ -63,6 +74,9 @@ export class S3UploadController {
     );
   }
 
+  /**
+   * magazine 이미지 Presigned URL 생성
+   */
   @Post('/magazine-image/presigned-urls')
   @HttpCode(201)
   @ApiBadRequestResponse({
@@ -73,13 +87,33 @@ export class S3UploadController {
       '- extensions array contains an invalid extension\n' +
       '- extensions array exceeds max size',
   })
-  @AdminAuth()
+  @AdminAuth(AdminRole.MagazineAdmin)
   async createMagazineImagePresignedUrls(
     @Body()
     createMagazineImagePresignedUrlsDto: CreateMagazineImagePresignedUrlsDto,
   ): Promise<PresignedUrlEntity[]> {
     return this.s3UploadService.createMagazineImagePresignedUrls(
       createMagazineImagePresignedUrlsDto,
+    );
+  }
+
+  /**
+   * 프로필 이미지 Presigned URL 생성
+   */
+  @Post('/profile-image/presigned-url')
+  @HttpCode(201)
+  @ApiBadRequestResponse({
+    description:
+      '- extension field is not provided\n' +
+      '- extension is not in IMAGE_EXTENSION type\n',
+  })
+  @AdminAuth(AdminRole.SuperAdmin)
+  async createProfileImagePresignedUrl(
+    @Body()
+    createProfileImagePresignedUrlDto: CreateProfileImagePresignedUrlDto,
+  ): Promise<PresignedUrlEntity> {
+    return this.s3UploadService.createProfileImagePresignedUrl(
+      createProfileImagePresignedUrlDto,
     );
   }
 }

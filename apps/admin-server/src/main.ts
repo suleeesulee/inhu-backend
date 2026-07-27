@@ -10,10 +10,12 @@ import { AdminServerModule } from './admin-server.module';
 import { getMode } from '@libs/common/utils/get-mode.util';
 import { DiscordWebhookService } from '@libs/common/modules/discord-webhook/discord-webhook.service';
 import { DiscordWebhookContext } from '@libs/common/modules/discord-webhook/constants/discord-webhook-context.enum';
-import { NaverBlogService } from '@libs/common/modules/naver-blog/naver-blog.service';
+import { Ga4Service } from '@libs/common/modules/ga4/ga4.service';
 
 async function bootstrap() {
   const app = await NestFactory.create(AdminServerModule);
+
+  app.enableShutdownHooks();
 
   app.enableCors({
     origin: process.env.CORS_ORIGIN?.split(' '),
@@ -60,5 +62,9 @@ async function bootstrap() {
   }
 
   await app.listen(process.env.ADMIN_SERVER_PORT ?? 3000);
+
+  if (process.send) {
+    process.send('ready');
+  }
 }
 bootstrap();

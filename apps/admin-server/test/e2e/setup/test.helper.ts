@@ -3,6 +3,7 @@ import * as cookieParser from 'cookie-parser';
 import { LoginAdminForTest, LoginAdminHelper } from './login-admin.helper';
 import { ITestHelper } from '@libs/testing/interface/test-helper.interface';
 import { Type } from '@libs/common/types/Type';
+import { OpenAIService } from '@libs/common/modules/openAI/openAI.service';
 
 export class TestHelper extends ITestHelper {
   /**
@@ -11,10 +12,21 @@ export class TestHelper extends ITestHelper {
   public loginAdmin: {
     admin1: LoginAdminForTest;
     admin2: LoginAdminForTest;
+    superAdmin: LoginAdminForTest;
+    magazineAdmin1: LoginAdminForTest;
+    magazineAdmin2: LoginAdminForTest;
+    allAdmin1: LoginAdminForTest;
   };
 
   public static create(AppModule: Type) {
-    return new TestHelper(AppModule);
+    const helper = new TestHelper(AppModule);
+
+    helper.overrideProvider(OpenAIService).useValue({
+      complete: jest.fn().mockResolvedValue({ stations: [] }),
+      completeWithImage: jest.fn().mockResolvedValue({ stations: [] }),
+    });
+
+    return helper;
   }
 
   public async appSetup(): Promise<void> {

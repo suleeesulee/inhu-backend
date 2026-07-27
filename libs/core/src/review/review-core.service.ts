@@ -33,6 +33,10 @@ export class ReviewCoreService {
     );
   }
 
+  public async getAllReviewCount(input: GetAllReviewInput): Promise<number> {
+    return await this.reviewCoreRepository.selectAllReviewCount(input);
+  }
+
   @Transactional()
   public async createReviewByPlaceIdx(
     placeIdx: number,

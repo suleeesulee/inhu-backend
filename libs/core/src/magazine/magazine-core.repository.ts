@@ -103,6 +103,7 @@ export class MagazineCoreRepository {
     return await this.txHost.tx.magazine.create({
       ...SELECT_MAGAZINE,
       data: {
+        authorIdx: input.authorIdx,
         title: input.title,
         description: input.description,
         content: input.content,

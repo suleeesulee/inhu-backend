@@ -50,6 +50,20 @@ export class UserCoreRepository {
     });
   }
 
+  public async selectUserBySchoolEmail(
+    schoolEmailHash: string,
+  ): Promise<SelectUser | null> {
+    return this.txHost.tx.user.findFirst({
+      ...SELECT_USER,
+      where: {
+        deletedAt: null,
+        userEmail: {
+          schoolEmailHash,
+        },
+      },
+    });
+  }
+
   public async selectUserAll(
     input: GetAllUsersInput,
   ): Promise<SelectUserForAdmin[]> {
@@ -84,6 +98,7 @@ export class UserCoreRepository {
       data: {
         nickname: input.nickname,
         profileImagePath: input.profileImagePath,
+        platform: input.platform,
         userProvider: input.social
           ? {
               create: {
@@ -98,12 +113,30 @@ export class UserCoreRepository {
 
   public async updateUserByIdx(
     idx: number,
-    input: UpdateUserInput,
+    input: Omit<UpdateUserInput, 'schoolEmail'> & {
+      schoolEmailEncrypted?: string;
+      schoolEmailHash?: string;
+    },
   ): Promise<void> {
     await this.txHost.tx.user.update({
       data: {
         nickname: input.nickname,
         profileImagePath: input.profileImagePath,
+        userEmail:
+          input.schoolEmailEncrypted && input.schoolEmailHash
+            ? {
+                upsert: {
+                  create: {
+                    schoolEmailEncrypted: input.schoolEmailEncrypted,
+                    schoolEmailHash: input.schoolEmailHash,
+                  },
+                  update: {
+                    schoolEmailEncrypted: input.schoolEmailEncrypted,
+                    schoolEmailHash: input.schoolEmailHash,
+                  },
+                },
+              }
+            : undefined,
       },
       where: { idx, deletedAt: null },
     });

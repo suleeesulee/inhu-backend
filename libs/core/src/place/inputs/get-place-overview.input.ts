@@ -11,7 +11,7 @@ export class GetPlaceOverviewInput {
   /**
    * 한 번에 가져올 개수
    */
-  take: number;
+  take?: number;
 
   /**
    * 스킵할 데이터의 개수
@@ -71,7 +71,7 @@ export class GetPlaceOverviewInput {
   /**
    * 검색 필터링
    *
-   * - 장소 이름, 메뉴 이름, 메뉴 설명으로 검색 가능
+   * - 장소 이름, 메뉴 이름, 검색 태그로 검색 가능
    */
   searchKeyword?: string;
 
@@ -84,4 +84,22 @@ export class GetPlaceOverviewInput {
    * 분위기 카테고리 필터링
    */
   moodCategoryList?: MoodCategory[];
+
+  /**
+   * 자유 태그 필터링
+   */
+  freeTagList?: string[];
+
+  /**
+   * 만원 이하 여부
+   *
+   * true: 만원 이하 메뉴가 있는 장소만
+   * undefined: 만원 이하 여부 상관없이 모두 가져오기
+   */
+  lowPrice?: boolean;
+
+  /**
+   * 우선순위 따라 정렬 여부
+   */
+  priority?: boolean;
 }

@@ -1,3 +1,4 @@
+import { CryptoService } from '@libs/common/modules/crypto/crypto.service';
 import { AuthProvider } from '@libs/core/user/constants/auth-provider.constant';
 import { ITestHelper } from '@libs/testing/interface/test-helper.interface';
 import { TokenIssuedBy } from '@user/common/module/login-token/constants/token-issued-by.constants';
@@ -13,6 +14,7 @@ export type LoginUserForTest = {
     accessToken: string;
     refreshToken: string;
   };
+  schoolEmail: string;
 };
 
 export class LoginUserHelper {
@@ -20,6 +22,9 @@ export class LoginUserHelper {
     user1: LoginUserForTest;
     user2: LoginUserForTest;
   }> {
+    const user1SchoolEmail = 'user-1-school-email@example.com';
+    const user2SchoolEmail = 'user-2-school-email@example.com';
+
     const [user1, user2] = await Promise.all([
       testHelper.getPrisma().user.create({
         data: {
@@ -29,6 +34,16 @@ export class LoginUserHelper {
             create: {
               name: AuthProvider.KAKAO,
               snsId: 'user-1-sns-id-000123',
+            },
+          },
+          userEmail: {
+            create: {
+              schoolEmailEncrypted: testHelper
+                .get(CryptoService)
+                .encrypt(user1SchoolEmail),
+              schoolEmailHash: testHelper
+                .get(CryptoService)
+                .hmacDigest(user1SchoolEmail),
             },
           },
         },
@@ -41,6 +56,16 @@ export class LoginUserHelper {
             create: {
               name: AuthProvider.KAKAO,
               snsId: 'user-2-sns-id-000123',
+            },
+          },
+          userEmail: {
+            create: {
+              schoolEmailEncrypted: testHelper
+                .get(CryptoService)
+                .encrypt(user2SchoolEmail),
+              schoolEmailHash: testHelper
+                .get(CryptoService)
+                .hmacDigest(user2SchoolEmail),
             },
           },
         },
@@ -78,6 +103,7 @@ export class LoginUserHelper {
           accessToken: user1AppTokenSet.accessToken,
           refreshToken: user1AppTokenSet.refreshToken,
         },
+        schoolEmail: user1SchoolEmail,
       },
       user2: {
         idx: user2.idx,
@@ -89,6 +115,7 @@ export class LoginUserHelper {
           accessToken: user2AppTokenSet.accessToken,
           refreshToken: user2AppTokenSet.refreshToken,
         },
+        schoolEmail: user2SchoolEmail,
       },
     };
   }

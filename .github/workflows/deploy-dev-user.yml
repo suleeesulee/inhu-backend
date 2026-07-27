@@ -33,6 +33,7 @@ jobs:
 
   # 2. User 서버 배포
   deploy-user:
+    concurrency: raspberry-pi-deploy
     runs-on: ubuntu-latest
     needs: build-user
     steps:

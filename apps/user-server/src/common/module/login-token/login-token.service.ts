@@ -223,9 +223,10 @@ export class LoginTokenService {
 
     const jwtId = userIdx + '-' + uuidv4();
 
-    const expiresIn = TokenIssuedBy.APP
-      ? this.APP_REFRESH_TOKEN_AGE_DATES
-      : this.WEB_REFRESH_TOKEN_AGE_DATES;
+    const expiresIn =
+      issuedBy === TokenIssuedBy.APP
+        ? this.APP_REFRESH_TOKEN_AGE_DATES
+        : this.WEB_REFRESH_TOKEN_AGE_DATES;
 
     await this.refreshTokenStorage.saveRefreshToken(
       userIdx,
@@ -243,5 +244,12 @@ export class LoginTokenService {
       refreshTokenId: jwtId,
       payload,
     };
+  }
+
+  /**
+   * 특정 사용자의 모든 Refresh Token 무효화
+   */
+  public async invalidateAllRefreshTokens(userIdx: number): Promise<void> {
+    await this.refreshTokenStorage.removeAllRefreshTokensByUserIdx(userIdx);
   }
 }

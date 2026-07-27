@@ -48,11 +48,25 @@ export class UserModel {
    */
   type: UserType;
 
+  /**
+   * 학교 이메일
+   *
+   * @example "user@university.edu"
+   */
+  schoolEmail: string | null;
+
+  /**
+   * 학교 인증 여부
+   *
+   * @example false
+   */
+  isSchoolVerified: boolean;
+
   constructor(data: UserModel) {
     Object.assign(this, data);
   }
 
-  static fromPrisma(user: SelectUser): UserModel {
+  static fromPrisma(user: SelectUser, schoolEmail: string | null): UserModel {
     return new UserModel({
       idx: user.idx,
       nickname: user.nickname,
@@ -63,6 +77,8 @@ export class UserModel {
         : null,
       type:
         user.placeOwnerList.length > 0 ? UserType.PLACE_OWNER : UserType.USER,
+      schoolEmail,
+      isSchoolVerified: user.userEmail !== null,
     });
   }
 }

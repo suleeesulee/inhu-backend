@@ -21,6 +21,17 @@ import { AopModule } from '@toss/nestjs-aop';
 import { BlogReviewModule } from '@user/api/blog-review/blog-review.module';
 import { MagazineModule } from './api/magazine/magazine.module';
 import { PinnedMagazineModule } from './api/pinned-magazine/pinned-magazine.module';
+import { ServerExceptionsFilter } from '@libs/common/filters/server-exception.filter';
+import { HashModule } from '@libs/common/modules/hash/hash.module';
+import { PlaceSectionModule } from './api/place-section/place-section.module';
+import { MagazineSectionModule } from './api/magazine-section/magazine-section.module';
+import { AdminAccountCoreModule } from '@libs/core/admin-account/admin-account-core.module';
+import { FoodStationModule } from './api/food-station/food-station.module';
+import { APP_INTERCEPTOR } from '@nestjs/core';
+import { MetricInterceptor } from '@libs/common/interceptors/metric.interceptor';
+import { MetricModule } from '@libs/common/modules/metric/metric.module';
+import { PrometheusApiModule } from './api/prometheus/prometheus.module';
+import { UserMailModule } from './api/mail/user-mail.module';
 
 @Module({
   imports: [
@@ -52,9 +63,25 @@ import { PinnedMagazineModule } from './api/pinned-magazine/pinned-magazine.modu
     AopModule,
     MagazineModule,
     PinnedMagazineModule,
+    HashModule,
+    PlaceSectionModule,
+    MagazineSectionModule,
+    AdminAccountCoreModule,
+    FoodStationModule,
+    MetricModule,
+    PrometheusApiModule,
+    UserMailModule,
   ],
-  controllers: [],
-  providers: [],
+  providers: [
+    {
+      provide: 'APP_FILTER',
+      useClass: ServerExceptionsFilter,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: MetricInterceptor,
+    },
+  ],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

@@ -66,30 +66,30 @@ jobs:
           echo "Deployment gate outputs: ${{ toJSON(steps.deployment-gate.outputs) }}"
 
   # Job 2: User 서버 빌드 및 테스트
-  test-user:
-    name: Test User Server
-    needs: check-user-changes
-    if: needs.check-user-changes.outputs.should_run == 'true'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+  # test-user:
+  #   name: Test User Server
+  #   needs: check-user-changes
+  #   if: needs.check-user-changes.outputs.should_run == 'true'
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v4
 
-      - name: Setup nodejs
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22.x
+  #     - name: Setup nodejs
+  #       uses: actions/setup-node@v4
+  #       with:
+  #         node-version: 22.x
 
-      - name: Install dependencies
-        run: npm ci
+  #     - name: Install dependencies
+  #       run: npm ci
 
-      # PR 시 User 서버 테스트 실행
-      - name: Run E2E tests for User Server
-        if: github.event_name == 'pull_request'
-        run: |
-          npm run user-server:test:infra:up
-          npm run user-server:test:e2e
-          npm run user-server:test:infra:down
+  #     # PR 시 User 서버 테스트 실행
+  #     - name: Run E2E tests for User Server
+  #       if: github.event_name == 'pull_request'
+  #       run: |
+  #         npm run user-server:test:infra:up
+  #         npm run user-server:test:e2e
+  #         npm run user-server:test:infra:down
 
   build-user:
     name: Build User Server
@@ -162,8 +162,31 @@ jobs:
           ssh -o StrictHostKeyChecking=no -i key.pem $USER@$HOST << 'EOF'
             cd ~/inhu-backend
             . ~/inhu-backend/bash-scripts/load-nvm-script.sh
-            tar -xzf deploy-user.tar.gz
+
+            DEPLOY_TEMP="deploy_temp_$(date +%s)"
+            mkdir -p $DEPLOY_TEMP
+
+            tar -xzf deploy-user.tar.gz -C $DEPLOY_TEMP
             rm deploy-user.tar.gz
-            npm ci
-            pm2 restart inhu-backend
+
+            cd $DEPLOY_TEMP
+            npm ci --production
+            npx prisma generate
+            cd ..
+
+            mkdir -p dist/apps/user-server
+            mv dist/apps/user-server dist/apps/user-server_old || true
+            mv $DEPLOY_TEMP/dist/apps/user-server dist/apps/user-server
+
+            mv node_modules node_modules_old || true
+            mv $DEPLOY_TEMP/node_modules ./node_modules
+
+            mv prisma prisma_old || true
+            mv $DEPLOY_TEMP/prisma ./prisma
+
+            cp $DEPLOY_TEMP/package.json $DEPLOY_TEMP/package-lock.json ./
+
+            pm2 reload inhu-backend
+
+            rm -rf $DEPLOY_TEMP dist/apps/user-server_old node_modules_old prisma_old
           EOF

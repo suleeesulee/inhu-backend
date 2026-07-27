@@ -50,6 +50,20 @@ export class UserEntity {
    */
   type: UserType;
 
+  /**
+   * 학교 이메일
+   *
+   * @example "user@university.edu"
+   */
+  schoolEmail: string | null;
+
+  /**
+   * 학교 인증 여부
+   *
+   * @example false
+   */
+  isSchoolVerified: boolean;
+
   constructor(data: UserEntity) {
     Object.assign(this, data);
   }
@@ -62,6 +76,8 @@ export class UserEntity {
       createdAt: model.createdAt,
       provider: model.provider?.provider,
       type: model.type,
+      schoolEmail: model.schoolEmail,
+      isSchoolVerified: model.isSchoolVerified,
     });
   }
 }

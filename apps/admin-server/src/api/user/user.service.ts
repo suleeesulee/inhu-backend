@@ -1,8 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { GetUserOverviewAllDto } from './dto/request/get-user-overview-all.dto';
 import { UserOverviewEntity } from './entity/user-overview.entity';
 import { UserCoreService } from '@libs/core/user/user-core.service';
 import { GetAllUsersInput } from '@libs/core/user/inputs/get-user-overview.input';
+import { UserEntity } from './entity/user.entity';
 
 @Injectable()
 export class UserService {
@@ -22,5 +23,15 @@ export class UserService {
       userList: users.map(UserOverviewEntity.fromModel),
       count: await this.userCoreService.getUserOverviewCount(),
     };
+  }
+
+  public async getUserByIdx(idx: number): Promise<UserEntity> {
+    const userModel = await this.userCoreService.getUserByIdx(idx);
+
+    if (!userModel) {
+      throw new NotFoundException('Cannot find user');
+    }
+
+    return UserEntity.fromModel(userModel);
   }
 }

@@ -32,7 +32,12 @@ export class NaverBlogService {
       .filter(Boolean);
 
     // 작성일
-    const uploadedAt = this.getUploadedAt($('span.se_publishDate').text());
+    const publishStr =
+      $('span.se_publishDate').text() || $('p._postAddDate').text();
+    if (!publishStr) {
+      throw new NaverBlogNotFoundException('Cannot find publish date');
+    }
+    const uploadedAt = this.getUploadedAt(publishStr);
 
     // 메타 데이터
     const metadataList = result.map((v) => v.attribs);
@@ -57,7 +62,15 @@ export class NaverBlogService {
 
       const $ = cheerio.load(data);
 
-      return 'https://blog.naver.com' + $('iframe').attr('src');
+      const iframeSrc = $('iframe').attr('src');
+
+      if (!iframeSrc) {
+        throw new NaverBlogNotFoundException(
+          'Cannot find iframe src in naver blog',
+        );
+      }
+
+      return 'https://blog.naver.com' + iframeSrc;
     } catch (err) {
       if (isAxiosError(err)) {
         if (err.response?.status === 404) {
@@ -124,6 +137,26 @@ export class NaverBlogService {
   }
 
   private getUploadedAt(publishStr: string) {
+    const now = new Date();
+    const nowKst = new Date(now.getTime() + 9 * 60 * 60 * 1000);
+    const cleanStr = publishStr.trim();
+
+    if (cleanStr.includes('전')) {
+      const numMatch = cleanStr.match(/\d+/);
+      const value = parseInt(numMatch ? numMatch[0] : '0', 10);
+      let resultTime = nowKst.getTime();
+
+      if (cleanStr.includes('분')) {
+        resultTime -= value * 60 * 1000;
+      } else if (cleanStr.includes('시간')) {
+        resultTime -= value * 60 * 60 * 1000;
+      } else if (cleanStr.includes('일')) {
+        resultTime -= value * 24 * 60 * 60 * 1000;
+      }
+
+      return new Date(resultTime);
+    }
+
     const dateArr = publishStr.split('.').map((d) => d.trim());
 
     const year = dateArr[0];

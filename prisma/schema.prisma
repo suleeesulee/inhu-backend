@@ -48,6 +48,7 @@ model Place {
   bookmarkCount                Int                        @default(0) @map("bookmark_count")
   roadAddressIdx               Int                        @map("road_address_idx")
   isClosedOnHoliday            Boolean?                   @map("is_closed_on_holiday")
+  priority                     Int?                       @db.SmallInt
   createdAt                    DateTime                   @default(now()) @map("created_at") @db.Timestamptz(6)
   deletedAt                    DateTime?                  @map("deleted_at") @db.Timestamptz(6)
   permanentlyClosedAt          DateTime?                  @map("permanently_closed_at") @db.Timestamptz(6)
@@ -58,13 +59,16 @@ model Place {
   closedDayList                ClosedDay[]
   magazinePlaceList            MagazinePlace[]
   menuList                     Menu[]
+  nfcList                      Nfc[]
   operatingHourList            OperatingHour[]
   pickedPlace                  PickedPlace?
+  placeFreeTagMappingList      PlaceFreeTagMapping[]
   placeImageList               PlaceImage[]
   placeKeywordCountList        PlaceKeywordCount[]
   placeMainCategoryMappingList PlaceMainCategoryMapping[]
   placeMoodCategoryMappingList PlaceMoodCategoryMapping[]
   placeOwnerList               PlaceOwner[]
+  placeSearchTagMappingList    PlaceSearchTagMapping[]
   roadAddress                  RoadAddress                @relation(fields: [roadAddressIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_road_address_tb_to_place_tb")
   placeTypeMappingList         PlaceTypeMapping[]
   reviewList                   Review[]
@@ -140,10 +144,10 @@ model PlaceTypeMapping {
 }
 
 model PlaceType {
-  idx                          Int                          @id
-  content                      String                       @unique @db.VarChar
-  createdAt                    DateTime                     @default(now()) @map("created_at") @db.Timestamptz(6)
-  deletedAt                    DateTime?                    @map("deleted_at") @db.Timestamptz(6)
+  idx                          Int                        @id
+  content                      String                     @unique @db.VarChar
+  createdAt                    DateTime                   @default(now()) @map("created_at") @db.Timestamptz(6)
+  deletedAt                    DateTime?                  @map("deleted_at") @db.Timestamptz(6)
   placeTypeMagazineMappingList PlaceTypeMagazineMapping[]
   placeTypeMappingList         PlaceTypeMapping[]
 
@@ -159,6 +163,7 @@ model Menu {
   imagePath  String?      @map("image_path") @db.VarChar
   isFlexible Boolean      @default(false) @map("is_flexible")
   sortOrder  Int          @map("sort_order") @db.SmallInt
+  isMain     Boolean      @default(true) @map("is_main")
   createdAt  DateTime     @default(now()) @map("created_at") @db.Timestamptz(6)
   deletedAt  DateTime?    @map("deleted_at") @db.Timestamptz(6)
   reviewList MenuReview[]
@@ -256,15 +261,24 @@ model User {
   idx                       Int                     @id @default(autoincrement())
   nickname                  String                  @db.VarChar
   profileImagePath          String?                 @map("profile_image_path") @db.VarChar
+  platform                  String                  @default("unknown") @db.VarChar
+  schoolEmailEncrypted      String?                 @map("school_email_encrypted") @db.VarChar
+  schoolEmailHash           String?                 @map("school_email_hash") @db.VarChar
+  isSchoolVerified          Boolean                 @default(false) @map("is_school_verified")
   createdAt                 DateTime                @default(now()) @map("created_at") @db.Timestamptz(6)
   deletedAt                 DateTime?               @map("deleted_at") @db.Timestamptz(6)
   adminAccount              AdminAccount?
   bookmarkList              Bookmark[]
+  cafeteriaBookmark         CafeteriaBookmark[]
+  leagueSeasonResultList    LeagueSeasonResult[]
   magazineLike              MagazineLike[]
+  magazine                  Magazine[]
   placeOwnerList            PlaceOwner[]
+  placeVisitList            PlaceVisit[]
   reviewList                Review[]
   service1ResultList        Service1Result[]
   service2ResultList        Service2Result[]
+  userEmail                 UserEmail?
   userProvider              UserProvider?
   withdrawServiceResultList WithdrawServiceResult[]
 
@@ -275,8 +289,9 @@ model AdminAccount {
   idx       Int      @id
   id        String   @db.VarChar
   pw        String   @db.VarChar
+  role      String   @default("ADMIN") @db.VarChar
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
-  user      User     @relation(fields: [idx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_user_tb_to_admin_account_tb")
+  user      User     @relation(fields: [idx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_user_tb_to_admin_tb")
 
   @@map("admin_account_tb")
 }
@@ -347,7 +362,7 @@ model BlogReview {
   createdAt              DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
   uploadedAt             DateTime  @map("uploaded_at") @db.Timestamptz(6)
   deletedAt              DateTime? @map("deleted_at") @db.Timestamptz(6)
-  place                  Place     @relation(fields: [placeIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_place_tb_to_place_owner_tb")
+  place                  Place     @relation(fields: [placeIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_place_tb_to_blog_review_tb")
 
   @@map("blog_review_tb")
 }
@@ -373,21 +388,23 @@ model MagazinePlace {
 }
 
 model Magazine {
-  idx                             Int                             @id @default(autoincrement())
-  title                           String                          @db.VarChar
-  description                     String?                         @db.VarChar
-  content                         String                          @db.VarChar
-  thumbnailImagePath              String?                         @map("thumbnail_image_path") @db.VarChar
-  isTitleVisible                  Boolean                         @default(false) @map("is_title_visible")
-  likeCount                       Int                             @default(0) @map("like_count")
-  viewCount                       Int                             @default(0) @map("view_count")
-  createdAt                       DateTime                        @default(now()) @map("created_at") @db.Timestamptz(6)
-  activatedAt                     DateTime?                       @map("activated_at") @db.Timestamptz(6)
-  deletedAt                       DateTime?                       @map("deleted_at") @db.Timestamptz(6)
+  idx                             Int                           @id @default(autoincrement())
+  authorIdx                       Int                           @map("author_idx")
+  title                           String                        @db.VarChar
+  description                     String?                       @db.VarChar
+  content                         String                        @db.VarChar
+  thumbnailImagePath              String?                       @map("thumbnail_image_path") @db.VarChar
+  isTitleVisible                  Boolean                       @default(false) @map("is_title_visible")
+  likeCount                       Int                           @default(0) @map("like_count")
+  viewCount                       Int                           @default(0) @map("view_count")
+  createdAt                       DateTime                      @default(now()) @map("created_at") @db.Timestamptz(6)
+  activatedAt                     DateTime?                     @map("activated_at") @db.Timestamptz(6)
+  deletedAt                       DateTime?                     @map("deleted_at") @db.Timestamptz(6)
   magazineLike                    MagazineLike[]
   magazineMainCategoryMappingList MagazineMainCategoryMapping[]
   magazineMoodCategoryMappingList MagazineMoodCategoryMapping[]
   placeList                       MagazinePlace[]
+  userTb                          User                          @relation(fields: [authorIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_user_tb_to_magazine_tb")
   pinnedMagazine                  PinnedMagazine?
   placeTypeMagazineMappingList    PlaceTypeMagazineMapping[]
 
@@ -434,10 +451,10 @@ model PlaceMoodCategoryMapping {
 }
 
 model MainCategory {
-  idx                             Int                             @id
-  content                         String                          @db.VarChar
-  createdAt                       DateTime                        @default(now()) @map("created_at") @db.Timestamptz(6)
-  deletedAt                       DateTime?                       @map("deleted_at") @db.Timestamptz(6)
+  idx                             Int                           @id
+  content                         String                        @db.VarChar
+  createdAt                       DateTime                      @default(now()) @map("created_at") @db.Timestamptz(6)
+  deletedAt                       DateTime?                     @map("deleted_at") @db.Timestamptz(6)
   magazineMainCategoryMappingList MagazineMainCategoryMapping[]
   placeMainCategoryMappingList    PlaceMainCategoryMapping[]
 
@@ -445,10 +462,10 @@ model MainCategory {
 }
 
 model MoodCategory {
-  idx                             Int                             @id
-  content                         String                          @db.VarChar
-  createdAt                       DateTime                        @default(now()) @map("created_at") @db.Timestamptz(6)
-  deletedAt                       DateTime?                       @map("deleted_at") @db.Timestamptz(6)
+  idx                             Int                           @id
+  content                         String                        @db.VarChar
+  createdAt                       DateTime                      @default(now()) @map("created_at") @db.Timestamptz(6)
+  deletedAt                       DateTime?                     @map("deleted_at") @db.Timestamptz(6)
   magazineMoodCategoryMappingList MagazineMoodCategoryMapping[]
   placeMoodCategoryMappingList    PlaceMoodCategoryMapping[]
 
@@ -483,4 +500,260 @@ model PlaceTypeMagazineMapping {
 
   @@id([placeTypeIdx, magazineIdx])
   @@map("place_type_magazine_mapping_tb")
+}
+
+model FreeTag {
+  idx                     Int                   @id @default(autoincrement())
+  content                 String                @db.VarChar
+  createdAt               DateTime              @default(now()) @map("created_at") @db.Timestamptz(6)
+  deletedAt               DateTime?             @map("deleted_at") @db.Timestamptz(6)
+  placeFreeTagMappingList PlaceFreeTagMapping[]
+
+  @@map("free_tag_tb")
+}
+
+model PlaceFreeTagMapping {
+  freeTagIdx Int     @map("free_tag_idx")
+  placeIdx   Int     @map("place_idx")
+  freeTag    FreeTag @relation(fields: [freeTagIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_free_tag_tb_to_place_free_tag_mapping_tb")
+  place      Place   @relation(fields: [placeIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_place_tb_to_place_free_tag_mapping_tb")
+
+  @@id([freeTagIdx, placeIdx])
+  @@map("place_free_tag_mapping_tb")
+}
+
+model SearchTag {
+  idx                       Int                     @id @default(autoincrement())
+  content                   String                  @db.VarChar
+  createdAt                 DateTime                @default(now()) @map("created_at") @db.Timestamptz(6)
+  deletedAt                 DateTime?               @map("deleted_at") @db.Timestamptz(6)
+  placeSearchTagMappingList PlaceSearchTagMapping[]
+
+  @@map("search_tag_tb")
+}
+
+model PlaceSearchTagMapping {
+  searchTagIdx Int       @map("search_tag_idx")
+  placeIdx     Int       @map("place_idx")
+  place        Place     @relation(fields: [placeIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_place_tb_to_place_search_tag_mapping_tb")
+  searchTag    SearchTag @relation(fields: [searchTagIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_search_tag_tb_to_place_search_tag_mapping_tb")
+
+  @@id([searchTagIdx, placeIdx])
+  @@map("place_search_tag_mapping_tb")
+}
+
+model PlaceSection {
+  idx         Int       @id @default(autoincrement())
+  title       String    @db.VarChar
+  parameter   Json
+  sortOrder   Int       @map("sort_order") @db.SmallInt
+  createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  activatedAt DateTime? @map("activated_at") @db.Timestamptz(6)
+  deletedAt   DateTime? @map("deleted_at") @db.Timestamptz(6)
+
+  @@map("place_section_tb")
+}
+
+model MagazineSection {
+  idx         Int       @id @default(autoincrement())
+  title       String    @db.VarChar
+  parameter   Json
+  sortOrder   Int       @map("sort_order") @db.SmallInt
+  createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  activatedAt DateTime? @map("activated_at") @db.Timestamptz(6)
+  deletedAt   DateTime? @map("deleted_at") @db.Timestamptz(6)
+
+  @@map("magazine_section_tb")
+}
+
+model CafeteriaBookmark {
+  userIdx      Int       @map("user_idx")
+  cafeteriaIdx Int       @map("cafeteria_idx")
+  createdAt    DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  deletedAt    DateTime? @map("deleted_at") @db.Timestamptz(6)
+  cafeteria    Cafeteria @relation(fields: [cafeteriaIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_cafeteria_tb_to_cafeteria_bookmark_tb")
+  user         User      @relation(fields: [userIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_user_tb_to_cafeteria_bookmark_tb")
+
+  @@id([userIdx, cafeteriaIdx])
+  @@map("cafeteria_bookmark_tb")
+}
+
+model Cafeteria {
+  idx                   Int                 @id @default(autoincrement())
+  name                  String              @db.VarChar
+  createdAt             DateTime            @default(now()) @map("created_at") @db.Timestamptz(6)
+  deletedAt             DateTime?           @map("deleted_at") @db.Timestamptz(6)
+  cafeteriaBookmarkList CafeteriaBookmark[]
+  dailyMemoList         DailyMemo[]
+  foodStationList       FoodStation[]
+
+  @@map("cafeteria_tb")
+}
+
+model DailyMemo {
+  idx          Int       @id @default(autoincrement())
+  cafeteriaIdx Int       @map("cafeteria_idx")
+  content      String    @db.VarChar
+  date         DateTime  @db.Date
+  createdAt    DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  deletedAt    DateTime? @map("deleted_at") @db.Timestamptz(6)
+  cafeteria    Cafeteria @relation(fields: [cafeteriaIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_cafeteria_tb_to_daily_memo_tb")
+
+  @@map("daily_memo_tb")
+}
+
+model FoodStation {
+  idx              Int            @id @default(autoincrement())
+  cafeteriaIdx     Int            @map("cafeteria_idx")
+  mealTypeIdx      Int            @map("meal_type_idx")
+  name             String?        @db.VarChar
+  startTime        DateTime       @map("start_time") @db.Time(6)
+  endTime          DateTime       @map("end_time") @db.Time(6)
+  startDate        DateTime       @map("start_date") @db.Date
+  endDate          DateTime       @map("end_date") @db.Date
+  createdAt        DateTime       @default(now()) @map("created_at") @db.Timestamptz(6)
+  deletedAt        DateTime?      @map("deleted_at") @db.Timestamptz(6)
+  cafeteria        Cafeteria      @relation(fields: [cafeteriaIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_cafeteria_tb_to_food_station_tb")
+  mealType         MealType       @relation(fields: [mealTypeIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_meal_type_tb_to_food_station_tb")
+  mealOfferingList MealOffering[]
+
+  @@map("food_station_tb")
+}
+
+model MealItem {
+  idx             Int          @id @default(autoincrement())
+  mealOfferingIdx Int          @map("meal_offering_idx")
+  name            String       @db.VarChar
+  price           Int?
+  createdAt       DateTime     @default(now()) @map("created_at") @db.Timestamptz(6)
+  deletedAt       DateTime?    @map("deleted_at") @db.Timestamptz(6)
+  mealOffering    MealOffering @relation(fields: [mealOfferingIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_meal_offering_tb_to_meal_item_tb")
+
+  @@map("meal_item_tb")
+}
+
+model MealOffering {
+  idx            Int         @id @default(autoincrement())
+  foodStationIdx Int         @map("food_station_idx")
+  startTime      DateTime    @map("start_time") @db.Time(6)
+  endTime        DateTime    @map("end_time") @db.Time(6)
+  kcal           Int?
+  servedDate     DateTime    @map("served_date") @db.Date
+  createdAt      DateTime    @default(now()) @map("created_at") @db.Timestamptz(6)
+  deletedAt      DateTime?   @map("deleted_at") @db.Timestamptz(6)
+  mealItemList   MealItem[]
+  foodStation    FoodStation @relation(fields: [foodStationIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_food_station_tb_to_meal_offering_tb")
+
+  @@map("meal_offering_tb")
+}
+
+model MealType {
+  idx             Int           @id
+  content         String        @db.VarChar
+  createdAt       DateTime      @default(now()) @map("created_at") @db.Timestamptz(6)
+  deletedAt       DateTime?     @map("deleted_at") @db.Timestamptz(6)
+  foodStationList FoodStation[]
+
+  @@map("meal_type_tb")
+}
+
+model LeagueSeasonResult {
+  id              String          @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  leagueSeasonIdx Int             @map("league_season_idx")
+  userIdx         Int             @map("user_idx")
+  finalScore      Int             @map("final_score")
+  createdAt       DateTime        @default(now()) @map("created_at") @db.Timestamptz(6)
+  leagueSeason    LeagueSeason @relation(fields: [leagueSeasonIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_league_season_tb_to_league_season_result_tb")
+  user            User            @relation(fields: [userIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_user_tb_to_league_season_result_tb")
+  userRewardList  UserReward[]
+
+  @@map("league_season_result_tb")
+}
+
+model LeagueSeason {
+  idx                    Int                    @id @default(autoincrement())
+  name                   String                 @db.VarChar
+  startAt                DateTime               @map("start_at") @db.Timestamptz(6)
+  endAt                  DateTime               @map("end_at") @db.Timestamptz(6)
+  createdAt              DateTime               @default(now()) @map("created_at") @db.Timestamptz(6)
+  finalizedAt            DateTime?              @map("finalized_at") @db.Timestamptz(6)
+  leagueSeasonResultList LeagueSeasonResult[]
+  rewardOptionList       RewardOption[]
+
+  @@map("league_season_tb")
+}
+
+model Nfc {
+  idx            Int            @id @default(autoincrement())
+  placeIdx       Int            @map("place_idx")
+  score          Int
+  tokenHash      String         @map("token_hash") @db.VarChar
+  activatedAt    DateTime?      @map("activated_at") @db.Timestamptz(6)
+  createdAt      DateTime       @default(now()) @map("created_at") @db.Timestamptz(6)
+  deletedAt      DateTime?      @map("deleted_at") @db.Timestamptz(6)
+  place          Place          @relation(fields: [placeIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_place_tb_to_nfc_tb")
+  placeVisitList PlaceVisit[]
+
+  @@map("nfc_tb")
+}
+
+model PlaceVisit {
+  id        String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  userIdx   Int      @map("user_idx")
+  nfcIdx    Int      @map("nfc_idx")
+  score     Int
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  nfc       Nfc    @relation(fields: [nfcIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_nfc_tb_to_place_visit_tb")
+  user      User     @relation(fields: [userIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_user_tb_to_place_visit_tb")
+
+  @@map("place_visit_tb")
+}
+
+model RewardOption {
+  id              String          @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  leagueSeasonIdx Int             @map("league_season_idx")
+  rewardIdx       Int             @map("reward_idx")
+  targetRank      Int             @map("target_rank")
+  createdAt       DateTime        @default(now()) @map("created_at") @db.Timestamptz(6)
+  deletedAt       DateTime?       @map("deleted_at") @db.Timestamptz(6)
+  leagueSeason    LeagueSeason @relation(fields: [leagueSeasonIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_league_season_tb_to_reward_option_tb")
+  reward          Reward        @relation(fields: [rewardIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_reward_tb_to_reward_option_tb")
+
+  @@map("reward_option_tb")
+}
+
+model Reward {
+  idx              Int              @id @default(autoincrement())
+  name             String           @db.VarChar
+  imagePath        String?          @map("image_path") @db.VarChar
+  activatedAt      DateTime?        @map("activated_at") @db.Timestamptz(6)
+  createdAt        DateTime         @default(now()) @map("created_at") @db.Timestamptz(6)
+  deletedAt        DateTime?        @map("deleted_at") @db.Timestamptz(6)
+  rewardOptionList RewardOption[]
+  userRewardList   UserReward[]
+
+  @@map("reward_tb")
+}
+
+model UserEmail {
+  idx                  Int      @id
+  schoolEmailEncrypted String   @map("school_email_encrypted") @db.VarChar
+  schoolEmailHash      String   @map("school_email_hash") @db.VarChar
+  createdAt            DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  user                 User     @relation(fields: [idx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_user_tb_to_user_email_tb")
+
+  @@map("user_email_tb")
+}
+
+model UserReward {
+  id                    String               @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  rewardIdx             Int                  @map("reward_idx")
+  leagueSeasonResultIdx String               @map("league_season_result_idx") @db.Uuid
+  createdAt             DateTime             @default(now()) @map("created_at") @db.Timestamptz(6)
+  selectedAt            DateTime?            @map("selected_at") @db.Timestamptz(6)
+  issuedAt              DateTime?            @map("issued_at") @db.Timestamptz(6)
+  leagueSeasonResult    LeagueSeasonResult @relation(fields: [leagueSeasonResultIdx], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_league_season_result_tb_to_user_reward_tb")
+  reward                Reward             @relation(fields: [rewardIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_reward_tb_to_user_reward_tb")
+
+  @@map("user_reward_tb")
 }

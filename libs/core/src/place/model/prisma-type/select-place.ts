@@ -1,5 +1,7 @@
 import { Prisma } from '@prisma/client';
 import { SELECT_PLACE_ROAD_ADDRESS } from './select-place-road-address';
+import { SELECT_FREE_TAG } from '@libs/core/free-tag/model/prisma-type/select-free-tag';
+import { SELECT_SEARCH_TAG } from '@libs/core/search-tag/model/prisma-type/select-search-tag';
 
 export const SELECT_PLACE = Prisma.validator<Prisma.PlaceDefaultArgs>()({
   select: {
@@ -73,6 +75,16 @@ export const SELECT_PLACE = Prisma.validator<Prisma.PlaceDefaultArgs>()({
     placeMoodCategoryMappingList: {
       select: {
         moodCategoryIdx: true,
+      },
+    },
+    placeFreeTagMappingList: {
+      select: {
+        freeTag: SELECT_FREE_TAG,
+      },
+    },
+    placeSearchTagMappingList: {
+      select: {
+        searchTag: SELECT_SEARCH_TAG,
       },
     },
   },

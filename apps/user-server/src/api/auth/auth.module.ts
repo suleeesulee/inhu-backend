@@ -24,5 +24,6 @@ import { RedisModule } from '@libs/common/modules/redis/redis.module';
   ],
   controllers: [AuthController],
   providers: [AuthService, KakaoLoginStrategy, AppleLoginStrategy],
+  exports: [AuthService],
 })
 export class AuthModule {}

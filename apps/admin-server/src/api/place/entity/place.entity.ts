@@ -18,6 +18,8 @@ import { MainCategory } from '@libs/core/category/constants/main-category.consta
 import { MoodCategory } from '@libs/core/category/constants/mood-category.constant';
 import { UniqueArray } from '@libs/common/decorator/unique-array.decorator';
 import { ToArray } from '@libs/common/decorator/to-array.decorator';
+import { FreeTagEntity } from '@admin/api/free-tag/entity/free-tag.entity';
+import { SearchTagEntity } from '@admin/api/search-tag/entity/search-tag.entity';
 
 export class PlaceEntity {
   /**
@@ -149,6 +151,16 @@ export class PlaceEntity {
   @IsEnumValue(PlaceType, { each: true })
   public typeList: PlaceType[];
 
+  /**
+   * 자유 태그 목록
+   */
+  public freeTagList: FreeTagEntity[];
+
+  /**
+   * 검색 태그 목록
+   */
+  public searchTagList: SearchTagEntity[];
+
   constructor(data: PlaceEntity) {
     Object.assign(this, data);
   }
@@ -178,6 +190,8 @@ export class PlaceEntity {
       mainCategoryList: model.mainCategoryList,
       moodCategoryList: model.moodCategoryList,
       typeList: model.typeList,
+      freeTagList: model.freeTagList.map(FreeTagEntity.fromModel),
+      searchTagList: model.searchTagList.map(SearchTagEntity.fromModel),
     });
   }
 }

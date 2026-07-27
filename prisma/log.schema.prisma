@@ -1,0 +1,464 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/log"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("LOG_DATABASE_URL")
+}
+
+model DimBreakTimes {
+  id        String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  idx       Int
+  placeIdx  Int       @map("place_idx")
+  startAt   DateTime  @map("start_at") @db.Time(6)
+  endAt     DateTime  @map("end_at") @db.Time(6)
+  day       Int       @db.SmallInt
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz
+  validFrom DateTime  @map("valid_from") @db.Timestamptz
+
+  @@unique([idx, validFrom], map: "uq_dim_break_times_idx_valid_from")
+  @@index([validFrom], map: "index_dim_break_times_valid_from")
+  @@map("dim_break_times")
+}
+
+model DimClosedDays {
+  id        String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  idx       Int
+  placeIdx  Int       @map("place_idx")
+  day       Int       @db.SmallInt
+  week      Int       @db.SmallInt
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz
+  validFrom DateTime  @map("valid_from") @db.Timestamptz
+
+  @@unique([idx, validFrom], map: "uq_dim_closed_days_idx_valid_from")
+  @@index([validFrom], map: "index_dim_closed_days_valid_from")
+  @@map("dim_closed_days")
+}
+
+model DimKeywords {
+  id           String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  idx          Int
+  content      String    @db.VarChar
+  registeredAt DateTime  @map("registered_at") @db.Timestamptz
+  deletedAt    DateTime? @map("deleted_at") @db.Timestamptz
+  createdAt    DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  validFrom    DateTime  @map("valid_from") @db.Timestamptz
+
+  @@unique([idx, validFrom], map: "uq_dim_keywords_idx_valid_from")
+  @@index([validFrom], map: "index_dim_keywords_valid_from")
+  @@map("dim_keywords")
+}
+
+model DimMagazineLikes {
+  id           String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  magazineIdx  Int       @map("magazine_idx")
+  userIdx      Int       @map("user_idx")
+  registeredAt DateTime  @map("registered_at") @db.Timestamptz
+  createdAt    DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  deletedAt    DateTime? @map("deleted_at") @db.Timestamptz
+  validFrom    DateTime  @map("valid_from") @db.Timestamptz
+
+  @@unique([magazineIdx, userIdx, validFrom], map: "uq_dim_magazine_likes_magazine_idx_user_idx_valid_from")
+  @@index([validFrom], map: "index_dim_magazine_likes_valid_from")
+  @@map("dim_magazine_likes")
+}
+
+model DimMagazineMainCategoryMappings {
+  id              String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  mainCategoryIdx Int       @map("main_category_idx")
+  magazineIdx     Int       @map("magazine_idx")
+  createdAt       DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  deletedAt       DateTime? @map("deleted_at") @db.Timestamptz
+  validFrom       DateTime  @map("valid_from") @db.Timestamptz
+
+  @@unique([mainCategoryIdx, magazineIdx, validFrom], map: "uq_dim_magazine_main_category_mappings_keys_valid_from")
+  @@index([validFrom], map: "index_dim_magazine_main_category_mappings_valid_from")
+  @@map("dim_magazine_main_category_mappings")
+}
+
+model DimMagazineMoodCategoryMappings {
+  id              String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  moodCategoryIdx Int       @map("mood_category_idx")
+  magazineIdx     Int       @map("magazine_idx")
+  createdAt       DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  deletedAt       DateTime? @map("deleted_at") @db.Timestamptz
+  validFrom       DateTime  @map("valid_from") @db.Timestamptz
+
+  @@unique([moodCategoryIdx, magazineIdx, validFrom], map: "uq_dim_magazine_mood_category_mappings_keys_valid_from")
+  @@index([validFrom], map: "index_dim_magazine_mood_category_mappings_valid_from")
+  @@map("dim_magazine_mood_category_mappings")
+}
+
+model DimMagazinePlaces {
+  id         String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  magazineIdx Int      @map("magazine_idx")
+  placeIdx   Int       @map("place_idx")
+  createdAt  DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  deletedAt  DateTime? @map("deleted_at") @db.Timestamptz
+  validFrom  DateTime  @map("valid_from") @db.Timestamptz
+
+  @@unique([magazineIdx, placeIdx, validFrom], map: "uq_dim_magazine_places_magazine_idx_place_idx_valid_from")
+  @@index([validFrom], map: "index_dim_magazine_places_valid_from")
+  @@map("dim_magazine_places")
+}
+
+model DimMagazines {
+  id                 String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  idx                Int
+  authorIdx          Int       @map("author_idx")
+  title              String    @db.VarChar
+  description        String?   @db.VarChar
+  content            String    @db.VarChar
+  thumbnailImagePath String?   @map("thumbnail_image_path") @db.VarChar
+  isTitleVisible     Boolean   @map("is_title_visible")
+  likeCount          Int       @map("like_count")
+  viewCount          Int       @map("view_count")
+  registeredAt       DateTime  @map("registered_at") @db.Timestamptz
+  activatedAt        DateTime? @map("activated_at") @db.Timestamptz
+  deletedAt          DateTime? @map("deleted_at") @db.Timestamptz
+  createdAt          DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  validFrom          DateTime  @map("valid_from") @db.Timestamptz
+
+  @@unique([idx, validFrom], map: "uq_dim_magazines_idx_valid_from")
+  @@index([validFrom], map: "index_dim_magazines_valid_from")
+  @@map("dim_magazines")
+}
+
+model DimMainCategories {
+  id           String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  idx          Int
+  content      String    @db.VarChar
+  createdAt    DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  deletedAt    DateTime? @map("deleted_at") @db.Timestamptz
+  registeredAt DateTime  @map("registered_at") @db.Timestamptz
+  validFrom    DateTime  @map("valid_from") @db.Timestamptz
+
+  @@unique([idx, validFrom], map: "uq_dim_main_categories_idx_valid_from")
+  @@index([validFrom], map: "index_dim_main_categories_valid_from")
+  @@map("dim_main_categories")
+}
+
+
+
+model DimMenuReviews {
+  id        String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  menuIdx   Int       @map("menu_idx")
+  reviewIdx Int       @map("review_idx")
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz
+  validFrom DateTime  @map("valid_from") @db.Timestamptz
+
+  @@unique([menuIdx, reviewIdx, validFrom], map: "uq_dim_menu_reviews_menu_idx_review_idx_valid_from")
+  @@index([validFrom], map: "index_dim_menu_reviews_valid_from")
+  @@map("dim_menu_reviews")
+}
+
+model DimMenus {
+  id           String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  idx          Int
+  placeIdx     Int       @map("place_idx")
+  name         String    @db.VarChar
+  content      String?   @db.VarChar
+  price        Int?
+  imagePath    String?   @map("image_path") @db.VarChar
+  isFlexible   Boolean   @map("is_flexible")
+  sortOrder    Int       @map("sort_order")
+  isMain       Boolean   @map("is_main")
+  registeredAt DateTime  @map("registered_at") @db.Timestamptz
+  deletedAt    DateTime? @map("deleted_at") @db.Timestamptz
+  createdAt    DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  validFrom    DateTime  @map("valid_from") @db.Timestamptz
+
+  @@unique([idx, validFrom], map: "uq_dim_menus_idx_valid_from")
+  @@index([validFrom], map: "index_dim_menus_valid_from")
+  @@map("dim_menus")
+}
+
+model DimMoodCategories {
+  id           String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  idx          Int
+  content      String    @db.VarChar
+  createdAt    DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  deletedAt    DateTime? @map("deleted_at") @db.Timestamptz
+  registeredAt DateTime  @map("registered_at") @db.Timestamptz
+  validFrom    DateTime  @map("valid_from") @db.Timestamptz
+
+  @@unique([idx, validFrom], map: "uq_dim_mood_categories_idx_valid_from")
+  @@index([validFrom], map: "index_dim_mood_categories_valid_from")
+  @@map("dim_mood_categories")
+}
+
+
+model DimOperatingHours {
+  id        String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  idx       Int
+  placeIdx  Int       @map("place_idx")
+  startAt   DateTime  @map("start_at") @db.Time(6)
+  endAt     DateTime  @map("end_at") @db.Time(6)
+  day       Int       @db.SmallInt
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz
+  validFrom DateTime  @map("valid_from") @db.Timestamptz
+
+  @@unique([idx, validFrom], map: "uq_dim_operating_hours_idx_valid_from")
+  @@index([validFrom], map: "index_dim_operating_hours_valid_from")
+  @@map("dim_operating_hours")
+}
+
+model DimPinnedMagazines {
+  id           String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  idx          Int
+  registeredAt DateTime  @map("registered_at") @db.Timestamptz
+  createdAt    DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  deletedAt    DateTime? @map("deleted_at") @db.Timestamptz
+  validFrom    DateTime  @map("valid_from") @db.Timestamptz
+
+  @@unique([idx, validFrom], map: "uq_dim_pinned_magazines_idx_valid_from")
+  @@index([validFrom], map: "index_dim_pinned_magazines_valid_from")
+  @@map("dim_pinned_magazines")
+}
+
+model DimPlaceImages {
+  id           String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  idx          Int
+  placeIdx     Int       @map("place_idx")
+  imagePath    String?   @map("image_path") @db.VarChar
+  createdAt    DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  deletedAt    DateTime? @map("deleted_at") @db.Timestamptz
+  registeredAt DateTime  @map("registered_at") @db.Timestamptz
+  validFrom    DateTime  @map("valid_from") @db.Timestamptz
+
+  @@unique([idx, validFrom], map: "uq_dim_place_images_idx_valid_from")
+  @@index([validFrom], map: "index_dim_place_images_valid_from")
+  @@map("dim_place_images")
+}
+
+model DimPlaceMainCategoryMappings {
+  id              String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  mainCategoryIdx Int       @map("main_category_idx")
+  placeIdx        Int       @map("place_idx")
+  createdAt       DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  deletedAt       DateTime? @map("deleted_at") @db.Timestamptz
+  validFrom       DateTime  @map("valid_from") @db.Timestamptz
+
+  @@unique([mainCategoryIdx, placeIdx, validFrom], map: "uq_dim_place_main_category_mappings_keys_valid_from")
+  @@index([validFrom], map: "index_dim_place_main_category_mappings_valid_from")
+  @@map("dim_place_main_category_mappings")
+}
+
+model DimPlaceMoodCategoryMappings {
+  id              String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  moodCategoryIdx Int       @map("mood_category_idx")
+  placeIdx        Int       @map("place_idx")
+  createdAt       DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  deletedAt       DateTime? @map("deleted_at") @db.Timestamptz
+  validFrom       DateTime  @map("valid_from") @db.Timestamptz
+
+  @@unique([moodCategoryIdx, placeIdx, validFrom], map: "uq_dim_place_mood_category_mappings_keys_valid_from")
+  @@index([validFrom], map: "index_dim_place_mood_category_mappings_valid_from")
+  @@map("dim_place_mood_category_mappings")
+}
+
+
+model DimPlaceTypeMagazineMappings {
+  id           String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  placeTypeIdx Int       @map("place_type_idx")
+  magazineIdx  Int       @map("magazine_idx")
+  createdAt    DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  deletedAt    DateTime? @map("deleted_at") @db.Timestamptz
+  validFrom    DateTime  @map("valid_from") @db.Timestamptz
+
+  @@unique([placeTypeIdx, magazineIdx, validFrom], map: "uq_dim_place_type_magazine_mappings_keys_valid_from")
+  @@index([validFrom], map: "index_dim_place_type_magazine_mappings_valid_from")
+  @@map("dim_place_type_magazine_mappings")
+}
+
+model DimPlaceTypeMappings {
+  id           String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  placeTypeIdx Int       @map("place_type_idx")
+  placeIdx     Int       @map("place_idx")
+  createdAt    DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  deletedAt    DateTime? @map("deleted_at") @db.Timestamptz
+  validFrom    DateTime  @map("valid_from") @db.Timestamptz
+
+  @@unique([placeTypeIdx, placeIdx, validFrom], map: "uq_dim_place_type_mappings_idx_valid_from")
+  @@index([validFrom], map: "index_dim_place_type_mappings_valid_from")
+  @@map("dim_place_type_mappings")
+}
+
+model DimPlaceTypes {
+  id           String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  idx          Int
+  content      String    @db.VarChar
+  createdAt    DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  deletedAt    DateTime? @map("deleted_at") @db.Timestamptz
+  registeredAt DateTime  @map("registered_at") @db.Timestamptz
+  validFrom    DateTime  @map("valid_from") @db.Timestamptz
+
+  @@unique([idx, validFrom], map: "uq_dim_place_types_idx_valid_from")
+  @@index([validFrom], map: "index_dim_place_types_valid_from")
+  @@map("dim_place_types")
+}
+
+model DimPlaces {
+  id                  String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  idx                 Int
+  roadAddressIdx      Int       @map("road_address_idx")
+  name                String    @db.VarChar
+  tel                 String?   @db.VarChar
+  reviewCount         Int       @map("review_count")
+  bookmarkCount       Int       @map("bookmark_count")
+  isClosedOnHoliday   Boolean?  @map("is_closed_on_holiday")
+  createdAt           DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  deletedAt           DateTime? @map("deleted_at") @db.Timestamptz
+  permanentlyClosedAt DateTime? @map("permanently_closed_at") @db.Timestamptz
+  activatedAt         DateTime? @map("activated_at") @db.Timestamptz
+  registeredAt        DateTime  @map("registered_at") @db.Timestamptz
+  validFrom           DateTime  @map("valid_from") @db.Timestamptz
+
+  @@unique([idx, validFrom], map: "uq_dim_places_idx_valid_from")
+  @@index([validFrom], map: "index_dim_places_valid_from")
+  @@map("dim_places")
+}
+
+model DimReviewImages {
+  id        String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  idx       Int
+  reviewIdx Int       @map("review_idx")
+  imagePath String    @map("image_path") @db.VarChar
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz
+  validFrom DateTime  @map("valid_from") @db.Timestamptz
+
+  @@unique([idx, validFrom], map: "uq_dim_review_images_idx_valid_from")
+  @@index([validFrom], map: "index_dim_review_images_valid_from")
+  @@map("dim_review_images")
+}
+
+model DimReviewKeywordMappings {
+  id         String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  reviewIdx  Int       @map("review_idx")
+  keywordIdx Int       @map("keyword_idx")
+  createdAt  DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  deletedAt  DateTime? @map("deleted_at") @db.Timestamptz
+  validFrom  DateTime? @map("valid_from") @db.Timestamptz
+
+  @@unique([reviewIdx, keywordIdx, validFrom], map: "uq_dim_review_keyword_mappings_keys_valid_from")
+  @@index([validFrom], map: "index_dim_review_keyword_mappings_valid_from")
+  @@map("dim_review_keyword_mappings")
+}
+
+model DimReviews {
+  id            String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  idx           Int
+  userIdx       Int       @map("user_idx")
+  placeIdx      Int       @map("place_idx")
+  content       String    @db.VarChar
+  isMenuChecked Boolean   @map("is_menu_checked")
+  registeredAt  DateTime  @map("registered_at") @db.Timestamptz
+  deletedAt     DateTime? @map("deleted_at") @db.Timestamptz
+  createdAt     DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  validFrom     DateTime  @map("valid_from") @db.Timestamptz
+
+  @@unique([idx, validFrom], map: "uq_dim_reviews_idx_valid_from")
+  @@index([validFrom], map: "index_dim_reviews_valid_from")
+  @@map("dim_reviews")
+}
+
+model DimRoadAddresses {
+  id            String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  idx           Int
+  addressName   String   @map("address_name") @db.VarChar
+  detailAddress String?  @map("detail_address") @db.VarChar
+  addressX      Decimal  @map("address_x") @db.Decimal
+  addressY      Decimal  @map("address_y") @db.Decimal
+  createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz
+  validFrom     DateTime @map("valid_from") @db.Timestamptz
+
+  @@unique([idx, validFrom], map: "uq_dim_road_addresses_idx_valid_from")
+  @@index([validFrom], map: "index_dim_road_addresses_valid_from")
+  @@map("dim_road_addresses")
+}
+
+model DimUserProviders {
+  id        String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  idx       Int
+  provider  String   @db.VarChar
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  validFrom DateTime @map("valid_from") @db.Timestamptz
+
+  @@unique([idx, validFrom], map: "uq_dim_user_providers_idx_valid_from")
+  @@index([validFrom], map: "index_dim_user_providers_valid_from")
+  @@map("dim_user_providers")
+}
+
+model DimUsers {
+  id               String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  idx              Int
+  nickname         String    @db.VarChar
+  profileImagePath String?   @map("profile_image_path") @db.VarChar
+  signupAt         DateTime  @map("signup_at") @db.Timestamptz
+  platform         String    @db.VarChar
+  deletedAt        DateTime? @map("deleted_at") @db.Timestamptz
+  createdAt        DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  validFrom        DateTime  @map("valid_from") @db.Timestamptz
+
+  @@unique([idx, validFrom], map: "uq_dim_users_idx_valid_from")
+  @@index([validFrom], map: "index_dim_users_valid_from")
+  @@map("dim_users")
+}
+
+model DimWeeklyClosedDays {
+  id         String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  idx        Int
+  placeIdx   Int       @map("place_idx")
+  closedDate DateTime  @map("closed_date") @db.Date
+  type       Int       @db.SmallInt
+  createdAt  DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  deletedAt  DateTime? @map("deleted_at") @db.Timestamptz
+  validFrom  DateTime  @map("valid_from") @db.Timestamptz
+
+  @@unique([idx, validFrom], map: "uq_dim_weekly_closed_days_idx_valid_from")
+  @@index([validFrom], map: "index_dim_weekly_closed_days_valid_from")
+  @@map("dim_weekly_closed_days")
+}
+
+model EventTypes {
+  idx        Int          @id
+  name       String       @db.VarChar
+  factEvents FactEvents[]
+
+  @@map("event_types")
+}
+
+model FactEventProperties {
+  id            String     @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  eventId       String     @map("event_id") @db.Uuid
+  propertyKey   String     @map("property_key") @db.VarChar
+  propertyValue String     @map("property_value") @db.VarChar
+  event         FactEvents @relation(fields: [eventId], references: [id])
+
+  @@unique([eventId, propertyKey], map: "fact_event_properties_event_id_key_uk")
+  @@map("fact_event_properties")
+}
+
+model FactEvents {
+  id                  String                @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  typeIdx             Int                   @map("type_idx")
+  userIdx             Int?                  @map("user_idx")
+  eventTime           DateTime              @map("event_time") @db.Timestamptz
+  createdAt           DateTime              @default(now()) @map("created_at") @db.Timestamptz
+  deviceType          Int                   @map("device_type")
+  platform            Int
+  eventType           EventTypes            @relation(fields: [typeIdx], references: [idx])
+  factEventProperties FactEventProperties[]
+
+  @@index([typeIdx], map: "index_fact_type_idx")
+  @@index([eventTime], map: "index_fact_event_time")
+  @@index([userIdx], map: "index_fact_user_idx")
+  @@map("fact_events")
+}

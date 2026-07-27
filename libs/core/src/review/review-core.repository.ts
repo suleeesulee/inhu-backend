@@ -36,6 +36,21 @@ export class ReviewCoreRepository {
     });
   }
 
+  async selectAllReviewCount({
+    placeIdx,
+    userIdx,
+  }: GetAllReviewInput): Promise<number> {
+    return await this.txHost.tx.review.count({
+      where: {
+        AND: [
+          { deletedAt: null },
+          this.getPlaceFilter(placeIdx),
+          this.getUserFilter(userIdx),
+        ],
+      },
+    });
+  }
+
   async selectReviewByIdx(reviewIdx: number): Promise<SelectReview | null> {
     return await this.txHost.tx.review.findUnique({
       ...SELECT_REVIEW,

@@ -16,6 +16,7 @@ import {
   Query,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
+import { AdminRole } from '../auth/admin-role.enum';
 
 @Controller()
 @ApiTags('Blog Review')
@@ -45,7 +46,7 @@ export class BlogReviewController {
    */
   @Get('/place/:placeIdx/blog-review')
   @Exception(400, 'invalid querystring')
-  @AdminAuth()
+  @AdminAuth(AdminRole.MagazineAdmin)
   public async getBlogReviewAll(
     @Param('placeIdx', ParseIntPipe) placeIdx: number,
     @Query() dto: GetBlogReviewAllDto,

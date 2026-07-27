@@ -41,6 +41,20 @@ export class UserForAdminModel {
   reviewCount: number;
 
   /**
+   * 학교 이메일
+   *
+   * @example "user@university.edu"
+   */
+  schoolEmail: string | null;
+
+  /**
+   * 학교 인증 여부
+   *
+   * @example false
+   */
+  isSchoolVerified: boolean;
+
+  /**
    * 계정 생성일
    *
    * @example "2025-07-25T14:49:21.451Z"
@@ -51,7 +65,10 @@ export class UserForAdminModel {
     Object.assign(this, data);
   }
 
-  static fromPrisma(user: SelectUserForAdmin): UserForAdminModel {
+  static fromPrisma(
+    user: SelectUserForAdmin,
+    schoolEmail: string | null,
+  ): UserForAdminModel {
     return new UserForAdminModel({
       idx: user.idx,
       nickname: user.nickname,
@@ -60,6 +77,8 @@ export class UserForAdminModel {
         ? UserProviderModel.fromPrisma(user.userProvider)
         : null,
       reviewCount: user._count.reviewList,
+      schoolEmail,
+      isSchoolVerified: user.userEmail !== null,
       createdAt: user.createdAt,
     });
   }

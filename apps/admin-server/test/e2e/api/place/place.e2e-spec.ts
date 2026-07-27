@@ -1,6 +1,8 @@
 import { AdminServerModule } from '@admin/admin-server.module';
 import { CreatePlaceDto } from '@admin/api/place/dto/request/create-place.dto';
 import { GetPlaceOverviewDto } from '@admin/api/place/dto/request/get-place-overview-all.dto';
+import { UpdatePlaceFreeTagDto } from '@admin/api/place/dto/request/update-place-free-tag.dto';
+import { UpdatePlaceSearchTagDto } from '@admin/api/place/dto/request/update-place-search-tag.dto';
 import { UpdatePlaceDto } from '@admin/api/place/dto/request/update-place.dto';
 import { RunBiWeeklyClosedDayCronJobResponseDto } from '@admin/api/place/dto/response/run-bi-weekly-closed-day-cron-job.response.dto';
 import { PlaceOverviewEntity } from '@admin/api/place/entity/place-overview.entity';
@@ -12,14 +14,18 @@ import { PlaceType } from '@libs/core/place/constants/place-type.constant';
 import { WeeklyCloseType } from '@libs/core/place/constants/weekly-close-type.constant';
 import { PlaceCoreService } from '@libs/core/place/place-core.service';
 import { KakaoAddressService } from '@libs/modules/kakao-address/kakao-address.service';
+import { FreeTagSeedHelper } from '@libs/testing/seed/free-tag/free-tag.seed';
 import { MenuSeedHelper } from '@libs/testing/seed/menu/menu.seed';
 import { PlaceSeedHelper } from '@libs/testing/seed/place/place.seed';
+import { SearchTagSeedHelper } from '@libs/testing/seed/search-tag/search-tag.seed';
 import { TestHelper } from 'apps/admin-server/test/e2e/setup/test.helper';
 
 describe('Place E2E test', () => {
   const testHelper = TestHelper.create(AdminServerModule);
   const placeSeedHelper = testHelper.seedHelper(PlaceSeedHelper);
   const menuSeedHelper = testHelper.seedHelper(MenuSeedHelper);
+  const freeTagSeedHelper = testHelper.seedHelper(FreeTagSeedHelper);
+  const searchTagSeedHelper = testHelper.seedHelper(SearchTagSeedHelper);
 
   beforeEach(async () => {
     await testHelper.init();
@@ -62,6 +68,44 @@ describe('Place E2E test', () => {
       expect(place.activatedAt).toBe(placeSeed.activatedAt);
       expect(place.mainCategoryList).toEqual([]);
       expect(place.moodCategoryList).toEqual([]);
+      expect(place.freeTagList).toEqual([]);
+      expect(place.searchTagList).toEqual([]);
+    });
+
+    it('200 - successfully get place list (magazine admin', async () => {
+      const dto: GetPlaceOverviewDto = {
+        page: 1,
+      };
+
+      const loginUser = testHelper.loginAdmin.magazineAdmin1;
+
+      const placeSeed = await placeSeedHelper.seed({});
+
+      const response = await testHelper
+        .test()
+        .get('/place')
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .query(dto)
+        .expect(200);
+
+      const place: PlaceOverviewEntity = response.body.placeList[0];
+      const count: number = response.body.count;
+
+      expect(count).toBe(1);
+
+      expect(place.idx).toBe(placeSeed.idx);
+      expect(place.name).toBe(placeSeed.name);
+      expect(place.roadAddress.name).toBe(placeSeed.roadAddress.name);
+      expect(place.roadAddress.detail).toBe(placeSeed.roadAddress.detail);
+      expect(place.roadAddress.addressX).toBe(placeSeed.roadAddress.addressX);
+      expect(place.roadAddress.addressY).toBe(placeSeed.roadAddress.addressY);
+      expect(place.reviewCount).toBe(placeSeed.reviewCount);
+      expect(place.type).toBe(placeSeed.type);
+      expect(place.activatedAt).toBe(placeSeed.activatedAt);
+      expect(place.mainCategoryList).toEqual([]);
+      expect(place.moodCategoryList).toEqual([]);
+      expect(place.freeTagList).toEqual([]);
+      expect(place.searchTagList).toEqual([]);
     });
 
     it('401 - no access token provided', async () => {
@@ -568,12 +612,172 @@ describe('Place E2E test', () => {
       expect(places).toStrictEqual([]);
       expect(count).toBe(0);
     });
+
+    it('200 - check type filtering', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const dto: GetPlaceOverviewDto = {
+        page: 1,
+        type: PlaceType.CAFE,
+      };
+
+      const [
+        place1,
+        place2,
+        place3,
+        place4,
+        place5,
+        place6,
+        place7,
+        place8,
+        place9,
+        place10,
+        place11,
+        place12,
+        place13,
+        place14,
+      ] = await placeSeedHelper.seedAll([
+        {
+          name: 'place 1',
+          activatedAt: new Date(),
+          type: PlaceType.CAFE,
+        },
+        {
+          name: 'place 2',
+          activatedAt: new Date(),
+          type: PlaceType.RESTAURANT,
+        },
+        {
+          name: 'place 3',
+          activatedAt: new Date(),
+          type: PlaceType.BAR,
+        },
+        {
+          name: 'place 4',
+          activatedAt: new Date(),
+          type: PlaceType.CAFE,
+        },
+        {
+          name: 'place 5',
+          activatedAt: new Date(),
+          type: PlaceType.CAFE,
+        },
+        {
+          name: 'place 6',
+          activatedAt: new Date(),
+          type: PlaceType.CAFE,
+        },
+        {
+          name: 'place 7',
+          activatedAt: new Date(),
+          type: PlaceType.CAFE,
+        },
+        {
+          name: 'place 8',
+          activatedAt: new Date(),
+          type: PlaceType.CAFE,
+        },
+        {
+          name: 'place 9',
+          activatedAt: new Date(),
+          type: PlaceType.CAFE,
+        },
+        {
+          name: 'place 10',
+          activatedAt: new Date(),
+          type: PlaceType.CAFE,
+        },
+        {
+          name: 'place 11',
+          activatedAt: new Date(),
+          type: PlaceType.CAFE,
+        },
+        {
+          name: 'place 12',
+          activatedAt: new Date(),
+          type: PlaceType.CAFE,
+        },
+        {
+          name: 'place 13',
+          activatedAt: new Date(),
+          type: PlaceType.CAFE,
+        },
+        {
+          name: 'place 14',
+          activatedAt: new Date(),
+          type: PlaceType.CAFE,
+        },
+      ]);
+
+      const response = await testHelper
+        .test()
+        .get('/place')
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .query(dto)
+        .expect(200);
+
+      const places: PlaceOverviewEntity[] = response.body.placeList;
+      const count: number = response.body.count;
+
+      expect(places.map(({ name }) => name).sort()).toStrictEqual(
+        [
+          place5.name,
+          place6.name,
+          place7.name,
+          place8.name,
+          place9.name,
+          place10.name,
+          place11.name,
+          place12.name,
+          place13.name,
+          place14.name,
+        ].sort(),
+      );
+      expect(count).toBe(12);
+
+      const dto2: GetPlaceOverviewDto = {
+        page: 2,
+        type: PlaceType.CAFE,
+      };
+
+      const response2 = await testHelper
+        .test()
+        .get('/place')
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .query(dto2)
+        .expect(200);
+
+      const places2: PlaceOverviewEntity[] = response2.body.placeList;
+      const count2: number = response2.body.count;
+
+      expect(places2.map(({ name }) => name).sort()).toStrictEqual(
+        [place1.name, place4.name].sort(),
+      );
+      expect(count2).toBe(12);
+    });
   });
 
   describe('GET /place/:idx', () => {
     it('200 - field check', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const now = testHelper.mockTodayTime('10:00');
+
+      const [freeTag1, freeTag2] = await freeTagSeedHelper.seedAll([
+        {
+          content: 'free tag 1',
+        },
+        {
+          content: 'free tag 2',
+        },
+      ]);
+
+      const [searchTag1, searchTag2] = await searchTagSeedHelper.seedAll([
+        {
+          content: 'search tag 1',
+        },
+        {
+          content: 'search tag 2',
+        },
+      ]);
 
       const placeSeed = await placeSeedHelper.seed({
         activatedAt: new Date(),
@@ -650,11 +854,16 @@ describe('Place E2E test', () => {
             week: 2,
           },
         ],
-        mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
+        mainCategoryList: [
+          MainCategory.BAKERY,
+          MainCategory.BUNGEOPPANG_WAFFLE,
+        ],
         moodCategoryList: [
           MoodCategory.STUDY_FRIENDLY,
           MoodCategory.DESSERT_HOTSPOT,
         ],
+        freeTagIdxList: [freeTag1.idx, freeTag2.idx],
+        searchTagIdxList: [searchTag1.idx, searchTag2.idx],
       });
 
       const response = await testHelper
@@ -701,9 +910,15 @@ describe('Place E2E test', () => {
       expect(place.closedDayList[1].day).toBe(DayOfWeek.SAT);
       expect(place.closedDayList[1].week).toBe(2);
       expect(place.mainCategoryList[0]).toBe(MainCategory.BAKERY);
-      expect(place.mainCategoryList[1]).toBe(MainCategory.BUNGEOPPANG);
+      expect(place.mainCategoryList[1]).toBe(MainCategory.BUNGEOPPANG_WAFFLE);
       expect(place.moodCategoryList[0]).toBe(MoodCategory.STUDY_FRIENDLY);
       expect(place.moodCategoryList[1]).toBe(MoodCategory.DESSERT_HOTSPOT);
+      expect(place.freeTagList.map(({ idx }) => idx).sort()).toEqual(
+        [freeTag1.idx, freeTag2.idx].sort(),
+      );
+      expect(place.searchTagList.map(({ idx }) => idx).sort()).toEqual(
+        [searchTag1.idx, searchTag2.idx].sort(),
+      );
     });
 
     it('200 - not activated place', async () => {
@@ -718,6 +933,24 @@ describe('Place E2E test', () => {
         .get(`/place/${place.idx}`)
         .set('Cookie', `token=Bearer ${loginUser.token}`)
         .expect(200);
+    });
+
+    it('200 - successfully get place detail (magazine admin)', async () => {
+      const loginUser = testHelper.loginAdmin.magazineAdmin1;
+      const placeSeed = await placeSeedHelper.seed({
+        activatedAt: new Date(),
+        deletedAt: null,
+      });
+
+      const response = await testHelper
+        .test()
+        .get(`/place/${placeSeed.idx}`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .expect(200);
+
+      const place: PlaceEntity = response.body;
+
+      expect(place.idx).toBe(placeSeed.idx);
     });
 
     it('404 - deleted place', async () => {
@@ -844,6 +1077,8 @@ describe('Place E2E test', () => {
       expect(place.closedDayList[1].week).toBe(2);
       expect(place.mainCategoryList).toEqual([]);
       expect(place.moodCategoryList).toEqual([]);
+      expect(place.freeTagList).toEqual([]);
+      expect(place.searchTagList).toEqual([]);
 
       mock.mockRestore();
     });
@@ -943,6 +1178,47 @@ describe('Place E2E test', () => {
         .send(createPlaceDto)
         .expect(400);
     });
+
+    it('403 - unauthorized access (magazine admin)', async () => {
+      const createPlaceDto: CreatePlaceDto = {
+        name: 'New Place',
+        tel: '032-1234-5678',
+        isClosedOnHoliday: false,
+        imagePathList: ['/place/image1.png', '/place/image2.png'],
+        type: PlaceType.RESTAURANT,
+        roadAddress: {
+          name: 'New Road',
+          detail: 'New Detail',
+          addressX: 37.123,
+          addressY: 126.123,
+        },
+        closedDayList: [
+          { day: DayOfWeek.MON, week: 1 },
+          { day: DayOfWeek.TUE, week: 2 },
+        ],
+        breakTimeList: [
+          { startAt: '12:00:00', endAt: '13:00:00', day: DayOfWeek.WED },
+          { startAt: '14:00:00', endAt: '15:00:00', day: DayOfWeek.FRI },
+        ],
+        operatingHourList: [
+          { startAt: '10:00:00', endAt: '20:00:00', day: DayOfWeek.THU },
+          { startAt: '11:00:00', endAt: '21:00:00', day: DayOfWeek.SAT },
+        ],
+        weeklyClosedDayList: [
+          { date: '2025-07-22', type: WeeklyCloseType.BIWEEKLY },
+          { date: '2025-07-23', type: WeeklyCloseType.BIWEEKLY },
+        ],
+      };
+
+      const loginUser = testHelper.loginAdmin.magazineAdmin1;
+
+      await testHelper
+        .test()
+        .post('/place')
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send(createPlaceDto)
+        .expect(403);
+    });
   });
 
   describe('PUT /place/:idx/category', () => {
@@ -950,7 +1226,10 @@ describe('Place E2E test', () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const place = await placeSeedHelper.seed({
         type: PlaceType.CAFE,
-        mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
+        mainCategoryList: [
+          MainCategory.BAKERY,
+          MainCategory.BUNGEOPPANG_WAFFLE,
+        ],
         moodCategoryList: [
           MoodCategory.STUDY_FRIENDLY,
           MoodCategory.DESSERT_HOTSPOT,
@@ -1011,7 +1290,10 @@ describe('Place E2E test', () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const place = await placeSeedHelper.seed({
         type: PlaceType.CAFE,
-        mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
+        mainCategoryList: [
+          MainCategory.BAKERY,
+          MainCategory.BUNGEOPPANG_WAFFLE,
+        ],
         moodCategoryList: [
           MoodCategory.STUDY_FRIENDLY,
           MoodCategory.DESSERT_HOTSPOT,
@@ -1072,7 +1354,10 @@ describe('Place E2E test', () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const place = await placeSeedHelper.seed({
         type: PlaceType.CAFE,
-        mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
+        mainCategoryList: [
+          MainCategory.BAKERY,
+          MainCategory.BUNGEOPPANG_WAFFLE,
+        ],
         moodCategoryList: [
           MoodCategory.STUDY_FRIENDLY,
           MoodCategory.DESSERT_HOTSPOT,
@@ -1101,7 +1386,7 @@ describe('Place E2E test', () => {
         .set('Cookie', `token=Bearer ${loginUser.token}`)
         .send({
           typeList: [PlaceType.CAFE],
-          mainCategoryList: [MainCategory.DESSERT, MainCategory.SANDWICH],
+          mainCategoryList: [MainCategory.DESSERT, MainCategory.SANDWICH_SALAD],
           moodCategoryList: [MoodCategory.GOOD_ATMOSPHERE],
         })
         .expect(200);
@@ -1125,7 +1410,9 @@ describe('Place E2E test', () => {
         afterMainCategoryList
           .map((category) => category.mainCategoryIdx)
           .sort(),
-      ).toStrictEqual([MainCategory.DESSERT, MainCategory.SANDWICH].sort());
+      ).toStrictEqual(
+        [MainCategory.DESSERT, MainCategory.SANDWICH_SALAD].sort(),
+      );
       expect(afterMoodCategoryList.length).toBe(1);
       expect(afterMoodCategoryList[0].moodCategoryIdx).toBe(
         MoodCategory.GOOD_ATMOSPHERE,
@@ -1136,7 +1423,10 @@ describe('Place E2E test', () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const place = await placeSeedHelper.seed({
         type: PlaceType.CAFE,
-        mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
+        mainCategoryList: [
+          MainCategory.BAKERY,
+          MainCategory.BUNGEOPPANG_WAFFLE,
+        ],
         moodCategoryList: [
           MoodCategory.STUDY_FRIENDLY,
           MoodCategory.DESSERT_HOTSPOT,
@@ -1168,7 +1458,7 @@ describe('Place E2E test', () => {
           mainCategoryList: [MainCategory.DESSERT],
           moodCategoryList: [
             MoodCategory.GOOD_ATMOSPHERE,
-            MoodCategory.BAR_DATE,
+            MoodCategory.COST_EFFECTIVE,
           ],
         })
         .expect(200);
@@ -1197,7 +1487,7 @@ describe('Place E2E test', () => {
           .map((category) => category.moodCategoryIdx)
           .sort(),
       ).toStrictEqual(
-        [MoodCategory.GOOD_ATMOSPHERE, MoodCategory.BAR_DATE].sort(),
+        [MoodCategory.GOOD_ATMOSPHERE, MoodCategory.COST_EFFECTIVE].sort(),
       );
     });
 
@@ -1205,7 +1495,10 @@ describe('Place E2E test', () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const place = await placeSeedHelper.seed({
         type: PlaceType.CAFE,
-        mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
+        mainCategoryList: [
+          MainCategory.BAKERY,
+          MainCategory.BUNGEOPPANG_WAFFLE,
+        ],
         moodCategoryList: [
           MoodCategory.STUDY_FRIENDLY,
           MoodCategory.DESSERT_HOTSPOT,
@@ -1234,7 +1527,7 @@ describe('Place E2E test', () => {
         .set('Cookie', `token=Bearer ${loginUser.token}`)
         .send({
           typeList: [PlaceType.CAFE],
-          mainCategoryList: [MainCategory.DESSERT, MainCategory.SANDWICH],
+          mainCategoryList: [MainCategory.DESSERT, MainCategory.SANDWICH_SALAD],
           moodCategoryList: [],
         })
         .expect(200);
@@ -1258,7 +1551,9 @@ describe('Place E2E test', () => {
         afterMainCategoryList
           .map((category) => category.mainCategoryIdx)
           .sort(),
-      ).toStrictEqual([MainCategory.DESSERT, MainCategory.SANDWICH].sort());
+      ).toStrictEqual(
+        [MainCategory.DESSERT, MainCategory.SANDWICH_SALAD].sort(),
+      );
       expect(afterMoodCategoryList.length).toBe(0);
     });
 
@@ -1266,7 +1561,10 @@ describe('Place E2E test', () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const place = await placeSeedHelper.seed({
         type: PlaceType.CAFE,
-        mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
+        mainCategoryList: [
+          MainCategory.BAKERY,
+          MainCategory.BUNGEOPPANG_WAFFLE,
+        ],
         moodCategoryList: [
           MoodCategory.STUDY_FRIENDLY,
           MoodCategory.DESSERT_HOTSPOT,
@@ -1300,7 +1598,7 @@ describe('Place E2E test', () => {
           mainCategoryList: [],
           moodCategoryList: [
             MoodCategory.GOOD_ATMOSPHERE,
-            MoodCategory.BAR_DATE,
+            MoodCategory.COST_EFFECTIVE,
           ],
         })
         .expect(200);
@@ -1326,7 +1624,7 @@ describe('Place E2E test', () => {
           .map((category) => category.moodCategoryIdx)
           .sort(),
       ).toStrictEqual(
-        [MoodCategory.GOOD_ATMOSPHERE, MoodCategory.BAR_DATE].sort(),
+        [MoodCategory.GOOD_ATMOSPHERE, MoodCategory.COST_EFFECTIVE].sort(),
       );
     });
 
@@ -1334,7 +1632,10 @@ describe('Place E2E test', () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const place = await placeSeedHelper.seed({
         type: PlaceType.CAFE,
-        mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
+        mainCategoryList: [
+          MainCategory.BAKERY,
+          MainCategory.BUNGEOPPANG_WAFFLE,
+        ],
         moodCategoryList: [
           MoodCategory.STUDY_FRIENDLY,
           MoodCategory.DESSERT_HOTSPOT,
@@ -1368,12 +1669,12 @@ describe('Place E2E test', () => {
           mainCategoryList: [
             MainCategory.DESSERT,
             MainCategory.DESSERT,
-            MainCategory.SANDWICH,
+            MainCategory.SANDWICH_SALAD,
           ],
           moodCategoryList: [
             MoodCategory.GOOD_ATMOSPHERE,
-            MoodCategory.BAR_DATE,
-            MoodCategory.BAR_DATE,
+            MoodCategory.COST_EFFECTIVE,
+            MoodCategory.COST_EFFECTIVE,
           ],
         })
         .expect(200);
@@ -1397,14 +1698,16 @@ describe('Place E2E test', () => {
         afterMainCategoryList
           .map((category) => category.mainCategoryIdx)
           .sort(),
-      ).toStrictEqual([MainCategory.DESSERT, MainCategory.SANDWICH].sort());
+      ).toStrictEqual(
+        [MainCategory.DESSERT, MainCategory.SANDWICH_SALAD].sort(),
+      );
       expect(afterMoodCategoryList.length).toBe(2);
       expect(
         afterMoodCategoryList
           .map((category) => category.moodCategoryIdx)
           .sort(),
       ).toStrictEqual(
-        [MoodCategory.GOOD_ATMOSPHERE, MoodCategory.BAR_DATE].sort(),
+        [MoodCategory.GOOD_ATMOSPHERE, MoodCategory.COST_EFFECTIVE].sort(),
       );
     });
 
@@ -1412,7 +1715,10 @@ describe('Place E2E test', () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const place = await placeSeedHelper.seed({
         type: PlaceType.CAFE,
-        mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
+        mainCategoryList: [
+          MainCategory.BAKERY,
+          MainCategory.BUNGEOPPANG_WAFFLE,
+        ],
         moodCategoryList: [
           MoodCategory.STUDY_FRIENDLY,
           MoodCategory.DESSERT_HOTSPOT,
@@ -1443,10 +1749,10 @@ describe('Place E2E test', () => {
         .set('Cookie', `token=Bearer ${loginUser.token}`)
         .send({
           typeList: [PlaceType.CAFE, PlaceType.RESTAURANT],
-          mainCategoryList: [MainCategory.DESSERT, MainCategory.SANDWICH],
+          mainCategoryList: [MainCategory.DESSERT, MainCategory.SANDWICH_SALAD],
           moodCategoryList: [
             MoodCategory.GOOD_ATMOSPHERE,
-            MoodCategory.BAR_DATE,
+            MoodCategory.COST_EFFECTIVE,
           ],
         })
         .expect(200);
@@ -1472,21 +1778,26 @@ describe('Place E2E test', () => {
         afterMainCategoryList
           .map((category) => category.mainCategoryIdx)
           .sort(),
-      ).toStrictEqual([MainCategory.DESSERT, MainCategory.SANDWICH].sort());
+      ).toStrictEqual(
+        [MainCategory.DESSERT, MainCategory.SANDWICH_SALAD].sort(),
+      );
       expect(afterMoodCategoryList.length).toBe(2);
       expect(
         afterMoodCategoryList
           .map((category) => category.moodCategoryIdx)
           .sort(),
       ).toStrictEqual(
-        [MoodCategory.GOOD_ATMOSPHERE, MoodCategory.BAR_DATE].sort(),
+        [MoodCategory.GOOD_ATMOSPHERE, MoodCategory.COST_EFFECTIVE].sort(),
       );
     });
 
     it('401 - no access token', async () => {
       const place = await placeSeedHelper.seed({
         type: PlaceType.CAFE,
-        mainCategoryList: [MainCategory.BAKERY, MainCategory.BUNGEOPPANG],
+        mainCategoryList: [
+          MainCategory.BAKERY,
+          MainCategory.BUNGEOPPANG_WAFFLE,
+        ],
         moodCategoryList: [
           MoodCategory.STUDY_FRIENDLY,
           MoodCategory.DESSERT_HOTSPOT,
@@ -1520,6 +1831,32 @@ describe('Place E2E test', () => {
         .expect(400);
     });
 
+    it('403 - unauthorized access (magazine admin)', async () => {
+      const loginUser = testHelper.loginAdmin.magazineAdmin1;
+      const place = await placeSeedHelper.seed({
+        type: PlaceType.CAFE,
+        mainCategoryList: [
+          MainCategory.BAKERY,
+          MainCategory.BUNGEOPPANG_WAFFLE,
+        ],
+        moodCategoryList: [
+          MoodCategory.STUDY_FRIENDLY,
+          MoodCategory.DESSERT_HOTSPOT,
+        ],
+      });
+
+      await testHelper
+        .test()
+        .put(`/place/${place.idx}/category`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send({
+          typeList: [PlaceType.CAFE],
+          mainCategoryList: [MainCategory.DESSERT],
+          moodCategoryList: [MoodCategory.GOOD_ATMOSPHERE],
+        })
+        .expect(403);
+    });
+
     it('404 - place not found', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const nonExistentPlaceIdx = 99999;
@@ -1532,6 +1869,747 @@ describe('Place E2E test', () => {
           typeList: [PlaceType.CAFE],
           mainCategoryList: [MainCategory.DESSERT],
           moodCategoryList: [MoodCategory.GOOD_ATMOSPHERE],
+        })
+        .expect(404);
+    });
+  });
+
+  describe('PUT /place/:idx/free-tag', () => {
+    it('200 - successfully updates free tag list to place', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+
+      const [freeTag1, freeTag2] = await freeTagSeedHelper.seedAll([
+        {
+          content: 'Free Tag 1',
+        },
+        {
+          content: 'Free Tag 2',
+        },
+      ]);
+      const place = await placeSeedHelper.seed({
+        activatedAt: new Date(),
+      });
+
+      const updatePlaceFreeTagDto: UpdatePlaceFreeTagDto = {
+        freeTagList: [freeTag1.content, freeTag2.content],
+      };
+
+      await testHelper
+        .test()
+        .put(`/place/${place.idx}/free-tag`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send(updatePlaceFreeTagDto)
+        .expect(200);
+
+      const placeModel = await testHelper
+        .get(PlaceCoreService)
+        .getPlaceByIdx(place.idx);
+
+      if (!placeModel) {
+        throw new Error('Place not found after update');
+      }
+
+      expect(placeModel.freeTagList.length).toBe(2);
+      expect(placeModel.freeTagList.map(({ idx }) => idx).sort()).toEqual(
+        [freeTag1.idx, freeTag2.idx].sort(),
+      );
+    });
+
+    it('200 - successfully updates empty free tag list to place', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+
+      const place = await placeSeedHelper.seed({
+        activatedAt: new Date(),
+      });
+
+      const updatePlaceFreeTagDto: UpdatePlaceFreeTagDto = {
+        freeTagList: [],
+      };
+
+      await testHelper
+        .test()
+        .put(`/place/${place.idx}/free-tag`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send(updatePlaceFreeTagDto)
+        .expect(200);
+
+      const placeModel = await testHelper
+        .get(PlaceCoreService)
+        .getPlaceByIdx(place.idx);
+
+      if (!placeModel) {
+        throw new Error('Place not found after update');
+      }
+
+      expect(placeModel.freeTagList.length).toBe(0);
+    });
+
+    it('200 - successfully updated place free tags when none of the tags previously existed', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+
+      const place = await placeSeedHelper.seed({
+        activatedAt: new Date(),
+      });
+
+      const prisma = testHelper.getPrisma();
+
+      const newFreeTags = ['New Free Tag 1', 'New Free Tag 2'];
+      const existingFreeTags = await prisma.freeTag.findMany({
+        where: {
+          content: {
+            in: newFreeTags,
+          },
+        },
+      });
+      expect(existingFreeTags.length).toBe(0);
+
+      const updatePlaceFreeTagDto: UpdatePlaceFreeTagDto = {
+        freeTagList: newFreeTags,
+      };
+
+      await testHelper
+        .test()
+        .put(`/place/${place.idx}/free-tag`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send(updatePlaceFreeTagDto)
+        .expect(200);
+
+      const placeModel = await testHelper
+        .get(PlaceCoreService)
+        .getPlaceByIdx(place.idx);
+
+      if (!placeModel) {
+        throw new Error('Place not found after update');
+      }
+
+      expect(placeModel.freeTagList.length).toBe(2);
+      expect(
+        placeModel.freeTagList.map(({ content }) => content).sort(),
+      ).toEqual(newFreeTags.sort());
+
+      const createdFreeTags = await prisma.freeTag.findMany({
+        where: {
+          content: {
+            in: newFreeTags,
+          },
+        },
+      });
+      expect(createdFreeTags.length).toBe(2);
+      expect(createdFreeTags.map(({ content }) => content).sort()).toEqual(
+        newFreeTags.sort(),
+      );
+    });
+
+    it('200 - successfully updates place free tags when some of the tags previously existed and some are new', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+
+      const place = await placeSeedHelper.seed({
+        activatedAt: new Date(),
+      });
+
+      const prisma = testHelper.getPrisma();
+
+      const [freeTag1, freeTag2] = await freeTagSeedHelper.seedAll([
+        {
+          content: 'Existing Free Tag 1',
+        },
+        {
+          content: 'Existing Free Tag 2',
+        },
+      ]);
+
+      const newFreeTags = ['Existing Free Tag 1', 'New Free Tag 1'];
+      const existingFreeTags = await prisma.freeTag.findMany({
+        where: {
+          content: {
+            in: newFreeTags,
+          },
+        },
+      });
+      expect(existingFreeTags.length).toBe(1);
+      expect(existingFreeTags[0].content).toBe('Existing Free Tag 1');
+
+      const updatePlaceFreeTagDto: UpdatePlaceFreeTagDto = {
+        freeTagList: newFreeTags,
+      };
+
+      await testHelper
+        .test()
+        .put(`/place/${place.idx}/free-tag`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send(updatePlaceFreeTagDto)
+        .expect(200);
+
+      const placeModel = await testHelper
+        .get(PlaceCoreService)
+        .getPlaceByIdx(place.idx);
+
+      if (!placeModel) {
+        throw new Error('Place not found after update');
+      }
+
+      expect(placeModel.freeTagList.length).toBe(2);
+      expect(
+        placeModel.freeTagList.map(({ content }) => content).sort(),
+      ).toEqual(newFreeTags.sort());
+
+      const createdFreeTags = await prisma.freeTag.findMany({
+        where: {
+          content: {
+            in: newFreeTags,
+          },
+        },
+      });
+      expect(createdFreeTags.length).toBe(2);
+      expect(createdFreeTags.map(({ content }) => content).sort()).toEqual(
+        newFreeTags.sort(),
+      );
+    });
+
+    it('200 - successfully updates place free tags when all of the tags previously existed', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+
+      const place = await placeSeedHelper.seed({
+        activatedAt: new Date(),
+      });
+
+      const prisma = testHelper.getPrisma();
+
+      const [freeTag1, freeTag2] = await freeTagSeedHelper.seedAll([
+        {
+          content: 'Existing Free Tag 1',
+        },
+        {
+          content: 'Existing Free Tag 2',
+        },
+      ]);
+
+      const newFreeTags = ['Existing Free Tag 1', 'Existing Free Tag 2'];
+      const existingFreeTags = await prisma.freeTag.findMany({
+        where: {
+          content: {
+            in: newFreeTags,
+          },
+        },
+      });
+      expect(existingFreeTags.length).toBe(2);
+      expect(existingFreeTags.map(({ content }) => content).sort()).toEqual(
+        newFreeTags.sort(),
+      );
+
+      const updatePlaceFreeTagDto: UpdatePlaceFreeTagDto = {
+        freeTagList: newFreeTags,
+      };
+
+      await testHelper
+        .test()
+        .put(`/place/${place.idx}/free-tag`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send(updatePlaceFreeTagDto)
+        .expect(200);
+
+      const placeModel = await testHelper
+        .get(PlaceCoreService)
+        .getPlaceByIdx(place.idx);
+
+      if (!placeModel) {
+        throw new Error('Place not found after update');
+      }
+
+      expect(placeModel.freeTagList.length).toBe(2);
+      expect(
+        placeModel.freeTagList.map(({ content }) => content).sort(),
+      ).toEqual(newFreeTags.sort());
+
+      const createdFreeTags = await prisma.freeTag.findMany({
+        where: {
+          content: {
+            in: newFreeTags,
+          },
+        },
+      });
+      expect(createdFreeTags.length).toBe(2);
+      expect(createdFreeTags.map(({ content }) => content).sort()).toEqual(
+        newFreeTags.sort(),
+      );
+    });
+
+    it('200 - successfully deletes all free tags from place when empty free tag list is sent', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+
+      const [freeTag1, freeTag2] = await freeTagSeedHelper.seedAll([
+        {
+          content: 'Existing Free Tag 1',
+        },
+        {
+          content: 'Existing Free Tag 2',
+        },
+      ]);
+
+      const place = await placeSeedHelper.seed({
+        activatedAt: new Date(),
+        freeTagIdxList: [freeTag1.idx, freeTag2.idx],
+      });
+      const updatePlaceFreeTagDto: UpdatePlaceFreeTagDto = {
+        freeTagList: [],
+      };
+
+      const placeModel1 = await testHelper
+        .get(PlaceCoreService)
+        .getPlaceByIdx(place.idx);
+
+      if (!placeModel1) {
+        throw new Error('Place not found before update');
+      }
+
+      expect(placeModel1.freeTagList.length).toBe(2);
+      expect(
+        placeModel1.freeTagList.map(({ content }) => content).sort(),
+      ).toEqual([freeTag1.content, freeTag2.content].sort());
+
+      await testHelper
+        .test()
+        .put(`/place/${place.idx}/free-tag`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send(updatePlaceFreeTagDto)
+        .expect(200);
+
+      const placeMode2 = await testHelper
+        .get(PlaceCoreService)
+        .getPlaceByIdx(place.idx);
+
+      if (!placeMode2) {
+        throw new Error('Place not found after update');
+      }
+
+      expect(placeMode2.freeTagList.length).toBe(0);
+    });
+
+    it('401 - no access token', async () => {
+      const place = await placeSeedHelper.seed({
+        activatedAt: new Date(),
+      });
+
+      await testHelper
+        .test()
+        .put(`/place/${place.idx}/free-tag`)
+        .send({
+          freeTagList: ['Free Tag 1', 'Free Tag 2'],
+        })
+        .expect(401);
+    });
+
+    it('400 - invalid place idx', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const invalidPlaceIdx = 'invalid-idx';
+
+      await testHelper
+        .test()
+        .put(`/place/${invalidPlaceIdx}/free-tag`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send({
+          freeTagList: ['Free Tag 1', 'Free Tag 2'],
+        })
+        .expect(400);
+    });
+
+    it('403 - unauthorized access (magazine admin)', async () => {
+      const loginUser = testHelper.loginAdmin.magazineAdmin1;
+      const place = await placeSeedHelper.seed({
+        activatedAt: new Date(),
+      });
+
+      await testHelper
+        .test()
+        .put(`/place/${place.idx}/free-tag`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send({
+          freeTagList: ['Free Tag 1', 'Free Tag 2'],
+        })
+        .expect(403);
+    });
+
+    it('404 - place not found', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const nonExistentPlaceIdx = 99999;
+
+      await testHelper
+        .test()
+        .put(`/place/${nonExistentPlaceIdx}/free-tag`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send({
+          freeTagList: ['Free Tag 1', 'Free Tag 2'],
+        })
+        .expect(404);
+    });
+  });
+
+  // TODO: startsWith 이슈 테스트 추가하기
+  describe('PUT /place/:idx/search-tag', () => {
+    it('200 - successfully updates search tag list to place', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+
+      const [searchTag1, searchTag2] = await searchTagSeedHelper.seedAll([
+        {
+          content: 'Search Tag 1',
+        },
+        {
+          content: 'Search Tag 2',
+        },
+      ]);
+      const place = await placeSeedHelper.seed({
+        activatedAt: new Date(),
+      });
+
+      const updatePlaceSearchTagDto: UpdatePlaceSearchTagDto = {
+        searchTagList: [searchTag1.content, searchTag2.content],
+      };
+
+      await testHelper
+        .test()
+        .put(`/place/${place.idx}/search-tag`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send(updatePlaceSearchTagDto)
+        .expect(200);
+
+      const placeModel = await testHelper
+        .get(PlaceCoreService)
+        .getPlaceByIdx(place.idx);
+
+      if (!placeModel) {
+        throw new Error('Place not found after update');
+      }
+
+      expect(placeModel.searchTagList.length).toBe(2);
+      expect(placeModel.searchTagList.map(({ idx }) => idx).sort()).toEqual(
+        [searchTag1.idx, searchTag2.idx].sort(),
+      );
+    });
+
+    it('200 - successfully updates empty search tag list to place', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+
+      const place = await placeSeedHelper.seed({
+        activatedAt: new Date(),
+      });
+
+      const updatePlaceSearchTagDto: UpdatePlaceSearchTagDto = {
+        searchTagList: [],
+      };
+
+      await testHelper
+        .test()
+        .put(`/place/${place.idx}/search-tag`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send(updatePlaceSearchTagDto)
+        .expect(200);
+
+      const placeModel = await testHelper
+        .get(PlaceCoreService)
+        .getPlaceByIdx(place.idx);
+
+      if (!placeModel) {
+        throw new Error('Place not found after update');
+      }
+
+      expect(placeModel.searchTagList.length).toBe(0);
+    });
+
+    it('200 - successfully updated place search tags when none of the tags previously existed', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+
+      const place = await placeSeedHelper.seed({
+        activatedAt: new Date(),
+      });
+
+      const prisma = testHelper.getPrisma();
+
+      const newSearchTags = ['New Search Tag 1', 'New Search Tag 2'];
+      const existingSearchTags = await prisma.searchTag.findMany({
+        where: {
+          content: {
+            in: newSearchTags,
+          },
+        },
+      });
+      expect(existingSearchTags.length).toBe(0);
+
+      const updatePlaceSearchTagDto: UpdatePlaceSearchTagDto = {
+        searchTagList: newSearchTags,
+      };
+
+      await testHelper
+        .test()
+        .put(`/place/${place.idx}/search-tag`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send(updatePlaceSearchTagDto)
+        .expect(200);
+
+      const placeModel = await testHelper
+        .get(PlaceCoreService)
+        .getPlaceByIdx(place.idx);
+
+      if (!placeModel) {
+        throw new Error('Place not found after update');
+      }
+
+      expect(placeModel.searchTagList.length).toBe(2);
+      expect(
+        placeModel.searchTagList.map(({ content }) => content).sort(),
+      ).toEqual(newSearchTags.sort());
+
+      const createdSearchTags = await prisma.searchTag.findMany({
+        where: {
+          content: {
+            in: newSearchTags,
+          },
+        },
+      });
+      expect(createdSearchTags.length).toBe(2);
+      expect(createdSearchTags.map(({ content }) => content).sort()).toEqual(
+        newSearchTags.sort(),
+      );
+    });
+
+    it('200 - successfully updates place search tags when some of the tags previously existed and some are new', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+
+      const place = await placeSeedHelper.seed({
+        activatedAt: new Date(),
+      });
+
+      const prisma = testHelper.getPrisma();
+
+      const [searchTag1, searchTag2] = await searchTagSeedHelper.seedAll([
+        {
+          content: 'Existing Search Tag 1',
+        },
+        {
+          content: 'Existing Search Tag 2',
+        },
+      ]);
+
+      const newSearchTags = ['Existing Search Tag 1', 'New Search Tag 1'];
+      const existingSearchTags = await prisma.searchTag.findMany({
+        where: {
+          content: {
+            in: newSearchTags,
+          },
+        },
+      });
+      expect(existingSearchTags.length).toBe(1);
+      expect(existingSearchTags[0].content).toBe('Existing Search Tag 1');
+
+      const updatePlaceSearchTagDto: UpdatePlaceSearchTagDto = {
+        searchTagList: newSearchTags,
+      };
+
+      await testHelper
+        .test()
+        .put(`/place/${place.idx}/search-tag`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send(updatePlaceSearchTagDto)
+        .expect(200);
+
+      const placeModel = await testHelper
+        .get(PlaceCoreService)
+        .getPlaceByIdx(place.idx);
+
+      if (!placeModel) {
+        throw new Error('Place not found after update');
+      }
+
+      expect(placeModel.searchTagList.length).toBe(2);
+      expect(
+        placeModel.searchTagList.map(({ content }) => content).sort(),
+      ).toEqual(newSearchTags.sort());
+
+      const createdSearchTags = await prisma.searchTag.findMany({
+        where: {
+          content: {
+            in: newSearchTags,
+          },
+        },
+      });
+      expect(createdSearchTags.length).toBe(2);
+      expect(createdSearchTags.map(({ content }) => content).sort()).toEqual(
+        newSearchTags.sort(),
+      );
+    });
+
+    it('200 - successfully updates place search tags when all of the tags previously existed', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+
+      const place = await placeSeedHelper.seed({
+        activatedAt: new Date(),
+      });
+
+      const prisma = testHelper.getPrisma();
+
+      const [searchTag1, searchTag2] = await searchTagSeedHelper.seedAll([
+        {
+          content: 'Existing Search Tag 1',
+        },
+        {
+          content: 'Existing Search Tag 2',
+        },
+      ]);
+
+      const newSearchTags = ['Existing Search Tag 1', 'Existing Search Tag 2'];
+      const existingSearchTags = await prisma.searchTag.findMany({
+        where: {
+          content: {
+            in: newSearchTags,
+          },
+        },
+      });
+      expect(existingSearchTags.length).toBe(2);
+      expect(existingSearchTags.map(({ content }) => content).sort()).toEqual(
+        newSearchTags.sort(),
+      );
+
+      const updatePlaceSearchTagDto: UpdatePlaceSearchTagDto = {
+        searchTagList: newSearchTags,
+      };
+
+      await testHelper
+        .test()
+        .put(`/place/${place.idx}/search-tag`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send(updatePlaceSearchTagDto)
+        .expect(200);
+
+      const placeModel = await testHelper
+        .get(PlaceCoreService)
+        .getPlaceByIdx(place.idx);
+
+      if (!placeModel) {
+        throw new Error('Place not found after update');
+      }
+
+      expect(placeModel.searchTagList.length).toBe(2);
+      expect(
+        placeModel.searchTagList.map(({ content }) => content).sort(),
+      ).toEqual(newSearchTags.sort());
+
+      const createdSearchTags = await prisma.searchTag.findMany({
+        where: {
+          content: {
+            in: newSearchTags,
+          },
+        },
+      });
+      expect(createdSearchTags.length).toBe(2);
+      expect(createdSearchTags.map(({ content }) => content).sort()).toEqual(
+        newSearchTags.sort(),
+      );
+    });
+
+    it('200 - successfully deletes all search tags from place when empty search tag list is sent', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+
+      const [searchTag1, searchTag2] = await searchTagSeedHelper.seedAll([
+        {
+          content: 'Existing Search Tag 1',
+        },
+        {
+          content: 'Existing Search Tag 2',
+        },
+      ]);
+
+      const place = await placeSeedHelper.seed({
+        activatedAt: new Date(),
+        searchTagIdxList: [searchTag1.idx, searchTag2.idx],
+      });
+      const updatePlaceSearchTagDto: UpdatePlaceSearchTagDto = {
+        searchTagList: [],
+      };
+
+      const placeModel1 = await testHelper
+        .get(PlaceCoreService)
+        .getPlaceByIdx(place.idx);
+
+      if (!placeModel1) {
+        throw new Error('Place not found before update');
+      }
+
+      expect(placeModel1.searchTagList.length).toBe(2);
+      expect(
+        placeModel1.searchTagList.map(({ content }) => content).sort(),
+      ).toEqual([searchTag1.content, searchTag2.content].sort());
+
+      await testHelper
+        .test()
+        .put(`/place/${place.idx}/search-tag`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send(updatePlaceSearchTagDto)
+        .expect(200);
+
+      const placeMode2 = await testHelper
+        .get(PlaceCoreService)
+        .getPlaceByIdx(place.idx);
+
+      if (!placeMode2) {
+        throw new Error('Place not found after update');
+      }
+
+      expect(placeMode2.searchTagList.length).toBe(0);
+    });
+
+    it('401 - no access token', async () => {
+      const place = await placeSeedHelper.seed({
+        activatedAt: new Date(),
+      });
+
+      await testHelper
+        .test()
+        .put(`/place/${place.idx}/search-tag`)
+        .send({
+          searchTagList: ['Search Tag 1', 'Search Tag 2'],
+        })
+        .expect(401);
+    });
+
+    it('400 - invalid place idx', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const invalidPlaceIdx = 'invalid-idx';
+
+      await testHelper
+        .test()
+        .put(`/place/${invalidPlaceIdx}/search-tag`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send({
+          searchTagList: ['Search Tag 1', 'Search Tag 2'],
+        })
+        .expect(400);
+    });
+
+    it('403 - unauthorized access (magazine admin)', async () => {
+      const loginUser = testHelper.loginAdmin.magazineAdmin1;
+      const place = await placeSeedHelper.seed({
+        activatedAt: new Date(),
+      });
+
+      await testHelper
+        .test()
+        .put(`/place/${place.idx}/search-tag`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send({
+          searchTagList: ['Search Tag 1', 'Search Tag 2'],
+        })
+        .expect(403);
+    });
+
+    it('404 - place not found', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const nonExistentPlaceIdx = 99999;
+
+      await testHelper
+        .test()
+        .put(`/place/${nonExistentPlaceIdx}/search-tag`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send({
+          searchTagList: ['Search Tag 1', 'Search Tag 2'],
         })
         .expect(404);
     });
@@ -1733,6 +2811,65 @@ describe('Place E2E test', () => {
         .expect(401);
     });
 
+    it('403 - unauthorized access (magazine admin)', async () => {
+      const loginUser = testHelper.loginAdmin.magazineAdmin1;
+      const place = await placeSeedHelper.seed({
+        activatedAt: new Date(),
+      });
+
+      function getKstDateString(offsetDays = 0): string {
+        const now = new Date();
+        // 한국시간 보정 (+9시간)
+        now.setHours(now.getHours() + 9);
+        now.setDate(now.getDate() + offsetDays);
+
+        const yyyy = now.getFullYear();
+        const mm = String(now.getMonth() + 1).padStart(2, '0');
+        const dd = String(now.getDate()).padStart(2, '0');
+        return `${yyyy}-${mm}-${dd}`;
+      }
+
+      const updatePlaceDto: UpdatePlaceDto = {
+        name: 'Updated Place',
+        tel: '032-9876-5432',
+        isClosedOnHoliday: true,
+        imagePathList: [
+          '/place/updated-image1.png',
+          '/place/updated-image2.png',
+        ],
+        type: PlaceType.RESTAURANT,
+        roadAddress: {
+          name: 'Updated Road',
+          detail: 'Updated Detail',
+          addressX: 37.123,
+          addressY: 126.123,
+        },
+        closedDayList: [
+          { day: DayOfWeek.MON, week: 1 },
+          { day: DayOfWeek.TUE, week: 2 },
+        ],
+        breakTimeList: [
+          { startAt: '12:00:00', endAt: '13:00:00', day: DayOfWeek.WED },
+          { startAt: '14:00:00', endAt: '15:00:00', day: DayOfWeek.FRI },
+        ],
+        operatingHourList: [
+          { startAt: '10:00:00', endAt: '20:00:00', day: DayOfWeek.THU },
+          { startAt: '11:00:00', endAt: '21:00:00', day: DayOfWeek.SAT },
+        ],
+        weeklyClosedDayList: [
+          { date: getKstDateString(), type: WeeklyCloseType.BIWEEKLY },
+          { date: getKstDateString(1), type: WeeklyCloseType.BIWEEKLY },
+        ],
+      };
+
+      await testHelper
+        .test()
+        .put(`/place/${place.idx}`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send(updatePlaceDto)
+        .expect(403);
+    });
+
     it('404 - there is no place with the given idx', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const placeIdx = -1; // ! no place with this idx
@@ -1835,6 +2972,19 @@ describe('Place E2E test', () => {
       await testHelper.test().delete(`/place/${place.idx}`).expect(401);
     });
 
+    it('403 - unauthorized access (magazine admin)', async () => {
+      const loginUser = testHelper.loginAdmin.magazineAdmin1;
+      const place = await placeSeedHelper.seed({
+        activatedAt: new Date(),
+      });
+
+      await testHelper
+        .test()
+        .delete(`/place/${place.idx}`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .expect(403);
+    });
+
     it('400 - invalid place idx', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const invalidPlaceIdx = 'invalid-idx';
@@ -1888,6 +3038,19 @@ describe('Place E2E test', () => {
         .test()
         .post(`/place/${placeSeed.idx}/activate`)
         .expect(401);
+    });
+
+    it('403 - unauthorized access (magazine admin)', async () => {
+      const loginUser = testHelper.loginAdmin.magazineAdmin1;
+      const placeSeed = await placeSeedHelper.seed({
+        activatedAt: null,
+      });
+
+      await testHelper
+        .test()
+        .post(`/place/${placeSeed.idx}/activate`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .expect(403);
     });
 
     it('404 - attempt to activate a place that does not exist', async () => {
@@ -1950,6 +3113,19 @@ describe('Place E2E test', () => {
         .post(`/place/${invalidPlaceIdx}/deactivate`)
         .set('Cookie', `token=Bearer ${loginUser.token}`)
         .expect(400);
+    });
+
+    it('403 - unauthorized access (magazine admin)', async () => {
+      const loginUser = testHelper.loginAdmin.magazineAdmin1;
+      const placeSeed = await placeSeedHelper.seed({
+        activatedAt: new Date(),
+      });
+
+      await testHelper
+        .test()
+        .post(`/place/${placeSeed.idx}/deactivate`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .expect(403);
     });
 
     it('404 - attempt to deactivate a place that does not exist', async () => {
@@ -2022,6 +3198,20 @@ describe('Place E2E test', () => {
         .expect(401);
     });
 
+    it('403 - unauthorized access (magazine admin)', async () => {
+      const loginUser = testHelper.loginAdmin.magazineAdmin1;
+      const placeSeed = await placeSeedHelper.seed({
+        activatedAt: new Date(),
+        permanentlyClosedAt: null,
+      });
+
+      await testHelper
+        .test()
+        .post(`/place/${placeSeed.idx}/close-permanently`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .expect(403);
+    });
+
     it('404 - attempt to close permanently a place that does not exist', async () => {
       const loginUser = testHelper.loginAdmin.admin1;
       const nonExistentPlaceIdx = -1; // ! no place with this idx
@@ -2090,6 +3280,20 @@ describe('Place E2E test', () => {
         .test()
         .post(`/place/${placeSeed.idx}/cancel-close-permanently`)
         .expect(401);
+    });
+
+    it('403 - unauthorized access (magazine admin)', async () => {
+      const loginUser = testHelper.loginAdmin.magazineAdmin1;
+      const placeSeed = await placeSeedHelper.seed({
+        activatedAt: new Date(),
+        permanentlyClosedAt: null,
+      });
+
+      await testHelper
+        .test()
+        .post(`/place/${placeSeed.idx}/cancel-close-permanently`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .expect(403);
     });
 
     it('404 - attempt to close a place that does not exist', async () => {
@@ -2229,6 +3433,18 @@ describe('Place E2E test', () => {
         .send({ date: '2025-08-20' })
         .expect(401);
     });
+
+    it('403 - unauthorized access (magazine admin)', async () => {
+      const loginUser = testHelper.loginAdmin.magazineAdmin1;
+      await placeSeedHelper.seed({});
+
+      await testHelper
+        .test()
+        .post('/place/cron/bi-weekly-closed-day')
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send({ date: '2025-08-20' })
+        .expect(403);
+    });
   });
 
   describe('POST /place/:idx/bi-weekly-closed-day', () => {
@@ -2275,6 +3491,18 @@ describe('Place E2E test', () => {
         .post(`/place/${place.idx}/bi-weekly-closed-day`)
         .send({ date: '2025-08-20' })
         .expect(401);
+    });
+
+    it('403 - unauthorized access (magazine admin)', async () => {
+      const loginUser = testHelper.loginAdmin.magazineAdmin1;
+      const place = await placeSeedHelper.seed({});
+
+      await testHelper
+        .test()
+        .post(`/place/${place.idx}/bi-weekly-closed-day`)
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send({ date: '2025-08-20' })
+        .expect(403);
     });
 
     it('404 - place does not exist', async () => {

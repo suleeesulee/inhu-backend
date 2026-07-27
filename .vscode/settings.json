@@ -1,4 +1,21 @@
 {
   "liveServer.settings.port": 5502,
-  "cSpell.words": ["naverblog"]
+  "cSpell.words": [
+    "autoincrement",
+    "dbgenerated",
+    "Debezium",
+    "naverblog",
+    "Timestamptz"
+  ],
+  "prisma.pinToPrisma6": true,
+  "prisma.schemaPath": "./prisma/schema.prisma",
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "typescript.enablePromptUseWorkspaceTsdk": true,
+  "editor.quickSuggestions": {
+    "other": true,
+    "comments": false,
+    "strings": true
+  },
+  "editor.suggestOnTriggerCharacters": true,
+  "editor.inlineSuggest.enabled": true
 }
