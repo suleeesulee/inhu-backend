@@ -27,7 +27,7 @@ jobs:
       # Step 1: Batch 서버와 관련된 변경이 있었는지 확인 (github action 테스트 유발 여부)
       - name: Check for Batch Service Changes
         id: filter
-        uses: tj-actions/changed-files@v44
+        uses: tj-actions/changed-files@v46
         with:
           # 오직 이 파일들만 변경 감지
           files: |
@@ -44,7 +44,7 @@ jobs:
       # Step 2: 배포가 필요한 변경인지 확인 (Whitelist 방식)
       - name: Check for deployable changes
         id: deployment-gate
-        uses: tj-actions/changed-files@v44
+        uses: tj-actions/changed-files@v46
         with:
           # 오직 이 파일들만 배포를 유발할 수 있음
           files: |
