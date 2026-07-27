@@ -30,6 +30,6 @@ INSERT INTO user_tb (nickname) VALUES ('admin1');
 INSERT INTO user_tb (nickname) VALUES ('magazine_admin1');
 
 INSERT INTO admin_account_tb (idx, id, pw, role) VALUES (1, '1234', '$2b$10$l.EPjNQZOAdfiLqk5Lp8sujej5a7MTVCV7KL1z9wykrAZz04uSLLG', 'SUPER_ADMIN');
-INSERT INTO admin_account_tb (idx, id, pw, role) VALUES (2, '12345', '$2b$10$QUkvtBmewhf/00A1iX3EQ.Yv91QK5NZuzJn1HIGTMJ0xh8yaL6sdC', 'ADMIN');
-INSERT INTO admin_account_tb (idx, id, pw, role) VALUES (3, '123456', '$2b$10$UsBdBOLatj0EN9.qQyhZyO9VvFxR2jPWbszAJnamW653qsdO738DG', 'MAGAZINE_ADMIN');
+INSERT INTO admin_account_tb (idx, id, pw, role) VALUES (2, '12345', '$2b$10$l.EPjNQZOAdfiLqk5Lp8sujej5a7MTVCV7KL1z9wykrAZz04uSLLG', 'ADMIN');
+INSERT INTO admin_account_tb (idx, id, pw, role) VALUES (3, '123456', '$2b$10$l.EPjNQZOAdfiLqk5Lp8sujej5a7MTVCV7KL1z9wykrAZz04uSLLG', 'MAGAZINE_ADMIN');
 
