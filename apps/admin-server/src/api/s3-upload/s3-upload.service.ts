@@ -8,6 +8,7 @@ import { S3Folder } from '@libs/common/modules/s3/constants/s3-folder.constants'
 import { ContentType } from '@libs/common/modules/s3/constants/content-type.constants';
 import { CreateMagazineImagePresignedUrlsDto } from './dto/request/create-magazine-image-presigned-url.dto';
 import { CreateProfileImagePresignedUrlDto } from './dto/request/create-profile-image-presigned-url.dto';
+import { CreateReviewImagePresignedUrlsDto } from './dto/request/create-review-image-presigned-url.dto';
 
 @Injectable()
 export class S3UploadService {
@@ -63,6 +64,17 @@ export class S3UploadService {
     return await this.s3Service.getPresignedUrl({
       folder: S3Folder.PROFILE,
       extension: createProfileImagePresignedUrlDto.extension,
+      maxSize: 5,
+      contentType: ContentType.IMAGE,
+    });
+  }
+
+  public async createReviewImagePresignedUrls(
+    dto: CreateReviewImagePresignedUrlsDto,
+  ): Promise<PresignedUrlModel[]> {
+    return this.s3Service.getPresignedUrls({
+      folder: S3Folder.REVIEW,
+      extensions: dto.extensions,
       maxSize: 5,
       contentType: ContentType.IMAGE,
     });
