@@ -49,19 +49,19 @@ jobs:
       - name: Compress files
         run: tar -czf deploy-batch.tar.gz -C ./deploy-batch-files .
 
-      - name: Install sshpass
-        run: sudo apt-get update && sudo apt-get install -y sshpass
-
       - name: Deploy to Raspberry Pi (reload batch service)
         env:
           HOST: ${{ secrets.RASPBERRY_PI_HOST }}
+          KEY: ${{ secrets.RASPBERRY_PI_SSH_PRIVATE_KEY }}
           USER: ${{ secrets.RASPBERRY_PI_USER }}
-          PASSWORD: ${{ secrets.RASPBERRY_PI_PASSWORD }}
           PORT: ${{ secrets.RASPBERRY_PI_PORT }}
         run: |
-          sshpass -p "$PASSWORD" scp -P "$PORT" -o StrictHostKeyChecking=no deploy-batch.tar.gz $USER@$HOST:~/inhu-backend/
+          echo "$KEY" > private_key
+          chmod 400 private_key
 
-          sshpass -p "$PASSWORD" scp -P "$PORT" -o StrictHostKeyChecking=no ./.github/workflows/scripts/deploy-dev-service-script.sh $USER@$HOST:~/inhu-backend/deploy-scripts/
+          scp -P "$PORT" -o StrictHostKeyChecking=no -i private_key deploy-batch.tar.gz $USER@$HOST:~/inhu-backend/
 
-          sshpass -p "$PASSWORD" ssh -p "$PORT" -o StrictHostKeyChecking=no $USER@$HOST \
+          scp -P "$PORT" -o StrictHostKeyChecking=no -i private_key ./.github/workflows/scripts/deploy-dev-service-script.sh $USER@$HOST:~/inhu-backend/deploy-scripts/
+
+          ssh -p "$PORT" -o StrictHostKeyChecking=no -i private_key $USER@$HOST \
             "bash ~/inhu-backend/deploy-scripts/deploy-dev-service-script.sh batch"

@@ -178,37 +178,43 @@ jobs:
       - name: Build seed
         run: npm run build:seed
 
-      - name: Execute common tasks on server
-        env:
-          HOST: ${{ secrets.RASPBERRY_PI_HOST }}
-          USER: ${{ secrets.RASPBERRY_PI_USER }}
-          PASSWORD: ${{ secrets.RASPBERRY_PI_PASSWORD }}
-          PORT: ${{ secrets.RASPBERRY_PI_PORT }}
-          DB_DOWN: ${{ needs.check-changes.outputs.should_db_down }}
-          USER_CHANGED: ${{ needs.check-changes.outputs.user_changed }}
-          ADMIN_CHANGED: ${{ needs.check-changes.outputs.admin_changed }}
-          BATCH_CHANGED: ${{ needs.check-changes.outputs.batch_changed }}
-          DEPENDENCY_CHANGED: ${{ needs.check-changes.outputs.dependency_changed }}
-
+      - name: Create infrastructure deployment bundle
         run: |
-          sudo apt-get update || (sudo apt-get update && sudo apt-get install -y sshpass)
-
           tar -czf infra-bundle.tar.gz \
             package.json package-lock.json \
             prisma scripts \
             dist/scripts/dev-infra/seed \
             .github/workflows/scripts/deploy-dev-infra-script.sh
 
-          sshpass -p "$PASSWORD" scp -P "$PORT" -o StrictHostKeyChecking=no infra-bundle.tar.gz $USER@$HOST:~/inhu-backend/
+      - name: Execute common tasks on server
+        env:
+          HOST: ${{ secrets.RASPBERRY_PI_HOST }}
+          KEY: ${{ secrets.RASPBERRY_PI_SSH_PRIVATE_KEY }}
+          USER: ${{ secrets.RASPBERRY_PI_USER }}
+          PORT: ${{ secrets.RASPBERRY_PI_PORT }}
+          DB_DOWN: ${{ needs.check-changes.outputs.should_db_down }}
+          USER_CHANGED: ${{ needs.check-changes.outputs.user_changed }}
+          ADMIN_CHANGED: ${{ needs.check-changes.outputs.admin_changed }}
+          BATCH_CHANGED: ${{ needs.check-changes.outputs.batch_changed }}
+          DEPENDENCY_CHANGED: ${{ needs.check-changes.outputs.dependency_changed }}
+        run: |
+          echo "$KEY" > private_key
+          chmod 400 private_key
 
-          sshpass -p "$PASSWORD" ssh -p "$PORT" -o StrictHostKeyChecking=no $USER@$HOST "
-          cd ~/inhu-backend && \
-          tar -xzf infra-bundle.tar.gz && \
-          rm infra-bundle.tar.gz && \
-          chmod +x .github/workflows/scripts/deploy-dev-infra-script.sh && \
-          DB_DOWN_FLAG='$DB_DOWN' USER_CHANGED='$USER_CHANGED' ADMIN_CHANGED='$ADMIN_CHANGED' BATCH_CHANGED='$BATCH_CHANGED' DEPENDENCY_CHANGED='$DEPENDENCY_CHANGED' \
-          ./.github/workflows/scripts/deploy-dev-infra-script.sh
-          "
+          scp -P "$PORT" -o StrictHostKeyChecking=no -i private_key infra-bundle.tar.gz $USER@$HOST:~/inhu-backend/
+
+          ssh -p "$PORT" -o StrictHostKeyChecking=no -i private_key $USER@$HOST "
+              cd ~/inhu-backend &&
+              tar -xzf infra-bundle.tar.gz &&
+              rm infra-bundle.tar.gz &&
+              chmod +x .github/workflows/scripts/deploy-dev-infra-script.sh &&
+              DB_DOWN_FLAG='$DB_DOWN' \
+              USER_CHANGED='$USER_CHANGED' \
+              ADMIN_CHANGED='$ADMIN_CHANGED' \
+              BATCH_CHANGED='$BATCH_CHANGED' \
+              DEPENDENCY_CHANGED='$DEPENDENCY_CHANGED' \
+              ./.github/workflows/scripts/deploy-dev-infra-script.sh
+            "
 
   # 3. 서비스별 워크플로우 호출
   call-user-workflow:

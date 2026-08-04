@@ -8,6 +8,7 @@ import { ApiBadRequestResponse, ApiTags } from '@nestjs/swagger';
 import { CreateMagazineImagePresignedUrlsDto } from './dto/request/create-magazine-image-presigned-url.dto';
 import { AdminRole } from '../auth/admin-role.enum';
 import { CreateProfileImagePresignedUrlDto } from './dto/request/create-profile-image-presigned-url.dto';
+import { CreateReviewImagePresignedUrlsDto } from './dto/request/create-review-image-presigned-url.dto';
 
 @Controller('s3-upload')
 @ApiTags('s3-upload')
@@ -115,5 +116,26 @@ export class S3UploadController {
     return this.s3UploadService.createProfileImagePresignedUrl(
       createProfileImagePresignedUrlDto,
     );
+  }
+
+  /**
+   * 리뷰 이미지 업로드 Presigned URL 생성
+   */
+  @Post('/review-image/presigned-urls')
+  @HttpCode(201)
+  @ApiBadRequestResponse({
+    description:
+      '- extension field is not provided\n' +
+      '- extension is not in IMAGE_EXTENSION type\n' +
+      '- extensions array is empty\n' +
+      '- extensions array contains an invalid extension\n' +
+      '- extensions array exceeds max size',
+  })
+  @AdminAuth(AdminRole.SuperAdmin)
+  async createReviewImagePresignedUrls(
+    @Body()
+    dto: CreateReviewImagePresignedUrlsDto,
+  ): Promise<PresignedUrlEntity[]> {
+    return this.s3UploadService.createReviewImagePresignedUrls(dto);
   }
 }
