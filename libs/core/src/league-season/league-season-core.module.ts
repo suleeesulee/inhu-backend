@@ -4,6 +4,6 @@ import { LeagueSeasonCoreRepository } from './league-season-core.repository';
 
 @Module({
   providers: [LeagueSeasonCoreService, LeagueSeasonCoreRepository],
-  exports: [LeagueSeasonCoreRepository],
+  exports: [LeagueSeasonCoreService],
 })
 export class LeagueSeasonCoreModule {}
