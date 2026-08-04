@@ -262,9 +262,6 @@ model User {
   nickname                  String                  @db.VarChar
   profileImagePath          String?                 @map("profile_image_path") @db.VarChar
   platform                  String                  @default("unknown") @db.VarChar
-  schoolEmailEncrypted      String?                 @map("school_email_encrypted") @db.VarChar
-  schoolEmailHash           String?                 @map("school_email_hash") @db.VarChar
-  isSchoolVerified          Boolean                 @default(false) @map("is_school_verified")
   createdAt                 DateTime                @default(now()) @map("created_at") @db.Timestamptz(6)
   deletedAt                 DateTime?               @map("deleted_at") @db.Timestamptz(6)
   adminAccount              AdminAccount?
