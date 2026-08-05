@@ -36,6 +36,7 @@ import { Ga4Module } from '@libs/common/modules/ga4/ga4.module';
 import { StatisticModule } from './api/statistic/statistic.module';
 import { RewardModule } from './api/reward/reward.module';
 import { NfcModule } from './api/nfc/nfc.module';
+import { LeagueSeasonModule } from './api/league-season/league-season.module';
 
 @Module({
   imports: [
@@ -77,6 +78,7 @@ import { NfcModule } from './api/nfc/nfc.module';
     StatisticModule,
     RewardModule,
     NfcModule,
+    LeagueSeasonModule,
   ],
   providers: [
     {
