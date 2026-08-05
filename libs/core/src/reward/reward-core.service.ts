@@ -25,14 +25,14 @@ export class RewardCoreService {
     );
   }
 
-  public async updateReward(
+  public async updateRewardByIdx(
     idx: number,
     input: UpdateRewardInput,
   ): Promise<void> {
-    await this.rewardCoreRepository.updateReward(idx, input);
+    await this.rewardCoreRepository.updateRewardByIdx(idx, input);
   }
 
-  public async deleteReward(idx: number): Promise<void> {
-    await this.rewardCoreRepository.softDeleteReward(idx);
+  public async deleteRewardByIdx(idx: number): Promise<void> {
+    await this.rewardCoreRepository.softDeleteRewardByIdx(idx);
   }
 }

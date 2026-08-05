@@ -41,7 +41,7 @@ export class RewardCoreRepository {
     });
   }
 
-  public async updateReward(
+  public async updateRewardByIdx(
     idx: number,
     input: UpdateRewardInput,
   ): Promise<void> {
@@ -55,7 +55,7 @@ export class RewardCoreRepository {
     });
   }
 
-  public async softDeleteReward(idx: number): Promise<void> {
+  public async softDeleteRewardByIdx(idx: number): Promise<void> {
     await this.txHost.tx.reward.update({
       data: { deletedAt: new Date() },
       where: { idx, deletedAt: null },
