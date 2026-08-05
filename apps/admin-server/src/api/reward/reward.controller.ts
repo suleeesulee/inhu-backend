@@ -1,4 +1,5 @@
 import {
+  Body,
   Controller,
   Delete,
   Get,
@@ -33,7 +34,9 @@ export class RewardController {
   @Post()
   @AdminAuth()
   @Exception(400, 'Invalid reward creation request')
-  public async createReward(dto: CreateRewardDto): Promise<RewardEntity> {
+  public async createReward(
+    @Body() dto: CreateRewardDto,
+  ): Promise<RewardEntity> {
     return await this.rewardService.createReward(dto);
   }
 
@@ -47,7 +50,7 @@ export class RewardController {
   @Exception(409, 'Reward already activated')
   public async updateRewardByIdx(
     @Param('idx', ParseIntPipe) idx: number,
-    dto: CreateRewardDto,
+    @Body() dto: CreateRewardDto,
   ): Promise<void> {
     return await this.rewardService.updateRewardByIdx(idx, dto);
   }
@@ -57,7 +60,6 @@ export class RewardController {
    */
   @Post('/:idx/activate')
   @AdminAuth()
-  @Exception(400, 'Invalid reward activation request')
   @Exception(404, 'Reward not found')
   @Exception(409, 'Reward already activated')
   public async activateRewardByIdx(
@@ -71,6 +73,8 @@ export class RewardController {
    */
   @Post('/:idx/deactivate')
   @AdminAuth()
+  @Exception(404, 'Reward not found')
+  @Exception(409, 'Reward not activated')
   public async deactivateRewardByIdx(
     @Param('idx', ParseIntPipe) idx: number,
   ): Promise<void> {

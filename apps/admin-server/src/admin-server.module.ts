@@ -35,6 +35,7 @@ import { PrometheusApiModule } from './api/prometheus/prometheus.module';
 import { Ga4Module } from '@libs/common/modules/ga4/ga4.module';
 import { StatisticModule } from './api/statistic/statistic.module';
 import { RewardModule } from './api/reward/reward.module';
+import { NfcModule } from './api/nfc/nfc.module';
 
 @Module({
   imports: [
@@ -75,6 +76,7 @@ import { RewardModule } from './api/reward/reward.module';
     PrometheusApiModule,
     StatisticModule,
     RewardModule,
+    NfcModule,
   ],
   providers: [
     {

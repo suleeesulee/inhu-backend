@@ -54,7 +54,10 @@ export class NfcCoreRepository {
     });
   }
 
-  public async updateNfc(idx: number, input: UpdateNfcInput): Promise<void> {
+  public async updateNfcByIdx(
+    idx: number,
+    input: UpdateNfcInput,
+  ): Promise<void> {
     await this.txHost.tx.nfc.update({
       where: { idx },
       data: {
@@ -66,7 +69,7 @@ export class NfcCoreRepository {
     });
   }
 
-  public async softDeleteNfc(idx: number): Promise<void> {
+  public async softDeleteNfcByIdx(idx: number): Promise<void> {
     await this.txHost.tx.nfc.update({
       data: { deletedAt: new Date() },
       where: { idx, deletedAt: null },

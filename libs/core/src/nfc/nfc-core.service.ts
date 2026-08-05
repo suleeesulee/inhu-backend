@@ -28,11 +28,14 @@ export class NfcCoreService {
     return NfcModel.fromPrisma(await this.nfcCoreRepository.insertNfc(input));
   }
 
-  public async updateNfc(idx: number, input: UpdateNfcInput): Promise<void> {
-    await this.nfcCoreRepository.updateNfc(idx, input);
+  public async updateNfcByIdx(
+    idx: number,
+    input: UpdateNfcInput,
+  ): Promise<void> {
+    await this.nfcCoreRepository.updateNfcByIdx(idx, input);
   }
 
-  public async deleteNfc(idx: number): Promise<void> {
-    await this.nfcCoreRepository.softDeleteNfc(idx);
+  public async deleteNfcByIdx(idx: number): Promise<void> {
+    await this.nfcCoreRepository.softDeleteNfcByIdx(idx);
   }
 }
