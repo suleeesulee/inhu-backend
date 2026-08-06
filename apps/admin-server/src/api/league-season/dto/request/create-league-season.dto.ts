@@ -21,7 +21,7 @@ export class CreateLeagueSeasonDto {
    */
   @IsString()
   @IsKoreanDate()
-  startAt: Date;
+  startAt: string;
 
   /**
    * ! start와 동일
@@ -31,7 +31,7 @@ export class CreateLeagueSeasonDto {
    */
   @IsString()
   @IsKoreanDate()
-  endAt: Date;
+  endAt: string;
 
   @ValidateNested({ each: true })
   @Type(() => CreateLeagueRewardOptionDto)

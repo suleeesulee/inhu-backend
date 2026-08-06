@@ -32,6 +32,7 @@ import { MetricInterceptor } from '@libs/common/interceptors/metric.interceptor'
 import { MetricModule } from '@libs/common/modules/metric/metric.module';
 import { PrometheusApiModule } from './api/prometheus/prometheus.module';
 import { UserMailModule } from './api/mail/user-mail.module';
+import { LeagueSeasonModule } from './api/league-season/league-season.module';
 
 @Module({
   imports: [
@@ -71,6 +72,7 @@ import { UserMailModule } from './api/mail/user-mail.module';
     MetricModule,
     PrometheusApiModule,
     UserMailModule,
+    LeagueSeasonModule,
   ],
   providers: [
     {

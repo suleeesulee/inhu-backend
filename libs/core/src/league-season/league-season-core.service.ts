@@ -18,6 +18,18 @@ export class LeagueSeasonCoreService {
     return leagueSeason && LeagueSeasonModel.fromPrisma(leagueSeason);
   }
 
+  public async getLeagueSeasonByDate(
+    startAt: string,
+    endAt: string,
+  ): Promise<LeagueSeasonModel | null> {
+    const leagueSeason =
+      await this.leagueSeasonCoreRepository.getLeagueSeasonByDate(
+        startAt,
+        endAt,
+      );
+    return leagueSeason && LeagueSeasonModel.fromPrisma(leagueSeason);
+  }
+
   public async getLeagueSeasonAll(): Promise<LeagueSeasonModel[]> {
     return (await this.leagueSeasonCoreRepository.getLeagueSeasonAll()).map(
       (leagueSeason) => LeagueSeasonModel.fromPrisma(leagueSeason),

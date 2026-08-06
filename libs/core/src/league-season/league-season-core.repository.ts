@@ -25,6 +25,19 @@ export class LeagueSeasonCoreRepository {
     });
   }
 
+  public async getLeagueSeasonByDate(
+    startAt: string,
+    endAt: string,
+  ): Promise<SelectLeagueSeason | null> {
+    return await this.txHost.tx.leagueSeason.findFirst({
+      ...SELECT_LEAGUE_SEASON,
+      where: {
+        startAt: `${startAt}T00:00:00Z`,
+        endAt: `${endAt}T23:59:59Z`,
+      },
+    });
+  }
+
   public async getLeagueSeasonAll(): Promise<SelectLeagueSeason[]> {
     return await this.txHost.tx.leagueSeason.findMany({
       ...SELECT_LEAGUE_SEASON,
@@ -38,8 +51,8 @@ export class LeagueSeasonCoreRepository {
       ...SELECT_LEAGUE_SEASON,
       data: {
         name: input.name,
-        startAt: input.startAt,
-        endAt: input.endAt,
+        startAt: `${input.startAt}T00:00:00Z`,
+        endAt: `${input.endAt}T23:59:59Z`,
         rewardOptionList: {
           createMany: {
             data: input.rewardOptionList.map((rewardOption) => ({
@@ -62,8 +75,8 @@ export class LeagueSeasonCoreRepository {
       },
       data: {
         name: input.name,
-        startAt: input.startAt,
-        endAt: input.endAt,
+        startAt: `${input.startAt}T00:00:00Z`,
+        endAt: `${input.endAt}T23:59:59Z`,
         rewardOptionList: input.rewardOptionList
           ? {
               deleteMany: {},
