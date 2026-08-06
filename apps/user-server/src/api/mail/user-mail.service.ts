@@ -7,6 +7,7 @@ import {
   Injectable,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { emailVerificationTemplate } from './email-verification.template';
 
 @Injectable()
 export class UserMailService {
@@ -50,8 +51,8 @@ export class UserMailService {
 
     await this.mailService.sendMail(
       email,
-      '이메일 인증 코드',
-      `인증 코드는 ${verificationCode}입니다. 이 코드는 5분 동안 유효합니다.`,
+      '[인하밥길] 이메일 인증 코드',
+      emailVerificationTemplate(verificationCode),
     );
   }
 
