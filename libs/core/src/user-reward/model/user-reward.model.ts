@@ -1,5 +1,4 @@
 import { SelectUserReward } from './prisma-type/select-user-reward';
-import { UserRewardLeagueSeasonResultModel } from './user-reward-league-season-result.model';
 
 export class UserRewardModel {
   /**
@@ -11,6 +10,11 @@ export class UserRewardModel {
    * reward 식별자
    */
   public rewardIdx: number | null;
+
+  /**
+   * 리그 시즌 결과 식별자
+   */
+  public leagueSeasonResultId: string;
 
   /**
    * 생성 일자
@@ -27,11 +31,6 @@ export class UserRewardModel {
    */
   public issuedAt: Date | null;
 
-  /**
-   * 리그 시즌 결과
-   */
-  public leagueSeasonResult: UserRewardLeagueSeasonResultModel;
-
   constructor(data: UserRewardModel) {
     Object.assign(this, data);
   }
@@ -40,12 +39,10 @@ export class UserRewardModel {
     return new UserRewardModel({
       id: userReward.id,
       rewardIdx: userReward.rewardIdx,
+      leagueSeasonResultId: userReward.leagueSeasonResultId,
       createdAt: userReward.createdAt,
       selectedAt: userReward.selectedAt,
       issuedAt: userReward.issuedAt,
-      leagueSeasonResult: UserRewardLeagueSeasonResultModel.fromPrisma(
-        userReward.leagueSeasonResult,
-      ),
     });
   }
 }
