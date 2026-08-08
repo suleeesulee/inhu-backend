@@ -6,6 +6,7 @@ import {
   SelectPlaceVisit,
 } from './model/prisma-type/select-place-visit';
 import { CreatePlaceVisitInput } from './model/inputs/create-place-visit.input';
+import { GetPlaceVisitAllInput } from './model/inputs/get-place-visit-all.input';
 
 @Injectable()
 export class PlaceVisitCoreRepository {
@@ -16,6 +17,7 @@ export class PlaceVisitCoreRepository {
   // 방문 인증 내역용
   public async selectPlaceVisitAllByUserIdx(
     userIdx: number,
+    dto: GetPlaceVisitAllInput,
   ): Promise<SelectPlaceVisit[]> {
     return await this.txHost.tx.placeVisit.findMany({
       ...SELECT_PLACE_VISIT,
@@ -30,6 +32,8 @@ export class PlaceVisitCoreRepository {
       orderBy: {
         createdAt: 'desc',
       },
+      take: dto.take,
+      skip: dto.skip,
     });
   }
 

@@ -18,7 +18,7 @@ export class NfcController {
   constructor(private readonly nfcService: NfcService) {}
 
   /**
-   * 리워드 생성
+   * nfc 생성
    */
   @Post('place/:placeIdx/nfc')
   @AdminAuth()
@@ -31,7 +31,7 @@ export class NfcController {
   }
 
   /**
-   * 리워드 수정
+   * nfc 수정
    */
   @Put('nfc/:idx')
   @AdminAuth()
@@ -46,7 +46,7 @@ export class NfcController {
   }
 
   /**
-   * 리워드 활성화
+   * nfc 활성화
    */
   @Post('nfc/:idx/activate')
   @AdminAuth()
@@ -59,7 +59,7 @@ export class NfcController {
   }
 
   /**
-   * 리워드 비활성화
+   * nfc 비활성화
    */
   @Post('nfc/:idx/deactivate')
   @Exception(404, 'Nfc not found')
@@ -72,7 +72,7 @@ export class NfcController {
   }
 
   /**
-   * 리워드 삭제
+   * nfc 삭제
    */
   @Delete('nfc/:idx')
   @AdminAuth()
