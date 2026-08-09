@@ -1,4 +1,3 @@
-import { SELECT_REWARD } from '@libs/core/reward/model/prisma-type/select-reward';
 import { Prisma } from '@prisma/client';
 import { SELECT_LEAGUE_REWARD_OPTION } from './select-league-reward-option';
 
