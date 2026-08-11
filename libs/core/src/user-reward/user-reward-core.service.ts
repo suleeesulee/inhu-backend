@@ -25,6 +25,26 @@ export class UserRewardCoreService {
     );
   }
 
+  public async getUserRewardByLeagueSeasonResultId(
+    leagueSeasonResultId: string,
+  ): Promise<UserRewardModel | null> {
+    const userReward =
+      await this.userRewardCoreRepository.selectUserRewardByLeagueSeasonResultId(
+        leagueSeasonResultId,
+      );
+    return userReward && UserRewardModel.fromPrisma(userReward);
+  }
+
+  public async getUserRewardAllByLeagueSeasonResultIdList(
+    leagueSeasonResultIdList: string[],
+  ): Promise<UserRewardModel[]> {
+    return (
+      await this.userRewardCoreRepository.selectUserRewardAllByLeagueSeasonResultIdList(
+        leagueSeasonResultIdList,
+      )
+    ).map(UserRewardModel.fromPrisma);
+  }
+
   public async createUserReward(
     input: CreateUserRewardInput,
   ): Promise<UserRewardModel> {

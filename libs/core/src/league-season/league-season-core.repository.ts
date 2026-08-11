@@ -19,6 +19,7 @@ import {
   SELECT_LEAGUE_REWARD_OPTION,
   SelectLeagueRewardOption,
 } from './model/prisma-type/select-league-reward-option';
+import { GetLeagueSeasonResultAllInput } from './inputs/get-league-season-result-all.input';
 
 @Injectable()
 export class LeagueSeasonCoreRepository {
@@ -26,7 +27,7 @@ export class LeagueSeasonCoreRepository {
     private readonly txHost: TransactionHost<TransactionalAdapterPrisma>,
   ) {}
 
-  public async getLeagueSeasonByIdx(
+  public async selectLeagueSeasonByIdx(
     idx: number,
   ): Promise<SelectLeagueSeason | null> {
     return await this.txHost.tx.leagueSeason.findUnique({
@@ -37,7 +38,7 @@ export class LeagueSeasonCoreRepository {
     });
   }
 
-  public async getLeagueSeasonByDate(
+  public async selectLeagueSeasonByDate(
     startAt: string,
     endAt: string,
   ): Promise<SelectLeagueSeason | null> {
@@ -50,43 +51,77 @@ export class LeagueSeasonCoreRepository {
     });
   }
 
-  public async getLeagueSeasonAll(): Promise<SelectLeagueSeason[]> {
+  public async selectLeagueSeasonAll(): Promise<SelectLeagueSeason[]> {
     return await this.txHost.tx.leagueSeason.findMany({
       ...SELECT_LEAGUE_SEASON,
     });
   }
 
-  public async getLeagueSeasonResultByLeagueSeasonIdx(
+  public async selectLeagueSeasonResultAllByUserIdx(
+    userIdx: number,
+    input: GetLeagueSeasonResultAllInput,
+  ): Promise<SelectLeagueSeasonResult[]> {
+    const order = input.order ?? 'desc';
+
+    return await this.txHost.tx.leagueSeasonResult.findMany({
+      ...SELECT_LEAGUE_SEASON_RESULT,
+      where: { userIdx },
+      orderBy: [
+        { leagueSeason: { endAt: order } },
+        { createdAt: order },
+        { id: order },
+      ],
+      take: input.take,
+      skip: input.skip,
+    });
+  }
+
+  public async selectLeagueSeasonResultByLeagueSeasonIdxAndUserIdx(
     leagueSeasonIdx: number,
+    userIdx: number,
   ): Promise<SelectLeagueSeasonResult | null> {
     return await this.txHost.tx.leagueSeasonResult.findFirst({
       ...SELECT_LEAGUE_SEASON_RESULT,
       where: {
         leagueSeasonIdx,
+        userIdx,
       },
     });
   }
 
-  public async getLeagueSeasonResultUserRankingAllByLeagueSeasonIdx(
+  public async selectLeagueSeasonResultUserRankingAllByLeagueSeasonIdx(
     leagueSeasonIdx: number,
   ): Promise<SelectLeagueSeasonResultUserRanking[]> {
     return await this.txHost.tx.$queryRaw<
       SelectLeagueSeasonResultUserRanking[]
-    >(SELECT_LEAGUE_SEASON_RESULT_USER_RANKING(leagueSeasonIdx));
+    >(SELECT_LEAGUE_SEASON_RESULT_USER_RANKING([leagueSeasonIdx]));
   }
 
-  public async getLeagueSeasonResultUserRankingByLeagueSeasonAndUserIdx(
+  public async selectLeagueSeasonResultUserRankingByLeagueSeasonIdxAndUserIdx(
     leagueSeasonIdx: number,
     userIdx: number,
   ): Promise<SelectLeagueSeasonResultUserRanking | null> {
     const [userRanking] = await this.txHost.tx.$queryRaw<
       SelectLeagueSeasonResultUserRanking[]
-    >(SELECT_LEAGUE_SEASON_RESULT_USER_RANKING(leagueSeasonIdx, userIdx));
+    >(SELECT_LEAGUE_SEASON_RESULT_USER_RANKING([leagueSeasonIdx], userIdx));
 
     return userRanking ?? null;
   }
 
-  public async getLeagueRewardOptionAllByLeagueSeasonIdx(
+  public async selectLeagueSeasonResultUserRankingByLeagueSeasonIdxListAndUserIdx(
+    leagueSeasonIdxList: number[],
+    userIdx: number,
+  ): Promise<SelectLeagueSeasonResultUserRanking[]> {
+    if (leagueSeasonIdxList.length === 0) {
+      return [];
+    }
+
+    return await this.txHost.tx.$queryRaw<
+      SelectLeagueSeasonResultUserRanking[]
+    >(SELECT_LEAGUE_SEASON_RESULT_USER_RANKING(leagueSeasonIdxList, userIdx));
+  }
+
+  public async selectLeagueRewardOptionAllByLeagueSeasonIdx(
     leagueSeasonIdx: number,
   ): Promise<SelectLeagueRewardOption[]> {
     return await this.txHost.tx.leagueRewardOption.findMany({
@@ -97,7 +132,7 @@ export class LeagueSeasonCoreRepository {
     });
   }
 
-  public async getLeagueRewardOptionAllByLeagueSeasonIdxAndTargetRank(
+  public async selectLeagueRewardOptionAllByLeagueSeasonIdxAndTargetRank(
     leagueSeasonIdx: number,
     targetRank: number,
   ): Promise<SelectLeagueRewardOption[]> {

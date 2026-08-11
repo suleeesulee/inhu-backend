@@ -42,10 +42,6 @@ export class PlaceVisitCoreService {
     ).map(PlaceVisitStatisticModel.fromQuery);
   }
 
-  public async getUserScoreAllByPeriod(startAt: Date, endAt: Date) {}
-
-  public async getUserTotalScoreAll() {}
-
   public async createPlaceVisit(
     input: CreatePlaceVisitInput,
   ): Promise<PlaceVisitModel> {

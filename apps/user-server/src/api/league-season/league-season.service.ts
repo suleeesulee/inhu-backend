@@ -2,11 +2,19 @@ import { LeagueSeasonCoreService } from '@libs/core/league-season/league-season-
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { GetLeagueSeasonByDateDto } from './dto/request/get-league-season-by-date.dto';
 import { LeagueSeasonEntity } from './entity/league-season.entity';
+import { LeagueSeasonResultEntity } from './entity/league-season-result.entity';
+import { PlaceVisitCoreService } from '@libs/core/place-visit/place-visit-core.service';
+import { UserRewardCoreService } from '@libs/core/user-reward/user-reward-core.service';
+import { GetLeagueSeasonResultByLeagueSeasonIdxDto } from './dto/request/get-league-season-result-by-league-season-idx.dto';
+import { LeagueSeasonResultOverviewEntity } from './entity/league-season-result-overview.entity';
+import { GetLeagueSeasonResultAllDto } from './dto/request/get-league-season-result-all.dto';
 
 @Injectable()
 export class LeagueSeasonService {
   constructor(
     private readonly leagueSeasonCoreService: LeagueSeasonCoreService,
+    private readonly placeVisitCoreService: PlaceVisitCoreService,
+    private readonly userRewardCoreService: UserRewardCoreService,
   ) {}
 
   public async getLeagueSeasonByDate(
@@ -22,5 +30,135 @@ export class LeagueSeasonService {
     }
 
     return LeagueSeasonEntity.fromModel(leagueSeason);
+  }
+
+  public async getLeagueSeasonResultByLeagueSeasonIdx(
+    leagueSeasonIdx: number,
+    userIdx: number,
+    dto: GetLeagueSeasonResultByLeagueSeasonIdxDto,
+  ): Promise<LeagueSeasonResultEntity> {
+    const leagueSeason =
+      await this.leagueSeasonCoreService.getLeagueSeasonByIdx(leagueSeasonIdx);
+    if (!leagueSeason) {
+      throw new NotFoundException('League season not found');
+    }
+
+    const [
+      leagueSeasonResult,
+      leagueSeasonResultUserRanking,
+      placeVisitStatisticList,
+    ] = await Promise.all([
+      this.leagueSeasonCoreService.getLeagueSeasonResultByLeagueSeasonIdxAndUserIdx(
+        leagueSeasonIdx,
+        userIdx,
+      ),
+      this.leagueSeasonCoreService.getLeagueSeasonResultUserRankingByLeagueSeasonIdxAndUserIdx(
+        leagueSeasonIdx,
+        userIdx,
+      ),
+      this.placeVisitCoreService.getPlaceVisitStatisticAllByUserIdxAndPeriod(
+        userIdx,
+        { startAt: dto.startAt, endAt: dto.endAt },
+      ),
+    ]);
+    if (!leagueSeasonResult) {
+      throw new NotFoundException('League season result not found');
+    }
+    if (!leagueSeasonResultUserRanking) {
+      throw new NotFoundException(
+        'League season result user ranking not found',
+      );
+    }
+    if (!placeVisitStatisticList) {
+      throw new NotFoundException('Place visit statistic list not found');
+    }
+
+    const userReward =
+      await this.userRewardCoreService.getUserRewardByLeagueSeasonResultId(
+        leagueSeasonResult.id,
+      );
+    if (!userReward) {
+      throw new NotFoundException('User reward not found');
+    }
+
+    return LeagueSeasonResultEntity.fromModel(
+      leagueSeasonResult,
+      leagueSeasonResultUserRanking,
+      placeVisitStatisticList,
+      userReward,
+    );
+  }
+
+  public async getLeagueSeasonResultAll(
+    userIdx: number,
+    dto: GetLeagueSeasonResultAllDto,
+  ): Promise<LeagueSeasonResultOverviewEntity[]> {
+    const pageSize = 10;
+    const skip = (dto.page - 1) * pageSize;
+    const leagueSeasonResultList =
+      await this.leagueSeasonCoreService.getLeagueSeasonResultAllByUserIdx(
+        userIdx,
+        {
+          take: pageSize,
+          skip,
+          order: dto.order,
+        },
+      );
+
+    if (leagueSeasonResultList.length === 0) {
+      return [];
+    }
+
+    const leagueSeasonIdxList = leagueSeasonResultList.map(
+      ({ leagueSeason }) => leagueSeason.idx,
+    );
+    const leagueSeasonResultIdList = leagueSeasonResultList.map(({ id }) => id);
+
+    const [userRankingList, userRewardList] = await Promise.all([
+      this.leagueSeasonCoreService.getLeagueSeasonResultUserRankingByLeagueSeasonIdxListAndUserIdx(
+        leagueSeasonIdxList,
+        userIdx,
+      ),
+      this.userRewardCoreService.getUserRewardAllByLeagueSeasonResultIdList(
+        leagueSeasonResultIdList,
+      ),
+    ]);
+
+    const userRankingByLeagueSeasonIdx = new Map(
+      userRankingList.map((userRanking) => [
+        userRanking.leagueSeasonIdx,
+        userRanking,
+      ]),
+    );
+    const userRewardByLeagueSeasonResultId = new Map(
+      userRewardList.map((userReward) => [
+        userReward.leagueSeasonResultId,
+        userReward,
+      ]),
+    );
+
+    return leagueSeasonResultList.map((leagueSeasonResult) => {
+      const userRanking = userRankingByLeagueSeasonIdx.get(
+        leagueSeasonResult.leagueSeason.idx,
+      );
+      if (!userRanking) {
+        throw new NotFoundException(
+          'League season result user ranking not found',
+        );
+      }
+
+      const userReward = userRewardByLeagueSeasonResultId.get(
+        leagueSeasonResult.id,
+      );
+      if (!userReward) {
+        throw new NotFoundException('User reward not found');
+      }
+
+      return LeagueSeasonResultOverviewEntity.fromModel(
+        leagueSeasonResult,
+        userRanking,
+        userReward,
+      );
+    });
   }
 }

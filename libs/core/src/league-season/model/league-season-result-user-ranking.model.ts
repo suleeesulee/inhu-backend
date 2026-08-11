@@ -1,6 +1,7 @@
 import { SelectLeagueSeasonResultUserRanking } from './prisma-type/select-league-season-result-user-ranking';
 
 export class LeagueSeasonResultUserRankingModel {
+  public leagueSeasonIdx: number;
   public userIdx: number;
   public nickname: string;
   public seasonRank: number;
@@ -18,6 +19,7 @@ export class LeagueSeasonResultUserRankingModel {
     data: SelectLeagueSeasonResultUserRanking,
   ): LeagueSeasonResultUserRankingModel {
     return new LeagueSeasonResultUserRankingModel({
+      leagueSeasonIdx: data.leagueSeasonIdx,
       userIdx: data.userIdx,
       nickname: data.nickname,
       seasonRank: data.seasonRank,

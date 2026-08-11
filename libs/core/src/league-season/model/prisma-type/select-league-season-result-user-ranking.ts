@@ -1,6 +1,7 @@
 import { Prisma } from '@prisma/client';
 
 export type SelectLeagueSeasonResultUserRanking = {
+  leagueSeasonIdx: number;
   userIdx: number;
   nickname: string;
   seasonRank: number;
@@ -12,19 +13,21 @@ export type SelectLeagueSeasonResultUserRanking = {
 };
 
 export const SELECT_LEAGUE_SEASON_RESULT_USER_RANKING = (
-  leagueSeasonIdx: number,
+  leagueSeasonIdxList: number[],
   userIdx?: number,
 ): Prisma.Sql => Prisma.sql`
   WITH target_league_season AS (
     SELECT
       idx,
+      start_at,
       end_at
     FROM league_season_tb
-    WHERE idx = ${leagueSeasonIdx}
+    WHERE idx IN (${Prisma.join(leagueSeasonIdxList)})
       AND finalized_at IS NOT NULL
   ),
   season_user_score AS (
     SELECT
+      tls.idx AS league_season_idx,
       lsr.user_idx,
       u.nickname,
       lsr.final_score AS season_score,
@@ -32,26 +35,27 @@ export const SELECT_LEAGUE_SEASON_RESULT_USER_RANKING = (
     FROM league_season_result_tb AS lsr
     JOIN target_league_season AS tls
       ON tls.idx = lsr.league_season_idx
-    JOIN league_season_tb AS ls
-      ON ls.idx = lsr.league_season_idx
     JOIN user_tb AS u
       ON u.idx = lsr.user_idx
     JOIN place_visit_tb AS pv
       ON pv.user_idx = lsr.user_idx
-      AND pv.created_at >= ls.start_at
-      AND pv.created_at <= ls.end_at
+      AND pv.created_at >= tls.start_at
+      AND pv.created_at <= tls.end_at
     GROUP BY
+      tls.idx,
       lsr.user_idx,
       u.nickname,
       lsr.final_score
   ),
   season_ranked_user AS (
     SELECT
+      league_season_idx,
       user_idx,
       nickname,
       season_score,
       season_latest_visit_at,
       ROW_NUMBER() OVER (
+        PARTITION BY league_season_idx
         ORDER BY
           season_score DESC,
           season_latest_visit_at DESC NULLS LAST,
@@ -61,26 +65,31 @@ export const SELECT_LEAGUE_SEASON_RESULT_USER_RANKING = (
   ),
   cumulative_league_season_result AS (
     SELECT
+      tls.idx AS target_league_season_idx,
       lsr.user_idx,
       lsr.final_score,
       ls.start_at,
       ls.end_at
-    FROM league_season_result_tb AS lsr
+    FROM target_league_season AS tls
     JOIN league_season_tb AS ls
-      ON ls.idx = lsr.league_season_idx
-    CROSS JOIN target_league_season AS tls
-    WHERE ls.end_at <= tls.end_at
+      ON ls.end_at <= tls.end_at
       AND ls.finalized_at IS NOT NULL
+    JOIN league_season_result_tb AS lsr
+      ON lsr.league_season_idx = ls.idx
   ),
   cumulative_user_score AS (
     SELECT
+      target_league_season_idx,
       user_idx,
       SUM(final_score)::int AS cumulative_score
     FROM cumulative_league_season_result
-    GROUP BY user_idx
+    GROUP BY
+      target_league_season_idx,
+      user_idx
   ),
   cumulative_user_latest_visit AS (
     SELECT
+      clsr.target_league_season_idx,
       clsr.user_idx,
       MAX(pv.created_at) AS cumulative_latest_visit_at
     FROM cumulative_league_season_result AS clsr
@@ -88,14 +97,18 @@ export const SELECT_LEAGUE_SEASON_RESULT_USER_RANKING = (
       ON pv.user_idx = clsr.user_idx
       AND pv.created_at >= clsr.start_at
       AND pv.created_at <= clsr.end_at
-    GROUP BY clsr.user_idx
+    GROUP BY
+      clsr.target_league_season_idx,
+      clsr.user_idx
   ),
   cumulative_ranked_user AS (
     SELECT
+      cus.target_league_season_idx,
       cus.user_idx,
       cus.cumulative_score,
       culv.cumulative_latest_visit_at,
       ROW_NUMBER() OVER (
+        PARTITION BY cus.target_league_season_idx
         ORDER BY
           cus.cumulative_score DESC,
           culv.cumulative_latest_visit_at DESC NULLS LAST,
@@ -103,9 +116,11 @@ export const SELECT_LEAGUE_SEASON_RESULT_USER_RANKING = (
       )::int AS cumulative_rank
     FROM cumulative_user_score AS cus
     JOIN cumulative_user_latest_visit AS culv
-      ON culv.user_idx = cus.user_idx
+      ON culv.target_league_season_idx = cus.target_league_season_idx
+      AND culv.user_idx = cus.user_idx
   )
   SELECT
+    sru.league_season_idx AS "leagueSeasonIdx",
     sru.user_idx AS "userIdx",
     sru.nickname AS "nickname",
     sru.season_rank AS "seasonRank",
@@ -116,12 +131,14 @@ export const SELECT_LEAGUE_SEASON_RESULT_USER_RANKING = (
     cru.cumulative_latest_visit_at AS "cumulativeLatestVisitAt"
   FROM season_ranked_user AS sru
   JOIN cumulative_ranked_user AS cru
-    ON cru.user_idx = sru.user_idx
+    ON cru.target_league_season_idx = sru.league_season_idx
+    AND cru.user_idx = sru.user_idx
   ${
     userIdx === undefined
       ? Prisma.empty
       : Prisma.sql`WHERE sru.user_idx = ${userIdx}`
   }
   ORDER BY
+    sru.league_season_idx ASC,
     sru.season_rank ASC
 `;

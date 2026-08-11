@@ -6,6 +6,7 @@ import { LeagueSeasonResultModel } from './model/league-season-result.model';
 import { LeagueSeasonResultUserRankingModel } from './model/league-season-result-user-ranking.model';
 import { LeagueSeasonModel } from './model/league-season.model';
 import { LeagueRewardOptionModel } from './model/league-reward-option.model';
+import { GetLeagueSeasonResultAllInput } from './inputs/get-league-season-result-all.input';
 
 @Injectable()
 export class LeagueSeasonCoreService {
@@ -17,7 +18,7 @@ export class LeagueSeasonCoreService {
     idx: number,
   ): Promise<LeagueSeasonModel | null> {
     const leagueSeason =
-      await this.leagueSeasonCoreRepository.getLeagueSeasonByIdx(idx);
+      await this.leagueSeasonCoreRepository.selectLeagueSeasonByIdx(idx);
     return leagueSeason && LeagueSeasonModel.fromPrisma(leagueSeason);
   }
 
@@ -26,7 +27,7 @@ export class LeagueSeasonCoreService {
     endAt: string,
   ): Promise<LeagueSeasonModel | null> {
     const leagueSeason =
-      await this.leagueSeasonCoreRepository.getLeagueSeasonByDate(
+      await this.leagueSeasonCoreRepository.selectLeagueSeasonByDate(
         startAt,
         endAt,
       );
@@ -34,17 +35,31 @@ export class LeagueSeasonCoreService {
   }
 
   public async getLeagueSeasonAll(): Promise<LeagueSeasonModel[]> {
-    return (await this.leagueSeasonCoreRepository.getLeagueSeasonAll()).map(
+    return (await this.leagueSeasonCoreRepository.selectLeagueSeasonAll()).map(
       (leagueSeason) => LeagueSeasonModel.fromPrisma(leagueSeason),
     );
   }
 
-  public async getLeagueSeasonResultByLeagueSeasonIdx(
+  public async getLeagueSeasonResultAllByUserIdx(
+    userIdx: number,
+    input: GetLeagueSeasonResultAllInput,
+  ): Promise<LeagueSeasonResultModel[]> {
+    return (
+      await this.leagueSeasonCoreRepository.selectLeagueSeasonResultAllByUserIdx(
+        userIdx,
+        input,
+      )
+    ).map(LeagueSeasonResultModel.fromPrisma);
+  }
+
+  public async getLeagueSeasonResultByLeagueSeasonIdxAndUserIdx(
     leagueSeasonIdx: number,
+    userIdx: number,
   ): Promise<LeagueSeasonResultModel | null> {
     const leagueSeasonResult =
-      await this.leagueSeasonCoreRepository.getLeagueSeasonResultByLeagueSeasonIdx(
+      await this.leagueSeasonCoreRepository.selectLeagueSeasonResultByLeagueSeasonIdxAndUserIdx(
         leagueSeasonIdx,
+        userIdx,
       );
 
     return (
@@ -57,18 +72,18 @@ export class LeagueSeasonCoreService {
     leagueSeasonIdx: number,
   ): Promise<LeagueSeasonResultUserRankingModel[]> {
     return (
-      await this.leagueSeasonCoreRepository.getLeagueSeasonResultUserRankingAllByLeagueSeasonIdx(
+      await this.leagueSeasonCoreRepository.selectLeagueSeasonResultUserRankingAllByLeagueSeasonIdx(
         leagueSeasonIdx,
       )
     ).map(LeagueSeasonResultUserRankingModel.fromQuery);
   }
 
-  public async getLeagueSeasonResultUserRankingByLeagueSeasonAndUserIdx(
+  public async getLeagueSeasonResultUserRankingByLeagueSeasonIdxAndUserIdx(
     leagueSeasonIdx: number,
     userIdx: number,
   ): Promise<LeagueSeasonResultUserRankingModel | null> {
     const userRanking =
-      await this.leagueSeasonCoreRepository.getLeagueSeasonResultUserRankingByLeagueSeasonAndUserIdx(
+      await this.leagueSeasonCoreRepository.selectLeagueSeasonResultUserRankingByLeagueSeasonIdxAndUserIdx(
         leagueSeasonIdx,
         userIdx,
       );
@@ -78,11 +93,23 @@ export class LeagueSeasonCoreService {
     );
   }
 
+  public async getLeagueSeasonResultUserRankingByLeagueSeasonIdxListAndUserIdx(
+    leagueSeasonIdxList: number[],
+    userIdx: number,
+  ): Promise<LeagueSeasonResultUserRankingModel[]> {
+    return (
+      await this.leagueSeasonCoreRepository.selectLeagueSeasonResultUserRankingByLeagueSeasonIdxListAndUserIdx(
+        leagueSeasonIdxList,
+        userIdx,
+      )
+    ).map(LeagueSeasonResultUserRankingModel.fromQuery);
+  }
+
   public async getLeagueRewardOptionAllByLeagueSeasonIdx(
     leagueSeasonIdx: number,
   ): Promise<LeagueRewardOptionModel[]> {
     return (
-      await this.leagueSeasonCoreRepository.getLeagueRewardOptionAllByLeagueSeasonIdx(
+      await this.leagueSeasonCoreRepository.selectLeagueRewardOptionAllByLeagueSeasonIdx(
         leagueSeasonIdx,
       )
     ).map(LeagueRewardOptionModel.fromPrisma);
@@ -93,7 +120,7 @@ export class LeagueSeasonCoreService {
     targetRank: number,
   ): Promise<LeagueRewardOptionModel[]> {
     return (
-      await this.leagueSeasonCoreRepository.getLeagueRewardOptionAllByLeagueSeasonIdxAndTargetRank(
+      await this.leagueSeasonCoreRepository.selectLeagueRewardOptionAllByLeagueSeasonIdxAndTargetRank(
         leagueSeasonIdx,
         targetRank,
       )

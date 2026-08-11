@@ -13,7 +13,7 @@ export class LeagueSeasonResultEntity {
   public leagueSeason: LeagueSeasonEntity;
   public participantCount: number;
   public userRanking: LeagueSeasonResultUserRankingEntity;
-  public placeVisitStatistic: PlaceVisitStatisticEntity;
+  public placeVisitStatisticList: PlaceVisitStatisticEntity[];
   public userReward: UserRewardEntity;
 
   constructor(data: LeagueSeasonResultEntity) {
@@ -23,7 +23,7 @@ export class LeagueSeasonResultEntity {
   public static fromModel(
     model: LeagueSeasonResultModel,
     userRanking: LeagueSeasonResultUserRankingModel,
-    placeVisitStatistic: PlaceVisitStatisticModel,
+    placeVisitStatisticList: PlaceVisitStatisticModel[],
     userReward: UserRewardModel,
   ): LeagueSeasonResultEntity {
     return new LeagueSeasonResultEntity({
@@ -32,8 +32,9 @@ export class LeagueSeasonResultEntity {
       leagueSeason: LeagueSeasonEntity.fromModel(model.leagueSeason),
       participantCount: model.participantCount,
       userRanking: LeagueSeasonResultUserRankingEntity.fromModel(userRanking),
-      placeVisitStatistic:
-        PlaceVisitStatisticEntity.fromModel(placeVisitStatistic),
+      placeVisitStatisticList: placeVisitStatisticList.map((stat) =>
+        PlaceVisitStatisticEntity.fromModel(stat),
+      ),
       userReward: UserRewardEntity.fromModel(userReward),
     });
   }

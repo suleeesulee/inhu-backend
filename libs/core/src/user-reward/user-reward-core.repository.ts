@@ -39,6 +39,30 @@ export class UserRewardCoreRepository {
     });
   }
 
+  public async selectUserRewardByLeagueSeasonResultId(
+    leagueSeasonResultId: string,
+  ): Promise<SelectUserReward | null> {
+    return await this.txHost.tx.userReward.findFirst({
+      ...SELECT_USER_REWARD,
+      where: { leagueSeasonResultId },
+    });
+  }
+
+  public async selectUserRewardAllByLeagueSeasonResultIdList(
+    leagueSeasonResultIdList: string[],
+  ): Promise<SelectUserReward[]> {
+    if (leagueSeasonResultIdList.length === 0) {
+      return [];
+    }
+
+    return await this.txHost.tx.userReward.findMany({
+      ...SELECT_USER_REWARD,
+      where: {
+        leagueSeasonResultId: { in: leagueSeasonResultIdList },
+      },
+    });
+  }
+
   public async insertUserReward(
     input: CreateUserRewardInput,
   ): Promise<SelectUserReward> {
