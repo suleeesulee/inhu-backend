@@ -10,7 +10,10 @@ export const SELECT_LEAGUE_SEASON =
       endAt: true,
       createdAt: true,
       finalizedAt: true,
-      rewardOptionList: SELECT_LEAGUE_REWARD_OPTION,
+      rewardOptionList: {
+        ...SELECT_LEAGUE_REWARD_OPTION,
+        where: { deletedAt: null },
+      },
     },
   });
 

@@ -40,6 +40,32 @@ export class LeagueSeasonCoreService {
     );
   }
 
+  public async getLeagueSeasonResultById(
+    id: string,
+  ): Promise<LeagueSeasonResultModel | null> {
+    const leagueSeasonResult =
+      await this.leagueSeasonCoreRepository.selectLeagueSeasonResultById(id);
+    return (
+      leagueSeasonResult &&
+      LeagueSeasonResultModel.fromPrisma(leagueSeasonResult)
+    );
+  }
+
+  public async getLeagueSeasonResultByIdAndUserIdx(
+    id: string,
+    userIdx: number,
+  ): Promise<LeagueSeasonResultModel | null> {
+    const leagueSeasonResult =
+      await this.leagueSeasonCoreRepository.selectLeagueSeasonResultByIdAndUserIdx(
+        id,
+        userIdx,
+      );
+    return (
+      leagueSeasonResult &&
+      LeagueSeasonResultModel.fromPrisma(leagueSeasonResult)
+    );
+  }
+
   public async getLeagueSeasonResultAllByUserIdx(
     userIdx: number,
     input: GetLeagueSeasonResultAllInput,

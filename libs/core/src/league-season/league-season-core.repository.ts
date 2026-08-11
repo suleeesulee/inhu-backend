@@ -57,6 +57,30 @@ export class LeagueSeasonCoreRepository {
     });
   }
 
+  public async selectLeagueSeasonResultById(
+    id: string,
+  ): Promise<SelectLeagueSeasonResult | null> {
+    return await this.txHost.tx.leagueSeasonResult.findUnique({
+      ...SELECT_LEAGUE_SEASON_RESULT,
+      where: {
+        id,
+      },
+    });
+  }
+
+  public async selectLeagueSeasonResultByIdAndUserIdx(
+    id: string,
+    userIdx: number,
+  ): Promise<SelectLeagueSeasonResult | null> {
+    return await this.txHost.tx.leagueSeasonResult.findFirst({
+      ...SELECT_LEAGUE_SEASON_RESULT,
+      where: {
+        id,
+        userIdx,
+      },
+    });
+  }
+
   public async selectLeagueSeasonResultAllByUserIdx(
     userIdx: number,
     input: GetLeagueSeasonResultAllInput,
@@ -128,6 +152,7 @@ export class LeagueSeasonCoreRepository {
       ...SELECT_LEAGUE_REWARD_OPTION,
       where: {
         leagueSeasonIdx,
+        deletedAt: null,
       },
     });
   }
@@ -141,6 +166,7 @@ export class LeagueSeasonCoreRepository {
       where: {
         leagueSeasonIdx,
         targetRank,
+        deletedAt: null,
       },
     });
   }

@@ -14,9 +14,20 @@ export class UserRewardController {
   @LoginAuth()
   @Exception(400, 'Invalid request')
   @Exception(403, 'User is not school verified')
-  @Exception(404, 'Reward not found')
+  @Exception(403, 'Reward is not available for this league season')
+  @Exception(
+    403,
+    "Reward is not available for the user's rank in this league season",
+  )
+  @Exception(
+    403,
+    'Different user cannot select reward for this league season result',
+  )
   @Exception(404, 'User reward not found')
+  @Exception(404, 'Reward not found')
+  @Exception(404, 'League-season-result-user-ranking not found')
   @Exception(409, 'Reward has already been selected')
+  @Exception(409, 'Reward has already been issued')
   public async updateUserRewardById(
     @Body() dto: UpdateUserRewardDto,
     @Param('id', ParseUUIDPipe) id: string,
