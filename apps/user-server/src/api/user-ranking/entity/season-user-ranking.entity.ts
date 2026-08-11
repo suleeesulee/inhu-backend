@@ -7,6 +7,7 @@ export class SeasonUserRankingEntity extends PickType(UserRankingEntity, [
   'nickname',
   'seasonRank',
   'seasonScore',
+  'seasonLatestVisitAt',
 ]) {
   constructor(data: SeasonUserRankingEntity) {
     super();
@@ -21,6 +22,7 @@ export class SeasonUserRankingEntity extends PickType(UserRankingEntity, [
       nickname: model.nickname,
       seasonRank: model.seasonRank,
       seasonScore: model.seasonScore,
+      seasonLatestVisitAt: model.seasonLatestVisitAt,
     });
   }
 }

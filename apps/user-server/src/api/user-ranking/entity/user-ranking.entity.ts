@@ -30,6 +30,11 @@ export class UserRankingEntity {
   public seasonScore: number;
 
   /**
+   * 시즌 내 가장 최근 방문 일시
+   */
+  public seasonLatestVisitAt: Date | null;
+
+  /**
    * 누적 랭킹
    *
    * @example 1
@@ -43,6 +48,11 @@ export class UserRankingEntity {
    */
   public cumulativeScore: number;
 
+  /**
+   * 누적 기준 가장 최근 방문 일시
+   */
+  public cumulativeLatestVisitAt: Date | null;
+
   constructor(data: UserRankingEntity) {
     Object.assign(this, data);
   }
@@ -53,8 +63,10 @@ export class UserRankingEntity {
       nickname: model.nickname,
       seasonRank: model.seasonRank,
       seasonScore: model.seasonScore,
+      seasonLatestVisitAt: model.seasonLatestVisitAt,
       cumulativeRank: model.cumulativeRank,
       cumulativeScore: model.cumulativeScore,
+      cumulativeLatestVisitAt: model.cumulativeLatestVisitAt,
     });
   }
 }

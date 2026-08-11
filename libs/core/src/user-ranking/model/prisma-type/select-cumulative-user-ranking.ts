@@ -5,6 +5,7 @@ export type SelectCumulativeUserRanking = {
   nickname: string;
   cumulativeRank: number;
   cumulativeScore: number;
+  cumulativeLatestVisitAt: Date;
 };
 
 export const SELECT_CUMULATIVE_USER_RANKING: Prisma.Sql = Prisma.sql`
@@ -12,7 +13,8 @@ export const SELECT_CUMULATIVE_USER_RANKING: Prisma.Sql = Prisma.sql`
     SELECT
       u.idx AS user_idx,
       u.nickname,
-      COALESCE(SUM(pv.score), 0)::int AS cumulative_score
+      COALESCE(SUM(pv.score), 0)::int AS cumulative_score,
+      MAX(pv.created_at) AS cumulative_latest_visit_at
     FROM user_tb AS u
     LEFT JOIN place_visit_tb AS pv
       ON pv.user_idx = u.idx
@@ -27,13 +29,20 @@ export const SELECT_CUMULATIVE_USER_RANKING: Prisma.Sql = Prisma.sql`
       user_idx,
       nickname,
       cumulative_score,
-      RANK() OVER (ORDER BY cumulative_score DESC)::int AS cumulative_rank
+      cumulative_latest_visit_at,
+      ROW_NUMBER() OVER (
+        ORDER BY
+          cumulative_score DESC,
+          cumulative_latest_visit_at DESC,
+          user_idx ASC
+      )::int AS cumulative_rank
     FROM user_score
   )
   SELECT
     ru.user_idx AS "userIdx",
     ru.nickname AS "nickname",
     ru.cumulative_rank AS "cumulativeRank",
-    ru.cumulative_score AS "cumulativeScore"
+    ru.cumulative_score AS "cumulativeScore",
+    ru.cumulative_latest_visit_at AS "cumulativeLatestVisitAt"
   FROM ranked_user AS ru
 `;

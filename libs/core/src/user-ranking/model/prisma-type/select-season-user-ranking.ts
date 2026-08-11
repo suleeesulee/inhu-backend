@@ -5,6 +5,7 @@ export type SelectSeasonUserRanking = {
   nickname: string;
   seasonRank: number;
   seasonScore: number;
+  seasonLatestVisitAt: Date;
 };
 
 export const SELECT_SEASON_USER_RANKING = (
@@ -23,7 +24,8 @@ export const SELECT_SEASON_USER_RANKING = (
       u.idx AS user_idx,
       u.nickname,
       tls.idx AS league_season_idx,
-      COALESCE(SUM(pv.score), 0)::int AS season_score
+      COALESCE(SUM(pv.score), 0)::int AS season_score,
+      MAX(pv.created_at) AS season_latest_visit_at
     FROM user_tb AS u
     JOIN target_league_season AS tls
       ON TRUE
@@ -44,13 +46,20 @@ export const SELECT_SEASON_USER_RANKING = (
       nickname,
       league_season_idx,
       season_score,
-      RANK() OVER (ORDER BY season_score DESC)::int AS season_rank
+      season_latest_visit_at,
+      ROW_NUMBER() OVER (
+        ORDER BY
+          season_score DESC,
+          season_latest_visit_at DESC,
+          user_idx ASC
+      )::int AS season_rank
     FROM user_score
   )
   SELECT
     ru.user_idx AS "userIdx",
     ru.nickname AS "nickname",
     ru.season_rank AS "seasonRank",
-    ru.season_score AS "seasonScore"
+    ru.season_score AS "seasonScore",
+    ru.season_latest_visit_at AS "seasonLatestVisitAt"
   FROM ranked_user AS ru
 `;

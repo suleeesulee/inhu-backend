@@ -7,6 +7,7 @@ export class CumulativeUserRankingModel extends PickType(UserRankingModel, [
   'nickname',
   'cumulativeRank',
   'cumulativeScore',
+  'cumulativeLatestVisitAt',
 ]) {
   constructor(data: CumulativeUserRankingModel) {
     super();
@@ -21,6 +22,7 @@ export class CumulativeUserRankingModel extends PickType(UserRankingModel, [
       nickname: data.nickname,
       cumulativeRank: data.cumulativeRank,
       cumulativeScore: data.cumulativeScore,
+      cumulativeLatestVisitAt: data.cumulativeLatestVisitAt,
     });
   }
 }

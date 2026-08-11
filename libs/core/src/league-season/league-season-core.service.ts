@@ -3,7 +3,9 @@ import { CreateLeagueSeasonInput } from './inputs/create-league-season.input';
 import { UpdateLeagueSeasonInput } from './inputs/update-league-season.input';
 import { LeagueSeasonCoreRepository } from './league-season-core.repository';
 import { LeagueSeasonResultModel } from './model/league-season-result.model';
+import { LeagueSeasonResultUserRankingModel } from './model/league-season-result-user-ranking.model';
 import { LeagueSeasonModel } from './model/league-season.model';
+import { LeagueRewardOptionModel } from './model/league-reward-option.model';
 
 @Injectable()
 export class LeagueSeasonCoreService {
@@ -49,6 +51,53 @@ export class LeagueSeasonCoreService {
       leagueSeasonResult &&
       LeagueSeasonResultModel.fromPrisma(leagueSeasonResult)
     );
+  }
+
+  public async getLeagueSeasonResultUserRankingAllByLeagueSeasonIdx(
+    leagueSeasonIdx: number,
+  ): Promise<LeagueSeasonResultUserRankingModel[]> {
+    return (
+      await this.leagueSeasonCoreRepository.getLeagueSeasonResultUserRankingAllByLeagueSeasonIdx(
+        leagueSeasonIdx,
+      )
+    ).map(LeagueSeasonResultUserRankingModel.fromQuery);
+  }
+
+  public async getLeagueSeasonResultUserRankingByLeagueSeasonAndUserIdx(
+    leagueSeasonIdx: number,
+    userIdx: number,
+  ): Promise<LeagueSeasonResultUserRankingModel | null> {
+    const userRanking =
+      await this.leagueSeasonCoreRepository.getLeagueSeasonResultUserRankingByLeagueSeasonAndUserIdx(
+        leagueSeasonIdx,
+        userIdx,
+      );
+
+    return (
+      userRanking && LeagueSeasonResultUserRankingModel.fromQuery(userRanking)
+    );
+  }
+
+  public async getLeagueRewardOptionAllByLeagueSeasonIdx(
+    leagueSeasonIdx: number,
+  ): Promise<LeagueRewardOptionModel[]> {
+    return (
+      await this.leagueSeasonCoreRepository.getLeagueRewardOptionAllByLeagueSeasonIdx(
+        leagueSeasonIdx,
+      )
+    ).map(LeagueRewardOptionModel.fromPrisma);
+  }
+
+  public async getLeagueRewardOptionAllByLeagueSeasonIdxAndTargetRank(
+    leagueSeasonIdx: number,
+    targetRank: number,
+  ): Promise<LeagueRewardOptionModel[]> {
+    return (
+      await this.leagueSeasonCoreRepository.getLeagueRewardOptionAllByLeagueSeasonIdxAndTargetRank(
+        leagueSeasonIdx,
+        targetRank,
+      )
+    ).map(LeagueRewardOptionModel.fromPrisma);
   }
 
   public async createLeagueSeason(

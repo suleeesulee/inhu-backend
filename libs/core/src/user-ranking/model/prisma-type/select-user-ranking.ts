@@ -5,8 +5,10 @@ export type SelectUserRanking = {
   nickname: string;
   seasonRank: number | null;
   seasonScore: number;
+  seasonLatestVisitAt: Date | null;
   cumulativeRank: number | null;
   cumulativeScore: number;
+  cumulativeLatestVisitAt: Date | null;
 };
 
 export const SELECT_USER_RANKING: Prisma.Sql = Prisma.sql`
@@ -22,7 +24,12 @@ export const SELECT_USER_RANKING: Prisma.Sql = Prisma.sql`
         ),
         0
       )::int AS season_score,
-      COALESCE(SUM(pv.score), 0)::int AS cumulative_score
+      MAX(pv.created_at) FILTER (
+        WHERE pv.created_at >= ls.start_at
+          AND pv.created_at <= ls.end_at
+      ) AS season_latest_visit_at,
+      COALESCE(SUM(pv.score), 0)::int AS cumulative_score,
+      MAX(pv.created_at) AS cumulative_latest_visit_at
     FROM league_season_tb AS ls
     CROSS JOIN user_tb AS u
     LEFT JOIN place_visit_tb AS pv
@@ -41,19 +48,27 @@ export const SELECT_USER_RANKING: Prisma.Sql = Prisma.sql`
       user_idx,
       nickname,
       season_score,
+      season_latest_visit_at,
       cumulative_score,
+      cumulative_latest_visit_at,
       CASE
         WHEN season_score = 0 THEN NULL
-        ELSE RANK() OVER (
+        ELSE ROW_NUMBER() OVER (
           PARTITION BY league_season_idx
-          ORDER BY season_score DESC
+          ORDER BY
+            season_score DESC,
+            season_latest_visit_at DESC NULLS LAST,
+            user_idx ASC
         )::int
       END AS season_rank,
       CASE
         WHEN cumulative_score = 0 THEN NULL
-        ELSE RANK() OVER (
+        ELSE ROW_NUMBER() OVER (
           PARTITION BY league_season_idx
-          ORDER BY cumulative_score DESC
+          ORDER BY
+            cumulative_score DESC,
+            cumulative_latest_visit_at DESC NULLS LAST,
+            user_idx ASC
         )::int
       END AS cumulative_rank
     FROM user_score
@@ -63,7 +78,9 @@ export const SELECT_USER_RANKING: Prisma.Sql = Prisma.sql`
     ru.nickname AS "nickname",
     ru.season_rank AS "seasonRank",
     ru.season_score AS "seasonScore",
+    ru.season_latest_visit_at AS "seasonLatestVisitAt",
     ru.cumulative_rank AS "cumulativeRank",
-    ru.cumulative_score AS "cumulativeScore"
+    ru.cumulative_score AS "cumulativeScore",
+    ru.cumulative_latest_visit_at AS "cumulativeLatestVisitAt"
   FROM ranked_user AS ru
 `;

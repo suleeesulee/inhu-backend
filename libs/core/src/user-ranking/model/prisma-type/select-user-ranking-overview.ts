@@ -29,7 +29,12 @@ export const SELECT_USER_RANKING_OVERVIEW: Prisma.Sql = Prisma.sql`
         ),
         0
       )::int AS season_score,
-      COALESCE(SUM(pv.score), 0)::int AS cumulative_score
+      MAX(pv.created_at) FILTER (
+        WHERE pv.created_at >= tls.start_at
+          AND pv.created_at <= tls.end_at
+      ) AS season_latest_visit_at,
+      COALESCE(SUM(pv.score), 0)::int AS cumulative_score,
+      MAX(pv.created_at) AS cumulative_latest_visit_at
     FROM user_tb AS u
     JOIN target_league_season AS tls
       ON TRUE
@@ -46,14 +51,26 @@ export const SELECT_USER_RANKING_OVERVIEW: Prisma.Sql = Prisma.sql`
     SELECT
       user_idx,
       season_score,
+      season_latest_visit_at,
       cumulative_score,
+      cumulative_latest_visit_at,
       CASE
         WHEN season_score = 0 THEN NULL
-        ELSE RANK() OVER (ORDER BY season_score DESC)::int
+        ELSE ROW_NUMBER() OVER (
+          ORDER BY
+            season_score DESC,
+            season_latest_visit_at DESC NULLS LAST,
+            user_idx ASC
+        )::int
       END AS season_rank,
       CASE
         WHEN cumulative_score = 0 THEN NULL
-        ELSE RANK() OVER (ORDER BY cumulative_score DESC)::int
+        ELSE ROW_NUMBER() OVER (
+          ORDER BY
+            cumulative_score DESC,
+            cumulative_latest_visit_at DESC NULLS LAST,
+            user_idx ASC
+        )::int
       END AS cumulative_rank
     FROM user_score
   )

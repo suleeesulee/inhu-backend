@@ -11,6 +11,14 @@ import {
   SELECT_LEAGUE_SEASON_RESULT,
   SelectLeagueSeasonResult,
 } from './model/prisma-type/select-league-season-result';
+import {
+  SELECT_LEAGUE_SEASON_RESULT_USER_RANKING,
+  SelectLeagueSeasonResultUserRanking,
+} from './model/prisma-type/select-league-season-result-user-ranking';
+import {
+  SELECT_LEAGUE_REWARD_OPTION,
+  SelectLeagueRewardOption,
+} from './model/prisma-type/select-league-reward-option';
 
 @Injectable()
 export class LeagueSeasonCoreRepository {
@@ -55,6 +63,49 @@ export class LeagueSeasonCoreRepository {
       ...SELECT_LEAGUE_SEASON_RESULT,
       where: {
         leagueSeasonIdx,
+      },
+    });
+  }
+
+  public async getLeagueSeasonResultUserRankingAllByLeagueSeasonIdx(
+    leagueSeasonIdx: number,
+  ): Promise<SelectLeagueSeasonResultUserRanking[]> {
+    return await this.txHost.tx.$queryRaw<
+      SelectLeagueSeasonResultUserRanking[]
+    >(SELECT_LEAGUE_SEASON_RESULT_USER_RANKING(leagueSeasonIdx));
+  }
+
+  public async getLeagueSeasonResultUserRankingByLeagueSeasonAndUserIdx(
+    leagueSeasonIdx: number,
+    userIdx: number,
+  ): Promise<SelectLeagueSeasonResultUserRanking | null> {
+    const [userRanking] = await this.txHost.tx.$queryRaw<
+      SelectLeagueSeasonResultUserRanking[]
+    >(SELECT_LEAGUE_SEASON_RESULT_USER_RANKING(leagueSeasonIdx, userIdx));
+
+    return userRanking ?? null;
+  }
+
+  public async getLeagueRewardOptionAllByLeagueSeasonIdx(
+    leagueSeasonIdx: number,
+  ): Promise<SelectLeagueRewardOption[]> {
+    return await this.txHost.tx.leagueRewardOption.findMany({
+      ...SELECT_LEAGUE_REWARD_OPTION,
+      where: {
+        leagueSeasonIdx,
+      },
+    });
+  }
+
+  public async getLeagueRewardOptionAllByLeagueSeasonIdxAndTargetRank(
+    leagueSeasonIdx: number,
+    targetRank: number,
+  ): Promise<SelectLeagueRewardOption[]> {
+    return await this.txHost.tx.leagueRewardOption.findMany({
+      ...SELECT_LEAGUE_REWARD_OPTION,
+      where: {
+        leagueSeasonIdx,
+        targetRank,
       },
     });
   }
