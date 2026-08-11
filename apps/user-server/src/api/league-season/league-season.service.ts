@@ -1,7 +1,7 @@
 import { LeagueSeasonCoreService } from '@libs/core/league-season/league-season-core.service';
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { LeagueSeasonEntity } from './entity/league-season.entity';
 import { GetLeagueSeasonByDateDto } from './dto/request/get-league-season-by-date.dto';
+import { LeagueSeasonEntity } from './entity/league-season.entity';
 
 @Injectable()
 export class LeagueSeasonService {

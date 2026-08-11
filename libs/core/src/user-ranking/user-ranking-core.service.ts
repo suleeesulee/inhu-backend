@@ -2,7 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { UserRankingCoreRepository } from './user-ranking-core.repository';
 import { GetCumulativeRankingAllInput } from './inputs/get-cumulative-ranking-all.input';
 import { GetSeasonRankingAllInput } from './inputs/get-season-ranking-all.input';
-import { UserRankingEntryModel } from './model/user-ranking-entry.model';
+import { CumulativeUserRankingModel } from './model/cumulative-user-ranking.model';
+import { SeasonUserRankingModel } from './model/season-user-ranking.model';
 import { UserRankingOverviewModel } from './model/user-ranking-overview.model';
 import { UserRankingModel } from './model/user-ranking.model';
 
@@ -22,24 +23,24 @@ export class UserRankingCoreService {
     ).map(UserRankingModel.fromQuery);
   }
 
-  public async getSeasonRankingAll(
+  public async getSeasonUserRankingAll(
     leagueSeasonIdx: number,
     input: GetSeasonRankingAllInput,
-  ): Promise<UserRankingEntryModel[]> {
+  ): Promise<SeasonUserRankingModel[]> {
     return (
-      await this.userRankingCoreRepository.selectSeasonRankingAllByLeagueSeasonIdx(
+      await this.userRankingCoreRepository.selectSeasonUserRankingAllByLeagueSeasonIdx(
         leagueSeasonIdx,
         input,
       )
-    ).map(UserRankingEntryModel.fromQuery);
+    ).map(SeasonUserRankingModel.fromQuery);
   }
 
-  public async getCumulativeRankingAll(
+  public async getCumulativeUserRankingAll(
     input: GetCumulativeRankingAllInput,
-  ): Promise<UserRankingEntryModel[]> {
+  ): Promise<CumulativeUserRankingModel[]> {
     return (
-      await this.userRankingCoreRepository.selectCumulativeRankingAll(input)
-    ).map(UserRankingEntryModel.fromQuery);
+      await this.userRankingCoreRepository.selectCumulativeUserRankingAll(input)
+    ).map(CumulativeUserRankingModel.fromQuery);
   }
 
   public async getUserRankingOverviewByUserIdx(

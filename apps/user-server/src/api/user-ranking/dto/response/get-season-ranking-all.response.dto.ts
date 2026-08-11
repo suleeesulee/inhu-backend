@@ -1,6 +1,6 @@
-import { UserRankingEntryEntity } from '../../entity/user-ranking-entry.entity';
+import { SeasonUserRankingEntity } from '../../entity/season-user-ranking.entity';
 
 export class GetSeasonRankingAllResponseDto {
   public hasNext: boolean;
-  public userRankingEntryList: UserRankingEntryEntity[];
+  public seasonUserRankingList: SeasonUserRankingEntity[];
 }

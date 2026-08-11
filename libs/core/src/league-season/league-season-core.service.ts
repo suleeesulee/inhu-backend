@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { LeagueSeasonCoreRepository } from './league-season-core.repository';
-import { LeagueSeasonModel } from './model/league-season.model';
 import { CreateLeagueSeasonInput } from './inputs/create-league-season.input';
 import { UpdateLeagueSeasonInput } from './inputs/update-league-season.input';
+import { LeagueSeasonCoreRepository } from './league-season-core.repository';
+import { LeagueSeasonResultModel } from './model/league-season-result.model';
+import { LeagueSeasonModel } from './model/league-season.model';
 
 @Injectable()
 export class LeagueSeasonCoreService {
@@ -33,6 +34,20 @@ export class LeagueSeasonCoreService {
   public async getLeagueSeasonAll(): Promise<LeagueSeasonModel[]> {
     return (await this.leagueSeasonCoreRepository.getLeagueSeasonAll()).map(
       (leagueSeason) => LeagueSeasonModel.fromPrisma(leagueSeason),
+    );
+  }
+
+  public async getLeagueSeasonResultByLeagueSeasonIdx(
+    leagueSeasonIdx: number,
+  ): Promise<LeagueSeasonResultModel | null> {
+    const leagueSeasonResult =
+      await this.leagueSeasonCoreRepository.getLeagueSeasonResultByLeagueSeasonIdx(
+        leagueSeasonIdx,
+      );
+
+    return (
+      leagueSeasonResult &&
+      LeagueSeasonResultModel.fromPrisma(leagueSeasonResult)
     );
   }
 

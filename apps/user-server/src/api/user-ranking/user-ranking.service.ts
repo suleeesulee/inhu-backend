@@ -4,7 +4,8 @@ import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { GetCumulativeRankingAllDto } from './dto/request/get-ranking-all.dto';
 import { GetSeasonRankingAllResponseDto } from './dto/response/get-season-ranking-all.response.dto';
 import { GetCumulativeRankingAllResponseDto } from './dto/response/get-cumulative-ranking-all.response.dto';
-import { UserRankingEntryEntity } from './entity/user-ranking-entry.entity';
+import { CumulativeUserRankingEntity } from './entity/cumulative-user-ranking.entity';
+import { SeasonUserRankingEntity } from './entity/season-user-ranking.entity';
 import { UserRankingOverviewEntity } from './entity/user-ranking-overview.entity';
 import { UserRankingEntity } from './entity/user-ranking.entity';
 import { GetSeasonRankingAllDto } from './dto/request/get-season-ranking-all.dto';
@@ -48,19 +49,20 @@ export class UserRankingService {
       throw new NotFoundException('League season not found');
     }
 
-    const rankingList = await this.userRankingCoreService.getSeasonRankingAll(
-      leagueSeasonIdx,
-      {
-        take: pageSize + 1,
-        skip,
-      },
-    );
+    const rankingList =
+      await this.userRankingCoreService.getSeasonUserRankingAll(
+        leagueSeasonIdx,
+        {
+          take: pageSize + 1,
+          skip,
+        },
+      );
 
     return {
       hasNext: rankingList.length > pageSize,
-      userRankingEntryList: rankingList
+      seasonUserRankingList: rankingList
         .slice(0, pageSize)
-        .map(UserRankingEntryEntity.fromModel),
+        .map(SeasonUserRankingEntity.fromModel),
     };
   }
 
@@ -70,16 +72,16 @@ export class UserRankingService {
     const pageSize = 10;
     const skip = (dto.page - 1) * pageSize;
     const rankingList =
-      await this.userRankingCoreService.getCumulativeRankingAll({
+      await this.userRankingCoreService.getCumulativeUserRankingAll({
         take: pageSize + 1,
         skip,
       });
 
     return {
       hasNext: rankingList.length > pageSize,
-      userRankingEntryList: rankingList
+      cumulativeUserRankingList: rankingList
         .slice(0, pageSize)
-        .map(UserRankingEntryEntity.fromModel),
+        .map(CumulativeUserRankingEntity.fromModel),
     };
   }
 

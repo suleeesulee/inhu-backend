@@ -1,12 +1,16 @@
 import { TransactionHost } from '@nestjs-cls/transactional';
 import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-prisma';
 import { Injectable } from '@nestjs/common';
+import { CreateLeagueSeasonInput } from './inputs/create-league-season.input';
+import { UpdateLeagueSeasonInput } from './inputs/update-league-season.input';
 import {
   SELECT_LEAGUE_SEASON,
   SelectLeagueSeason,
 } from './model/prisma-type/select-league-season';
-import { CreateLeagueSeasonInput } from './inputs/create-league-season.input';
-import { UpdateLeagueSeasonInput } from './inputs/update-league-season.input';
+import {
+  SELECT_LEAGUE_SEASON_RESULT,
+  SelectLeagueSeasonResult,
+} from './model/prisma-type/select-league-season-result';
 
 @Injectable()
 export class LeagueSeasonCoreRepository {
@@ -41,6 +45,17 @@ export class LeagueSeasonCoreRepository {
   public async getLeagueSeasonAll(): Promise<SelectLeagueSeason[]> {
     return await this.txHost.tx.leagueSeason.findMany({
       ...SELECT_LEAGUE_SEASON,
+    });
+  }
+
+  public async getLeagueSeasonResultByLeagueSeasonIdx(
+    leagueSeasonIdx: number,
+  ): Promise<SelectLeagueSeasonResult | null> {
+    return await this.txHost.tx.leagueSeasonResult.findFirst({
+      ...SELECT_LEAGUE_SEASON_RESULT,
+      where: {
+        leagueSeasonIdx,
+      },
     });
   }
 

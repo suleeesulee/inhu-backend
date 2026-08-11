@@ -1,6 +1,6 @@
-import { UserRankingEntryEntity } from '../../entity/user-ranking-entry.entity';
+import { CumulativeUserRankingEntity } from '../../entity/cumulative-user-ranking.entity';
 
 export class GetCumulativeRankingAllResponseDto {
   public hasNext: boolean;
-  public userRankingEntryList: UserRankingEntryEntity[];
+  public cumulativeUserRankingList: CumulativeUserRankingEntity[];
 }

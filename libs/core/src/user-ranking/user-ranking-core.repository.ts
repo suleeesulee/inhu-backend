@@ -4,9 +4,12 @@ import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import {
   SELECT_CUMULATIVE_USER_RANKING,
+  SelectCumulativeUserRanking,
+} from './model/prisma-type/select-cumulative-user-ranking';
+import {
   SELECT_SEASON_USER_RANKING,
-  SelectUserRankingEntry,
-} from './model/prisma-type/select-user-ranking-entry';
+  SelectSeasonUserRanking,
+} from './model/prisma-type/select-season-user-ranking';
 import {
   SELECT_USER_RANKING_OVERVIEW,
   SelectUserRankingOverview,
@@ -33,15 +36,15 @@ export class UserRankingCoreRepository {
     `);
   }
 
-  public async selectSeasonRankingAllByLeagueSeasonIdx(
+  public async selectSeasonUserRankingAllByLeagueSeasonIdx(
     leagueSeasonIdx: number,
     input: GetSeasonRankingAllInput,
-  ): Promise<SelectUserRankingEntry[]> {
-    return await this.txHost.tx.$queryRaw<SelectUserRankingEntry[]>(
+  ): Promise<SelectSeasonUserRanking[]> {
+    return await this.txHost.tx.$queryRaw<SelectSeasonUserRanking[]>(
       Prisma.sql`
         ${SELECT_SEASON_USER_RANKING(leagueSeasonIdx)}
         ORDER BY
-          ru.rank ASC,
+          ru.season_rank ASC,
           ru.user_idx ASC
         LIMIT ${input.take}
         OFFSET ${input.skip}
@@ -49,14 +52,14 @@ export class UserRankingCoreRepository {
     );
   }
 
-  public async selectCumulativeRankingAll(
+  public async selectCumulativeUserRankingAll(
     input: GetCumulativeRankingAllInput,
-  ): Promise<SelectUserRankingEntry[]> {
-    return await this.txHost.tx.$queryRaw<SelectUserRankingEntry[]>(
+  ): Promise<SelectCumulativeUserRanking[]> {
+    return await this.txHost.tx.$queryRaw<SelectCumulativeUserRanking[]>(
       Prisma.sql`
         ${SELECT_CUMULATIVE_USER_RANKING}
         ORDER BY
-          ru.rank ASC,
+          ru.cumulative_rank ASC,
           ru.user_idx ASC
         LIMIT ${input.take}
         OFFSET ${input.skip}
