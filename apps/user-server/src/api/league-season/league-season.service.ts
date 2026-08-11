@@ -28,7 +28,13 @@ export class LeagueSeasonService {
       throw new NotFoundException('League season not found');
     }
 
-    return LeagueSeasonEntity.fromModel(leagueSeason);
+    const participantCount =
+      await this.placeVisitCoreService.getPlaceVisitCountByPeriod(
+        dto.startAt,
+        dto.endAt,
+      );
+
+    return LeagueSeasonEntity.fromModel(leagueSeason, participantCount);
   }
 
   public async getLeagueSeasonResultByLeagueSeasonIdx(

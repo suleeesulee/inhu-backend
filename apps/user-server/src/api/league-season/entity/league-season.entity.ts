@@ -32,6 +32,11 @@ export class LeagueSeasonEntity {
   public createdAt: Date;
 
   /**
+   * league season 참여자 수
+   */
+  public participantCount: number;
+
+  /**
    * league season 보상 옵션 리스트
    */
   public rewardOptionList: LeagueRewardOptionEntity[];
@@ -40,13 +45,17 @@ export class LeagueSeasonEntity {
     Object.assign(this, data);
   }
 
-  public static fromModel(model: LeagueSeasonModel): LeagueSeasonEntity {
+  public static fromModel(
+    model: LeagueSeasonModel,
+    participantCount: number,
+  ): LeagueSeasonEntity {
     return new LeagueSeasonEntity({
       idx: model.idx,
       name: model.name,
       startAt: model.startAt,
       endAt: model.endAt,
       createdAt: model.createdAt,
+      participantCount,
       rewardOptionList: model.rewardOptionList.map((rewardOption) =>
         LeagueRewardOptionEntity.fromModel(rewardOption),
       ),

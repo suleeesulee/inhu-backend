@@ -5,7 +5,7 @@ import { UserRewardModel } from '@libs/core/user-reward/model/user-reward.model'
 import { LeagueSeasonResultUserRankingModel } from '@libs/core/league-season/model/league-season-result-user-ranking.model';
 import { UserRewardEntity } from '@user/api/user-reward/entity/user-reward.entity';
 import { LeagueSeasonResultUserRankingEntity } from './league-season-result-user-ranking.entity';
-import { LeagueSeasonEntity } from './league-season.entity';
+import { LeagueSeasonResultLeagueSeasonEntity } from './league-season-result-league-season.entity';
 
 export class LeagueSeasonResultOverviewEntity extends PickType(
   LeagueSeasonResultEntity,
@@ -24,7 +24,9 @@ export class LeagueSeasonResultOverviewEntity extends PickType(
     return new LeagueSeasonResultOverviewEntity({
       id: model.id,
       createdAt: model.createdAt,
-      leagueSeason: LeagueSeasonEntity.fromModel(model.leagueSeason),
+      leagueSeason: LeagueSeasonResultLeagueSeasonEntity.fromModel(
+        model.leagueSeason,
+      ),
       userRanking: LeagueSeasonResultUserRankingEntity.fromModel(userRanking),
       userReward: UserRewardEntity.fromModel(userReward),
     });

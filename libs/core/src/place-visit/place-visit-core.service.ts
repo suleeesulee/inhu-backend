@@ -42,6 +42,16 @@ export class PlaceVisitCoreService {
     ).map(PlaceVisitStatisticModel.fromQuery);
   }
 
+  public async getPlaceVisitCountByPeriod(
+    startAt: string,
+    endAt: string,
+  ): Promise<number> {
+    return await this.placeVisitCoreRepository.selectPlaceVisitCountByPeriod(
+      startAt,
+      endAt,
+    );
+  }
+
   public async createPlaceVisit(
     input: CreatePlaceVisitInput,
   ): Promise<PlaceVisitModel> {

@@ -1,11 +1,11 @@
 import { PlaceVisitStatisticEntity } from '@user/api/place-visit/entity/place-visit-statistic.entity';
 import { LeagueSeasonResultUserRankingEntity } from './league-season-result-user-ranking.entity';
-import { LeagueSeasonEntity } from './league-season.entity';
 import { LeagueSeasonResultModel } from '@libs/core/league-season/model/league-season-result.model';
 import { UserRewardEntity } from '@user/api/user-reward/entity/user-reward.entity';
 import { LeagueSeasonResultUserRankingModel } from '@libs/core/league-season/model/league-season-result-user-ranking.model';
 import { PlaceVisitStatisticModel } from '@libs/core/place-visit/model/place-visit-statistic.model';
 import { UserRewardModel } from '@libs/core/user-reward/model/user-reward.model';
+import { LeagueSeasonResultLeagueSeasonEntity } from './league-season-result-league-season.entity';
 
 export class LeagueSeasonResultEntity {
   /**
@@ -23,7 +23,7 @@ export class LeagueSeasonResultEntity {
   /**
    * 리그 시즌 정보
    */
-  public leagueSeason: LeagueSeasonEntity;
+  public leagueSeason: LeagueSeasonResultLeagueSeasonEntity;
 
   /**
    * 리그 시즌 참여자 수
@@ -60,7 +60,9 @@ export class LeagueSeasonResultEntity {
     return new LeagueSeasonResultEntity({
       id: model.id,
       createdAt: model.createdAt,
-      leagueSeason: LeagueSeasonEntity.fromModel(model.leagueSeason),
+      leagueSeason: LeagueSeasonResultLeagueSeasonEntity.fromModel(
+        model.leagueSeason,
+      ),
       participantCount: model.participantCount,
       userRanking: LeagueSeasonResultUserRankingEntity.fromModel(userRanking),
       placeVisitStatisticList: placeVisitStatisticList.map((stat) =>

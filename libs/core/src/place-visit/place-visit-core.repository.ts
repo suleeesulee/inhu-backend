@@ -58,6 +58,20 @@ export class PlaceVisitCoreRepository {
     });
   }
 
+  public async selectPlaceVisitCountByPeriod(
+    startAt: string,
+    endAt: string,
+  ): Promise<number> {
+    return await this.txHost.tx.placeVisit.count({
+      where: {
+        createdAt: {
+          gte: `${startAt}T00:00:00Z`,
+          lte: `${endAt}T23:59:59Z`,
+        },
+      },
+    });
+  }
+
   public async selectPlaceVisitStatisticAllByUserIdxAndPeriod(
     userIdx: number,
     input: GetPlaceVisitStatisticAllInput,
