@@ -5,7 +5,6 @@ import { LeagueSeasonEntity } from './entity/league-season.entity';
 import { LeagueSeasonResultEntity } from './entity/league-season-result.entity';
 import { PlaceVisitCoreService } from '@libs/core/place-visit/place-visit-core.service';
 import { UserRewardCoreService } from '@libs/core/user-reward/user-reward-core.service';
-import { GetLeagueSeasonResultByLeagueSeasonIdxDto } from './dto/request/get-league-season-result-by-league-season-idx.dto';
 import { LeagueSeasonResultOverviewEntity } from './entity/league-season-result-overview.entity';
 import { GetLeagueSeasonResultAllDto } from './dto/request/get-league-season-result-all.dto';
 
@@ -35,7 +34,6 @@ export class LeagueSeasonService {
   public async getLeagueSeasonResultByLeagueSeasonIdx(
     leagueSeasonIdx: number,
     userIdx: number,
-    dto: GetLeagueSeasonResultByLeagueSeasonIdxDto,
   ): Promise<LeagueSeasonResultEntity> {
     const leagueSeason =
       await this.leagueSeasonCoreService.getLeagueSeasonByIdx(leagueSeasonIdx);
@@ -58,19 +56,19 @@ export class LeagueSeasonService {
       ),
       this.placeVisitCoreService.getPlaceVisitStatisticAllByUserIdxAndPeriod(
         userIdx,
-        { startAt: dto.startAt, endAt: dto.endAt },
+        { startAt: leagueSeason.startAt, endAt: leagueSeason.endAt },
       ),
     ]);
     if (!leagueSeasonResult) {
-      throw new NotFoundException('League season result not found');
+      throw new NotFoundException('League-season-result not found');
     }
     if (!leagueSeasonResultUserRanking) {
       throw new NotFoundException(
-        'League season result user ranking not found',
+        'League-season-result-user-ranking not found',
       );
     }
     if (!placeVisitStatisticList) {
-      throw new NotFoundException('Place visit statistic list not found');
+      throw new NotFoundException('Place-visit-statistic list not found');
     }
 
     const userReward =
@@ -78,7 +76,7 @@ export class LeagueSeasonService {
         leagueSeasonResult.id,
       );
     if (!userReward) {
-      throw new NotFoundException('User reward not found');
+      throw new NotFoundException('User-reward not found');
     }
 
     return LeagueSeasonResultEntity.fromModel(
@@ -143,7 +141,7 @@ export class LeagueSeasonService {
       );
       if (!userRanking) {
         throw new NotFoundException(
-          'League season result user ranking not found',
+          'League-season-result-user-ranking not found',
         );
       }
 
@@ -151,7 +149,7 @@ export class LeagueSeasonService {
         leagueSeasonResult.id,
       );
       if (!userReward) {
-        throw new NotFoundException('User reward not found');
+        throw new NotFoundException('User-reward not found');
       }
 
       return LeagueSeasonResultOverviewEntity.fromModel(

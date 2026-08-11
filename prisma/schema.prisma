@@ -713,10 +713,10 @@ model LeagueRewardOption {
   targetRank      Int             @map("target_rank")
   createdAt       DateTime        @default(now()) @map("created_at") @db.Timestamptz(6)
   deletedAt       DateTime?       @map("deleted_at") @db.Timestamptz(6)
-  leagueSeason    LeagueSeason @relation(fields: [leagueSeasonIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_league_season_tb_to_reward_option_tb")
-  reward          Reward        @relation(fields: [rewardIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_reward_tb_to_reward_option_tb")
+  leagueSeason    LeagueSeason @relation(fields: [leagueSeasonIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_league_season_tb_to_league_reward_option_tb")
+  reward          Reward        @relation(fields: [rewardIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_reward_tb_to_league_reward_option_tb")
 
-  @@map("reward_option_tb")
+  @@map("league_reward_option_tb")
 }
 
 model Reward {

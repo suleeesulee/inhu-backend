@@ -2,7 +2,18 @@ import { PlaceVisitStatisticModel } from '@libs/core/place-visit/model/place-vis
 import { PlaceType } from '@libs/core/place/constants/place-type.constant';
 
 export class PlaceVisitStatisticEntity {
+  /**
+   * 방문 장소 타입
+   *
+   * @example 1
+   */
   public placeType: PlaceType;
+
+  /**
+   * 방문 장소 타입별 방문 횟수
+   *
+   * @example 5
+   */
   public visitCount: number;
 
   constructor(data: PlaceVisitStatisticEntity) {

@@ -3,7 +3,9 @@ import { IsNotEmpty, IsString } from 'class-validator';
 
 export class GetLeagueSeasonByDateDto {
   /**
-   * league season 시작일
+   * league season 시작일 날짜 (YYYY-MM-DD)
+   *
+   * @example "2026-08-03"
    */
   @IsNotEmpty()
   @IsString()
@@ -11,7 +13,9 @@ export class GetLeagueSeasonByDateDto {
   startAt: string;
 
   /**
-   * league season 종료일
+   * league season 종료일 날짜 (YYYY-MM-DD)
+   *
+   * @example "2026-08-17"
    */
   @IsNotEmpty()
   @IsString()

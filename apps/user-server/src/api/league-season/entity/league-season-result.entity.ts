@@ -8,12 +8,43 @@ import { PlaceVisitStatisticModel } from '@libs/core/place-visit/model/place-vis
 import { UserRewardModel } from '@libs/core/user-reward/model/user-reward.model';
 
 export class LeagueSeasonResultEntity {
+  /**
+   * 리그 시즌 결과 ID
+   *
+   * @example "123e4567-e89b-12d3-a456-426614174000"
+   */
   public id: string;
+
+  /**
+   * 리그 시즌 결과 생성일 (배치 처리된 시간)
+   */
   public createdAt: Date;
+
+  /**
+   * 리그 시즌 정보
+   */
   public leagueSeason: LeagueSeasonEntity;
+
+  /**
+   * 리그 시즌 참여자 수
+   *
+   * @example 100
+   */
   public participantCount: number;
+
+  /**
+   * 리그 시즌 결과 사용자 랭킹 정보
+   */
   public userRanking: LeagueSeasonResultUserRankingEntity;
+
+  /**
+   * 리그 시즌 결과 사용자 방문 통계 정보
+   */
   public placeVisitStatisticList: PlaceVisitStatisticEntity[];
+
+  /**
+   * 리그 시즌 결과 사용자 보상 정보
+   */
   public userReward: UserRewardEntity;
 
   constructor(data: LeagueSeasonResultEntity) {

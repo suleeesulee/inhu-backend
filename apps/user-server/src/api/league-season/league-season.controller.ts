@@ -7,7 +7,6 @@ import { GetLeagueSeasonByDateDto } from './dto/request/get-league-season-by-dat
 import { LeagueSeasonEntity } from './entity/league-season.entity';
 import { LeagueSeasonService } from './league-season.service';
 import { LeagueSeasonResultEntity } from './entity/league-season-result.entity';
-import { GetLeagueSeasonResultByLeagueSeasonIdxDto } from './dto/request/get-league-season-result-by-league-season-idx.dto';
 import { GetLeagueSeasonResultAllDto } from './dto/request/get-league-season-result-all.dto';
 import { LeagueSeasonResultOverviewEntity } from './entity/league-season-result-overview.entity';
 
@@ -25,6 +24,9 @@ export class LeagueSeasonController {
     return await this.leagueSeasonService.getLeagueSeasonByDate(dto);
   }
 
+  /**
+   * 특정 리그 시즌 결과 조회
+   */
   @Get(':leagueSeasonIdx/result')
   @LoginAuth()
   @Exception(400, 'Invalid request')
@@ -36,15 +38,16 @@ export class LeagueSeasonController {
   public async getLeagueSeasonResultByLeagueSeasonIdx(
     @Param('leagueSeasonIdx', ParseIntPipe) leagueSeasonIdx: number,
     @User() user: LoginUser,
-    @Query() dto: GetLeagueSeasonResultByLeagueSeasonIdxDto,
   ): Promise<LeagueSeasonResultEntity> {
     return await this.leagueSeasonService.getLeagueSeasonResultByLeagueSeasonIdx(
       leagueSeasonIdx,
       user.idx,
-      dto,
     );
   }
 
+  /**
+   * 모든 리그 시즌 결과 조회 (리그 참여 내역)
+   */
   @Get('result/all')
   @LoginAuth()
   @Exception(404, 'League season result user ranking not found')

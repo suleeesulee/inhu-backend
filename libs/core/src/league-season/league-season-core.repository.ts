@@ -176,8 +176,8 @@ export class LeagueSeasonCoreRepository {
       },
       data: {
         name: input.name,
-        startAt: `${input.startAt}T00:00:00Z`,
-        endAt: `${input.endAt}T23:59:59Z`,
+        startAt: input.startAt ? `${input.startAt}T00:00:00Z` : undefined,
+        endAt: input.endAt ? `${input.endAt}T23:59:59Z` : undefined,
         rewardOptionList: input.rewardOptionList
           ? {
               deleteMany: {},

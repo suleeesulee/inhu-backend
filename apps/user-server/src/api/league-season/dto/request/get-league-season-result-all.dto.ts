@@ -2,6 +2,11 @@ import { Type } from 'class-transformer';
 import { IsIn, IsInt, IsNotEmpty, IsOptional, Min } from 'class-validator';
 
 export class GetLeagueSeasonResultAllDto {
+  /**
+   * 페이지 번호
+   *
+   * @example 1
+   */
   @Type(() => Number)
   @IsNotEmpty()
   @IsInt()

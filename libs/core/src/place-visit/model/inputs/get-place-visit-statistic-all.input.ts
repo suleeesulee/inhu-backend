@@ -1,4 +1,4 @@
 export class GetPlaceVisitStatisticAllInput {
-  public startAt: string;
-  public endAt: string;
+  public startAt: Date;
+  public endAt: Date;
 }

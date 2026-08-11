@@ -8,8 +8,8 @@ export type SelectPlaceVisitStatistic = {
 
 export const SELECT_PLACE_VISIT_STATISTIC = (
   userIdx: number,
-  startAt: string,
-  endAt: string,
+  startAt: Date,
+  endAt: Date,
 ): Prisma.Sql => Prisma.sql`
   SELECT
     pt.idx AS "placeType",
@@ -22,8 +22,8 @@ export const SELECT_PLACE_VISIT_STATISTIC = (
   LEFT JOIN place_visit_tb AS pv
     ON pv.nfc_idx = n.idx
     AND pv.user_idx = ${userIdx}
-    AND pv.created_at >= ${`${startAt}T00:00:00Z`}::timestamptz
-    AND pv.created_at <= ${`${endAt}T23:59:59Z`}::timestamptz
+    AND pv.created_at >= ${startAt}
+    AND pv.created_at <= ${endAt}
   WHERE pt.idx IN (
     ${PlaceType.CAFE},
     ${PlaceType.RESTAURANT},

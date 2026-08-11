@@ -18,19 +18,6 @@ export class UserRankingController {
   constructor(private readonly userRankingService: UserRankingService) {}
 
   /**
-   * 특정 리그 사용자 랭킹 전체 정보 조회
-   */
-  @Get('/league-season/:leagueSeasonIdx/user-ranking/all')
-  @Exception(404, 'League season not found')
-  public async getUserRankingAllByLeagueSeasonIdx(
-    @Param('leagueSeasonIdx', ParseIntPipe) leagueSeasonIdx: number,
-  ): Promise<UserRankingEntity[]> {
-    return await this.userRankingService.getUserRankingAllByLeagueSeasonIdx(
-      leagueSeasonIdx,
-    );
-  }
-
-  /**
    * 특정 리그 사용자 랭킹 조회
    */
   @Get('/league-season/:leagueSeasonIdx/season-ranking/all')

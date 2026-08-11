@@ -35,6 +35,7 @@ import { UserMailModule } from './api/mail/user-mail.module';
 import { LeagueSeasonModule } from './api/league-season/league-season.module';
 import { UserRankingModule } from './api/user-ranking/user-ranking.module';
 import { UserRewardModule } from './api/user-reward/user-reward.module';
+import { PlaceVisitModule } from './api/place-visit/place-visit.module';
 
 @Module({
   imports: [
@@ -77,6 +78,7 @@ import { UserRewardModule } from './api/user-reward/user-reward.module';
     LeagueSeasonModule,
     UserRankingModule,
     UserRewardModule,
+    PlaceVisitModule,
   ],
   providers: [
     {
