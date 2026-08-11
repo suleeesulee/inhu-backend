@@ -7,6 +7,11 @@ import {
 } from './model/prisma-type/select-place-visit';
 import { CreatePlaceVisitInput } from './model/inputs/create-place-visit.input';
 import { GetPlaceVisitAllInput } from './model/inputs/get-place-visit-all.input';
+import { GetPlaceVisitStatisticAllInput } from './model/inputs/get-place-visit-statistic-all.input';
+import {
+  SELECT_PLACE_VISIT_STATISTIC,
+  SelectPlaceVisitStatistic,
+} from './model/prisma-type/select-place-visit-statistic';
 
 @Injectable()
 export class PlaceVisitCoreRepository {
@@ -53,11 +58,14 @@ export class PlaceVisitCoreRepository {
     });
   }
 
-  // 현재 리그 순위 조회용
-  public async selectUserScoreAllByPeriod(startAt: Date, endAt: Date) {}
-
-  // 전체 리그 순위 조회용
-  public async selectUserTotalScoreAll() {}
+  public async selectPlaceVisitStatisticAllByUserIdxAndPeriod(
+    userIdx: number,
+    input: GetPlaceVisitStatisticAllInput,
+  ): Promise<SelectPlaceVisitStatistic[]> {
+    return await this.txHost.tx.$queryRaw<SelectPlaceVisitStatistic[]>(
+      SELECT_PLACE_VISIT_STATISTIC(userIdx, input.startAt, input.endAt),
+    );
+  }
 
   public async insertPlaceVisit(
     input: CreatePlaceVisitInput,
