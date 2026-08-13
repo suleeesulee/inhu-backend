@@ -23,6 +23,7 @@ export const SELECT_LEAGUE_SEASON_RESULT_USER_RANKING = (
       end_at
     FROM league_season_tb
     WHERE idx IN (${Prisma.join(leagueSeasonIdxList)})
+      AND activated_at IS NOT NULL
       AND finalized_at IS NOT NULL
   ),
   season_user_score AS (
@@ -73,6 +74,7 @@ export const SELECT_LEAGUE_SEASON_RESULT_USER_RANKING = (
     FROM target_league_season AS tls
     JOIN league_season_tb AS ls
       ON ls.end_at <= tls.end_at
+      AND ls.activated_at IS NOT NULL
       AND ls.finalized_at IS NOT NULL
     JOIN league_season_result_tb AS lsr
       ON lsr.league_season_idx = ls.idx

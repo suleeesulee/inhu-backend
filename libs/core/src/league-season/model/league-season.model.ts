@@ -23,6 +23,11 @@ export class LeagueSeasonModel {
   public endAt: Date;
 
   /**
+   * 활성화 일자
+   */
+  public activatedAt: Date | null;
+
+  /**
    * 생성 일자
    */
   public createdAt: Date;
@@ -49,6 +54,7 @@ export class LeagueSeasonModel {
       name: leagueSeason.name,
       startAt: leagueSeason.startAt,
       endAt: leagueSeason.endAt,
+      activatedAt: leagueSeason.activatedAt,
       createdAt: leagueSeason.createdAt,
       finalizedAt: leagueSeason.finalizedAt,
       rewardOptionList: leagueSeason.rewardOptionList.map((rewardOption) =>

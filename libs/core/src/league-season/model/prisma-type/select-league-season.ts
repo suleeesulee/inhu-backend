@@ -8,6 +8,7 @@ export const SELECT_LEAGUE_SEASON =
       name: true,
       startAt: true,
       endAt: true,
+      activatedAt: true,
       createdAt: true,
       finalizedAt: true,
       rewardOptionList: {

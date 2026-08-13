@@ -5,7 +5,15 @@ import { LeagueRewardOptionEntity } from './league-reward-option.entity';
 
 export class LeagueSeasonResultLeagueSeasonEntity extends PickType(
   LeagueSeasonEntity,
-  ['idx', 'name', 'startAt', 'endAt', 'createdAt', 'rewardOptionList'],
+  [
+    'idx',
+    'name',
+    'startAt',
+    'endAt',
+    'activatedAt',
+    'createdAt',
+    'rewardOptionList',
+  ],
 ) {
   constructor(data: LeagueSeasonResultLeagueSeasonEntity) {
     super();
@@ -20,6 +28,7 @@ export class LeagueSeasonResultLeagueSeasonEntity extends PickType(
       name: model.name,
       startAt: model.startAt,
       endAt: model.endAt,
+      activatedAt: model.activatedAt,
       createdAt: model.createdAt,
       rewardOptionList: model.rewardOptionList.map(
         LeagueRewardOptionEntity.fromModel,

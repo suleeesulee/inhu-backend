@@ -18,6 +18,7 @@ export const SELECT_SEASON_USER_RANKING = (
       end_at
     FROM league_season_tb
     WHERE idx = ${leagueSeasonIdx}
+      AND activated_at IS NOT NULL
   ),
   user_score AS (
     SELECT

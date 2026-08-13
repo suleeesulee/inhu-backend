@@ -26,6 +26,7 @@ export class LeagueSeasonService {
       await this.leagueSeasonCoreService.getLeagueSeasonByDate(
         dto.startAt,
         dto.endAt,
+        true,
       );
     if (!leagueSeason) {
       throw new NotFoundException('League season not found');
@@ -49,6 +50,7 @@ export class LeagueSeasonService {
         take: pageSize + 1,
         skip: (dto.page - 1) * pageSize,
         order: dto.order,
+        activated: true,
       });
 
     return {
@@ -64,7 +66,10 @@ export class LeagueSeasonService {
     userIdx: number,
   ): Promise<LeagueSeasonResultEntity> {
     const leagueSeason =
-      await this.leagueSeasonCoreService.getLeagueSeasonByIdx(leagueSeasonIdx);
+      await this.leagueSeasonCoreService.getLeagueSeasonByIdx(
+        leagueSeasonIdx,
+        true,
+      );
     if (!leagueSeason) {
       throw new NotFoundException('League season not found');
     }
@@ -77,6 +82,7 @@ export class LeagueSeasonService {
       this.leagueSeasonCoreService.getLeagueSeasonResultByLeagueSeasonIdxAndUserIdx(
         leagueSeasonIdx,
         userIdx,
+        true,
       ),
       this.leagueSeasonCoreService.getLeagueSeasonResultUserRankingByLeagueSeasonIdxAndUserIdx(
         leagueSeasonIdx,
@@ -128,6 +134,7 @@ export class LeagueSeasonService {
           take: pageSize,
           skip,
           order: dto.order,
+          activated: true,
         },
       );
 

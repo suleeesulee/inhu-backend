@@ -27,6 +27,7 @@ export class LeagueSeasonSeedHelper extends ISeedHelper<
         input.endAt,
         faker.date.soon({ days: 14, refDate: startAt }),
       ),
+      activatedAt: defaultValue(input.activatedAt, null),
       finalizedAt: defaultValue(input.finalizedAt, null),
       rewardOptionList: defaultValue(
         input.rewardOptionList?.map((rewardOption) => ({
@@ -51,6 +52,7 @@ export class LeagueSeasonSeedHelper extends ISeedHelper<
         createdAt: filledInput.createdAt,
         startAt: filledInput.startAt,
         endAt: filledInput.endAt,
+        activatedAt: filledInput.activatedAt,
         finalizedAt: filledInput.finalizedAt,
         rewardOptionList: filledInput.rewardOptionList
           ? {

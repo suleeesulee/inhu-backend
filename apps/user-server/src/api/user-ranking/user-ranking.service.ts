@@ -25,7 +25,10 @@ export class UserRankingService {
     leagueSeasonIdx: number,
   ): Promise<UserRankingEntity[]> {
     const leagueSeason =
-      await this.leagueSeasonCoreService.getLeagueSeasonByIdx(leagueSeasonIdx);
+      await this.leagueSeasonCoreService.getLeagueSeasonByIdx(
+        leagueSeasonIdx,
+        true,
+      );
     if (!leagueSeason) {
       throw new NotFoundException('League season not found');
     }
@@ -44,7 +47,10 @@ export class UserRankingService {
     const pageSize = 10;
     const skip = (dto.page - 1) * pageSize;
     const leagueSeason =
-      await this.leagueSeasonCoreService.getLeagueSeasonByIdx(leagueSeasonIdx);
+      await this.leagueSeasonCoreService.getLeagueSeasonByIdx(
+        leagueSeasonIdx,
+        true,
+      );
     if (!leagueSeason) {
       throw new NotFoundException('League season not found');
     }

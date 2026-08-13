@@ -1,4 +1,13 @@
-import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  Param,
+  ParseIntPipe,
+  Post,
+  Put,
+} from '@nestjs/common';
 import { LeagueSeasonService } from './league-season.service';
 import { AdminAuth } from '@admin/common/decorator/admin-auth.decorator';
 import { GetLeagueSeasonAllResponseDto } from './dto/response/get-league-season-all.dto';
@@ -26,9 +35,10 @@ export class LeagueSeasonController {
    */
   @Get('/:idx')
   @AdminAuth()
+  @Exception(400, 'Invalid league season idx')
   @Exception(404, 'League season not found')
   public async getLeagueSeasonByIdx(
-    @Param('idx') idx: number,
+    @Param('idx', ParseIntPipe) idx: number,
   ): Promise<LeagueSeasonEntity> {
     return await this.leagueSeasonService.getLeagueSeasonByIdx(idx);
   }
@@ -53,7 +63,7 @@ export class LeagueSeasonController {
   @Exception(400, 'Invalid request data')
   @Exception(404, 'League season not found')
   public async updateLeagueSeasonRewardOptionByIdx(
-    @Param('idx') idx: number,
+    @Param('idx', ParseIntPipe) idx: number,
     @Body() dto: UpdateLeagueRewardOptionDto,
   ): Promise<void> {
     return await this.leagueSeasonService.updateLeagueSeasonRewardOptionByIdx(
@@ -70,9 +80,39 @@ export class LeagueSeasonController {
   @Exception(400, 'Invalid request data')
   @Exception(404, 'League season not found')
   public async updateLeagueSeasonByIdx(
-    @Param('idx') idx: number,
+    @Param('idx', ParseIntPipe) idx: number,
     @Body() dto: UpdateLeagueSeasonDto,
   ): Promise<void> {
     return await this.leagueSeasonService.updateLeagueSeasonByIdx(idx, dto);
+  }
+
+  /**
+   * 특정 리그 시즌 활성화
+   */
+  @Post('/:idx/activate')
+  @AdminAuth()
+  @Exception(400, 'Invalid league season idx')
+  @Exception(404, 'League season not found')
+  @Exception(409, 'League season already activated')
+  @HttpCode(200)
+  public async activateLeagueSeasonByIdx(
+    @Param('idx', ParseIntPipe) idx: number,
+  ): Promise<void> {
+    return await this.leagueSeasonService.activateLeagueSeasonByIdx(idx);
+  }
+
+  /**
+   * 특정 리그 시즌 비활성화
+   */
+  @Post('/:idx/deactivate')
+  @AdminAuth()
+  @Exception(400, 'Invalid league season idx')
+  @Exception(404, 'League season not found')
+  @Exception(409, 'League season not activated')
+  @HttpCode(200)
+  public async deactivateLeagueSeasonByIdx(
+    @Param('idx', ParseIntPipe) idx: number,
+  ): Promise<void> {
+    return await this.leagueSeasonService.deactivateLeagueSeasonByIdx(idx);
   }
 }

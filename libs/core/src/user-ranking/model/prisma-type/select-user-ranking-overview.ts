@@ -13,7 +13,8 @@ export const SELECT_USER_RANKING_OVERVIEW: Prisma.Sql = Prisma.sql`
       start_at,
       end_at
     FROM league_season_tb
-    WHERE start_at <= NOW()
+    WHERE activated_at IS NOT NULL
+      AND start_at <= NOW()
     ORDER BY
       start_at DESC,
       idx DESC

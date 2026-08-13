@@ -7,6 +7,7 @@ export const SELECT_LEAGUE_SEASON_OVERVIEW =
       name: true,
       startAt: true,
       endAt: true,
+      activatedAt: true,
       createdAt: true,
     },
   });

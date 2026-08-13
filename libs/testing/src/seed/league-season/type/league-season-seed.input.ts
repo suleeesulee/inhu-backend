@@ -8,6 +8,7 @@ export type LeagueSeasonSeedInput = {
   createdAt?: Date;
   startAt?: Date;
   endAt?: Date;
+  activatedAt?: Date | null;
   finalizedAt?: Date | null;
   rewardOptionList?:
     | {

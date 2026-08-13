@@ -43,6 +43,7 @@ export class UserRewardService {
       await this.leagueSeasonCoreService.getLeagueSeasonResultByIdAndUserIdx(
         userReward.leagueSeasonResultId,
         loginUser.idx,
+        true,
       );
     if (!leagueSeasonResult) {
       throw new ForbiddenException(

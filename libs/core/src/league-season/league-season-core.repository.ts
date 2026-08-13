@@ -1,6 +1,7 @@
 import { TransactionHost } from '@nestjs-cls/transactional';
 import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-prisma';
 import { Injectable } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 import { CreateLeagueSeasonInput } from './inputs/create-league-season.input';
 import { UpdateLeagueSeasonInput } from './inputs/update-league-season.input';
 import {
@@ -34,11 +35,13 @@ export class LeagueSeasonCoreRepository {
 
   public async selectLeagueSeasonByIdx(
     idx: number,
+    activated?: boolean,
   ): Promise<SelectLeagueSeason | null> {
-    return await this.txHost.tx.leagueSeason.findUnique({
+    return await this.txHost.tx.leagueSeason.findFirst({
       ...SELECT_LEAGUE_SEASON,
       where: {
         idx,
+        ...this.getActivatedAtFilterWhereClause(activated),
       },
     });
   }
@@ -46,19 +49,24 @@ export class LeagueSeasonCoreRepository {
   public async selectLeagueSeasonByDate(
     startAt: string,
     endAt: string,
+    activated?: boolean,
   ): Promise<SelectLeagueSeason | null> {
     return await this.txHost.tx.leagueSeason.findFirst({
       ...SELECT_LEAGUE_SEASON,
       where: {
         startAt: `${startAt}T00:00:00Z`,
         endAt: `${endAt}T23:59:59Z`,
+        ...this.getActivatedAtFilterWhereClause(activated),
       },
     });
   }
 
-  public async selectLeagueSeasonAll(): Promise<SelectLeagueSeason[]> {
+  public async selectLeagueSeasonAll(
+    activated?: boolean,
+  ): Promise<SelectLeagueSeason[]> {
     return await this.txHost.tx.leagueSeason.findMany({
       ...SELECT_LEAGUE_SEASON,
+      where: this.getActivatedAtFilterWhereClause(activated),
     });
   }
 
@@ -69,6 +77,7 @@ export class LeagueSeasonCoreRepository {
 
     return await this.txHost.tx.leagueSeason.findMany({
       ...SELECT_LEAGUE_SEASON_OVERVIEW,
+      where: this.getActivatedAtFilterWhereClause(input.activated),
       orderBy: [{ startAt: order }, { idx: order }],
       take: input.take,
       skip: input.skip,
@@ -77,11 +86,13 @@ export class LeagueSeasonCoreRepository {
 
   public async selectLeagueSeasonResultById(
     id: string,
+    activated?: boolean,
   ): Promise<SelectLeagueSeasonResult | null> {
-    return await this.txHost.tx.leagueSeasonResult.findUnique({
+    return await this.txHost.tx.leagueSeasonResult.findFirst({
       ...SELECT_LEAGUE_SEASON_RESULT,
       where: {
         id,
+        leagueSeason: this.getActivatedAtFilterWhereClause(activated),
       },
     });
   }
@@ -89,12 +100,14 @@ export class LeagueSeasonCoreRepository {
   public async selectLeagueSeasonResultByIdAndUserIdx(
     id: string,
     userIdx: number,
+    activated?: boolean,
   ): Promise<SelectLeagueSeasonResult | null> {
     return await this.txHost.tx.leagueSeasonResult.findFirst({
       ...SELECT_LEAGUE_SEASON_RESULT,
       where: {
         id,
         userIdx,
+        leagueSeason: this.getActivatedAtFilterWhereClause(activated),
       },
     });
   }
@@ -107,7 +120,10 @@ export class LeagueSeasonCoreRepository {
 
     return await this.txHost.tx.leagueSeasonResult.findMany({
       ...SELECT_LEAGUE_SEASON_RESULT,
-      where: { userIdx },
+      where: {
+        userIdx,
+        leagueSeason: this.getActivatedAtFilterWhereClause(input.activated),
+      },
       orderBy: [
         { leagueSeason: { endAt: order } },
         { createdAt: order },
@@ -121,12 +137,14 @@ export class LeagueSeasonCoreRepository {
   public async selectLeagueSeasonResultByLeagueSeasonIdxAndUserIdx(
     leagueSeasonIdx: number,
     userIdx: number,
+    activated?: boolean,
   ): Promise<SelectLeagueSeasonResult | null> {
     return await this.txHost.tx.leagueSeasonResult.findFirst({
       ...SELECT_LEAGUE_SEASON_RESULT,
       where: {
         leagueSeasonIdx,
         userIdx,
+        leagueSeason: this.getActivatedAtFilterWhereClause(activated),
       },
     });
   }
@@ -198,6 +216,7 @@ export class LeagueSeasonCoreRepository {
         name: input.name,
         startAt: `${input.startAt}T00:00:00Z`,
         endAt: `${input.endAt}T23:59:59Z`,
+        activatedAt: input.activatedAt,
         rewardOptionList: {
           createMany: {
             data: input.rewardOptionList.map((rewardOption) => ({
@@ -222,6 +241,7 @@ export class LeagueSeasonCoreRepository {
         name: input.name,
         startAt: input.startAt ? `${input.startAt}T00:00:00Z` : undefined,
         endAt: input.endAt ? `${input.endAt}T23:59:59Z` : undefined,
+        activatedAt: input.activatedAt,
         rewardOptionList: input.rewardOptionList
           ? {
               deleteMany: {},
@@ -235,5 +255,19 @@ export class LeagueSeasonCoreRepository {
           : undefined,
       },
     });
+  }
+
+  private getActivatedAtFilterWhereClause(
+    activated?: boolean,
+  ): Prisma.LeagueSeasonWhereInput {
+    if (activated === undefined) {
+      return {};
+    }
+
+    if (activated) {
+      return { activatedAt: { not: null } };
+    }
+
+    return { activatedAt: null };
   }
 }

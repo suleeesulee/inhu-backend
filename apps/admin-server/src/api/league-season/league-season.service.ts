@@ -1,5 +1,9 @@
 import { LeagueSeasonCoreService } from '@libs/core/league-season/league-season-core.service';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { LeagueSeasonEntity } from './entity/league-season.entity';
 import { GetLeagueSeasonAllResponseDto } from './dto/response/get-league-season-all.dto';
 import { CreateLeagueSeasonDto } from './dto/request/create-league-season.dto';
@@ -33,7 +37,15 @@ export class LeagueSeasonService {
   public async createLeagueSeason(
     dto: CreateLeagueSeasonDto,
   ): Promise<LeagueSeasonEntity> {
-    return await this.leagueSeasonCoreService.createLeagueSeason(dto);
+    return LeagueSeasonEntity.fromModel(
+      await this.leagueSeasonCoreService.createLeagueSeason({
+        name: dto.name,
+        startAt: dto.startAt,
+        endAt: dto.endAt,
+        activatedAt: null,
+        rewardOptionList: dto.rewardOptionList,
+      }),
+    );
   }
 
   public async updateLeagueSeasonByIdx(
@@ -61,6 +73,42 @@ export class LeagueSeasonService {
 
     await this.leagueSeasonCoreService.updateLeagueSeasonByIdx(idx, {
       rewardOptionList: [dto],
+    });
+  }
+
+  public async activateLeagueSeasonByIdx(idx: number): Promise<void> {
+    const leagueSeason =
+      await this.leagueSeasonCoreService.getLeagueSeasonByIdx(idx);
+    if (!leagueSeason) {
+      throw new NotFoundException(`League season with idx ${idx} not found`);
+    }
+
+    if (leagueSeason.activatedAt) {
+      throw new ConflictException(
+        `League season with idx ${idx} is already activated`,
+      );
+    }
+
+    await this.leagueSeasonCoreService.updateLeagueSeasonByIdx(idx, {
+      activatedAt: new Date(),
+    });
+  }
+
+  public async deactivateLeagueSeasonByIdx(idx: number): Promise<void> {
+    const leagueSeason =
+      await this.leagueSeasonCoreService.getLeagueSeasonByIdx(idx);
+    if (!leagueSeason) {
+      throw new NotFoundException(`League season with idx ${idx} not found`);
+    }
+
+    if (!leagueSeason.activatedAt) {
+      throw new ConflictException(
+        `League season with idx ${idx} is not activated`,
+      );
+    }
+
+    await this.leagueSeasonCoreService.updateLeagueSeasonByIdx(idx, {
+      activatedAt: null,
     });
   }
 }

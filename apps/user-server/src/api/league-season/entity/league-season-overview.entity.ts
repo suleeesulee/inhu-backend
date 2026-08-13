@@ -7,6 +7,7 @@ export class LeagueSeasonOverviewEntity extends PickType(LeagueSeasonEntity, [
   'name',
   'startAt',
   'endAt',
+  'activatedAt',
   'createdAt',
 ]) {
   constructor(data: LeagueSeasonOverviewEntity) {
@@ -22,6 +23,7 @@ export class LeagueSeasonOverviewEntity extends PickType(LeagueSeasonEntity, [
       name: model.name,
       startAt: model.startAt,
       endAt: model.endAt,
+      activatedAt: model.activatedAt,
       createdAt: model.createdAt,
     });
   }

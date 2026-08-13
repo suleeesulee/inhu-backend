@@ -18,28 +18,36 @@ export class LeagueSeasonCoreService {
 
   public async getLeagueSeasonByIdx(
     idx: number,
+    activated?: boolean,
   ): Promise<LeagueSeasonModel | null> {
     const leagueSeason =
-      await this.leagueSeasonCoreRepository.selectLeagueSeasonByIdx(idx);
+      await this.leagueSeasonCoreRepository.selectLeagueSeasonByIdx(
+        idx,
+        activated,
+      );
     return leagueSeason && LeagueSeasonModel.fromPrisma(leagueSeason);
   }
 
   public async getLeagueSeasonByDate(
     startAt: string,
     endAt: string,
+    activated?: boolean,
   ): Promise<LeagueSeasonModel | null> {
     const leagueSeason =
       await this.leagueSeasonCoreRepository.selectLeagueSeasonByDate(
         startAt,
         endAt,
+        activated,
       );
     return leagueSeason && LeagueSeasonModel.fromPrisma(leagueSeason);
   }
 
-  public async getLeagueSeasonAll(): Promise<LeagueSeasonModel[]> {
-    return (await this.leagueSeasonCoreRepository.selectLeagueSeasonAll()).map(
-      (leagueSeason) => LeagueSeasonModel.fromPrisma(leagueSeason),
-    );
+  public async getLeagueSeasonAll(
+    activated?: boolean,
+  ): Promise<LeagueSeasonModel[]> {
+    return (
+      await this.leagueSeasonCoreRepository.selectLeagueSeasonAll(activated)
+    ).map((leagueSeason) => LeagueSeasonModel.fromPrisma(leagueSeason));
   }
 
   public async getLeagueSeasonOverviewAll(
@@ -52,9 +60,13 @@ export class LeagueSeasonCoreService {
 
   public async getLeagueSeasonResultById(
     id: string,
+    activated?: boolean,
   ): Promise<LeagueSeasonResultModel | null> {
     const leagueSeasonResult =
-      await this.leagueSeasonCoreRepository.selectLeagueSeasonResultById(id);
+      await this.leagueSeasonCoreRepository.selectLeagueSeasonResultById(
+        id,
+        activated,
+      );
     return (
       leagueSeasonResult &&
       LeagueSeasonResultModel.fromPrisma(leagueSeasonResult)
@@ -64,11 +76,13 @@ export class LeagueSeasonCoreService {
   public async getLeagueSeasonResultByIdAndUserIdx(
     id: string,
     userIdx: number,
+    activated?: boolean,
   ): Promise<LeagueSeasonResultModel | null> {
     const leagueSeasonResult =
       await this.leagueSeasonCoreRepository.selectLeagueSeasonResultByIdAndUserIdx(
         id,
         userIdx,
+        activated,
       );
     return (
       leagueSeasonResult &&
@@ -91,11 +105,13 @@ export class LeagueSeasonCoreService {
   public async getLeagueSeasonResultByLeagueSeasonIdxAndUserIdx(
     leagueSeasonIdx: number,
     userIdx: number,
+    activated?: boolean,
   ): Promise<LeagueSeasonResultModel | null> {
     const leagueSeasonResult =
       await this.leagueSeasonCoreRepository.selectLeagueSeasonResultByLeagueSeasonIdxAndUserIdx(
         leagueSeasonIdx,
         userIdx,
+        activated,
       );
 
     return (

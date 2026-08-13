@@ -13,4 +13,9 @@ export class GetLeagueSeasonAllInput {
    * 정렬 방향
    */
   public order?: 'asc' | 'desc';
+
+  /**
+   * 활성화 여부
+   */
+  public activated?: boolean;
 }
