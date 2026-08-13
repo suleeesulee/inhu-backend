@@ -119,6 +119,7 @@ CREATE TABLE league_season_tb
   name         varchar                  NOT NULL,
   start_at     timestamp with time zone NOT NULL,
   end_at       timestamp with time zone NOT NULL,
+  activated_at timestamp with time zone,
   created_at   timestamp with time zone NOT NULL DEFAULT NOW(),
   finalized_at timestamp with time zone,
   PRIMARY KEY (idx)
@@ -127,6 +128,10 @@ CREATE TABLE league_season_tb
 CREATE INDEX idx_league_season_unfinalized_end
   ON league_season_tb (end_at)
   WHERE finalized_at IS NULL;
+
+CREATE INDEX idx_league_season_activated_start
+  ON league_season_tb (start_at DESC, idx DESC)
+  WHERE activated_at IS NOT NULL;
 
 CREATE TABLE magazine_like_tb
 (

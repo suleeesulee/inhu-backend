@@ -672,6 +672,7 @@ model LeagueSeason {
   name                   String                 @db.VarChar
   startAt                DateTime               @map("start_at") @db.Timestamptz(6)
   endAt                  DateTime               @map("end_at") @db.Timestamptz(6)
+  activatedAt            DateTime?              @map("activated_at") @db.Timestamptz(6)
   createdAt              DateTime               @default(now()) @map("created_at") @db.Timestamptz(6)
   finalizedAt            DateTime?              @map("finalized_at") @db.Timestamptz(6)
   leagueSeasonResultList LeagueSeasonResult[]
