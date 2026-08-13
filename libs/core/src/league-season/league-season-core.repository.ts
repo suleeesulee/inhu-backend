@@ -20,6 +20,11 @@ import {
   SelectLeagueRewardOption,
 } from './model/prisma-type/select-league-reward-option';
 import { GetLeagueSeasonResultAllInput } from './inputs/get-league-season-result-all.input';
+import { GetLeagueSeasonAllInput } from './inputs/get-league-season-all.input';
+import {
+  SELECT_LEAGUE_SEASON_OVERVIEW,
+  SelectLeagueSeasonOverview,
+} from './model/prisma-type/select-league-season-overview';
 
 @Injectable()
 export class LeagueSeasonCoreRepository {
@@ -54,6 +59,19 @@ export class LeagueSeasonCoreRepository {
   public async selectLeagueSeasonAll(): Promise<SelectLeagueSeason[]> {
     return await this.txHost.tx.leagueSeason.findMany({
       ...SELECT_LEAGUE_SEASON,
+    });
+  }
+
+  public async selectLeagueSeasonOverviewAll(
+    input: GetLeagueSeasonAllInput,
+  ): Promise<SelectLeagueSeasonOverview[]> {
+    const order = input.order ?? 'desc';
+
+    return await this.txHost.tx.leagueSeason.findMany({
+      ...SELECT_LEAGUE_SEASON_OVERVIEW,
+      orderBy: [{ startAt: order }, { idx: order }],
+      take: input.take,
+      skip: input.skip,
     });
   }
 

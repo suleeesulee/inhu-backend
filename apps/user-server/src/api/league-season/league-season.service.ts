@@ -7,6 +7,9 @@ import { PlaceVisitCoreService } from '@libs/core/place-visit/place-visit-core.s
 import { UserRewardCoreService } from '@libs/core/user-reward/user-reward-core.service';
 import { LeagueSeasonResultOverviewEntity } from './entity/league-season-result-overview.entity';
 import { GetLeagueSeasonResultAllDto } from './dto/request/get-league-season-result-all.dto';
+import { GetLeagueSeasonAllDto } from './dto/request/get-league-season-all.dto';
+import { GetLeagueSeasonAllResponseDto } from './dto/response/get-league-season-all.response.dto';
+import { LeagueSeasonOverviewEntity } from './entity/league-season-overview.entity';
 
 @Injectable()
 export class LeagueSeasonService {
@@ -35,6 +38,25 @@ export class LeagueSeasonService {
       );
 
     return LeagueSeasonEntity.fromModel(leagueSeason, participantCount);
+  }
+
+  public async getLeagueSeasonAll(
+    dto: GetLeagueSeasonAllDto,
+  ): Promise<GetLeagueSeasonAllResponseDto> {
+    const pageSize = 10;
+    const leagueSeasonOverviewList =
+      await this.leagueSeasonCoreService.getLeagueSeasonOverviewAll({
+        take: pageSize + 1,
+        skip: (dto.page - 1) * pageSize,
+        order: dto.order,
+      });
+
+    return {
+      hasNext: leagueSeasonOverviewList.length > pageSize,
+      leagueSeasonOverviewList: leagueSeasonOverviewList
+        .slice(0, pageSize)
+        .map(LeagueSeasonOverviewEntity.fromModel),
+    };
   }
 
   public async getLeagueSeasonResultByLeagueSeasonIdx(

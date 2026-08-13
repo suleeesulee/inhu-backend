@@ -7,6 +7,8 @@ import { LeagueSeasonResultUserRankingModel } from './model/league-season-result
 import { LeagueSeasonModel } from './model/league-season.model';
 import { LeagueRewardOptionModel } from './model/league-reward-option.model';
 import { GetLeagueSeasonResultAllInput } from './inputs/get-league-season-result-all.input';
+import { GetLeagueSeasonAllInput } from './inputs/get-league-season-all.input';
+import { LeagueSeasonOverviewModel } from './model/league-season-overview.model';
 
 @Injectable()
 export class LeagueSeasonCoreService {
@@ -38,6 +40,14 @@ export class LeagueSeasonCoreService {
     return (await this.leagueSeasonCoreRepository.selectLeagueSeasonAll()).map(
       (leagueSeason) => LeagueSeasonModel.fromPrisma(leagueSeason),
     );
+  }
+
+  public async getLeagueSeasonOverviewAll(
+    input: GetLeagueSeasonAllInput,
+  ): Promise<LeagueSeasonOverviewModel[]> {
+    return (
+      await this.leagueSeasonCoreRepository.selectLeagueSeasonOverviewAll(input)
+    ).map(LeagueSeasonOverviewModel.fromPrisma);
   }
 
   public async getLeagueSeasonResultById(

@@ -9,6 +9,8 @@ import { LeagueSeasonService } from './league-season.service';
 import { LeagueSeasonResultEntity } from './entity/league-season-result.entity';
 import { GetLeagueSeasonResultAllDto } from './dto/request/get-league-season-result-all.dto';
 import { LeagueSeasonResultOverviewEntity } from './entity/league-season-result-overview.entity';
+import { GetLeagueSeasonAllDto } from './dto/request/get-league-season-all.dto';
+import { GetLeagueSeasonAllResponseDto } from './dto/response/get-league-season-all.response.dto';
 
 @Controller('league-season')
 export class LeagueSeasonController {
@@ -22,6 +24,16 @@ export class LeagueSeasonController {
     @Query() dto: GetLeagueSeasonByDateDto,
   ): Promise<LeagueSeasonEntity> {
     return await this.leagueSeasonService.getLeagueSeasonByDate(dto);
+  }
+
+  /**
+   * 리그 시즌 전체 조회
+   */
+  @Get('/all')
+  public async getLeagueSeasonAll(
+    @Query() dto: GetLeagueSeasonAllDto,
+  ): Promise<GetLeagueSeasonAllResponseDto> {
+    return await this.leagueSeasonService.getLeagueSeasonAll(dto);
   }
 
   /**
