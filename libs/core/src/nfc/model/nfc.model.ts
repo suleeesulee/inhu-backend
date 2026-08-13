@@ -17,9 +17,11 @@ export class NfcModel {
   public score: number;
 
   /**
-   * NFC 토큰 해시
+   * NFC UID
+   *
+   * ! 관리자 페이지에서만 반환하고 user 페이지에서는 반환하지 않음
    */
-  public tokenHash: string;
+  public uid: string;
 
   /**
    * NFC 활성화 시간
@@ -40,7 +42,7 @@ export class NfcModel {
       idx: nfc.idx,
       placeIdx: nfc.placeIdx,
       score: nfc.score,
-      tokenHash: nfc.tokenHash,
+      uid: nfc.uid,
       activatedAt: nfc.activatedAt,
       createdAt: nfc.createdAt,
     });

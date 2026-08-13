@@ -1,5 +1,5 @@
-import { Type } from 'class-transformer';
-import { IsInt, IsNotEmpty, IsString, Min } from 'class-validator';
+import { Transform, Type } from 'class-transformer';
+import { IsInt, IsNotEmpty, IsString, Matches, Min } from 'class-validator';
 
 export class CreateNfcDto {
   /**
@@ -14,11 +14,14 @@ export class CreateNfcDto {
   score: number;
 
   /**
-   * NFC 토큰 해시
+   * NFC UID
    *
-   * @example "hashed_token"
+   * @example "04DE5F1EACC040"
    */
   @IsNotEmpty()
+  @Transform(({ value }) =>
+    typeof value === 'string' ? value.toUpperCase() : value,
+  )
   @IsString()
-  tokenHash: string;
+  uid: string;
 }

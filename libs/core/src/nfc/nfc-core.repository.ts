@@ -21,13 +21,22 @@ export class NfcCoreRepository {
     });
   }
 
-  public async selectNfcByPlaceIdx(
-    placeIdx: number,
-  ): Promise<SelectNfc | null> {
-    return await this.txHost.tx.nfc.findFirst({
+  public async selectNfcAllByPlaceIdx(placeIdx: number): Promise<SelectNfc[]> {
+    return await this.txHost.tx.nfc.findMany({
       ...SELECT_NFC,
       where: {
         placeIdx,
+        deletedAt: null,
+      },
+      orderBy: { idx: 'asc' },
+    });
+  }
+
+  public async selectNfcByUid(uid: string): Promise<SelectNfc | null> {
+    return await this.txHost.tx.nfc.findUnique({
+      ...SELECT_NFC,
+      where: {
+        uid,
         deletedAt: null,
       },
     });
@@ -48,7 +57,7 @@ export class NfcCoreRepository {
       data: {
         placeIdx: input.placeIdx,
         score: input.score,
-        tokenHash: input.tokenHash,
+        uid: input.uid,
         activatedAt: input.activatedAt,
       },
     });
@@ -63,7 +72,7 @@ export class NfcCoreRepository {
       data: {
         placeIdx: input.placeIdx,
         score: input.score,
-        tokenHash: input.tokenHash,
+        uid: input.uid,
         activatedAt: input.activatedAt,
       },
     });

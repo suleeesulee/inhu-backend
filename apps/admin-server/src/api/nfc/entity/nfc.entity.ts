@@ -23,11 +23,11 @@ export class NfcEntity {
   public score: number;
 
   /**
-   * NFC 토큰 해시
+   * NFC UID
    *
-   * @example "hashed_token"
+   * @example "04DE5F1EACC040"
    */
-  public tokenHash: string;
+  public uid: string;
 
   /**
    * NFC 활성화 시간
@@ -48,7 +48,7 @@ export class NfcEntity {
       idx: model.idx,
       placeIdx: model.placeIdx,
       score: model.score,
-      tokenHash: model.tokenHash,
+      uid: model.uid,
       activatedAt: model.activatedAt,
       createdAt: model.createdAt,
     });

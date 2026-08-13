@@ -6,6 +6,6 @@
 export class CreateNfcInput {
   placeIdx: number;
   score: number;
-  tokenHash: string;
+  uid: string;
   activatedAt: Date | null;
 }
