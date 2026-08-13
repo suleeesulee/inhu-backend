@@ -33,7 +33,7 @@ export const SELECT_CUMULATIVE_USER_RANKING: Prisma.Sql = Prisma.sql`
       ROW_NUMBER() OVER (
         ORDER BY
           cumulative_score DESC,
-          cumulative_latest_visit_at DESC,
+          cumulative_latest_visit_at ASC,
           user_idx ASC
       )::int AS cumulative_rank
     FROM user_score

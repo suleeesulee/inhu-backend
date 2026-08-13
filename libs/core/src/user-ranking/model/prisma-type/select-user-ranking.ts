@@ -57,7 +57,7 @@ export const SELECT_USER_RANKING: Prisma.Sql = Prisma.sql`
           PARTITION BY league_season_idx
           ORDER BY
             season_score DESC,
-            season_latest_visit_at DESC NULLS LAST,
+            season_latest_visit_at ASC NULLS LAST,
             user_idx ASC
         )::int
       END AS season_rank,
@@ -67,7 +67,7 @@ export const SELECT_USER_RANKING: Prisma.Sql = Prisma.sql`
           PARTITION BY league_season_idx
           ORDER BY
             cumulative_score DESC,
-            cumulative_latest_visit_at DESC NULLS LAST,
+            cumulative_latest_visit_at ASC NULLS LAST,
             user_idx ASC
         )::int
       END AS cumulative_rank

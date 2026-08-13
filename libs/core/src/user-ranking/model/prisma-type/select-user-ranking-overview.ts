@@ -59,7 +59,7 @@ export const SELECT_USER_RANKING_OVERVIEW: Prisma.Sql = Prisma.sql`
         ELSE ROW_NUMBER() OVER (
           ORDER BY
             season_score DESC,
-            season_latest_visit_at DESC NULLS LAST,
+            season_latest_visit_at ASC NULLS LAST,
             user_idx ASC
         )::int
       END AS season_rank,
@@ -68,7 +68,7 @@ export const SELECT_USER_RANKING_OVERVIEW: Prisma.Sql = Prisma.sql`
         ELSE ROW_NUMBER() OVER (
           ORDER BY
             cumulative_score DESC,
-            cumulative_latest_visit_at DESC NULLS LAST,
+            cumulative_latest_visit_at ASC NULLS LAST,
             user_idx ASC
         )::int
       END AS cumulative_rank

@@ -50,7 +50,7 @@ export const SELECT_SEASON_USER_RANKING = (
       ROW_NUMBER() OVER (
         ORDER BY
           season_score DESC,
-          season_latest_visit_at DESC,
+          season_latest_visit_at ASC,
           user_idx ASC
       )::int AS season_rank
     FROM user_score

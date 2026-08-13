@@ -58,7 +58,7 @@ export const SELECT_LEAGUE_SEASON_RESULT_USER_RANKING = (
         PARTITION BY league_season_idx
         ORDER BY
           season_score DESC,
-          season_latest_visit_at DESC NULLS LAST,
+          season_latest_visit_at ASC NULLS LAST,
           user_idx ASC
       )::int AS season_rank
     FROM season_user_score
@@ -111,7 +111,7 @@ export const SELECT_LEAGUE_SEASON_RESULT_USER_RANKING = (
         PARTITION BY cus.target_league_season_idx
         ORDER BY
           cus.cumulative_score DESC,
-          culv.cumulative_latest_visit_at DESC NULLS LAST,
+          culv.cumulative_latest_visit_at ASC NULLS LAST,
           cus.user_idx ASC
       )::int AS cumulative_rank
     FROM cumulative_user_score AS cus
