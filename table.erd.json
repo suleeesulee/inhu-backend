@@ -8810,20 +8810,20 @@
       "8an1S5qcwKG7QgO3mJdhE": {
         "id": "8an1S5qcwKG7QgO3mJdhE",
         "tableId": "PxvPs85GZRN7v2weriJLB",
-        "name": "token_hash",
+        "name": "uid",
         "comment": "",
         "dataType": "varchar",
         "default": "",
         "options": 8,
         "ui": {
           "keys": 0,
-          "widthName": 67,
+          "widthName": 60,
           "widthComment": 60,
           "widthDataType": 60,
           "widthDefault": 60
         },
         "meta": {
-          "updateAt": 1782456332726,
+          "updateAt": 1786603446964,
           "createAt": 1782456326402
         }
       },

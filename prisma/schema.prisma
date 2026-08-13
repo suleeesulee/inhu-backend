@@ -684,7 +684,7 @@ model Nfc {
   idx            Int            @id @default(autoincrement())
   placeIdx       Int            @map("place_idx")
   score          Int
-  tokenHash      String         @map("token_hash") @db.VarChar
+  uid            String         @map("uid") @db.VarChar
   activatedAt    DateTime?      @map("activated_at") @db.Timestamptz(6)
   createdAt      DateTime       @default(now()) @map("created_at") @db.Timestamptz(6)
   deletedAt      DateTime?      @map("deleted_at") @db.Timestamptz(6)

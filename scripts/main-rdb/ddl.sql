@@ -265,7 +265,7 @@ CREATE TABLE nfc_tb
   idx          int                      NOT NULL GENERATED ALWAYS AS IDENTITY,
   place_idx    int                      NOT NULL,
   score        int                      NOT NULL,
-  token_hash   varchar                  NOT NULL,
+  uid          varchar                  NOT NULL,
   activated_at timestamp with time zone,
   created_at   timestamp with time zone NOT NULL DEFAULT NOW(),
   deleted_at   timestamp with time zone,
