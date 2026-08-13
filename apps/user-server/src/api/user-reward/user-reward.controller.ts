@@ -10,6 +10,9 @@ import { LoginUser } from '@user/common/types/LoginUser';
 export class UserRewardController {
   constructor(private readonly userRewardService: UserRewardService) {}
 
+  /**
+   * 보상 선택
+   */
   @Put(':id')
   @LoginAuth()
   @Exception(400, 'Invalid request')
