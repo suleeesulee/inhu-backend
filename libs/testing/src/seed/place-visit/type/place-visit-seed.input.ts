@@ -7,4 +7,5 @@ export type PlaceVisitSeedInput = {
   userIdx: number;
   nfcIdx: number;
   score?: number;
+  createdAt?: Date;
 };

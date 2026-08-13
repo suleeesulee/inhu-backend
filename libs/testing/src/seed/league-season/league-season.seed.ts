@@ -21,6 +21,7 @@ export class LeagueSeasonSeedHelper extends ISeedHelper<
 
     return {
       name: defaultValue(input.name, faker.lorem.words(3)),
+      createdAt: defaultValue(input.createdAt, new Date()),
       startAt,
       endAt: defaultValue(
         input.endAt,
@@ -47,6 +48,7 @@ export class LeagueSeasonSeedHelper extends ISeedHelper<
       select: { idx: true },
       data: {
         name: filledInput.name,
+        createdAt: filledInput.createdAt,
         startAt: filledInput.startAt,
         endAt: filledInput.endAt,
         finalizedAt: filledInput.finalizedAt,

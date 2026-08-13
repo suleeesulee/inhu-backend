@@ -20,6 +20,8 @@ export class LeagueSeasonController {
    * 날짜로 리그 시즌 조회
    */
   @Get()
+  @Exception(400, 'Invalid request')
+  @Exception(404, 'League season not found')
   public async getLeagueSeasonByDate(
     @Query() dto: GetLeagueSeasonByDateDto,
   ): Promise<LeagueSeasonEntity> {
@@ -30,6 +32,7 @@ export class LeagueSeasonController {
    * 리그 시즌 전체 조회
    */
   @Get('/all')
+  @Exception(400, 'Invalid request')
   public async getLeagueSeasonAll(
     @Query() dto: GetLeagueSeasonAllDto,
   ): Promise<GetLeagueSeasonAllResponseDto> {

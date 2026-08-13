@@ -20,6 +20,7 @@ export class PlaceVisitSeedHelper extends ISeedHelper<
       userIdx: input.userIdx,
       nfcIdx: input.nfcIdx,
       score: defaultValue(input.score, 1),
+      createdAt: defaultValue(input.createdAt, new Date()),
     };
   }
 
@@ -32,6 +33,7 @@ export class PlaceVisitSeedHelper extends ISeedHelper<
         userIdx: filledInput.userIdx,
         nfcIdx: filledInput.nfcIdx,
         score: filledInput.score,
+        createdAt: filledInput.createdAt,
       },
     });
 

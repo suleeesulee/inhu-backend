@@ -5,6 +5,7 @@
  */
 export type LeagueSeasonSeedInput = {
   name?: string;
+  createdAt?: Date;
   startAt?: Date;
   endAt?: Date;
   finalizedAt?: Date | null;
