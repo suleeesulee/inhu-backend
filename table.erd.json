@@ -10233,17 +10233,17 @@
         "name": "id",
         "comment": "",
         "dataType": "uuid",
-        "default": "",
-        "options": 7,
+        "default": "uuid_generate_v4()",
+        "options": 2,
         "ui": {
           "keys": 1,
           "widthName": 60,
           "widthComment": 60,
           "widthDataType": 60,
-          "widthDefault": 60
+          "widthDefault": 113
         },
         "meta": {
-          "updateAt": 1783496638234,
+          "updateAt": 1786684730379,
           "createAt": 1783494451279
         }
       },
@@ -12339,7 +12339,7 @@
           "columnIds": [
             "RDCPt_VLSMB7-8ZNxdchH"
           ],
-          "x": 5162.7026,
+          "x": 5189.2026,
           "y": 2898.0824,
           "direction": 8
         },
