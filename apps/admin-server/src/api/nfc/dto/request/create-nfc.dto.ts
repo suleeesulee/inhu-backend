@@ -23,5 +23,6 @@ export class CreateNfcDto {
     typeof value === 'string' ? value.toUpperCase() : value,
   )
   @IsString()
+  @Matches(/^[0-9A-F]{14}$/)
   uid: string;
 }

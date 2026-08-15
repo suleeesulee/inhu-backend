@@ -1,17 +1,36 @@
 import { NfcCoreService } from '@libs/core/nfc/nfc-core.service';
 import { Prisma } from '@prisma/client';
 import {
+  BadRequestException,
   ConflictException,
+  ForbiddenException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
 import { NfcEntity } from './entity/nfc.entity';
 import { CreateNfcDto } from './dto/request/create-nfc.dto';
 import { UpdateNfcDto } from './dto/request/update-nfc.dto';
+import { ConfigService } from '@nestjs/config';
+import {
+  decryptNfcPiccData,
+  deriveNfcAesKey,
+  deriveNfcSessionMacKey,
+  verifyNfcMac,
+} from '@libs/core/nfc/nfc-crypto';
+import { IssueNfcAesKeyResponseDto } from './dto/response/issue-nfc-aes-key.response.dto';
+import { VerifyNfcDto } from './dto/request/verify-nfc.dto';
+import { VerifyNfcResponseDto } from './dto/response/verify-nfc.response.dto';
 
 @Injectable()
 export class NfcService {
-  constructor(private readonly nfcCoreService: NfcCoreService) {}
+  private readonly masterKey: Buffer;
+
+  constructor(
+    private readonly nfcCoreService: NfcCoreService,
+    configService: ConfigService,
+  ) {
+    this.masterKey = this.readKey(configService, 'nfc.masterKey');
+  }
 
   public async getNfcByIdx(idx: number): Promise<NfcEntity> {
     const nfc = await this.nfcCoreService.getNfcByIdx(idx);
@@ -57,11 +76,74 @@ export class NfcService {
       await this.nfcCoreService.updateNfcByIdx(idx, {
         score: dto.score,
         uid: dto.uid,
+        activatedAt: nfc.uid === dto.uid ? undefined : null,
       });
     } catch (error) {
       this.throwIfUidDuplicated(error, dto.uid);
       throw error;
     }
+  }
+
+  public async issueNfcAesKeyByIdx(
+    idx: number,
+  ): Promise<IssueNfcAesKeyResponseDto> {
+    const nfc = await this.nfcCoreService.getNfcByIdx(idx);
+    if (!nfc) {
+      throw new NotFoundException(`Nfc with idx ${idx} not found`);
+    }
+    if (nfc.activatedAt) {
+      throw new ConflictException('Activated nfc AES key cannot be issued');
+    }
+
+    const uid = Buffer.from(nfc.uid, 'hex');
+
+    return {
+      uid: nfc.uid,
+      nfcAesKey: deriveNfcAesKey(this.masterKey, uid)
+        .toString('hex')
+        .toUpperCase(),
+    };
+  }
+
+  public async verifyNfcByIdx(
+    idx: number,
+    dto: VerifyNfcDto,
+  ): Promise<VerifyNfcResponseDto> {
+    const nfc = await this.nfcCoreService.getNfcByIdx(idx);
+    if (!nfc) {
+      throw new NotFoundException(`Nfc with idx ${idx} not found`);
+    }
+
+    const expectedUid = Buffer.from(nfc.uid, 'hex');
+    const nfcAesKey = deriveNfcAesKey(this.masterKey, expectedUid);
+
+    let uid: Buffer;
+    let readCounter: Buffer;
+
+    try {
+      ({ uid, readCounter } = decryptNfcPiccData(
+        Buffer.from(dto.encryptedPiccData, 'hex'),
+        nfcAesKey,
+      ));
+    } catch {
+      throw new BadRequestException('Failed to decrypt NFC PICC data');
+    }
+
+    if (!uid.equals(expectedUid)) {
+      throw new ConflictException('NFC UID does not match');
+    }
+
+    const sessionMacKey = deriveNfcSessionMacKey(nfcAesKey, uid, readCounter);
+
+    if (!verifyNfcMac(sessionMacKey, Buffer.from(dto.sdmMac, 'hex'))) {
+      throw new ForbiddenException('Invalid NFC MAC');
+    }
+
+    return {
+      valid: true,
+      uid: nfc.uid,
+      readCounter: readCounter.readUIntLE(0, readCounter.length),
+    };
   }
 
   public async activateNfcByIdx(idx: number): Promise<void> {
@@ -110,5 +192,15 @@ export class NfcService {
     ) {
       throw new ConflictException(`Nfc with uid ${uid} already exists`);
     }
+  }
+
+  private readKey(configService: ConfigService, name: string): Buffer {
+    const value = configService.getOrThrow<string>(name);
+
+    if (!/^[0-9a-fA-F]{32}$/.test(value)) {
+      throw new Error(`${name} must be a 16-byte hexadecimal value`);
+    }
+
+    return Buffer.from(value, 'hex');
   }
 }
