@@ -1,6 +1,7 @@
 import { TransactionHost } from '@nestjs-cls/transactional';
 import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-prisma';
 import { Injectable } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 import {
   SELECT_PLACE_VISIT,
   SelectPlaceVisit,
@@ -70,6 +71,36 @@ export class PlaceVisitCoreRepository {
         },
       },
     });
+  }
+
+  public async selectPlaceVisitCountByDatePeriod(
+    startAt: Date,
+    endAt: Date,
+  ): Promise<number> {
+    return await this.txHost.tx.placeVisit.count({
+      where: {
+        createdAt: {
+          gte: startAt,
+          lte: endAt,
+        },
+      },
+    });
+  }
+
+  public async selectPlaceVisitParticipantCountByDatePeriod(
+    startAt: Date,
+    endAt: Date,
+  ): Promise<number> {
+    const [result] = await this.txHost.tx.$queryRaw<
+      { participantCount: number }[]
+    >(Prisma.sql`
+      SELECT COUNT(DISTINCT user_idx)::int AS "participantCount"
+      FROM place_visit_tb
+      WHERE created_at >= ${startAt}
+        AND created_at <= ${endAt}
+    `);
+
+    return result.participantCount;
   }
 
   public async selectPlaceVisitStatisticAllByUserIdxAndPeriod(

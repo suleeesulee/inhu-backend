@@ -1,5 +1,6 @@
 import { LeagueSeasonCoreService } from '@libs/core/league-season/league-season-core.service';
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
   NotFoundException,
@@ -8,7 +9,9 @@ import { LeagueSeasonEntity } from './entity/league-season.entity';
 import { GetLeagueSeasonAllResponseDto } from './dto/response/get-league-season-all.dto';
 import { CreateLeagueSeasonDto } from './dto/request/create-league-season.dto';
 import { UpdateLeagueSeasonDto } from './dto/request/update-league-season.dto';
-import { UpdateLeagueRewardOptionDto } from './dto/request/update-league-reward-option.dto';
+import { GetLeagueSeasonAllDto } from './dto/request/get-league-season-all.dto';
+import { UpdateLeagueRewardOptionListDto } from './dto/request/update-league-reward-option-list.dto';
+import { LeagueSeasonOverviewEntity } from './entity/league-season-overview.entity';
 
 @Injectable()
 export class LeagueSeasonService {
@@ -26,17 +29,31 @@ export class LeagueSeasonService {
     return LeagueSeasonEntity.fromModel(leagueSeason);
   }
 
-  public async getLeagueSeasonAll(): Promise<GetLeagueSeasonAllResponseDto> {
+  public async getLeagueSeasonAll(
+    dto: GetLeagueSeasonAllDto,
+  ): Promise<GetLeagueSeasonAllResponseDto> {
+    const pageSize = 10;
+    const leagueSeasonList =
+      await this.leagueSeasonCoreService.getLeagueSeasonOverviewAll({
+        take: pageSize + 1,
+        skip: (dto.page - 1) * pageSize,
+        order: dto.order,
+        activated: dto.activated,
+      });
+
     return {
-      leagueSeasonList: (
-        await this.leagueSeasonCoreService.getLeagueSeasonAll()
-      ).map((leagueSeason) => LeagueSeasonEntity.fromModel(leagueSeason)),
+      hasNext: leagueSeasonList.length > pageSize,
+      leagueSeasonOverviewList: leagueSeasonList
+        .slice(0, pageSize)
+        .map(LeagueSeasonOverviewEntity.fromModel),
     };
   }
 
   public async createLeagueSeason(
     dto: CreateLeagueSeasonDto,
   ): Promise<LeagueSeasonEntity> {
+    this.validatePeriod(dto.startAt, dto.endAt);
+
     return LeagueSeasonEntity.fromModel(
       await this.leagueSeasonCoreService.createLeagueSeason({
         name: dto.name,
@@ -58,12 +75,14 @@ export class LeagueSeasonService {
       throw new NotFoundException(`League season with idx ${idx} not found`);
     }
 
+    this.validatePeriod(dto.startAt, dto.endAt);
+
     await this.leagueSeasonCoreService.updateLeagueSeasonByIdx(idx, dto);
   }
 
-  public async updateLeagueSeasonRewardOptionByIdx(
+  public async updateLeagueSeasonRewardOptionListByIdx(
     idx: number,
-    dto: UpdateLeagueRewardOptionDto,
+    dto: UpdateLeagueRewardOptionListDto,
   ): Promise<void> {
     const leagueSeason =
       await this.leagueSeasonCoreService.getLeagueSeasonByIdx(idx);
@@ -72,7 +91,7 @@ export class LeagueSeasonService {
     }
 
     await this.leagueSeasonCoreService.updateLeagueSeasonByIdx(idx, {
-      rewardOptionList: [dto],
+      rewardOptionList: dto.rewardOptionList,
     });
   }
 
@@ -110,5 +129,11 @@ export class LeagueSeasonService {
     await this.leagueSeasonCoreService.updateLeagueSeasonByIdx(idx, {
       activatedAt: null,
     });
+  }
+
+  private validatePeriod(startAt: string, endAt: string): void {
+    if (new Date(startAt).getTime() > new Date(endAt).getTime()) {
+      throw new BadRequestException('Start date must not be after end date');
+    }
   }
 }

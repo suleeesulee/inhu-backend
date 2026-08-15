@@ -33,9 +33,9 @@ export class LeagueSeasonService {
     }
 
     const participantCount =
-      await this.placeVisitCoreService.getPlaceVisitCountByPeriod(
-        dto.startAt,
-        dto.endAt,
+      await this.placeVisitCoreService.getPlaceVisitParticipantCountByDatePeriod(
+        leagueSeason.startAt,
+        leagueSeason.endAt,
       );
 
     return LeagueSeasonEntity.fromModel(leagueSeason, participantCount);

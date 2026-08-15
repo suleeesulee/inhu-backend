@@ -34,6 +34,19 @@ export class UserCoreRepository {
     });
   }
 
+  public async selectUserAllByIdxList(
+    idxList: number[],
+  ): Promise<SelectUser[]> {
+    if (idxList.length === 0) {
+      return [];
+    }
+
+    return await this.txHost.tx.user.findMany({
+      ...SELECT_USER,
+      where: { idx: { in: idxList } },
+    });
+  }
+
   public async selectUserBySnsId(
     snsId: string,
     provider: AuthProvider,

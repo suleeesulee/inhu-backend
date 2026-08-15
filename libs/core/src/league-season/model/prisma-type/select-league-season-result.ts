@@ -5,6 +5,8 @@ export const SELECT_LEAGUE_SEASON_RESULT =
   Prisma.validator<Prisma.LeagueSeasonResultDefaultArgs>()({
     select: {
       id: true,
+      userIdx: true,
+      finalScore: true,
       createdAt: true,
       leagueSeason: {
         select: {

@@ -9,6 +9,7 @@ export class LeagueSeasonOverviewModel extends PickType(LeagueSeasonModel, [
   'endAt',
   'activatedAt',
   'createdAt',
+  'finalizedAt',
 ]) {
   constructor(data: LeagueSeasonOverviewModel) {
     super();
@@ -25,6 +26,7 @@ export class LeagueSeasonOverviewModel extends PickType(LeagueSeasonModel, [
       endAt: leagueSeason.endAt,
       activatedAt: leagueSeason.activatedAt,
       createdAt: leagueSeason.createdAt,
+      finalizedAt: leagueSeason.finalizedAt,
     });
   }
 }

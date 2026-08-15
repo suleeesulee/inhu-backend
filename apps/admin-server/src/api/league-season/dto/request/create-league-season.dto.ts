@@ -1,5 +1,12 @@
 import { IsKoreanDate } from '@libs/common/decorator/is-korean-date.decorator';
-import { IsNotEmpty, IsString, ValidateNested } from 'class-validator';
+import {
+  IsArray,
+  IsDate,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
 import { CreateLeagueRewardOptionDto } from './create-league-reward-option.dto';
 import { Type } from 'class-transformer';
 
@@ -14,7 +21,6 @@ export class CreateLeagueSeasonDto {
   name: string;
 
   /**
-   * ! time까지 기입할지, day만 기입할지 정확한 기획 필요
    * 시작 날짜 (한국 날짜)
    *
    * @example '2026-08-03'
@@ -24,7 +30,6 @@ export class CreateLeagueSeasonDto {
   startAt: string;
 
   /**
-   * ! start와 동일
    * 종료 날짜 (한국 날짜)
    *
    * @example '2026-08-17'
@@ -33,6 +38,10 @@ export class CreateLeagueSeasonDto {
   @IsKoreanDate()
   endAt: string;
 
+  /**
+   * 리그 시즌 보상 옵션 리스트
+   */
+  @IsArray()
   @ValidateNested({ each: true })
   @Type(() => CreateLeagueRewardOptionDto)
   rewardOptionList: CreateLeagueRewardOptionDto[];

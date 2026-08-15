@@ -37,6 +37,11 @@ export class LeagueSeasonEntity {
   public createdAt: Date;
 
   /**
+   * 시즌 결과 집계 완료 일자
+   */
+  public finalizedAt: Date | null;
+
+  /**
    * league season 보상 옵션 리스트
    */
   public rewardOptionList: LeagueRewardOptionEntity[];
@@ -53,6 +58,7 @@ export class LeagueSeasonEntity {
       endAt: model.endAt,
       activatedAt: model.activatedAt,
       createdAt: model.createdAt,
+      finalizedAt: model.finalizedAt,
       rewardOptionList: model.rewardOptionList.map((rewardOption) =>
         LeagueRewardOptionEntity.fromModel(rewardOption),
       ),

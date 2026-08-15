@@ -52,6 +52,26 @@ export class PlaceVisitCoreService {
     );
   }
 
+  public async getPlaceVisitCountByDatePeriod(
+    startAt: Date,
+    endAt: Date,
+  ): Promise<number> {
+    return await this.placeVisitCoreRepository.selectPlaceVisitCountByDatePeriod(
+      startAt,
+      endAt,
+    );
+  }
+
+  public async getPlaceVisitParticipantCountByDatePeriod(
+    startAt: Date,
+    endAt: Date,
+  ): Promise<number> {
+    return await this.placeVisitCoreRepository.selectPlaceVisitParticipantCountByDatePeriod(
+      startAt,
+      endAt,
+    );
+  }
+
   public async createPlaceVisit(
     input: CreatePlaceVisitInput,
   ): Promise<PlaceVisitModel> {

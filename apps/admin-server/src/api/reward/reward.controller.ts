@@ -6,6 +6,7 @@ import {
   Param,
   ParseIntPipe,
   Post,
+  Query,
   Put,
 } from '@nestjs/common';
 import { RewardService } from './reward.service';
@@ -14,6 +15,8 @@ import { GetRewardAllResponseDto } from './dto/response/get-reward-all-response.
 import { CreateRewardDto } from './dto/request/create-reward.dto';
 import { RewardEntity } from './entity/reward.entity';
 import { Exception } from '@libs/common/decorator/exception.decorator';
+import { GetRewardAllDto } from './dto/request/get-reward-all.dto';
+import { UpdateRewardDto } from './dto/request/update-reward.dto';
 
 @Controller('reward')
 export class RewardController {
@@ -24,8 +27,23 @@ export class RewardController {
    */
   @Get('/all')
   @AdminAuth()
-  public async getRewardAll(): Promise<GetRewardAllResponseDto> {
-    return await this.rewardService.getRewardAll();
+  public async getRewardAll(
+    @Query() dto: GetRewardAllDto,
+  ): Promise<GetRewardAllResponseDto> {
+    return await this.rewardService.getRewardAll(dto);
+  }
+
+  /**
+   * 특정 리워드 조회
+   */
+  @Get('/:idx')
+  @AdminAuth()
+  @Exception(400, 'Invalid reward idx')
+  @Exception(404, 'Reward not found')
+  public async getRewardByIdx(
+    @Param('idx', ParseIntPipe) idx: number,
+  ): Promise<RewardEntity> {
+    return await this.rewardService.getRewardByIdx(idx);
   }
 
   /**
@@ -50,7 +68,7 @@ export class RewardController {
   @Exception(409, 'Reward already activated')
   public async updateRewardByIdx(
     @Param('idx', ParseIntPipe) idx: number,
-    @Body() dto: CreateRewardDto,
+    @Body() dto: UpdateRewardDto,
   ): Promise<void> {
     return await this.rewardService.updateRewardByIdx(idx, dto);
   }

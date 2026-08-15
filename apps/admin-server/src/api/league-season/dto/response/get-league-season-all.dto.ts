@@ -1,5 +1,6 @@
-import { LeagueSeasonEntity } from '../../entity/league-season.entity';
+import { LeagueSeasonOverviewEntity } from '../../entity/league-season-overview.entity';
 
 export class GetLeagueSeasonAllResponseDto {
-  leagueSeasonList: LeagueSeasonEntity[];
+  public hasNext: boolean;
+  public leagueSeasonOverviewList: LeagueSeasonOverviewEntity[];
 }

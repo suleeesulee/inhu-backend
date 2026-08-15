@@ -6,6 +6,7 @@ import {
   Param,
   ParseIntPipe,
   Post,
+  Query,
   Put,
 } from '@nestjs/common';
 import { LeagueSeasonService } from './league-season.service';
@@ -13,9 +14,10 @@ import { AdminAuth } from '@admin/common/decorator/admin-auth.decorator';
 import { GetLeagueSeasonAllResponseDto } from './dto/response/get-league-season-all.dto';
 import { LeagueSeasonEntity } from './entity/league-season.entity';
 import { CreateLeagueSeasonDto } from './dto/request/create-league-season.dto';
-import { UpdateLeagueRewardOptionDto } from './dto/request/update-league-reward-option.dto';
 import { UpdateLeagueSeasonDto } from './dto/request/update-league-season.dto';
 import { Exception } from '@libs/common/decorator/exception.decorator';
+import { GetLeagueSeasonAllDto } from './dto/request/get-league-season-all.dto';
+import { UpdateLeagueRewardOptionListDto } from './dto/request/update-league-reward-option-list.dto';
 
 @Controller('league-season')
 export class LeagueSeasonController {
@@ -26,8 +28,10 @@ export class LeagueSeasonController {
    */
   @Get('/all')
   @AdminAuth()
-  public async getLeagueSeasonAll(): Promise<GetLeagueSeasonAllResponseDto> {
-    return await this.leagueSeasonService.getLeagueSeasonAll();
+  public async getLeagueSeasonAll(
+    @Query() dto: GetLeagueSeasonAllDto,
+  ): Promise<GetLeagueSeasonAllResponseDto> {
+    return await this.leagueSeasonService.getLeagueSeasonAll(dto);
   }
 
   /**
@@ -56,24 +60,24 @@ export class LeagueSeasonController {
   }
 
   /**
-   * 특정 리그 시즌 보상 옵션 수정 (임시 api; 기획 논의 필요)
+   * 특정 리그 시즌 보상 옵션 목록 수정
    */
-  @Post('/:idx/reward-option')
+  @Put('/:idx/reward-option')
   @AdminAuth()
   @Exception(400, 'Invalid request data')
   @Exception(404, 'League season not found')
-  public async updateLeagueSeasonRewardOptionByIdx(
+  public async updateLeagueSeasonRewardOptionListByIdx(
     @Param('idx', ParseIntPipe) idx: number,
-    @Body() dto: UpdateLeagueRewardOptionDto,
+    @Body() dto: UpdateLeagueRewardOptionListDto,
   ): Promise<void> {
-    return await this.leagueSeasonService.updateLeagueSeasonRewardOptionByIdx(
+    return await this.leagueSeasonService.updateLeagueSeasonRewardOptionListByIdx(
       idx,
       dto,
     );
   }
 
   /**
-   * 특정 리그 시즌 수정 (임시 api; 기획 논의 필요)
+   * 특정 리그 시즌 수정
    */
   @Put('/:idx')
   @AdminAuth()

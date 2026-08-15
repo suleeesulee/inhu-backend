@@ -43,10 +43,10 @@ export class LeagueSeasonCoreService {
   }
 
   public async getLeagueSeasonAll(
-    activated?: boolean,
+    input: GetLeagueSeasonAllInput,
   ): Promise<LeagueSeasonModel[]> {
     return (
-      await this.leagueSeasonCoreRepository.selectLeagueSeasonAll(activated)
+      await this.leagueSeasonCoreRepository.selectLeagueSeasonAll(input)
     ).map((leagueSeason) => LeagueSeasonModel.fromPrisma(leagueSeason));
   }
 
@@ -71,6 +71,16 @@ export class LeagueSeasonCoreService {
       leagueSeasonResult &&
       LeagueSeasonResultModel.fromPrisma(leagueSeasonResult)
     );
+  }
+
+  public async getLeagueSeasonResultAllByIdList(
+    idList: string[],
+  ): Promise<LeagueSeasonResultModel[]> {
+    return (
+      await this.leagueSeasonCoreRepository.selectLeagueSeasonResultAllByIdList(
+        idList,
+      )
+    ).map(LeagueSeasonResultModel.fromPrisma);
   }
 
   public async getLeagueSeasonResultByIdAndUserIdx(

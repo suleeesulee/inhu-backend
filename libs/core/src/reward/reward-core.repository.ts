@@ -4,6 +4,7 @@ import { Injectable } from '@nestjs/common';
 import { SELECT_REWARD, SelectReward } from './model/prisma-type/select-reward';
 import { CreateRewardInput } from './inputs/create-reward.input';
 import { UpdateRewardInput } from './inputs/update-reward.input';
+import { GetRewardAllInput } from './inputs/get-reward-all.input';
 
 @Injectable()
 export class RewardCoreRepository {
@@ -21,12 +22,38 @@ export class RewardCoreRepository {
     });
   }
 
-  public async selectRewardAll(): Promise<SelectReward[]> {
+  public async selectRewardAllByIdxList(
+    idxList: number[],
+  ): Promise<SelectReward[]> {
+    if (idxList.length === 0) {
+      return [];
+    }
+
+    return await this.txHost.tx.reward.findMany({
+      ...SELECT_REWARD,
+      where: { idx: { in: idxList } },
+    });
+  }
+
+  public async selectRewardAll(
+    input: GetRewardAllInput,
+  ): Promise<SelectReward[]> {
+    const order = input.order ?? 'desc';
+
     return await this.txHost.tx.reward.findMany({
       ...SELECT_REWARD,
       where: {
         deletedAt: null,
+        activatedAt:
+          input.activated === undefined
+            ? undefined
+            : input.activated
+              ? { not: null }
+              : null,
       },
+      orderBy: [{ createdAt: order }, { idx: order }],
+      take: input.take,
+      skip: input.skip,
     });
   }
 

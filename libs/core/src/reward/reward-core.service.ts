@@ -3,6 +3,7 @@ import { RewardCoreRepository } from './reward-core.repository';
 import { RewardModel } from './model/reward.model';
 import { CreateRewardInput } from './inputs/create-reward.input';
 import { UpdateRewardInput } from './inputs/update-reward.input';
+import { GetRewardAllInput } from './inputs/get-reward-all.input';
 
 @Injectable()
 export class RewardCoreService {
@@ -13,8 +14,16 @@ export class RewardCoreService {
     return reward && RewardModel.fromPrisma(reward);
   }
 
-  public async getRewardAll(): Promise<RewardModel[]> {
-    return (await this.rewardCoreRepository.selectRewardAll()).map(
+  public async getRewardAllByIdxList(
+    idxList: number[],
+  ): Promise<RewardModel[]> {
+    return (
+      await this.rewardCoreRepository.selectRewardAllByIdxList(idxList)
+    ).map(RewardModel.fromPrisma);
+  }
+
+  public async getRewardAll(input: GetRewardAllInput): Promise<RewardModel[]> {
+    return (await this.rewardCoreRepository.selectRewardAll(input)).map(
       RewardModel.fromPrisma,
     );
   }

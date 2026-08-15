@@ -35,6 +35,12 @@ export class UserCoreService {
     return user && this.toUserModel(user);
   }
 
+  public async getUserAllByIdxList(idxList: number[]): Promise<UserModel[]> {
+    return (await this.userCoreRepository.selectUserAllByIdxList(idxList)).map(
+      (user) => this.toUserModel(user),
+    );
+  }
+
   public async getUserBySocialId(
     snsId: string,
     provider: AuthProvider,

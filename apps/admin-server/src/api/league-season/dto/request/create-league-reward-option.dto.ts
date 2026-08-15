@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsInt, IsNotEmpty } from 'class-validator';
+import { IsInt, IsNotEmpty, Min } from 'class-validator';
 
 export class CreateLeagueRewardOptionDto {
   /**
@@ -10,6 +10,7 @@ export class CreateLeagueRewardOptionDto {
   @IsNotEmpty()
   @Type(() => Number)
   @IsInt()
+  @Min(1)
   rewardIdx: number;
 
   /**
@@ -20,5 +21,6 @@ export class CreateLeagueRewardOptionDto {
   @IsNotEmpty()
   @Type(() => Number)
   @IsInt()
+  @Min(1)
   targetRank: number;
 }

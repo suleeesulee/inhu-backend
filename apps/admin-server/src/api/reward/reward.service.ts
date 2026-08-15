@@ -8,17 +8,36 @@ import { GetRewardAllResponseDto } from './dto/response/get-reward-all-response.
 import { RewardEntity } from './entity/reward.entity';
 import { CreateRewardDto } from './dto/request/create-reward.dto';
 import { UpdateRewardDto } from './dto/request/update-reward.dto';
+import { GetRewardAllDto } from './dto/request/get-reward-all.dto';
 
 @Injectable()
 export class RewardService {
   constructor(private readonly rewardCoreService: RewardCoreService) {}
 
-  public async getRewardAll(): Promise<GetRewardAllResponseDto> {
+  public async getRewardAll(
+    dto: GetRewardAllDto,
+  ): Promise<GetRewardAllResponseDto> {
+    const pageSize = 10;
+    const rewardList = await this.rewardCoreService.getRewardAll({
+      take: pageSize + 1,
+      skip: (dto.page - 1) * pageSize,
+      order: dto.order,
+      activated: dto.activated,
+    });
+
     return {
-      rewardList: (await this.rewardCoreService.getRewardAll()).map((reward) =>
-        RewardEntity.fromModel(reward),
-      ),
+      hasNext: rewardList.length > pageSize,
+      rewardList: rewardList.slice(0, pageSize).map(RewardEntity.fromModel),
     };
+  }
+
+  public async getRewardByIdx(idx: number): Promise<RewardEntity> {
+    const reward = await this.rewardCoreService.getRewardByIdx(idx);
+    if (!reward) {
+      throw new NotFoundException(`Reward with idx ${idx} not found`);
+    }
+
+    return RewardEntity.fromModel(reward);
   }
 
   public async createReward(dto: CreateRewardDto): Promise<RewardEntity> {
@@ -42,7 +61,7 @@ export class RewardService {
 
     await this.rewardCoreService.updateRewardByIdx(idx, {
       name: dto.name,
-      imagePath: dto.imagePath ?? null,
+      imagePath: dto.imagePath,
     });
   }
 

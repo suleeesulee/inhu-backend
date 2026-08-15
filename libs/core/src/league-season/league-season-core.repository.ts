@@ -62,11 +62,18 @@ export class LeagueSeasonCoreRepository {
   }
 
   public async selectLeagueSeasonAll(
-    activated?: boolean,
+    input: GetLeagueSeasonAllInput,
   ): Promise<SelectLeagueSeason[]> {
+    const order = input.order ?? 'desc';
+
     return await this.txHost.tx.leagueSeason.findMany({
       ...SELECT_LEAGUE_SEASON,
-      where: this.getActivatedAtFilterWhereClause(activated),
+      where: {
+        ...this.getActivatedAtFilterWhereClause(input.activated),
+      },
+      orderBy: [{ startAt: order }, { idx: order }],
+      take: input.take,
+      skip: input.skip,
     });
   }
 
@@ -94,6 +101,19 @@ export class LeagueSeasonCoreRepository {
         id,
         leagueSeason: this.getActivatedAtFilterWhereClause(activated),
       },
+    });
+  }
+
+  public async selectLeagueSeasonResultAllByIdList(
+    idList: string[],
+  ): Promise<SelectLeagueSeasonResult[]> {
+    if (idList.length === 0) {
+      return [];
+    }
+
+    return await this.txHost.tx.leagueSeasonResult.findMany({
+      ...SELECT_LEAGUE_SEASON_RESULT,
+      where: { id: { in: idList } },
     });
   }
 

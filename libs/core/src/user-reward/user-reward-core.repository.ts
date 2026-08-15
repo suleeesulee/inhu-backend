@@ -9,6 +9,7 @@ import {
 import { UpdateUserRewardInput } from './input/update-user-reward.input';
 import { GetUserRewardInput } from './input/get-user-reward.input';
 import { Prisma } from '@prisma/client';
+import { UserRewardStatus } from './constants/user-reward-status.enum';
 
 @Injectable()
 export class UserRewardCoreRepository {
@@ -31,9 +32,12 @@ export class UserRewardCoreRepository {
     return await this.txHost.tx.userReward.findMany({
       ...SELECT_USER_REWARD,
       where: {
-        AND: [this.getPendingIssuanceFilterWhereClause(input.issued)],
+        ...this.getStatusFilterWhereClause(input.status),
+        leagueSeasonResult: input.leagueSeasonIdx
+          ? { leagueSeasonIdx: input.leagueSeasonIdx }
+          : undefined,
       },
-      orderBy: { createdAt: 'desc' },
+      orderBy: [{ createdAt: input.order ?? 'desc' }, { id: 'desc' }],
       take: input.take,
       skip: input.skip,
     });
@@ -92,14 +96,22 @@ export class UserRewardCoreRepository {
     });
   }
 
-  private getPendingIssuanceFilterWhereClause(
-    issued?: boolean,
+  private getStatusFilterWhereClause(
+    status?: UserRewardStatus,
   ): Prisma.UserRewardWhereInput {
-    if (issued === undefined) {
+    if (status === undefined) {
       return {};
     }
 
-    if (issued) {
+    if (status === UserRewardStatus.UNSELECTED) {
+      return {
+        selectedAt: null,
+        rewardIdx: null,
+        issuedAt: null,
+      };
+    }
+
+    if (status === UserRewardStatus.PENDING_ISSUANCE) {
       return {
         selectedAt: { not: null },
         rewardIdx: { not: null },
