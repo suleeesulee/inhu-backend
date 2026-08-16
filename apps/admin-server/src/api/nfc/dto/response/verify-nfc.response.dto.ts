@@ -4,7 +4,7 @@ export class VerifyNfcResponseDto {
    *
    * @example true
    */
-  valid: true;
+  valid: boolean;
 
   /**
    * 복호화된 NFC UID

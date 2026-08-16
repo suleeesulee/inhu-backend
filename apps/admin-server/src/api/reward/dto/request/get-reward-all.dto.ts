@@ -31,6 +31,9 @@ export class GetRewardAllDto {
 
   /**
    * 활성화 여부
+   * - true: 활성화된 리워드만 조회
+   * - false: 비활성화된 리워드만 조회
+   * - undefined: 모든 리워드 조회
    *
    * @example true
    */
