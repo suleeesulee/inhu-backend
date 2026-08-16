@@ -91,11 +91,12 @@ CREATE INDEX index_free_tag_content_like_active
 
 CREATE TABLE installation_tb
 (
-  id                       uuid                     NOT NULL DEFAULT uuid_generate_v4(),
+  id                       uuid                     NOT NULL,
   user_idx                 int                     ,
   platform                 varchar                  NOT NULL,
   app_version              varchar                  NOT NULL,
   refresh_token_expires_at timestamp with time zone,
+  updated_at               timestamp with time zone NOT NULL DEFAULT NOW(),
   created_at               timestamp with time zone NOT NULL DEFAULT NOW(),
   PRIMARY KEY (id)
 );
@@ -433,8 +434,7 @@ CREATE INDEX idx_place_visit_nfc_created
 
 CREATE TABLE push_token_tb
 (
-  anonymous_id    uuid                     NOT NULL,
-  id              uuid                     NOT NULL DEFAULT uuid_generate_v4(),
+  id              uuid                     NOT NULL,
   expo_push_token varchar                  NOT NULL,
   invalidated_at  timestamp with time zone,
   last_seen_at    timestamp with time zone NOT NULL DEFAULT NOW(),
@@ -1025,5 +1025,5 @@ ALTER TABLE installation_tb
 
 ALTER TABLE push_token_tb
   ADD CONSTRAINT FK_installation_tb_TO_push_token_tb
-    FOREIGN KEY (anonymous_id)
+    FOREIGN KEY (id)
     REFERENCES installation_tb (id);

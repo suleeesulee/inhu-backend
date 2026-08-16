@@ -870,29 +870,6 @@
           "createAt": 1772096602150
         }
       },
-      "3z3KcVsTJ5v7DWFHlomIx": {
-        "id": "3z3KcVsTJ5v7DWFHlomIx",
-        "name": "dim_magazines",
-        "comment": "",
-        "columnIds": [
-          "P3zd1nkEMwDAYJYQR9UzX"
-        ],
-        "seqColumnIds": [
-          "P3zd1nkEMwDAYJYQR9UzX"
-        ],
-        "ui": {
-          "x": 1032.3213,
-          "y": 1488.1421,
-          "zIndex": 228,
-          "widthName": 90,
-          "widthComment": 60,
-          "color": ""
-        },
-        "meta": {
-          "updateAt": 1772096869791,
-          "createAt": 1772096862401
-        }
-      },
       "7dTTCPaLkbWoIur8TLC2r": {
         "id": "7dTTCPaLkbWoIur8TLC2r",
         "name": "dim_magazines",
@@ -4706,26 +4683,6 @@
         "meta": {
           "updateAt": 1772096721971,
           "createAt": 1772096713282
-        }
-      },
-      "P3zd1nkEMwDAYJYQR9UzX": {
-        "id": "P3zd1nkEMwDAYJYQR9UzX",
-        "tableId": "3z3KcVsTJ5v7DWFHlomIx",
-        "name": "",
-        "comment": "",
-        "dataType": "",
-        "default": "",
-        "options": 0,
-        "ui": {
-          "keys": 0,
-          "widthName": 60,
-          "widthComment": 60,
-          "widthDataType": 60,
-          "widthDefault": 60
-        },
-        "meta": {
-          "updateAt": 1772096869791,
-          "createAt": 1772096869791
         }
       },
       "93jtQvj2IB8jI8yOPD-M0": {
