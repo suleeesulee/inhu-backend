@@ -9,5 +9,8 @@ export default () => ({
       ),
       bundleId: process.env.PUSH_NOTIFICATION_APP_BUNDLE_ID,
     },
+    fcm: {
+      keyFile: process.env.FCM_KEY_FILE || 'FCM_admin_key.json',
+    },
   },
 });

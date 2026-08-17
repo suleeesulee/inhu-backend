@@ -74,7 +74,6 @@ import { PushNotificationModule } from '@libs/common/modules/push-notification/p
     PrometheusApiModule,
     UserMailModule,
     InstallationLifecycleModule,
-    PushNotificationModule,
   ],
   providers: [
     {

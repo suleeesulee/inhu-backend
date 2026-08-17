@@ -61,14 +61,6 @@ async function bootstrap() {
 
   await app.listen(process.env.PORT ?? 3000);
 
-  await app.get(PushNotificationService).send({
-    body: 'ㅇㅇ',
-    platform: 'ios',
-    title: '테스트입니다.',
-    token: 'c952248dca1da6bb8bb1c914e802d93bed94ffbf46d139ea16cf8cad2bc65118',
-    data: {},
-  });
-
   if (process.send) {
     process.send('ready');
   }
