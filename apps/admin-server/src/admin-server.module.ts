@@ -34,6 +34,10 @@ import { MetricInterceptor } from '@libs/common/interceptors/metric.interceptor'
 import { PrometheusApiModule } from './api/prometheus/prometheus.module';
 import { Ga4Module } from '@libs/common/modules/ga4/ga4.module';
 import { StatisticModule } from './api/statistic/statistic.module';
+import { RewardModule } from './api/reward/reward.module';
+import { NfcModule } from './api/nfc/nfc.module';
+import { LeagueSeasonModule } from './api/league-season/league-season.module';
+import { UserRewardModule } from './api/user-reward/user-reward.module';
 import { NoticeModule } from './api/notice/notice.module';
 
 @Module({
@@ -74,6 +78,10 @@ import { NoticeModule } from './api/notice/notice.module';
     MetricModule,
     PrometheusApiModule,
     StatisticModule,
+    RewardModule,
+    NfcModule,
+    LeagueSeasonModule,
+    UserRewardModule,
     NoticeModule,
   ],
   providers: [
