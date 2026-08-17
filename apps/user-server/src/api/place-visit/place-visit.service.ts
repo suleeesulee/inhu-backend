@@ -2,7 +2,8 @@ import { PlaceVisitCoreService } from '@libs/core/place-visit/place-visit-core.s
 import { NfcCoreService } from '@libs/core/nfc/nfc-core.service';
 import {
   decryptNfcPiccData,
-  deriveNfcAesKey,
+  deriveNfcFileReadKey,
+  deriveNfcMetaReadKey,
   deriveNfcSessionMacKey,
   verifyNfcMac,
 } from '@libs/core/nfc/nfc-crypto';
@@ -13,10 +14,10 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { CreatePlaceVisitByNfcDto } from './dto/request/create-place-visit-by-nfc.dto';
 import { GetPlaceVisitAllDto } from './dto/request/get-place-visit-all.dto';
 import { GetPlaceVisitAllResponseDto } from './dto/response/get-place-visit-all.response.dto';
 import { PlaceVisitEntity } from './entity/place-visit.entity';
+import { CreatePlaceVisitByNfcDto } from './dto/request/create-place-visit-by-nfc.dto';
 
 @Injectable()
 export class PlaceVisitService {
@@ -52,8 +53,8 @@ export class PlaceVisitService {
     nfcIdx: number,
     dto: CreatePlaceVisitByNfcDto,
   ): Promise<PlaceVisitEntity> {
-    const encryptedPiccData = Buffer.from(dto.encryptedPiccData, 'hex');
-    const receivedMac = Buffer.from(dto.sdmMac, 'hex');
+    const encryptedPiccData = Buffer.from(dto.picc_data, 'hex');
+    const receivedMac = Buffer.from(dto.cmac, 'hex');
     const nfc = await this.nfcCoreService.getNfcByIdx(nfcIdx);
 
     if (!nfc) {
@@ -64,13 +65,16 @@ export class PlaceVisitService {
     }
 
     const expectedUid = Buffer.from(nfc.uid, 'hex');
-    const nfcAesKey = deriveNfcAesKey(this.masterKey, expectedUid);
+    const metaReadKey = deriveNfcMetaReadKey(this.masterKey);
 
     let uid: Buffer;
     let readCounter: Buffer;
 
     try {
-      ({ uid, readCounter } = decryptNfcPiccData(encryptedPiccData, nfcAesKey));
+      ({ uid, readCounter } = decryptNfcPiccData(
+        encryptedPiccData,
+        metaReadKey,
+      ));
     } catch {
       throw new BadRequestException('Failed to decrypt NFC PICC data');
     }
@@ -79,8 +83,13 @@ export class PlaceVisitService {
       throw new ForbiddenException('NFC UID does not match');
     }
 
-    const sessionMacKey = deriveNfcSessionMacKey(nfcAesKey, uid, readCounter);
-    if (!verifyNfcMac(sessionMacKey, receivedMac)) {
+    const fileReadKey = deriveNfcFileReadKey(this.masterKey, uid);
+    const sessionMacKey = deriveNfcSessionMacKey(fileReadKey, uid, readCounter);
+    const macInput = dto.enc
+      ? Buffer.from(`${dto.enc.toUpperCase()}&cmac=`, 'ascii')
+      : undefined;
+
+    if (!verifyNfcMac(sessionMacKey, receivedMac, macInput)) {
       throw new ForbiddenException('Invalid NFC MAC');
     }
 

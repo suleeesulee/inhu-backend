@@ -1,4 +1,4 @@
-import { createDecipheriv, timingSafeEqual } from 'crypto';
+import { createDecipheriv, pbkdf2Sync, timingSafeEqual } from 'crypto';
 import { calculateAesCmac } from '../../../common/src/modules/crypto/aes-cmac';
 
 const AES_KEY_LENGTH = 16;
@@ -8,6 +8,10 @@ const READ_COUNTER_LENGTH = 3;
 const NFC_MAC_LENGTH = 8;
 const PICC_DATA_TAG = 0xc7;
 const SESSION_MAC_VECTOR_PREFIX = Buffer.from('3CC300010080', 'hex');
+const META_READ_KEY_NUMBER = 1;
+const FILE_READ_KEY_NUMBER = 2;
+const KEY_DERIVATION_ITERATIONS = 5000;
+const ZERO_KEY = Buffer.alloc(AES_KEY_LENGTH);
 
 export type DecryptedNfcPiccData = {
   piccDataTag: number;
@@ -15,19 +19,43 @@ export type DecryptedNfcPiccData = {
   readCounter: Buffer;
 };
 
-export function deriveNfcAesKey(
-  masterKey: Buffer,
-  diversificationInput: Buffer,
-): Buffer {
+export function deriveNfcMetaReadKey(masterKey: Buffer): Buffer {
   assertLength(masterKey, AES_KEY_LENGTH, 'masterKey');
 
-  if (diversificationInput.length === 0 || diversificationInput.length > 31) {
-    throw new RangeError('diversificationInput must be between 1 and 31 bytes');
+  if (masterKey.equals(ZERO_KEY)) {
+    return Buffer.from(ZERO_KEY);
   }
 
-  return calculateAesCmac(
+  return pbkdf2Sync(
     masterKey,
-    Buffer.concat([Buffer.from([0x01]), diversificationInput]),
+    Buffer.concat([
+      Buffer.from('key_no_uid', 'ascii'),
+      Buffer.from([META_READ_KEY_NUMBER]),
+    ]),
+    KEY_DERIVATION_ITERATIONS,
+    AES_KEY_LENGTH,
+    'sha512',
+  );
+}
+
+export function deriveNfcFileReadKey(masterKey: Buffer, uid: Buffer): Buffer {
+  assertLength(masterKey, AES_KEY_LENGTH, 'masterKey');
+  assertLength(uid, UID_LENGTH, 'uid');
+
+  if (masterKey.equals(ZERO_KEY)) {
+    return Buffer.from(ZERO_KEY);
+  }
+
+  return pbkdf2Sync(
+    masterKey,
+    Buffer.concat([
+      Buffer.from('key', 'ascii'),
+      uid,
+      Buffer.from([FILE_READ_KEY_NUMBER]),
+    ]),
+    KEY_DERIVATION_ITERATIONS,
+    AES_KEY_LENGTH,
+    'sha512',
   );
 }
 

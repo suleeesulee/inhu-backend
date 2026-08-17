@@ -13,7 +13,8 @@ import { UpdateNfcDto } from './dto/request/update-nfc.dto';
 import { ConfigService } from '@nestjs/config';
 import {
   decryptNfcPiccData,
-  deriveNfcAesKey,
+  deriveNfcFileReadKey,
+  deriveNfcMetaReadKey,
   deriveNfcSessionMacKey,
   verifyNfcMac,
 } from '@libs/core/nfc/nfc-crypto';
@@ -99,7 +100,7 @@ export class NfcService {
 
     return {
       uid: nfc.uid,
-      nfcAesKey: deriveNfcAesKey(this.masterKey, uid)
+      nfcAesKey: deriveNfcFileReadKey(this.masterKey, uid)
         .toString('hex')
         .toUpperCase(),
     };
@@ -115,7 +116,7 @@ export class NfcService {
     }
 
     const expectedUid = Buffer.from(nfc.uid, 'hex');
-    const nfcAesKey = deriveNfcAesKey(this.masterKey, expectedUid);
+    const metaReadKey = deriveNfcMetaReadKey(this.masterKey);
 
     let uid: Buffer;
     let readCounter: Buffer;
@@ -123,7 +124,7 @@ export class NfcService {
     try {
       ({ uid, readCounter } = decryptNfcPiccData(
         Buffer.from(dto.encryptedPiccData, 'hex'),
-        nfcAesKey,
+        metaReadKey,
       ));
     } catch {
       throw new BadRequestException('Failed to decrypt NFC PICC data');
@@ -133,7 +134,8 @@ export class NfcService {
       throw new ConflictException('NFC UID does not match');
     }
 
-    const sessionMacKey = deriveNfcSessionMacKey(nfcAesKey, uid, readCounter);
+    const fileReadKey = deriveNfcFileReadKey(this.masterKey, uid);
+    const sessionMacKey = deriveNfcSessionMacKey(fileReadKey, uid, readCounter);
 
     if (!verifyNfcMac(sessionMacKey, Buffer.from(dto.sdmMac, 'hex'))) {
       throw new ForbiddenException('Invalid NFC MAC');

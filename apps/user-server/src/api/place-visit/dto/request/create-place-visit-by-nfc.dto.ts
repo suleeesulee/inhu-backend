@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, Matches } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString, Matches } from 'class-validator';
 
 export class CreatePlaceVisitByNfcDto {
   /**
@@ -8,8 +8,8 @@ export class CreatePlaceVisitByNfcDto {
    */
   @IsNotEmpty()
   @IsString()
-  @Matches(/^[0-9a-fA-F]{32}$/)
-  encryptedPiccData: string;
+  @Matches(/^[0-9a-fA-F]+$/)
+  picc_data: string;
 
   /**
    * SDM MAC
@@ -19,5 +19,15 @@ export class CreatePlaceVisitByNfcDto {
   @IsNotEmpty()
   @IsString()
   @Matches(/^[0-9a-fA-F]{16}$/)
-  sdmMac: string;
+  cmac: string;
+
+  /**
+   * 추가 암호화 데이터
+   *
+   * @example "5643892563214698"
+   */
+  @IsOptional()
+  @IsString()
+  @Matches(/^[0-9a-fA-F]*$/)
+  enc?: string;
 }
