@@ -89,6 +89,20 @@ CREATE INDEX index_free_tag_content_like_active
   ON free_tag_tb (content text_pattern_ops)
   WHERE deleted_at IS NULL;
 
+CREATE TABLE installation_tb
+(
+  id                       uuid                     NOT NULL,
+  user_idx                 int                     ,
+  platform                 varchar                  NOT NULL,
+  app_version              varchar                  NOT NULL,
+  refresh_token_expires_at timestamp with time zone,
+  updated_at               timestamp with time zone NOT NULL DEFAULT NOW(),
+  created_at               timestamp with time zone NOT NULL DEFAULT NOW(),
+  PRIMARY KEY (id)
+);
+
+COMMENT ON COLUMN installation_tb.platform IS 'ios / android';
+
 CREATE TABLE keyword_tb
 (
   idx        int                      NOT NULL,
@@ -422,6 +436,17 @@ CREATE INDEX idx_place_visit_user_created
   ON place_visit_tb (user_idx, created_at DESC);
 CREATE INDEX idx_place_visit_nfc_created
   ON place_visit_tb (nfc_idx, created_at DESC);
+
+CREATE TABLE push_token_tb
+(
+  id              uuid                     NOT NULL,
+  expo_push_token varchar                  NOT NULL,
+  last_seen_at    timestamp with time zone NOT NULL DEFAULT NOW(),
+  created_at      timestamp with time zone NOT NULL DEFAULT NOW(),
+  PRIMARY KEY (id)
+);
+
+COMMENT ON COLUMN push_token_tb.last_seen_at IS 'push token을 마지막으로 갱신한 시점';
 
 CREATE TABLE review_image_tb
 (
@@ -995,3 +1020,13 @@ ALTER TABLE user_email_tb
   ADD CONSTRAINT FK_user_tb_TO_user_email_tb
     FOREIGN KEY (idx)
     REFERENCES user_tb (idx);
+
+ALTER TABLE installation_tb
+  ADD CONSTRAINT FK_user_tb_TO_installation_tb
+    FOREIGN KEY (user_idx)
+    REFERENCES user_tb (idx);
+
+ALTER TABLE push_token_tb
+  ADD CONSTRAINT FK_installation_tb_TO_push_token_tb
+    FOREIGN KEY (id)
+    REFERENCES installation_tb (id);

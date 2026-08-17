@@ -11,6 +11,7 @@ import { JwtModule } from '@nestjs/jwt';
 import authConfig from '@user/api/auth/config/auth.config';
 import { UserCoreModule } from '@libs/core/user/user-core.module';
 import { RedisModule } from '@libs/common/modules/redis/redis.module';
+import { InstallationLifecycleCoreModule } from '@libs/core/installation-lifecycle/installation-lifecycle-core.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { RedisModule } from '@libs/common/modules/redis/redis.module';
     UserCoreModule,
     JwtModule,
     RedisModule,
+    InstallationLifecycleCoreModule,
   ],
   controllers: [AuthController],
   providers: [AuthService, KakaoLoginStrategy, AppleLoginStrategy],

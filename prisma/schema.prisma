@@ -267,6 +267,7 @@ model User {
   adminAccount              AdminAccount?
   bookmarkList              Bookmark[]
   cafeteriaBookmark         CafeteriaBookmark[]
+  installationList          Installation[]
   leagueSeasonResultList    LeagueSeasonResult[]
   magazineLike              MagazineLike[]
   magazine                  Magazine[]
@@ -754,4 +755,28 @@ model UserReward {
   reward               Reward?            @relation(fields: [rewardIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_reward_tb_to_user_reward_tb")
 
   @@map("user_reward_tb")
+}
+
+model Installation {
+  id                    String      @id @db.Uuid
+  userIdx               Int?        @map("user_idx")
+  platform              String      @db.VarChar
+  appVersion            String      @map("app_version") @db.VarChar
+  refreshTokenExpiresAt DateTime?   @map("refresh_token_expires_at") @db.Timestamptz(6)
+  updatedAt             DateTime    @default(now()) @map("updated_at") @db.Timestamptz(6)
+  createdAt             DateTime    @default(now()) @map("created_at") @db.Timestamptz(6)
+  user                  User?       @relation(fields: [userIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_user_tb_to_installation_tb")
+  pushToken             PushToken?
+
+  @@map("installation_tb")
+}
+
+model PushToken {
+  id            String       @id @db.Uuid
+  expoPushToken String       @map("expo_push_token") @db.VarChar
+  lastSeenAt    DateTime     @default(now()) @map("last_seen_at") @db.Timestamptz(6)
+  createdAt     DateTime     @default(now()) @map("created_at") @db.Timestamptz(6)
+  installation  Installation @relation(fields: [id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_installation_tb_to_push_token_tb")
+
+  @@map("push_token_tb")
 }
