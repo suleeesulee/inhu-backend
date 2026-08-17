@@ -1,3 +1,4 @@
+import { NoticeAuthorModel } from './notice-author.model';
 import { SelectNotice } from './prisma-type/select-notice';
 
 /**
@@ -29,6 +30,11 @@ export class NoticeModel {
    */
   public createdAt: Date;
 
+  /**
+   * 작성자 정보
+   */
+  public author: NoticeAuthorModel;
+
   constructor(data: NoticeModel) {
     Object.assign(this, data);
   }
@@ -40,6 +46,7 @@ export class NoticeModel {
       title: notice.title,
       content: notice.content,
       createdAt: notice.createdAt,
+      author: NoticeAuthorModel.fromPrisma(notice.author),
     });
   }
 }
