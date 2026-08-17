@@ -86,7 +86,6 @@ export abstract class ITestHelper {
   public async destroy() {
     await this.delRedisKeys();
     this.prismaSetup.ROLLBACK();
-    await this.appModule.close();
     await this.app.close();
     this.test_id = null;
   }
