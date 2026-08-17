@@ -72,6 +72,16 @@ export class PlaceVisitCoreService {
     );
   }
 
+  public async getPlaceVisitUserScoreAllByDatePeriod(
+    startAt: Date,
+    endAt: Date,
+  ): Promise<{ userIdx: number; score: number }[]> {
+    return await this.placeVisitCoreRepository.selectPlaceVisitUserScoreAllByDatePeriod(
+      startAt,
+      endAt,
+    );
+  }
+
   public async createPlaceVisit(
     input: CreatePlaceVisitInput,
   ): Promise<PlaceVisitModel> {

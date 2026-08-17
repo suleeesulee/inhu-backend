@@ -12,11 +12,13 @@ import { LogPrismaModule } from '@libs/common/modules/log-prisma/log-prisma.modu
 import { LogPrismaService } from '@libs/common/modules/log-prisma/log-prisma.service';
 import { CdcModule } from './cdc/cdc.module';
 import { LOG_PRISMA_KEY } from '@libs/common/modules/log-prisma/LOG_PRISMA_KEY';
+import { LeagueSeasonResultCronModule } from './league-season-result-cron/league-season-result-cron.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot(),
     PlaceCronModule,
+    LeagueSeasonResultCronModule,
     ClsModule.forRoot({
       plugins: [
         new ClsPluginTransactional({

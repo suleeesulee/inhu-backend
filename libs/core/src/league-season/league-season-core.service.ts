@@ -58,6 +58,14 @@ export class LeagueSeasonCoreService {
     ).map(LeagueSeasonOverviewModel.fromPrisma);
   }
 
+  public async createLeagueSeasonResult(
+    input: { leagueSeasonIdx: number; userIdx: number; finalScore: number },
+  ): Promise<LeagueSeasonResultModel> {
+    return LeagueSeasonResultModel.fromPrisma(
+      await this.leagueSeasonCoreRepository.insertLeagueSeasonResult(input),
+    );
+  }
+
   public async getLeagueSeasonResultById(
     id: string,
     activated?: boolean,

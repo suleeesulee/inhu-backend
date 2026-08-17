@@ -103,6 +103,27 @@ export class PlaceVisitCoreRepository {
     return result.participantCount;
   }
 
+  public async selectPlaceVisitUserScoreAllByDatePeriod(
+    startAt: Date,
+    endAt: Date,
+  ): Promise<{ userIdx: number; score: number }[]> {
+    return await this.txHost.tx.$queryRaw<{ userIdx: number; score: number }[]>(
+      Prisma.sql`
+        SELECT
+          pv.user_idx AS "userIdx",
+          COALESCE(SUM(pv.score), 0)::int AS score
+        FROM place_visit_tb AS pv
+        JOIN user_tb AS u ON u.idx = pv.user_idx
+        WHERE pv.created_at >= ${startAt}
+          AND pv.created_at <= ${endAt}
+          AND u.deleted_at IS NULL
+        GROUP BY pv.user_idx
+        HAVING SUM(pv.score) > 0
+        ORDER BY pv.user_idx ASC
+      `,
+    );
+  }
+
   public async selectPlaceVisitStatisticAllByUserIdxAndPeriod(
     userIdx: number,
     input: GetPlaceVisitStatisticAllInput,

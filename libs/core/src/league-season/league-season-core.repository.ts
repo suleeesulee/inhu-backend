@@ -70,6 +70,8 @@ export class LeagueSeasonCoreRepository {
       ...SELECT_LEAGUE_SEASON,
       where: {
         ...this.getActivatedAtFilterWhereClause(input.activated),
+        ...this.getEndAtFilterWhereClause(input.endAtBefore),
+        ...this.getFinalizedAtFilterWhereClause(input.finalized),
       },
       orderBy: [{ startAt: order }, { idx: order }],
       take: input.take,
@@ -249,6 +251,22 @@ export class LeagueSeasonCoreRepository {
     });
   }
 
+  public async insertLeagueSeasonResult(
+    input: { leagueSeasonIdx: number; userIdx: number; finalScore: number },
+  ): Promise<SelectLeagueSeasonResult> {
+    return await this.txHost.tx.leagueSeasonResult.create({
+      ...SELECT_LEAGUE_SEASON_RESULT,
+      data: {
+        leagueSeasonIdx: input.leagueSeasonIdx,
+        userIdx: input.userIdx,
+        finalScore: input.finalScore,
+        userRewardList: {
+          create: {},
+        },
+      },
+    });
+  }
+
   public async updateLeagueSeasonByIdx(
     idx: number,
     input: UpdateLeagueSeasonInput,
@@ -262,6 +280,7 @@ export class LeagueSeasonCoreRepository {
         startAt: input.startAt ? `${input.startAt}T00:00:00Z` : undefined,
         endAt: input.endAt ? `${input.endAt}T23:59:59Z` : undefined,
         activatedAt: input.activatedAt,
+        finalizedAt: input.finalizedAt,
         rewardOptionList: input.rewardOptionList
           ? {
               deleteMany: {},
@@ -289,5 +308,25 @@ export class LeagueSeasonCoreRepository {
     }
 
     return { activatedAt: null };
+  }
+
+  private getFinalizedAtFilterWhereClause(
+    finalized?: boolean,
+  ): Prisma.LeagueSeasonWhereInput {
+    if (finalized === undefined) {
+      return {};
+    }
+
+    return finalized ? { finalizedAt: { not: null } } : { finalizedAt: null };
+  }
+
+  private getEndAtFilterWhereClause(
+    endAtBefore?: Date,
+  ): Prisma.LeagueSeasonWhereInput {
+    if (!endAtBefore) {
+      return {};
+    }
+
+    return { endAt: { lt: endAtBefore } };
   }
 }
