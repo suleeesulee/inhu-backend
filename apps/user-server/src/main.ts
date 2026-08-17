@@ -10,6 +10,7 @@ import * as cookieParser from 'cookie-parser';
 import { getMode } from '@libs/common/utils/get-mode.util';
 import { DiscordWebhookService } from '@libs/common/modules/discord-webhook/discord-webhook.service';
 import { DiscordWebhookContext } from '@libs/common/modules/discord-webhook/constants/discord-webhook-context.enum';
+import { PushNotificationService } from '@libs/common/modules/push-notification/push-notification.service';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -59,6 +60,14 @@ async function bootstrap() {
   SwaggerModule.setup('api', app, documentFactory, customOptions);
 
   await app.listen(process.env.PORT ?? 3000);
+
+  await app.get(PushNotificationService).send({
+    body: 'ㅇㅇ',
+    platform: 'ios',
+    title: '테스트입니다.',
+    token: 'c952248dca1da6bb8bb1c914e802d93bed94ffbf46d139ea16cf8cad2bc65118',
+    data: {},
+  });
 
   if (process.send) {
     process.send('ready');
