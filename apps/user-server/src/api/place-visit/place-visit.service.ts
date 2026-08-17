@@ -50,21 +50,10 @@ export class PlaceVisitService {
 
   public async createPlaceVisitByNfc(
     userIdx: number,
-    nfcIdx: number,
     dto: CreatePlaceVisitByNfcDto,
   ): Promise<PlaceVisitEntity> {
     const encryptedPiccData = Buffer.from(dto.picc_data, 'hex');
     const receivedMac = Buffer.from(dto.cmac, 'hex');
-    const nfc = await this.nfcCoreService.getNfcByIdx(nfcIdx);
-
-    if (!nfc) {
-      throw new NotFoundException('NFC not found');
-    }
-    if (!nfc.activatedAt) {
-      throw new ForbiddenException('NFC is not activated');
-    }
-
-    const expectedUid = Buffer.from(nfc.uid, 'hex');
     const metaReadKey = deriveNfcMetaReadKey(this.masterKey);
 
     let uid: Buffer;
@@ -79,8 +68,15 @@ export class PlaceVisitService {
       throw new BadRequestException('Failed to decrypt NFC PICC data');
     }
 
-    if (!uid.equals(expectedUid)) {
-      throw new ForbiddenException('NFC UID does not match');
+    const nfc = await this.nfcCoreService.getNfcByUid(
+      uid.toString('hex').toUpperCase(),
+    );
+
+    if (!nfc) {
+      throw new NotFoundException('NFC not found');
+    }
+    if (!nfc.activatedAt) {
+      throw new ForbiddenException('NFC is not activated');
     }
 
     const fileReadKey = deriveNfcFileReadKey(this.masterKey, uid);
