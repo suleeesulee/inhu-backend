@@ -33,7 +33,7 @@ export class NfcCoreRepository {
   }
 
   public async selectNfcByUid(uid: string): Promise<SelectNfc | null> {
-    return await this.txHost.tx.nfc.findUnique({
+    return await this.txHost.tx.nfc.findFirst({
       ...SELECT_NFC,
       where: {
         uid,

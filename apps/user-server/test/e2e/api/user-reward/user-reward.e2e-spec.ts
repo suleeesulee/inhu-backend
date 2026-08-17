@@ -39,6 +39,7 @@ describe('User Reward E2E test', () => {
       const leagueSeason = await leagueSeasonSeedHelper.seed({
         startAt: new Date(now.getTime() - 24 * 60 * 60 * 1000),
         endAt: new Date(now.getTime() + 24 * 60 * 60 * 1000),
+        activatedAt: new Date(now.getTime() - 24 * 60 * 60 * 1000),
         finalizedAt: new Date(now.getTime() + 25 * 60 * 60 * 1000),
         rewardOptionList: [
           {
@@ -101,6 +102,7 @@ describe('User Reward E2E test', () => {
       const leagueSeason = await leagueSeasonSeedHelper.seed({
         startAt: new Date(now.getTime() - 24 * 60 * 60 * 1000),
         endAt: new Date(now.getTime() + 24 * 60 * 60 * 1000),
+        activatedAt: new Date(now.getTime() - 24 * 60 * 60 * 1000),
         finalizedAt: new Date(now.getTime() + 25 * 60 * 60 * 1000),
         rewardOptionList: [
           {
@@ -402,6 +404,7 @@ describe('User Reward E2E test', () => {
       const leagueSeason = await leagueSeasonSeedHelper.seed({
         startAt: new Date(now.getTime() - 24 * 60 * 60 * 1000),
         endAt: new Date(now.getTime() + 24 * 60 * 60 * 1000),
+        activatedAt: new Date(now.getTime() - 24 * 60 * 60 * 1000),
         finalizedAt: new Date(now.getTime() + 25 * 60 * 60 * 1000),
       });
       const leagueSeasonResult = await leagueSeasonResultSeedHelper.seed({
@@ -430,6 +433,7 @@ describe('User Reward E2E test', () => {
       const leagueSeason = await leagueSeasonSeedHelper.seed({
         startAt: new Date(now.getTime() - 24 * 60 * 60 * 1000),
         endAt: new Date(now.getTime() + 24 * 60 * 60 * 1000),
+        activatedAt: new Date(now.getTime() - 24 * 60 * 60 * 1000),
         finalizedAt: new Date(now.getTime() + 25 * 60 * 60 * 1000),
         rewardOptionList: [
           {
@@ -464,6 +468,7 @@ describe('User Reward E2E test', () => {
       const leagueSeason = await leagueSeasonSeedHelper.seed({
         startAt: new Date(now.getTime() - 24 * 60 * 60 * 1000),
         endAt: new Date(now.getTime() + 24 * 60 * 60 * 1000),
+        activatedAt: new Date(now.getTime() - 24 * 60 * 60 * 1000),
         finalizedAt: new Date(now.getTime() + 25 * 60 * 60 * 1000),
       });
       const leagueSeasonResult = await leagueSeasonResultSeedHelper.seed({
@@ -495,6 +500,7 @@ describe('User Reward E2E test', () => {
       const leagueSeason = await leagueSeasonSeedHelper.seed({
         startAt: new Date(now.getTime() - 24 * 60 * 60 * 1000),
         endAt: new Date(now.getTime() + 24 * 60 * 60 * 1000),
+        activatedAt: new Date(now.getTime() - 24 * 60 * 60 * 1000),
         finalizedAt: new Date(now.getTime() + 25 * 60 * 60 * 1000),
       });
       const leagueSeasonResult = await leagueSeasonResultSeedHelper.seed({

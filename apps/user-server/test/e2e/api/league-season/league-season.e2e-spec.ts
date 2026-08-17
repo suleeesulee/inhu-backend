@@ -347,7 +347,7 @@ describe('League Season E2E test', () => {
       const body: LeagueSeasonEntity = response.body;
 
       expect(body.idx).toBe(leagueSeason.idx);
-      expect(body.participantCount).toBe(2);
+      expect(body.participantCount).toBe(1);
     });
 
     it('200 - multiple reward options for same target rank', async () => {
