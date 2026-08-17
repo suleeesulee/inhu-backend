@@ -38,6 +38,7 @@ import { RewardModule } from './api/reward/reward.module';
 import { NfcModule } from './api/nfc/nfc.module';
 import { LeagueSeasonModule } from './api/league-season/league-season.module';
 import { UserRewardModule } from './api/user-reward/user-reward.module';
+import { NoticeModule } from './api/notice/notice.module';
 
 @Module({
   imports: [
@@ -81,6 +82,7 @@ import { UserRewardModule } from './api/user-reward/user-reward.module';
     NfcModule,
     LeagueSeasonModule,
     UserRewardModule,
+    NoticeModule,
   ],
   providers: [
     {

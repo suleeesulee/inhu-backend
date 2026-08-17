@@ -665,6 +665,16 @@ CREATE TABLE blog_review_tb
   PRIMARY KEY (idx)
 );
 
+CREATE TABLE notice_tb
+(
+  idx        int                      NOT NULL GENERATED ALWAYS AS IDENTITY,
+  author_idx int                      NOT NULL,
+  title      varchar                  NOT NULL,
+  content    varchar                  NOT NULL,
+  created_at timestamp with time zone NOT NULL DEFAULT NOW(),
+  PRIMARY KEY (idx)
+);
+
 -- kafka delete event 처리를 위한 REPLICA IDENTITY 설정
 -- 삭제 시 REPLICA IDENTITY가 DEFAULT인 경우, 삭제된 행의 전체 데이터를 가져올 수 없고, PK값만 가져올 수 있음.
 -- 따라서, 삭제된 행의 전체 데이터를 가져오기 위해 REPLICA IDENTITY를 FULL로 설정함.
@@ -1030,3 +1040,8 @@ ALTER TABLE push_token_tb
   ADD CONSTRAINT FK_installation_tb_TO_push_token_tb
     FOREIGN KEY (id)
     REFERENCES installation_tb (id);
+
+ALTER TABLE notice_tb
+  ADD CONSTRAINT FK_user_tb_TO_notice_tb
+    FOREIGN KEY (author_idx)
+    REFERENCES user_tb (idx);
