@@ -271,6 +271,7 @@ model User {
   leagueSeasonResultList    LeagueSeasonResult[]
   magazineLike              MagazineLike[]
   magazine                  Magazine[]
+  noticeList                Notice[]
   placeOwnerList            PlaceOwner[]
   placeVisitList            PlaceVisit[]
   reviewList                Review[]
@@ -778,4 +779,15 @@ model PushToken {
   installation  Installation @relation(fields: [id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_installation_tb_to_push_token_tb")
 
   @@map("push_token_tb")
+}
+
+model Notice {
+  idx       Int      @id @default(autoincrement())
+  authorIdx Int      @map("author_idx")
+  title     String   @db.VarChar
+  content   String   @db.VarChar
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  author    User     @relation(fields: [authorIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_user_tb_to_notice_tb")
+
+  @@map("notice_tb")
 }

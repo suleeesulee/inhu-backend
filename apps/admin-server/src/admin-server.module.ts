@@ -34,6 +34,7 @@ import { MetricInterceptor } from '@libs/common/interceptors/metric.interceptor'
 import { PrometheusApiModule } from './api/prometheus/prometheus.module';
 import { Ga4Module } from '@libs/common/modules/ga4/ga4.module';
 import { StatisticModule } from './api/statistic/statistic.module';
+import { NoticeModule } from './api/notice/notice.module';
 
 @Module({
   imports: [
@@ -73,6 +74,7 @@ import { StatisticModule } from './api/statistic/statistic.module';
     MetricModule,
     PrometheusApiModule,
     StatisticModule,
+    NoticeModule,
   ],
   providers: [
     {

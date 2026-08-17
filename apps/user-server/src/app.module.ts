@@ -34,6 +34,7 @@ import { PrometheusApiModule } from './api/prometheus/prometheus.module';
 import { UserMailModule } from './api/mail/user-mail.module';
 import { InstallationLifecycleModule } from './api/installation-lifecyle/installation-lifecycle.module';
 import { PushNotificationModule } from '@libs/common/modules/push-notification/push-notification.module';
+import { NoticeModule } from './api/notice/notice.module';
 
 @Module({
   imports: [
@@ -74,6 +75,7 @@ import { PushNotificationModule } from '@libs/common/modules/push-notification/p
     PrometheusApiModule,
     UserMailModule,
     InstallationLifecycleModule,
+    NoticeModule,
   ],
   providers: [
     {
