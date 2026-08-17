@@ -32,6 +32,8 @@ import { MetricInterceptor } from '@libs/common/interceptors/metric.interceptor'
 import { MetricModule } from '@libs/common/modules/metric/metric.module';
 import { PrometheusApiModule } from './api/prometheus/prometheus.module';
 import { UserMailModule } from './api/mail/user-mail.module';
+import { InstallationLifecycleModule } from './api/installation-lifecyle/installation-lifecycle.module';
+import { PushNotificationModule } from '@libs/common/modules/push-notification/push-notification.module';
 
 @Module({
   imports: [
@@ -71,6 +73,7 @@ import { UserMailModule } from './api/mail/user-mail.module';
     MetricModule,
     PrometheusApiModule,
     UserMailModule,
+    InstallationLifecycleModule,
   ],
   providers: [
     {

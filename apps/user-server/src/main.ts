@@ -10,6 +10,7 @@ import * as cookieParser from 'cookie-parser';
 import { getMode } from '@libs/common/utils/get-mode.util';
 import { DiscordWebhookService } from '@libs/common/modules/discord-webhook/discord-webhook.service';
 import { DiscordWebhookContext } from '@libs/common/modules/discord-webhook/constants/discord-webhook-context.enum';
+import { PushNotificationService } from '@libs/common/modules/push-notification/push-notification.service';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);

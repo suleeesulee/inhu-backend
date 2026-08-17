@@ -16,6 +16,7 @@ import { TokenIssuedBy } from '@user/common/module/login-token/constants/token-i
 import { LoginTokenService } from '@user/common/module/login-token/login-token.service';
 import { Request } from 'express';
 import { GuestLoginDto } from './dto/request/guest-login.dto';
+import { InstallationLifecycleCoreService } from '@libs/core/installation-lifecycle/installation-lifecycle-core.service';
 
 @Injectable()
 export class AuthService {
@@ -29,6 +30,7 @@ export class AuthService {
     private readonly appleLoginStrategy: AppleLoginStrategy,
     private readonly userCoreService: UserCoreService,
     private readonly loginTokenService: LoginTokenService,
+    private readonly installationLifecycleCoreService: InstallationLifecycleCoreService,
   ) {
     this.socialAuthProviderMap = {
       [AuthProvider.KAKAO]: this.kakaoLoginStrategy,
@@ -133,6 +135,17 @@ export class AuthService {
     try {
       const { idx, issuedBy, jti } =
         await this.loginTokenService.verifyRefreshToken(refreshToken);
+
+      const result =
+        await this.installationLifecycleCoreService.getInstallationIdByUserIdx(
+          idx,
+        );
+
+      if (result) {
+        await this.installationLifecycleCoreService.disconnectInstallationIdWithUser(
+          result.id,
+        );
+      }
 
       await this.loginTokenService.invalidateRefreshTokenById(
         idx,
