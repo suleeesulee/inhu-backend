@@ -773,7 +773,6 @@ model Installation {
 model PushToken {
   id            String       @id @db.Uuid
   expoPushToken String       @map("expo_push_token") @db.VarChar
-  invalidatedAt DateTime?    @map("invalidated_at") @db.Timestamptz(6)
   lastSeenAt    DateTime     @default(now()) @map("last_seen_at") @db.Timestamptz(6)
   createdAt     DateTime     @default(now()) @map("created_at") @db.Timestamptz(6)
   installation  Installation @relation(fields: [id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_installation_tb_to_push_token_tb")

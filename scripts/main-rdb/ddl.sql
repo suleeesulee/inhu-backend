@@ -436,13 +436,11 @@ CREATE TABLE push_token_tb
 (
   id              uuid                     NOT NULL,
   expo_push_token varchar                  NOT NULL,
-  invalidated_at  timestamp with time zone,
   last_seen_at    timestamp with time zone NOT NULL DEFAULT NOW(),
   created_at      timestamp with time zone NOT NULL DEFAULT NOW(),
   PRIMARY KEY (id)
 );
 
-COMMENT ON COLUMN push_token_tb.invalidated_at IS '사용자가 앱을 삭제한 후, 추후에 이를 감지한 경우';
 COMMENT ON COLUMN push_token_tb.last_seen_at IS 'push token을 마지막으로 갱신한 시점';
 
 CREATE TABLE review_image_tb

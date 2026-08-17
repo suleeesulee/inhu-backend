@@ -3,19 +3,30 @@ import { LoginTokenService } from '@user/common/module/login-token/login-token.s
 import { RegisterInstallationLifecycleDto } from './dto/request/register-installation-lifecycle.dto';
 import { InstallationLifecycleCoreService } from '@libs/core/installation-lifecycle/installation-lifecycle-core.service';
 import { UpsertInstallationIdInput } from '@libs/core/installation-lifecycle/inputs/upsert-installation-id.input';
+import { Transactional } from '@nestjs-cls/transactional';
+import { PushTokenCoreService } from '@libs/core/push-notification/push-token-core.service';
 
 @Injectable()
 export class InstallationLifecycleService {
   constructor(
     private readonly loginTokenService: LoginTokenService,
     private readonly installationLifecycleCoreService: InstallationLifecycleCoreService,
+    private readonly pushTokenCoreService: PushTokenCoreService,
   ) {}
 
+  @Transactional()
   public async registerLifecycle(dto: RegisterInstallationLifecycleDto) {
     const input = await this.processDtoToInput(dto);
 
     await this.installationLifecycleCoreService.upsertInstallationLifecycle(
       input,
+    );
+
+    console.log(dto);
+
+    await this.pushTokenCoreService.syncPushToken(
+      dto.installationId,
+      dto.pushNotificationToken,
     );
   }
 
