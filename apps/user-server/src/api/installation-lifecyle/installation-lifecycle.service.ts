@@ -22,8 +22,6 @@ export class InstallationLifecycleService {
       input,
     );
 
-    console.log(dto);
-
     await this.pushTokenCoreService.syncPushToken(
       dto.installationId,
       dto.pushNotificationToken,
