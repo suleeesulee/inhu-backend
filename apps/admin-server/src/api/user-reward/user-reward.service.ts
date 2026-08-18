@@ -6,6 +6,7 @@ import { LeagueSeasonCoreService } from '@libs/core/league-season/league-season-
 import { RewardCoreService } from '@libs/core/reward/reward-core.service';
 import {
   ConflictException,
+  ForbiddenException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -158,7 +159,7 @@ export class UserRewardService {
       this.rewardCoreService.getRewardByIdx(userReward.rewardIdx),
     ]);
     if (!user?.schoolEmail) {
-      throw new ConflictException('User school email not found');
+      throw new ForbiddenException('User school email not found');
     }
     if (!reward) {
       throw new NotFoundException('Reward not found');

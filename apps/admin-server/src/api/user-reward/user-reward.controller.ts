@@ -24,6 +24,9 @@ export class UserRewardController {
   @Get('/all')
   @AdminAuth()
   @Exception(400, 'Invalid request data')
+  @Exception(404, 'League season not found')
+  @Exception(404, 'User not found')
+  @Exception(404, 'Reward not found')
   public async getUserRewardAll(
     @Query() dto: GetUserRewardAllDto,
   ): Promise<GetUserRewardAllResponseDto> {
@@ -37,6 +40,9 @@ export class UserRewardController {
   @AdminAuth()
   @Exception(400, 'Invalid user reward id')
   @Exception(404, 'User reward not found')
+  @Exception(404, 'League season result not found')
+  @Exception(404, 'User not found')
+  @Exception(404, 'Reward not found')
   public async getUserRewardById(
     @Param('id', ParseUUIDPipe) id: string,
   ): Promise<UserRewardEntity> {
@@ -50,8 +56,12 @@ export class UserRewardController {
   @HttpCode(200)
   @AdminAuth()
   @Exception(400, 'Invalid user reward id')
+  @Exception(403, 'User school email not found')
   @Exception(404, 'User reward not found')
-  @Exception(409, 'User reward cannot be issued')
+  @Exception(404, 'League season result not found')
+  @Exception(404, 'Reward not found')
+  @Exception(409, 'User reward already issued')
+  @Exception(409, 'User has not selected a reward')
   public async issueUserRewardById(
     @Param('id', ParseUUIDPipe) id: string,
   ): Promise<void> {

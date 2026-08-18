@@ -77,36 +77,6 @@ export class NfcController {
   }
 
   /**
-   * 태그에 설정할 NFC AES 키 발급
-   */
-  @Post('nfc/:idx/aes-key')
-  @AdminAuth(AdminRole.SuperAdmin)
-  @Header('Cache-Control', 'no-store')
-  @Exception(404, 'Nfc not found')
-  @Exception(409, 'Activated nfc AES key cannot be issued')
-  public async issueNfcAesKeyByIdx(
-    @Param('idx', ParseIntPipe) idx: number,
-  ): Promise<IssueNfcAesKeyResponseDto> {
-    return await this.nfcService.issueNfcAesKeyByIdx(idx);
-  }
-
-  /**
-   * 실제 NFC 태그 검증
-   */
-  @Post('nfc/:idx/verify')
-  @AdminAuth()
-  @Exception(400, 'Invalid NFC payload')
-  @Exception(403, 'Invalid NFC MAC')
-  @Exception(404, 'Nfc not found')
-  @Exception(409, 'NFC UID does not match')
-  public async verifyNfcByIdx(
-    @Param('idx', ParseIntPipe) idx: number,
-    @Body() dto: VerifyNfcDto,
-  ): Promise<VerifyNfcResponseDto> {
-    return await this.nfcService.verifyNfcByIdx(idx, dto);
-  }
-
-  /**
    * nfc 활성화
    */
   @Post('nfc/:idx/activate')
