@@ -80,21 +80,6 @@ export class LeagueSeasonService {
     await this.leagueSeasonCoreService.updateLeagueSeasonByIdx(idx, dto);
   }
 
-  public async updateLeagueSeasonRewardOptionListByIdx(
-    idx: number,
-    dto: UpdateLeagueRewardOptionListDto,
-  ): Promise<void> {
-    const leagueSeason =
-      await this.leagueSeasonCoreService.getLeagueSeasonByIdx(idx);
-    if (!leagueSeason) {
-      throw new NotFoundException(`League season with idx ${idx} not found`);
-    }
-
-    await this.leagueSeasonCoreService.updateLeagueSeasonByIdx(idx, {
-      rewardOptionList: dto.rewardOptionList,
-    });
-  }
-
   public async activateLeagueSeasonByIdx(idx: number): Promise<void> {
     const leagueSeason =
       await this.leagueSeasonCoreService.getLeagueSeasonByIdx(idx);

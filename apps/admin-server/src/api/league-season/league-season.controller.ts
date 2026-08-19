@@ -17,7 +17,6 @@ import { CreateLeagueSeasonDto } from './dto/request/create-league-season.dto';
 import { UpdateLeagueSeasonDto } from './dto/request/update-league-season.dto';
 import { Exception } from '@libs/common/decorator/exception.decorator';
 import { GetLeagueSeasonAllDto } from './dto/request/get-league-season-all.dto';
-import { UpdateLeagueRewardOptionListDto } from './dto/request/update-league-reward-option-list.dto';
 
 @Controller('league-season')
 export class LeagueSeasonController {
@@ -57,23 +56,6 @@ export class LeagueSeasonController {
     @Body() dto: CreateLeagueSeasonDto,
   ): Promise<LeagueSeasonEntity> {
     return await this.leagueSeasonService.createLeagueSeason(dto);
-  }
-
-  /**
-   * 특정 리그 시즌 보상 옵션 목록 수정
-   */
-  @Put('/:idx/reward-option')
-  @AdminAuth()
-  @Exception(400, 'Invalid request data')
-  @Exception(404, 'League season not found')
-  public async updateLeagueSeasonRewardOptionListByIdx(
-    @Param('idx', ParseIntPipe) idx: number,
-    @Body() dto: UpdateLeagueRewardOptionListDto,
-  ): Promise<void> {
-    return await this.leagueSeasonService.updateLeagueSeasonRewardOptionListByIdx(
-      idx,
-      dto,
-    );
   }
 
   /**
