@@ -3,7 +3,6 @@ import {
   Controller,
   Delete,
   Get,
-  Header,
   Param,
   ParseIntPipe,
   Post,
@@ -15,10 +14,6 @@ import { Exception } from '@libs/common/decorator/exception.decorator';
 import { CreateNfcDto } from './dto/request/create-nfc.dto';
 import { NfcEntity } from './entity/nfc.entity';
 import { UpdateNfcDto } from './dto/request/update-nfc.dto';
-import { AdminRole } from '@admin/api/auth/admin-role.enum';
-import { IssueNfcAesKeyResponseDto } from './dto/response/issue-nfc-aes-key.response.dto';
-import { VerifyNfcDto } from './dto/request/verify-nfc.dto';
-import { VerifyNfcResponseDto } from './dto/response/verify-nfc.response.dto';
 
 @Controller()
 export class NfcController {

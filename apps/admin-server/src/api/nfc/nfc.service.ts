@@ -1,9 +1,6 @@
 import { NfcCoreService } from '@libs/core/nfc/nfc-core.service';
-import { Prisma } from '@prisma/client';
 import {
-  BadRequestException,
   ConflictException,
-  ForbiddenException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -11,16 +8,6 @@ import { NfcEntity } from './entity/nfc.entity';
 import { CreateNfcDto } from './dto/request/create-nfc.dto';
 import { UpdateNfcDto } from './dto/request/update-nfc.dto';
 import { ConfigService } from '@nestjs/config';
-import {
-  decryptNfcPiccData,
-  deriveNfcFileReadKey,
-  deriveNfcMetaReadKey,
-  deriveNfcSessionMacKey,
-  verifyNfcMac,
-} from '@libs/core/nfc/nfc-crypto';
-import { IssueNfcAesKeyResponseDto } from './dto/response/issue-nfc-aes-key.response.dto';
-import { VerifyNfcDto } from './dto/request/verify-nfc.dto';
-import { VerifyNfcResponseDto } from './dto/response/verify-nfc.response.dto';
 
 @Injectable()
 export class NfcService {
