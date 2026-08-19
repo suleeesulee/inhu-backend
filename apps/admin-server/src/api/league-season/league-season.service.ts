@@ -10,7 +10,6 @@ import { GetLeagueSeasonAllResponseDto } from './dto/response/get-league-season-
 import { CreateLeagueSeasonDto } from './dto/request/create-league-season.dto';
 import { UpdateLeagueSeasonDto } from './dto/request/update-league-season.dto';
 import { GetLeagueSeasonAllDto } from './dto/request/get-league-season-all.dto';
-import { UpdateLeagueRewardOptionListDto } from './dto/request/update-league-reward-option-list.dto';
 import { LeagueSeasonOverviewEntity } from './entity/league-season-overview.entity';
 
 @Injectable()
