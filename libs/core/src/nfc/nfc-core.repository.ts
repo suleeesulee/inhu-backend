@@ -28,7 +28,7 @@ export class NfcCoreRepository {
         placeIdx,
         deletedAt: null,
       },
-      orderBy: { idx: 'asc' },
+      orderBy: { createdAt: 'desc' },
     });
   }
 

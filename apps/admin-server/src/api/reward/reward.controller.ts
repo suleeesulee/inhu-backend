@@ -65,7 +65,6 @@ export class RewardController {
   @AdminAuth()
   @Exception(400, 'Invalid reward update request')
   @Exception(404, 'Reward not found')
-  @Exception(409, 'Reward already activated')
   public async updateRewardByIdx(
     @Param('idx', ParseIntPipe) idx: number,
     @Body() dto: UpdateRewardDto,

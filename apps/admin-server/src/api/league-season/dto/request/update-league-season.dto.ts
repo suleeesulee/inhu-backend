@@ -5,4 +5,5 @@ export class UpdateLeagueSeasonDto extends PickType(CreateLeagueSeasonDto, [
   'name',
   'startAt',
   'endAt',
+  'rewardOptionList',
 ]) {}

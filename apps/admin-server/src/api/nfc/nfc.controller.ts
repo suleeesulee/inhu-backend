@@ -3,7 +3,6 @@ import {
   Controller,
   Delete,
   Get,
-  Header,
   Param,
   ParseIntPipe,
   Post,
@@ -15,10 +14,6 @@ import { Exception } from '@libs/common/decorator/exception.decorator';
 import { CreateNfcDto } from './dto/request/create-nfc.dto';
 import { NfcEntity } from './entity/nfc.entity';
 import { UpdateNfcDto } from './dto/request/update-nfc.dto';
-import { AdminRole } from '@admin/api/auth/admin-role.enum';
-import { IssueNfcAesKeyResponseDto } from './dto/response/issue-nfc-aes-key.response.dto';
-import { VerifyNfcDto } from './dto/request/verify-nfc.dto';
-import { VerifyNfcResponseDto } from './dto/response/verify-nfc.response.dto';
 
 @Controller()
 export class NfcController {
@@ -74,36 +69,6 @@ export class NfcController {
     @Body() dto: UpdateNfcDto,
   ): Promise<void> {
     return await this.nfcService.updateNfcByIdx(idx, dto);
-  }
-
-  /**
-   * 태그에 설정할 NFC AES 키 발급
-   */
-  @Post('nfc/:idx/aes-key')
-  @AdminAuth(AdminRole.SuperAdmin)
-  @Header('Cache-Control', 'no-store')
-  @Exception(404, 'Nfc not found')
-  @Exception(409, 'Activated nfc AES key cannot be issued')
-  public async issueNfcAesKeyByIdx(
-    @Param('idx', ParseIntPipe) idx: number,
-  ): Promise<IssueNfcAesKeyResponseDto> {
-    return await this.nfcService.issueNfcAesKeyByIdx(idx);
-  }
-
-  /**
-   * 실제 NFC 태그 검증
-   */
-  @Post('nfc/:idx/verify')
-  @AdminAuth()
-  @Exception(400, 'Invalid NFC payload')
-  @Exception(403, 'Invalid NFC MAC')
-  @Exception(404, 'Nfc not found')
-  @Exception(409, 'NFC UID does not match')
-  public async verifyNfcByIdx(
-    @Param('idx', ParseIntPipe) idx: number,
-    @Body() dto: VerifyNfcDto,
-  ): Promise<VerifyNfcResponseDto> {
-    return await this.nfcService.verifyNfcByIdx(idx, dto);
   }
 
   /**

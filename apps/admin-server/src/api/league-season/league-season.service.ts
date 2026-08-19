@@ -10,7 +10,6 @@ import { GetLeagueSeasonAllResponseDto } from './dto/response/get-league-season-
 import { CreateLeagueSeasonDto } from './dto/request/create-league-season.dto';
 import { UpdateLeagueSeasonDto } from './dto/request/update-league-season.dto';
 import { GetLeagueSeasonAllDto } from './dto/request/get-league-season-all.dto';
-import { UpdateLeagueRewardOptionListDto } from './dto/request/update-league-reward-option-list.dto';
 import { LeagueSeasonOverviewEntity } from './entity/league-season-overview.entity';
 
 @Injectable()
@@ -78,21 +77,6 @@ export class LeagueSeasonService {
     this.validatePeriod(dto.startAt, dto.endAt);
 
     await this.leagueSeasonCoreService.updateLeagueSeasonByIdx(idx, dto);
-  }
-
-  public async updateLeagueSeasonRewardOptionListByIdx(
-    idx: number,
-    dto: UpdateLeagueRewardOptionListDto,
-  ): Promise<void> {
-    const leagueSeason =
-      await this.leagueSeasonCoreService.getLeagueSeasonByIdx(idx);
-    if (!leagueSeason) {
-      throw new NotFoundException(`League season with idx ${idx} not found`);
-    }
-
-    await this.leagueSeasonCoreService.updateLeagueSeasonByIdx(idx, {
-      rewardOptionList: dto.rewardOptionList,
-    });
   }
 
   public async activateLeagueSeasonByIdx(idx: number): Promise<void> {
