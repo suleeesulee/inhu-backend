@@ -4,6 +4,7 @@ import { Injectable } from '@nestjs/common';
 import { SELECT_NFC, SelectNfc } from './model/prisma-type/select-nfc';
 import { CreateNfcInput } from './inputs/create-nfc.input';
 import { UpdateNfcInput } from './inputs/update-nfc.input';
+import { GetNfcAllInput } from './inputs/get-nfc-all.input';
 
 @Injectable()
 export class NfcCoreRepository {
@@ -42,12 +43,23 @@ export class NfcCoreRepository {
     });
   }
 
-  public async selectNfcAll(): Promise<SelectNfc[]> {
+  public async selectNfcAll(input: GetNfcAllInput): Promise<SelectNfc[]> {
+    const order = input.order ?? 'desc';
+
     return await this.txHost.tx.nfc.findMany({
       ...SELECT_NFC,
       where: {
         deletedAt: null,
+        activatedAt:
+          input.activated === undefined
+            ? undefined
+            : input.activated
+              ? { not: null }
+              : null,
       },
+      orderBy: [{ createdAt: order }, { idx: order }],
+      take: input.take,
+      skip: input.skip,
     });
   }
 

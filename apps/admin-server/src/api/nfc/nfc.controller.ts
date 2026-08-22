@@ -6,6 +6,7 @@ import {
   Param,
   ParseIntPipe,
   Post,
+  Query,
   Put,
 } from '@nestjs/common';
 import { NfcService } from './nfc.service';
@@ -14,10 +15,23 @@ import { Exception } from '@libs/common/decorator/exception.decorator';
 import { CreateNfcDto } from './dto/request/create-nfc.dto';
 import { NfcEntity } from './entity/nfc.entity';
 import { UpdateNfcDto } from './dto/request/update-nfc.dto';
+import { GetNfcAllDto } from './dto/request/get-nfc-all.dto';
+import { GetNfcAllResponseDto } from './dto/response/get-nfc-all.response.dto';
 
 @Controller()
 export class NfcController {
   constructor(private readonly nfcService: NfcService) {}
+
+  /**
+   * nfc 전체 조회
+   */
+  @Get('nfc/all')
+  @AdminAuth()
+  public async getNfcAll(
+    @Query() dto: GetNfcAllDto,
+  ): Promise<GetNfcAllResponseDto> {
+    return await this.nfcService.getNfcAll(dto);
+  }
 
   /**
    * nfc 단건 조회

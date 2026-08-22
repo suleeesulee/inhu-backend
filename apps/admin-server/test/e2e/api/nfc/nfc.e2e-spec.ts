@@ -17,6 +17,240 @@ describe('Nfc E2E test', () => {
     await testHelper.destroy();
   });
 
+  describe('GET /nfc/all', () => {
+    it('200 - returns nfc from all places without activated filter', async () => {
+      const admin = testHelper.loginAdmin.admin1;
+      const [firstPlace, secondPlace] = await placeSeedHelper.seedAll([{}, {}]);
+      const [activatedNfc, deactivatedNfc, deletedNfc] =
+        await nfcSeedHelper.seedAll([
+          {
+            placeIdx: firstPlace.idx,
+            score: 3,
+            uid: '04DE5F1EACC001',
+            activatedAt: new Date(),
+          },
+          {
+            placeIdx: secondPlace.idx,
+            score: 5,
+            uid: '04DE5F1EACC002',
+            activatedAt: null,
+          },
+          {
+            placeIdx: firstPlace.idx,
+            score: 7,
+            uid: '04DE5F1EACC003',
+            activatedAt: new Date(),
+            deletedAt: new Date(),
+          },
+        ]);
+
+      const response = await testHelper
+        .test()
+        .get('/nfc/all')
+        .set('Cookie', `token=Bearer ${admin.token}`)
+        .query({ page: 1 })
+        .expect(200);
+
+      const nfcList: NfcEntity[] = response.body.nfcList;
+      const nfcIdxList = nfcList.map((nfc) => nfc.idx);
+
+      expect(response.body.hasNext).toBe(false);
+      expect(nfcList).toHaveLength(2);
+      expect(nfcIdxList).toEqual(
+        expect.arrayContaining([activatedNfc.idx, deactivatedNfc.idx]),
+      );
+      expect(nfcIdxList).not.toContain(deletedNfc.idx);
+      expect(nfcList).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            idx: activatedNfc.idx,
+            placeIdx: firstPlace.idx,
+            score: activatedNfc.score,
+            uid: activatedNfc.uid,
+          }),
+          expect.objectContaining({
+            idx: deactivatedNfc.idx,
+            placeIdx: secondPlace.idx,
+            score: deactivatedNfc.score,
+            uid: deactivatedNfc.uid,
+            activatedAt: null,
+          }),
+        ]),
+      );
+      expect(nfcList[0].createdAt).toBeDefined();
+    });
+
+    it('200 - activated filter check across different places', async () => {
+      const admin = testHelper.loginAdmin.admin1;
+      const [firstPlace, secondPlace] = await placeSeedHelper.seedAll([{}, {}]);
+      const [activatedNfc, deactivatedNfc] = await nfcSeedHelper.seedAll([
+        {
+          placeIdx: firstPlace.idx,
+          uid: '04DE5F1EACC004',
+          activatedAt: new Date(),
+        },
+        {
+          placeIdx: secondPlace.idx,
+          uid: '04DE5F1EACC005',
+          activatedAt: null,
+        },
+      ]);
+
+      const activatedResponse = await testHelper
+        .test()
+        .get('/nfc/all')
+        .set('Cookie', `token=Bearer ${admin.token}`)
+        .query({ page: 1, activated: true })
+        .expect(200);
+      const deactivatedResponse = await testHelper
+        .test()
+        .get('/nfc/all')
+        .set('Cookie', `token=Bearer ${admin.token}`)
+        .query({ page: 1, activated: false })
+        .expect(200);
+
+      expect(activatedResponse.body.nfcList).toHaveLength(1);
+      expect(activatedResponse.body.nfcList[0].idx).toBe(activatedNfc.idx);
+      expect(deactivatedResponse.body.nfcList).toHaveLength(1);
+      expect(deactivatedResponse.body.nfcList[0].idx).toBe(deactivatedNfc.idx);
+    });
+
+    it('200 - pagination check', async () => {
+      const admin = testHelper.loginAdmin.admin1;
+      const place = await placeSeedHelper.seed({});
+      await nfcSeedHelper.seedAll(
+        Array.from({ length: 11 }, (_, index) => ({
+          placeIdx: place.idx,
+          score: index,
+          uid: `04${index.toString(16).toUpperCase().padStart(12, '0')}`,
+        })),
+      );
+
+      const firstPageResponse = await testHelper
+        .test()
+        .get('/nfc/all')
+        .set('Cookie', `token=Bearer ${admin.token}`)
+        .query({ page: 1 })
+        .expect(200);
+      const secondPageResponse = await testHelper
+        .test()
+        .get('/nfc/all')
+        .set('Cookie', `token=Bearer ${admin.token}`)
+        .query({ page: 2 })
+        .expect(200);
+
+      expect(firstPageResponse.body.hasNext).toBe(true);
+      expect(firstPageResponse.body.nfcList).toHaveLength(10);
+      expect(secondPageResponse.body.hasNext).toBe(false);
+      expect(secondPageResponse.body.nfcList).toHaveLength(1);
+    });
+
+    it('200 - order check', async () => {
+      const admin = testHelper.loginAdmin.admin1;
+      const place = await placeSeedHelper.seed({});
+      const [olderNfc, newerNfc] = await nfcSeedHelper.seedAll([
+        { placeIdx: place.idx, uid: '04DE5F1EACC006' },
+        { placeIdx: place.idx, uid: '04DE5F1EACC007' },
+      ]);
+      await testHelper.getPrisma().nfc.update({
+        where: { idx: olderNfc.idx },
+        data: { createdAt: new Date('2026-01-01T00:00:00.000Z') },
+      });
+      await testHelper.getPrisma().nfc.update({
+        where: { idx: newerNfc.idx },
+        data: { createdAt: new Date('2026-01-02T00:00:00.000Z') },
+      });
+
+      const ascendingResponse = await testHelper
+        .test()
+        .get('/nfc/all')
+        .set('Cookie', `token=Bearer ${admin.token}`)
+        .query({ page: 1, order: 'asc' })
+        .expect(200);
+      const descendingResponse = await testHelper
+        .test()
+        .get('/nfc/all')
+        .set('Cookie', `token=Bearer ${admin.token}`)
+        .query({ page: 1, order: 'desc' })
+        .expect(200);
+
+      expect(ascendingResponse.body.nfcList[0].idx).toBe(olderNfc.idx);
+      expect(descendingResponse.body.nfcList[0].idx).toBe(newerNfc.idx);
+    });
+
+    it('200 - returns empty list when nfc does not exist', async () => {
+      const admin = testHelper.loginAdmin.admin1;
+
+      const response = await testHelper
+        .test()
+        .get('/nfc/all')
+        .set('Cookie', `token=Bearer ${admin.token}`)
+        .query({ page: 1 })
+        .expect(200);
+
+      expect(response.body.hasNext).toBe(false);
+      expect(response.body.nfcList).toEqual([]);
+    });
+
+    it('400 - page is missing', async () => {
+      const admin = testHelper.loginAdmin.admin1;
+
+      await testHelper
+        .test()
+        .get('/nfc/all')
+        .set('Cookie', `token=Bearer ${admin.token}`)
+        .expect(400);
+    });
+
+    it('400 - page is less than one', async () => {
+      const admin = testHelper.loginAdmin.admin1;
+
+      await testHelper
+        .test()
+        .get('/nfc/all')
+        .set('Cookie', `token=Bearer ${admin.token}`)
+        .query({ page: 0 })
+        .expect(400);
+    });
+
+    it('400 - order is invalid', async () => {
+      const admin = testHelper.loginAdmin.admin1;
+
+      await testHelper
+        .test()
+        .get('/nfc/all')
+        .set('Cookie', `token=Bearer ${admin.token}`)
+        .query({ page: 1, order: 'invalid-order' })
+        .expect(400);
+    });
+
+    it('400 - activated is invalid', async () => {
+      const admin = testHelper.loginAdmin.admin1;
+
+      await testHelper
+        .test()
+        .get('/nfc/all')
+        .set('Cookie', `token=Bearer ${admin.token}`)
+        .query({ page: 1, activated: 'invalid-activated' })
+        .expect(400);
+    });
+
+    it('401 - access token is missing', async () => {
+      await testHelper.test().get('/nfc/all').query({ page: 1 }).expect(401);
+    });
+
+    it('403 - insufficient role', async () => {
+      const magazineAdmin = testHelper.loginAdmin.magazineAdmin1;
+
+      await testHelper
+        .test()
+        .get('/nfc/all')
+        .set('Cookie', `token=Bearer ${magazineAdmin.token}`)
+        .query({ page: 1 })
+        .expect(403);
+    });
+  });
+
   describe('GET /nfc/:idx', () => {
     it('200 - inactive nfc field check', async () => {
       const admin = testHelper.loginAdmin.admin1;
