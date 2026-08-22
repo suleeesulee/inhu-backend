@@ -33,11 +33,11 @@ describe('Notice E2E test', () => {
         .expect(200);
 
       const noticeList: NoticeOverviewEntity[] = response.body.noticeList;
-      const count: number = response.body.count;
+      const hasNext: boolean = response.body.hasNext;
 
       expect(Array.isArray(noticeList)).toBe(true);
       expect(noticeList.length).toBe(1);
-      expect(count).toBe(1);
+      expect(hasNext).toBe(false);
 
       const notice: NoticeOverviewEntity = noticeList[0];
 
@@ -56,7 +56,7 @@ describe('Notice E2E test', () => {
         .expect(200);
 
       expect(response.body.noticeList).toEqual([]);
-      expect(response.body.count).toBe(0);
+      expect(response.body.hasNext).toBe(false);
     });
 
     it('200 - pagination check (page too high returns empty)', async () => {
@@ -74,7 +74,7 @@ describe('Notice E2E test', () => {
         .expect(200);
 
       expect(response.body.noticeList).toEqual([]);
-      expect(response.body.count).toBe(2);
+      expect(response.body.hasNext).toBe(false);
     });
 
     it('200 - returns latest notice first (desc by createdAt)', async () => {

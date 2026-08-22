@@ -15,15 +15,17 @@ export class NoticeService {
     dto: GetAllNoticeDto,
   ): Promise<GetAllNoticeResponseDto> {
     const input = {
-      take: PAGE_SIZE,
+      take: PAGE_SIZE + 1,
       skip: (dto.page - 1) * PAGE_SIZE,
     };
 
+    const noticeModelList = await this.noticeCoreService.getNoticeAll(input);
+
     return {
-      noticeList: (await this.noticeCoreService.getNoticeAll(input)).map(
-        NoticeOverviewEntity.fromModel,
-      ),
-      count: await this.noticeCoreService.getNoticeCount(),
+      hasNext: noticeModelList.length > PAGE_SIZE,
+      noticeList: noticeModelList
+        .slice(0, PAGE_SIZE)
+        .map(NoticeOverviewEntity.fromModel),
     };
   }
 
