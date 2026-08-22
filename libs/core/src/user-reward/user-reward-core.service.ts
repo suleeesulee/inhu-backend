@@ -25,6 +25,10 @@ export class UserRewardCoreService {
     );
   }
 
+  public async getUserRewardCount(input: GetUserRewardInput): Promise<number> {
+    return await this.userRewardCoreRepository.selectUserRewardCount(input);
+  }
+
   public async getUserRewardByLeagueSeasonResultId(
     leagueSeasonResultId: string,
   ): Promise<UserRewardModel | null> {

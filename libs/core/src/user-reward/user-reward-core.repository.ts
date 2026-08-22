@@ -33,13 +33,22 @@ export class UserRewardCoreRepository {
       ...SELECT_USER_REWARD,
       where: {
         ...this.getStatusFilterWhereClause(input.status),
-        leagueSeasonResult: input.leagueSeasonIdx
-          ? { leagueSeasonIdx: input.leagueSeasonIdx }
-          : undefined,
+        ...this.getLeagueSeasonIdxFilterWhereClause(input.leagueSeasonIdx),
       },
       orderBy: [{ createdAt: input.order ?? 'desc' }, { id: 'desc' }],
       take: input.take,
       skip: input.skip,
+    });
+  }
+
+  public async selectUserRewardCount(
+    input: GetUserRewardInput,
+  ): Promise<number> {
+    return await this.txHost.tx.userReward.count({
+      where: {
+        ...this.getStatusFilterWhereClause(input.status),
+        ...this.getLeagueSeasonIdxFilterWhereClause(input.leagueSeasonIdx),
+      },
     });
   }
 
@@ -121,6 +130,18 @@ export class UserRewardCoreRepository {
 
     return {
       issuedAt: { not: null },
+    };
+  }
+
+  private getLeagueSeasonIdxFilterWhereClause(
+    leagueSeasonIdx?: number,
+  ): Prisma.UserRewardWhereInput {
+    if (leagueSeasonIdx === undefined) {
+      return {};
+    }
+
+    return {
+      leagueSeasonResult: { leagueSeasonIdx },
     };
   }
 }

@@ -29,19 +29,20 @@ export class UserRewardService {
     dto: GetUserRewardAllDto,
   ): Promise<GetUserRewardAllResponseDto> {
     const pageSize = 10;
-    const userRewardList = await this.userRewardCoreService.getUserRewardAll({
-      take: pageSize + 1,
+    const input = {
+      take: pageSize,
       skip: (dto.page - 1) * pageSize,
       status: dto.status,
       order: dto.order,
       leagueSeasonIdx: dto.leagueSeasonIdx,
-    });
-    const pagedUserRewardList = userRewardList.slice(0, pageSize);
+    };
+    const [userRewardList, count] = await Promise.all([
+      this.userRewardCoreService.getUserRewardAll(input),
+      this.userRewardCoreService.getUserRewardCount(input),
+    ]);
     const leagueSeasonResultList =
       await this.leagueSeasonCoreService.getLeagueSeasonResultAllByIdList(
-        pagedUserRewardList.map(
-          (userReward) => userReward.leagueSeasonResultId,
-        ),
+        userRewardList.map((userReward) => userReward.leagueSeasonResultId),
       );
     const leagueSeasonResultMap = new Map(
       leagueSeasonResultList.map((leagueSeasonResult) => [
@@ -56,7 +57,7 @@ export class UserRewardService {
         ),
       ),
       this.rewardCoreService.getRewardAllByIdxList(
-        pagedUserRewardList.flatMap((userReward) =>
+        userRewardList.flatMap((userReward) =>
           userReward.rewardIdx === null ? [] : [userReward.rewardIdx],
         ),
       ),
@@ -65,8 +66,8 @@ export class UserRewardService {
     const rewardMap = new Map(rewardList.map((reward) => [reward.idx, reward]));
 
     return {
-      hasNext: userRewardList.length > pageSize,
-      userRewardList: pagedUserRewardList.map((userReward) => {
+      count,
+      userRewardList: userRewardList.map((userReward) => {
         const leagueSeasonResult = leagueSeasonResultMap.get(
           userReward.leagueSeasonResultId,
         );

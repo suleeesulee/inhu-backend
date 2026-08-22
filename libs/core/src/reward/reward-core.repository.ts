@@ -5,6 +5,7 @@ import { SELECT_REWARD, SelectReward } from './model/prisma-type/select-reward';
 import { CreateRewardInput } from './inputs/create-reward.input';
 import { UpdateRewardInput } from './inputs/update-reward.input';
 import { GetRewardAllInput } from './inputs/get-reward-all.input';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class RewardCoreRepository {
@@ -44,16 +45,20 @@ export class RewardCoreRepository {
       ...SELECT_REWARD,
       where: {
         deletedAt: null,
-        activatedAt:
-          input.activated === undefined
-            ? undefined
-            : input.activated
-              ? { not: null }
-              : null,
+        ...this.getActivatedAtFilterWhereClause(input.activated),
       },
       orderBy: [{ createdAt: order }, { idx: order }],
       take: input.take,
       skip: input.skip,
+    });
+  }
+
+  public async selectRewardCount(input: GetRewardAllInput): Promise<number> {
+    return await this.txHost.tx.reward.count({
+      where: {
+        deletedAt: null,
+        ...this.getActivatedAtFilterWhereClause(input.activated),
+      },
     });
   }
 
@@ -87,5 +92,19 @@ export class RewardCoreRepository {
       data: { deletedAt: new Date() },
       where: { idx, deletedAt: null },
     });
+  }
+
+  private getActivatedAtFilterWhereClause(
+    activated?: boolean,
+  ): Prisma.RewardWhereInput {
+    if (activated === undefined) {
+      return {};
+    }
+
+    if (activated) {
+      return { activatedAt: { not: null } };
+    }
+
+    return { activatedAt: null };
   }
 }

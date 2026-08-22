@@ -1,6 +1,6 @@
 import { NfcEntity } from '../../entity/nfc.entity';
 
 export class GetNfcAllResponseDto {
-  public hasNext: boolean;
+  public count: number;
   public nfcList: NfcEntity[];
 }

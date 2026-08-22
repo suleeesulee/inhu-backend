@@ -1,6 +1,6 @@
 import { UserRewardOverviewEntity } from '../../entity/user-reward-overview.entity';
 
 export class GetUserRewardAllResponseDto {
-  public hasNext: boolean;
+  public count: number;
   public userRewardList: UserRewardOverviewEntity[];
 }

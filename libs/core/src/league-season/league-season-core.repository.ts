@@ -93,6 +93,14 @@ export class LeagueSeasonCoreRepository {
     });
   }
 
+  public async selectLeagueSeasonOverviewCount(
+    input: GetLeagueSeasonAllInput,
+  ): Promise<number> {
+    return await this.txHost.tx.leagueSeason.count({
+      where: this.getActivatedAtFilterWhereClause(input.activated),
+    });
+  }
+
   public async selectLeagueSeasonResultById(
     id: string,
     activated?: boolean,
@@ -251,9 +259,11 @@ export class LeagueSeasonCoreRepository {
     });
   }
 
-  public async insertLeagueSeasonResult(
-    input: { leagueSeasonIdx: number; userIdx: number; finalScore: number },
-  ): Promise<SelectLeagueSeasonResult> {
+  public async insertLeagueSeasonResult(input: {
+    leagueSeasonIdx: number;
+    userIdx: number;
+    finalScore: number;
+  }): Promise<SelectLeagueSeasonResult> {
     return await this.txHost.tx.leagueSeasonResult.create({
       ...SELECT_LEAGUE_SEASON_RESULT,
       data: {
