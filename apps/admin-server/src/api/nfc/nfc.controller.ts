@@ -46,17 +46,6 @@ export class NfcController {
   }
 
   /**
-   * 장소의 모든 nfc 조회
-   */
-  @Get('place/:placeIdx/nfc')
-  @AdminAuth()
-  public async getNfcAllByPlaceIdx(
-    @Param('placeIdx', ParseIntPipe) placeIdx: number,
-  ): Promise<NfcEntity[]> {
-    return await this.nfcService.getNfcAllByPlaceIdx(placeIdx);
-  }
-
-  /**
    * nfc 생성
    */
   @Post('place/:placeIdx/nfc')

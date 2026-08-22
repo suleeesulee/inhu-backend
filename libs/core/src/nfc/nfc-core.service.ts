@@ -14,12 +14,6 @@ export class NfcCoreService {
     return nfc && NfcModel.fromPrisma(nfc);
   }
 
-  public async getNfcAllByPlaceIdx(placeIdx: number): Promise<NfcModel[]> {
-    return (await this.nfcCoreRepository.selectNfcAllByPlaceIdx(placeIdx)).map(
-      NfcModel.fromPrisma,
-    );
-  }
-
   public async getNfcByUid(uid: string): Promise<NfcModel | null> {
     const nfc = await this.nfcCoreRepository.selectNfcByUid(uid);
     return nfc && NfcModel.fromPrisma(nfc);

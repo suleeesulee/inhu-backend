@@ -31,4 +31,15 @@ export class GetNfcAllDto {
   @ToBoolean()
   @IsBoolean()
   public activated?: boolean;
+
+  /**
+   * 장소 식별자
+   *
+   * @example 1
+   */
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @Min(1)
+  public place?: number;
 }
