@@ -27,6 +27,8 @@ import { leagueSeasonResultSeedDataList } from './data/league-season-result.seed
 import { rewardSeedDataList } from './data/reward.seed';
 import { placeVisitSeedDataList } from './data/place-visit.seed';
 import { userRewardSeedDataList } from './data/user-reward.seed';
+import { NoticeSeedHelper } from '@libs/testing/seed/notice/notice.seed';
+import { noticeSeedDataList } from './data/notice.seed';
 
 const prisma = new PrismaService();
 
@@ -50,6 +52,7 @@ async function main() {
   const rewardSeedHelper = new RewardSeedHelper(prisma);
   const placeVisitSeedHelper = new PlaceVisitSeedHelper(prisma);
   const userRewardSeedHelper = new UserRewardSeedHelper(prisma);
+  const noticeSeedHelper = new NoticeSeedHelper(prisma);
 
   /**
    * 사용자 생성
@@ -61,6 +64,16 @@ async function main() {
   const user2 = await userSeedHelper.seed({ nickname: '인덕이' });
   const userList = { user1, user2 };
   const userOutputList = [user1, user2];
+
+  /**
+   * 공지사항 생성
+   */
+  for (const noticeData of noticeSeedDataList) {
+    await noticeSeedHelper.seed({
+      ...noticeData,
+      authorIdx: userOutputList[noticeData.authorIdx - 1].idx,
+    });
+  }
 
   await freeTagSeedHelper.seedAll([
     { content: '가성비' },
