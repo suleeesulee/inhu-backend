@@ -8,6 +8,8 @@ import { NfcEntity } from './entity/nfc.entity';
 import { CreateNfcDto } from './dto/request/create-nfc.dto';
 import { UpdateNfcDto } from './dto/request/update-nfc.dto';
 import { ConfigService } from '@nestjs/config';
+import { GetNfcAllDto } from './dto/request/get-nfc-all.dto';
+import { GetNfcAllResponseDto } from './dto/response/get-nfc-all.response.dto';
 
 @Injectable()
 export class NfcService {
@@ -18,6 +20,21 @@ export class NfcService {
     configService: ConfigService,
   ) {
     this.masterKey = this.readKey(configService, 'nfc.masterKey');
+  }
+
+  public async getNfcAll(dto: GetNfcAllDto): Promise<GetNfcAllResponseDto> {
+    const pageSize = 10;
+    const nfcList = await this.nfcCoreService.getNfcAll({
+      take: pageSize + 1,
+      skip: (dto.page - 1) * pageSize,
+      order: dto.order,
+      activated: dto.activated,
+    });
+
+    return {
+      hasNext: nfcList.length > pageSize,
+      nfcList: nfcList.slice(0, pageSize).map(NfcEntity.fromModel),
+    };
   }
 
   public async getNfcByIdx(idx: number): Promise<NfcEntity> {

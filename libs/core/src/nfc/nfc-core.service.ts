@@ -3,6 +3,7 @@ import { NfcCoreRepository } from './nfc-core.repository';
 import { NfcModel } from './model/nfc.model';
 import { CreateNfcInput } from './inputs/create-nfc.input';
 import { UpdateNfcInput } from './inputs/update-nfc.input';
+import { GetNfcAllInput } from './inputs/get-nfc-all.input';
 
 @Injectable()
 export class NfcCoreService {
@@ -24,8 +25,8 @@ export class NfcCoreService {
     return nfc && NfcModel.fromPrisma(nfc);
   }
 
-  public async getNfcAll(): Promise<NfcModel[]> {
-    return (await this.nfcCoreRepository.selectNfcAll()).map(
+  public async getNfcAll(input: GetNfcAllInput): Promise<NfcModel[]> {
+    return (await this.nfcCoreRepository.selectNfcAll(input)).map(
       NfcModel.fromPrisma,
     );
   }
