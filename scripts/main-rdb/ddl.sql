@@ -426,6 +426,8 @@ CREATE TABLE place_visit_tb
   user_idx   int                      NOT NULL,
   nfc_idx    int                      NOT NULL,
   score      int                      NOT NULL,
+  latitude   numeric                  NOT NULL,
+  longitude  numeric                  NOT NULL,
   created_at timestamp with time zone NOT NULL DEFAULT NOW(),
   PRIMARY KEY (id)
 );

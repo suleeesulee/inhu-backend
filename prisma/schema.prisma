@@ -702,6 +702,8 @@ model PlaceVisit {
   userIdx   Int      @map("user_idx")
   nfcIdx    Int      @map("nfc_idx")
   score     Int
+  latitude  Decimal  @db.Decimal
+  longitude Decimal  @db.Decimal
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
   nfc       Nfc    @relation(fields: [nfcIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_nfc_tb_to_place_visit_tb")
   user      User     @relation(fields: [userIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_user_tb_to_place_visit_tb")

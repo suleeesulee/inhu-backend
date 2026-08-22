@@ -1937,6 +1937,8 @@
           "RxXZONGMsXQl_9Jt2L2rb",
           "6A5mOOUIkmUxCBBbn4A3O",
           "DWKzKV1RZQB4-QVdW92zI",
+          "2X3qt0Px9-h_PzqOVqet6",
+          "BoEeLDMUx5w1AOYvsExAF",
           "92GpqzdjsiszXR17vrzeq"
         ],
         "seqColumnIds": [
@@ -1949,6 +1951,8 @@
           "6A5mOOUIkmUxCBBbn4A3O",
           "ge73bxgUHFKrLSe2bb7mv",
           "DWKzKV1RZQB4-QVdW92zI",
+          "2X3qt0Px9-h_PzqOVqet6",
+          "BoEeLDMUx5w1AOYvsExAF",
           "92GpqzdjsiszXR17vrzeq"
         ],
         "ui": {
@@ -1960,7 +1964,7 @@
           "color": "#03F0F4"
         },
         "meta": {
-          "updateAt": 1783413529675,
+          "updateAt": 1787416255993,
           "createAt": 1782456530399
         }
       },
@@ -10388,6 +10392,46 @@
           "updateAt": 1786645671471,
           "createAt": 1786645662479
         }
+      },
+      "2X3qt0Px9-h_PzqOVqet6": {
+        "id": "2X3qt0Px9-h_PzqOVqet6",
+        "tableId": "-VaUEhFBfs0ehmRWEGrnc",
+        "name": "latitude",
+        "comment": "",
+        "dataType": "numeric",
+        "default": "",
+        "options": 8,
+        "ui": {
+          "keys": 0,
+          "widthName": 60,
+          "widthComment": 60,
+          "widthDataType": 60,
+          "widthDefault": 60
+        },
+        "meta": {
+          "updateAt": 1787416237074,
+          "createAt": 1787416203734
+        }
+      },
+      "BoEeLDMUx5w1AOYvsExAF": {
+        "id": "BoEeLDMUx5w1AOYvsExAF",
+        "tableId": "-VaUEhFBfs0ehmRWEGrnc",
+        "name": "longitude",
+        "comment": "",
+        "dataType": "numeric",
+        "default": "",
+        "options": 8,
+        "ui": {
+          "keys": 0,
+          "widthName": 60,
+          "widthComment": 60,
+          "widthDataType": 60,
+          "widthDefault": 60
+        },
+        "meta": {
+          "updateAt": 1787416248233,
+          "createAt": 1787416205298
+        }
       }
     },
     "relationshipEntities": {
@@ -12259,7 +12303,7 @@
             "6A5mOOUIkmUxCBBbn4A3O"
           ],
           "x": 3907.363,
-          "y": 3016.6416,
+          "y": 3040.6416,
           "direction": 1
         },
         "meta": {
