@@ -17,6 +17,8 @@ describe('Place Visit E2E test', () => {
   const masterKey = Buffer.from('0123456789abcdef0123456789abcdef', 'hex');
   const uid = Buffer.from('04A1B2C3D4E5F6', 'hex');
   const readCounter = Buffer.from('000001', 'hex');
+  const latitude = 37.4508371;
+  const longitude = 126.6531324;
   let piccData: string;
   let cmac: string;
 
@@ -32,12 +34,7 @@ describe('Place Visit E2E test', () => {
 
     piccData = Buffer.concat([
       cipher.update(
-        Buffer.concat([
-          Buffer.from([0xc7]),
-          uid,
-          readCounter,
-          Buffer.alloc(5),
-        ]),
+        Buffer.concat([Buffer.from([0xc7]), uid, readCounter, Buffer.alloc(5)]),
       ),
       cipher.final(),
     ])
@@ -77,7 +74,7 @@ describe('Place Visit E2E test', () => {
         .test()
         .post('/place-visit/nfc')
         .set('Authorization', `Bearer ${loginUser.web.accessToken}`)
-        .send({ picc_data: piccData, cmac })
+        .send({ picc_data: piccData, cmac, latitude, longitude })
         .expect(201);
 
       expect(response.body).toEqual(
@@ -86,6 +83,8 @@ describe('Place Visit E2E test', () => {
           userIdx: loginUser.idx,
           nfcIdx: nfc.idx,
           score: nfc.score,
+          latitude,
+          longitude,
           place: expect.objectContaining({
             idx: place.idx,
             name: 'NFC 방문 인증 장소',
@@ -103,6 +102,8 @@ describe('Place Visit E2E test', () => {
       expect(placeVisit.userIdx).toBe(loginUser.idx);
       expect(placeVisit.nfcIdx).toBe(nfc.idx);
       expect(placeVisit.score).toBe(nfc.score);
+      expect(placeVisit.latitude.toNumber()).toBe(latitude);
+      expect(placeVisit.longitude.toNumber()).toBe(longitude);
       expect(placeVisit.createdAt.getTime()).toBeGreaterThanOrEqual(
         beforeRequest.getTime(),
       );
@@ -132,7 +133,13 @@ describe('Place Visit E2E test', () => {
         .test()
         .post('/place-visit/nfc')
         .set('Authorization', `Bearer ${loginUser.web.accessToken}`)
-        .send({ picc_data: piccData, enc, cmac: encryptedCmac })
+        .send({
+          picc_data: piccData,
+          enc,
+          cmac: encryptedCmac,
+          latitude,
+          longitude,
+        })
         .expect(201);
 
       expect(response.body).toEqual(
@@ -140,6 +147,38 @@ describe('Place Visit E2E test', () => {
           userIdx: loginUser.idx,
           nfcIdx: nfc.idx,
           score: nfc.score,
+          latitude,
+          longitude,
+        }),
+      );
+    });
+
+    it('201 - create place visit at coordinate boundaries', async () => {
+      const loginUser = testHelper.loginUsers.user1;
+      const place = await placeSeedHelper.seed({ activatedAt: new Date() });
+      const nfc = await nfcSeedHelper.seed({
+        placeIdx: place.idx,
+        uid: uid.toString('hex').toUpperCase(),
+        activatedAt: new Date(),
+      });
+
+      const response = await testHelper
+        .test()
+        .post('/place-visit/nfc')
+        .set('Authorization', `Bearer ${loginUser.web.accessToken}`)
+        .send({
+          picc_data: piccData,
+          cmac,
+          latitude: -90,
+          longitude: 180,
+        })
+        .expect(201);
+
+      expect(response.body).toEqual(
+        expect.objectContaining({
+          nfcIdx: nfc.idx,
+          latitude: -90,
+          longitude: 180,
         }),
       );
     });
@@ -151,7 +190,7 @@ describe('Place Visit E2E test', () => {
         .test()
         .post('/place-visit/nfc')
         .set('Authorization', `Bearer ${loginUser.web.accessToken}`)
-        .send({ cmac })
+        .send({ cmac, latitude, longitude })
         .expect(400);
     });
 
@@ -162,7 +201,7 @@ describe('Place Visit E2E test', () => {
         .test()
         .post('/place-visit/nfc')
         .set('Authorization', `Bearer ${loginUser.web.accessToken}`)
-        .send({ picc_data: piccData })
+        .send({ picc_data: piccData, latitude, longitude })
         .expect(400);
     });
 
@@ -173,7 +212,73 @@ describe('Place Visit E2E test', () => {
         .test()
         .post('/place-visit/nfc')
         .set('Authorization', `Bearer ${loginUser.web.accessToken}`)
-        .send({ picc_data: 'INVALID', cmac })
+        .send({ picc_data: 'INVALID', cmac, latitude, longitude })
+        .expect(400);
+    });
+
+    it('400 - latitude is missing', async () => {
+      const loginUser = testHelper.loginUsers.user1;
+
+      await testHelper
+        .test()
+        .post('/place-visit/nfc')
+        .set('Authorization', `Bearer ${loginUser.web.accessToken}`)
+        .send({ picc_data: piccData, cmac, longitude })
+        .expect(400);
+    });
+
+    it('400 - longitude is missing', async () => {
+      const loginUser = testHelper.loginUsers.user1;
+
+      await testHelper
+        .test()
+        .post('/place-visit/nfc')
+        .set('Authorization', `Bearer ${loginUser.web.accessToken}`)
+        .send({ picc_data: piccData, cmac, latitude })
+        .expect(400);
+    });
+
+    it('400 - latitude is out of range', async () => {
+      const loginUser = testHelper.loginUsers.user1;
+
+      await testHelper
+        .test()
+        .post('/place-visit/nfc')
+        .set('Authorization', `Bearer ${loginUser.web.accessToken}`)
+        .send({ picc_data: piccData, cmac, latitude: 90.0000001, longitude })
+        .expect(400);
+    });
+
+    it('400 - longitude is out of range', async () => {
+      const loginUser = testHelper.loginUsers.user1;
+
+      await testHelper
+        .test()
+        .post('/place-visit/nfc')
+        .set('Authorization', `Bearer ${loginUser.web.accessToken}`)
+        .send({ picc_data: piccData, cmac, latitude, longitude: -180.0000001 })
+        .expect(400);
+    });
+
+    it('400 - latitude has more than seven decimal places', async () => {
+      const loginUser = testHelper.loginUsers.user1;
+
+      await testHelper
+        .test()
+        .post('/place-visit/nfc')
+        .set('Authorization', `Bearer ${loginUser.web.accessToken}`)
+        .send({ picc_data: piccData, cmac, latitude: 37.45083712, longitude })
+        .expect(400);
+    });
+
+    it('400 - longitude has more than seven decimal places', async () => {
+      const loginUser = testHelper.loginUsers.user1;
+
+      await testHelper
+        .test()
+        .post('/place-visit/nfc')
+        .set('Authorization', `Bearer ${loginUser.web.accessToken}`)
+        .send({ picc_data: piccData, cmac, latitude, longitude: 126.65313241 })
         .expect(400);
     });
 
@@ -181,7 +286,7 @@ describe('Place Visit E2E test', () => {
       await testHelper
         .test()
         .post('/place-visit/nfc')
-        .send({ picc_data: piccData, cmac })
+        .send({ picc_data: piccData, cmac, latitude, longitude })
         .expect(401);
     });
 
@@ -198,7 +303,7 @@ describe('Place Visit E2E test', () => {
         .test()
         .post('/place-visit/nfc')
         .set('Authorization', `Bearer ${loginUser.web.accessToken}`)
-        .send({ picc_data: piccData, cmac })
+        .send({ picc_data: piccData, cmac, latitude, longitude })
         .expect(403);
     });
 
@@ -215,7 +320,12 @@ describe('Place Visit E2E test', () => {
         .test()
         .post('/place-visit/nfc')
         .set('Authorization', `Bearer ${loginUser.web.accessToken}`)
-        .send({ picc_data: piccData, cmac: '0000000000000000' })
+        .send({
+          picc_data: piccData,
+          cmac: '0000000000000000',
+          latitude,
+          longitude,
+        })
         .expect(403);
     });
 
@@ -226,7 +336,7 @@ describe('Place Visit E2E test', () => {
         .test()
         .post('/place-visit/nfc')
         .set('Authorization', `Bearer ${loginUser.web.accessToken}`)
-        .send({ picc_data: piccData, cmac })
+        .send({ picc_data: piccData, cmac, latitude, longitude })
         .expect(404);
     });
   });

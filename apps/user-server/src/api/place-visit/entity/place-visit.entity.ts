@@ -31,6 +31,20 @@ export class PlaceVisitEntity {
   public score: number;
 
   /**
+   * 방문 인증 위도
+   *
+   * @example 37.4508371
+   */
+  public latitude: number;
+
+  /**
+   * 방문 인증 경도
+   *
+   * @example 126.6531324
+   */
+  public longitude: number;
+
+  /**
    * 방문 장소 정보
    */
   public place: PlaceVisitPlaceEntity;
@@ -50,6 +64,8 @@ export class PlaceVisitEntity {
       userIdx: model.userIdx,
       nfcIdx: model.nfcIdx,
       score: model.score,
+      latitude: model.latitude,
+      longitude: model.longitude,
       place: PlaceVisitPlaceEntity.fromModel(model.place),
       createdAt: model.createdAt,
     });

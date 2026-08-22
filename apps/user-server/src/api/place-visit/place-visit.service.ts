@@ -94,6 +94,8 @@ export class PlaceVisitService {
         userIdx,
         nfcIdx: nfc.idx,
         score: nfc.score,
+        latitude: dto.latitude,
+        longitude: dto.longitude,
       }),
     );
   }

@@ -142,6 +142,8 @@ export class PlaceVisitCoreRepository {
         userIdx: input.userIdx,
         nfcIdx: input.nfcIdx,
         score: input.score,
+        latitude: input.latitude,
+        longitude: input.longitude,
       },
     });
   }
