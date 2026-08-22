@@ -22,17 +22,6 @@ export class NfcCoreRepository {
     });
   }
 
-  public async selectNfcAllByPlaceIdx(placeIdx: number): Promise<SelectNfc[]> {
-    return await this.txHost.tx.nfc.findMany({
-      ...SELECT_NFC,
-      where: {
-        placeIdx,
-        deletedAt: null,
-      },
-      orderBy: { createdAt: 'desc' },
-    });
-  }
-
   public async selectNfcByUid(uid: string): Promise<SelectNfc | null> {
     return await this.txHost.tx.nfc.findFirst({
       ...SELECT_NFC,
@@ -50,6 +39,7 @@ export class NfcCoreRepository {
       ...SELECT_NFC,
       where: {
         deletedAt: null,
+        placeIdx: input.placeIdx,
         activatedAt:
           input.activated === undefined
             ? undefined

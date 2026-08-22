@@ -115,6 +115,103 @@ describe('Nfc E2E test', () => {
       expect(deactivatedResponse.body.nfcList[0].idx).toBe(deactivatedNfc.idx);
     });
 
+    it('200 - place filter returns only nfc mapped to requested place', async () => {
+      const admin = testHelper.loginAdmin.admin1;
+      const [targetPlace, otherPlace] = await placeSeedHelper.seedAll([{}, {}]);
+      const [firstNfc, secondNfc, deletedNfc, otherPlaceNfc] =
+        await nfcSeedHelper.seedAll([
+          {
+            placeIdx: targetPlace.idx,
+            score: 3,
+            uid: '04DE5F1EACC041',
+            activatedAt: new Date(),
+          },
+          {
+            placeIdx: targetPlace.idx,
+            score: 5,
+            uid: '04DE5F1EACC042',
+            activatedAt: null,
+          },
+          {
+            placeIdx: targetPlace.idx,
+            score: 7,
+            uid: '04DE5F1EACC043',
+            deletedAt: new Date(),
+          },
+          {
+            placeIdx: otherPlace.idx,
+            score: 9,
+            uid: '04DE5F1EACC044',
+            activatedAt: new Date(),
+          },
+        ]);
+
+      const response = await testHelper
+        .test()
+        .get('/nfc/all')
+        .set('Cookie', `token=Bearer ${admin.token}`)
+        .query({ page: 1, place: targetPlace.idx })
+        .expect(200);
+
+      const nfcList: NfcEntity[] = response.body.nfcList;
+      const nfcIdxList = nfcList.map((nfc) => nfc.idx);
+
+      expect(response.body.hasNext).toBe(false);
+      expect(nfcIdxList).toEqual(
+        expect.arrayContaining([firstNfc.idx, secondNfc.idx]),
+      );
+      expect(nfcIdxList).not.toContain(deletedNfc.idx);
+      expect(nfcIdxList).not.toContain(otherPlaceNfc.idx);
+      expect(nfcList).toHaveLength(2);
+    });
+
+    it('200 - place and activated filters are applied together', async () => {
+      const admin = testHelper.loginAdmin.admin1;
+      const [targetPlace, otherPlace] = await placeSeedHelper.seedAll([{}, {}]);
+      const [targetActivatedNfc] = await nfcSeedHelper.seedAll([
+        {
+          placeIdx: targetPlace.idx,
+          uid: '04DE5F1EACC045',
+          activatedAt: new Date(),
+        },
+        {
+          placeIdx: targetPlace.idx,
+          uid: '04DE5F1EACC046',
+          activatedAt: null,
+        },
+        {
+          placeIdx: otherPlace.idx,
+          uid: '04DE5F1EACC047',
+          activatedAt: new Date(),
+        },
+      ]);
+
+      const response = await testHelper
+        .test()
+        .get('/nfc/all')
+        .set('Cookie', `token=Bearer ${admin.token}`)
+        .query({ page: 1, place: targetPlace.idx, activated: true })
+        .expect(200);
+
+      expect(response.body.nfcList).toHaveLength(1);
+      expect(response.body.nfcList[0].idx).toBe(targetActivatedNfc.idx);
+    });
+
+    it('200 - returns empty list when requested place has no nfc', async () => {
+      const admin = testHelper.loginAdmin.admin1;
+      const place = await placeSeedHelper.seed({});
+
+      const response = await testHelper
+        .test()
+        .get('/nfc/all')
+        .set('Cookie', `token=Bearer ${admin.token}`)
+        .query({ page: 1, place: place.idx })
+        .expect(200);
+
+      expect(response.body.hasNext).toBe(false);
+      expect(response.body.nfcList).toEqual([]);
+    });
+
     it('200 - pagination check', async () => {
       const admin = testHelper.loginAdmin.admin1;
       const place = await placeSeedHelper.seed({});
@@ -235,6 +332,28 @@ describe('Nfc E2E test', () => {
         .expect(400);
     });
 
+    it('400 - place is invalid', async () => {
+      const admin = testHelper.loginAdmin.admin1;
+
+      await testHelper
+        .test()
+        .get('/nfc/all')
+        .set('Cookie', `token=Bearer ${admin.token}`)
+        .query({ page: 1, place: 'invalid-place' })
+        .expect(400);
+    });
+
+    it('400 - place is less than one', async () => {
+      const admin = testHelper.loginAdmin.admin1;
+
+      await testHelper
+        .test()
+        .get('/nfc/all')
+        .set('Cookie', `token=Bearer ${admin.token}`)
+        .query({ page: 1, place: 0 })
+        .expect(400);
+    });
+
     it('401 - access token is missing', async () => {
       await testHelper.test().get('/nfc/all').query({ page: 1 }).expect(401);
     });
@@ -325,93 +444,6 @@ describe('Nfc E2E test', () => {
         .get(`/nfc/${nfcSeed.idx}`)
         .set('Cookie', `token=Bearer ${admin.token}`)
         .expect(404);
-    });
-  });
-
-  describe('GET /place/:placeIdx/nfc', () => {
-    it('200 - returns all nfc for requested place excluding deleted nfc', async () => {
-      const admin = testHelper.loginAdmin.admin1;
-      const [targetPlace, otherPlace] = await placeSeedHelper.seedAll([{}, {}]);
-      const [firstNfc, secondNfc, deletedNfc, otherPlaceNfc] =
-        await nfcSeedHelper.seedAll([
-          {
-            placeIdx: targetPlace.idx,
-            score: 3,
-            uid: '04DE5F1EACC041',
-            activatedAt: new Date(),
-          },
-          {
-            placeIdx: targetPlace.idx,
-            score: 5,
-            uid: '04DE5F1EACC042',
-            activatedAt: null,
-          },
-          {
-            placeIdx: targetPlace.idx,
-            score: 7,
-            uid: '04DE5F1EACC043',
-            deletedAt: new Date(),
-          },
-          {
-            placeIdx: otherPlace.idx,
-            score: 9,
-            uid: '04DE5F1EACC044',
-            activatedAt: new Date(),
-          },
-        ]);
-
-      const response = await testHelper
-        .test()
-        .get(`/place/${targetPlace.idx}/nfc`)
-        .set('Cookie', `token=Bearer ${admin.token}`)
-        .expect(200);
-
-      const nfcList: NfcEntity[] = response.body;
-      const nfcIdxList = nfcList.map((nfc) => nfc.idx);
-
-      expect(nfcIdxList).toEqual(
-        expect.arrayContaining([firstNfc.idx, secondNfc.idx]),
-      );
-      expect(nfcIdxList).not.toContain(deletedNfc.idx);
-      expect(nfcIdxList).not.toContain(otherPlaceNfc.idx);
-      expect(nfcList).toHaveLength(2);
-    });
-
-    it('200 - returns empty list when place has no nfc', async () => {
-      const admin = testHelper.loginAdmin.admin1;
-      const place = await placeSeedHelper.seed({});
-
-      const response = await testHelper
-        .test()
-        .get(`/place/${place.idx}/nfc`)
-        .set('Cookie', `token=Bearer ${admin.token}`)
-        .expect(200);
-
-      expect(response.body).toEqual([]);
-    });
-
-    it('400 - place idx is invalid', async () => {
-      const admin = testHelper.loginAdmin.admin1;
-
-      await testHelper
-        .test()
-        .get('/place/invalid-place-idx/nfc')
-        .set('Cookie', `token=Bearer ${admin.token}`)
-        .expect(400);
-    });
-
-    it('401 - access token is missing', async () => {
-      await testHelper.test().get('/place/1/nfc').expect(401);
-    });
-
-    it('403 - insufficient role', async () => {
-      const magazineAdmin = testHelper.loginAdmin.magazineAdmin1;
-
-      await testHelper
-        .test()
-        .get('/place/1/nfc')
-        .set('Cookie', `token=Bearer ${magazineAdmin.token}`)
-        .expect(403);
     });
   });
 
@@ -751,7 +783,7 @@ describe('Nfc E2E test', () => {
   });
 
   describe('DELETE /nfc/:idx', () => {
-    it('200 - soft deletes nfc and excludes it from place nfc list', async () => {
+    it('200 - soft deletes nfc and excludes it from filtered nfc list', async () => {
       const admin = testHelper.loginAdmin.admin1;
       const place = await placeSeedHelper.seed({});
       const nfcSeed = await nfcSeedHelper.seed({
@@ -770,12 +802,14 @@ describe('Nfc E2E test', () => {
       });
       const nfcListResponse = await testHelper
         .test()
-        .get(`/place/${place.idx}/nfc`)
+        .get('/nfc/all')
         .set('Cookie', `token=Bearer ${admin.token}`)
+        .query({ page: 1, place: place.idx })
         .expect(200);
 
       expect(nfc.deletedAt).not.toBeNull();
-      expect(nfcListResponse.body).toEqual([]);
+      expect(nfcListResponse.body.hasNext).toBe(false);
+      expect(nfcListResponse.body.nfcList).toEqual([]);
 
       await testHelper
         .test()

@@ -3,4 +3,5 @@ export class GetNfcAllInput {
   public skip: number;
   public order?: 'asc' | 'desc';
   public activated?: boolean;
+  public placeIdx?: number;
 }

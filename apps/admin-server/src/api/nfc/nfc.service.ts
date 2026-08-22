@@ -29,6 +29,7 @@ export class NfcService {
       skip: (dto.page - 1) * pageSize,
       order: dto.order,
       activated: dto.activated,
+      placeIdx: dto.place,
     });
 
     return {
@@ -44,12 +45,6 @@ export class NfcService {
     }
 
     return NfcEntity.fromModel(nfc);
-  }
-
-  public async getNfcAllByPlaceIdx(placeIdx: number): Promise<NfcEntity[]> {
-    return (await this.nfcCoreService.getNfcAllByPlaceIdx(placeIdx)).map(
-      NfcEntity.fromModel,
-    );
   }
 
   public async createNfcByPlaceIdx(
