@@ -4,6 +4,7 @@ import { UserRewardModel } from './model/user-reward.model';
 import { GetUserRewardInput } from './input/get-user-reward.input';
 import { CreateUserRewardInput } from './input/create-user-reward.input';
 import { UpdateUserRewardInput } from './input/update-user-reward.input';
+import { UserRewardStatus } from './constants/user-reward-status.enum';
 
 @Injectable()
 export class UserRewardCoreService {
@@ -47,6 +48,19 @@ export class UserRewardCoreService {
         leagueSeasonResultIdList,
       )
     ).map(UserRewardModel.fromPrisma);
+  }
+
+  public async getUserRewardByUserIdxAndStatus(
+    userIdx: number,
+    status: UserRewardStatus,
+  ): Promise<UserRewardModel | null> {
+    const userReward =
+      await this.userRewardCoreRepository.selectUserRewardByUserIdxAndStatus(
+        userIdx,
+        status,
+      );
+
+    return userReward && UserRewardModel.fromPrisma(userReward);
   }
 
   public async createUserReward(

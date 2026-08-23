@@ -76,6 +76,19 @@ export class UserRewardCoreRepository {
     });
   }
 
+  public async selectUserRewardByUserIdxAndStatus(
+    userIdx: number,
+    status: UserRewardStatus,
+  ): Promise<SelectUserReward | null> {
+    return await this.txHost.tx.userReward.findFirst({
+      ...SELECT_USER_REWARD,
+      where: {
+        leagueSeasonResult: { userIdx },
+        ...this.getStatusFilterWhereClause(status),
+      },
+    });
+  }
+
   public async insertUserReward(
     input: CreateUserRewardInput,
   ): Promise<SelectUserReward> {
