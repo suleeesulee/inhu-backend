@@ -29,7 +29,7 @@ const previousLeagueSeasonSeedDataList: LeagueSeasonSeedInput[] =
     const startAt = addMonths(currentStartAt, index - 9);
     const endAt = new Date(startAt);
     endAt.setUTCDate(15);
-    endAt.setUTCHours(23, 59, 59, 999);
+    endAt.setUTCHours(23, 59, 59, 0);
 
     const finalizedAt = state.finalized ? new Date(endAt) : null;
     finalizedAt?.setUTCDate(finalizedAt.getUTCDate() + 1);
@@ -64,7 +64,7 @@ const currentLeagueSeason: LeagueSeasonSeedInput = {
   endAt: (() => {
     const endAt = addMonths(currentStartAt, 1);
     endAt.setUTCDate(0);
-    endAt.setUTCHours(23, 59, 59, 999);
+    endAt.setUTCHours(23, 59, 59, 0);
     return endAt;
   })(),
   activatedAt: new Date(currentStartAt),
