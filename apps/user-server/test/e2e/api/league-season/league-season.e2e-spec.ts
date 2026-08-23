@@ -1559,10 +1559,12 @@ describe('League Season E2E test', () => {
         .expect(200);
 
       const descendingBody: LeagueSeasonResultOverviewEntity[] =
-        descendingResponse.body;
+        descendingResponse.body.leagueSeasonResultOverviewList;
       const ascendingBody: LeagueSeasonResultOverviewEntity[] =
-        ascendingResponse.body;
+        ascendingResponse.body.leagueSeasonResultOverviewList;
 
+      expect(descendingResponse.body.hasNext).toBe(false);
+      expect(ascendingResponse.body.hasNext).toBe(false);
       expect(descendingBody).toHaveLength(2);
       expect(descendingBody.map(({ id }) => id)).toStrictEqual([
         secondLeagueSeasonResult.id,
@@ -1685,14 +1687,16 @@ describe('League Season E2E test', () => {
         .expect(200);
 
       const firstPageBody: LeagueSeasonResultOverviewEntity[] =
-        firstPageResponse.body;
+        firstPageResponse.body.leagueSeasonResultOverviewList;
       const secondPageBody: LeagueSeasonResultOverviewEntity[] =
-        secondPageResponse.body;
+        secondPageResponse.body.leagueSeasonResultOverviewList;
 
+      expect(firstPageResponse.body.hasNext).toBe(true);
       expect(firstPageBody).toHaveLength(10);
       expect(firstPageBody.map(({ id }) => id)).toStrictEqual(
         leagueSeasonResultIdList.slice(1).reverse(),
       );
+      expect(secondPageResponse.body.hasNext).toBe(false);
       expect(secondPageBody).toHaveLength(1);
       expect(secondPageBody[0].id).toBe(leagueSeasonResultIdList[0]);
       expect(firstPageBody.some(({ id }) => id === secondPageBody[0].id)).toBe(
@@ -1743,7 +1747,10 @@ describe('League Season E2E test', () => {
         .set('Authorization', `Bearer ${loginUser.web.accessToken}`)
         .expect(200);
 
-      expect(response.body).toStrictEqual([]);
+      expect(response.body).toStrictEqual({
+        hasNext: false,
+        leagueSeasonResultOverviewList: [],
+      });
     });
 
     it('400 - page is missing', async () => {
