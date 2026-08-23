@@ -26,8 +26,7 @@ export class PlaceVisitController {
   ): Promise<GetPlaceVisitAllResponseDto> {
     return await this.placeVisitService.getPlaceVisitAllByUserIdx(
       dto,
-      // user.idx,
-      4,
+      user.idx,
     );
   }
 
