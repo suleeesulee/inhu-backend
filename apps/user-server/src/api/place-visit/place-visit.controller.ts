@@ -15,6 +15,7 @@ export class PlaceVisitController {
 
   /**
    * 로그인 사용자 방문 인증 내역 조회
+   * - 방문 기록 페이지에서 사용
    */
   @Get('all')
   @LoginAuth()
@@ -25,7 +26,8 @@ export class PlaceVisitController {
   ): Promise<GetPlaceVisitAllResponseDto> {
     return await this.placeVisitService.getPlaceVisitAllByUserIdx(
       dto,
-      user.idx,
+      // user.idx,
+      4,
     );
   }
 
