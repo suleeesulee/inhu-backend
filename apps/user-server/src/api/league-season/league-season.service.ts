@@ -125,9 +125,6 @@ export class LeagueSeasonService {
       await this.userRewardCoreService.getUserRewardByLeagueSeasonResultId(
         leagueSeasonResult.id,
       );
-    if (!userReward) {
-      throw new NotFoundException('User-reward not found');
-    }
 
     return LeagueSeasonResultEntity.fromModel(
       leagueSeasonResult,
@@ -211,14 +208,11 @@ export class LeagueSeasonService {
         const userReward = userRewardByLeagueSeasonResultId.get(
           leagueSeasonResult.id,
         );
-        if (!userReward) {
-          throw new NotFoundException('User-reward not found');
-        }
 
         return LeagueSeasonResultOverviewEntity.fromModel(
           leagueSeasonResult,
           userRanking,
-          userReward,
+          userReward ?? null,
         );
       },
     );

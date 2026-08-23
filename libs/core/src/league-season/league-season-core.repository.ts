@@ -270,9 +270,6 @@ export class LeagueSeasonCoreRepository {
         leagueSeasonIdx: input.leagueSeasonIdx,
         userIdx: input.userIdx,
         finalScore: input.finalScore,
-        userRewardList: {
-          create: {},
-        },
       },
     });
   }

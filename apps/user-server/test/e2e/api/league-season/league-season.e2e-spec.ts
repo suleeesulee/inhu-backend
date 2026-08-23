@@ -925,10 +925,10 @@ describe('League Season E2E test', () => {
         { placeType: PlaceType.RESTAURANT, visitCount: 1 },
         { placeType: PlaceType.BAR, visitCount: 0 },
       ]);
-      expect(body.userReward.id).toBe(userReward.id);
-      expect(body.userReward.rewardIdx).toBeNull();
-      expect(body.userReward.selectedAt).toBeNull();
-      expect(body.userReward.issuedAt).toBeNull();
+      expect(body.userReward!.id).toBe(userReward.id);
+      expect(body.userReward!.rewardIdx).toBeNull();
+      expect(body.userReward!.selectedAt).toBeNull();
+      expect(body.userReward!.issuedAt).toBeNull();
     });
 
     it('200 - same score is ranked by who reached it first', async () => {
@@ -1371,7 +1371,7 @@ describe('League Season E2E test', () => {
         .expect(404);
     });
 
-    it('404 - user reward does not exist', async () => {
+    it('200 - user reward is null when user is not eligible for reward', async () => {
       const loginUser = testHelper.loginUsers.user1;
       const activatedAt = new Date('2026-03-15T00:00:00.000Z');
       const place = await placeSeedHelper.seed({
@@ -1402,11 +1402,13 @@ describe('League Season E2E test', () => {
         finalScore: 10,
       });
 
-      await testHelper
+      const { body } = await testHelper
         .test()
         .get(`/league-season/${leagueSeason.idx}/result`)
         .set('Authorization', `Bearer ${loginUser.web.accessToken}`)
-        .expect(404);
+        .expect(200);
+
+      expect(body.userReward).toBeNull();
     });
   });
 
@@ -1604,21 +1606,21 @@ describe('League Season E2E test', () => {
       expect(descendingBody[0].userRanking.seasonScore).toBe(50);
       expect(descendingBody[0].userRanking.cumulativeRank).toBe(2);
       expect(descendingBody[0].userRanking.cumulativeScore).toBe(70);
-      expect(descendingBody[0].userReward.id).toBe(secondUserReward.id);
-      expect(descendingBody[0].userReward.rewardIdx).toBe(reward.idx);
-      expect(descendingBody[0].userReward.selectedAt).toBe(
+      expect(descendingBody[0].userReward!.id).toBe(secondUserReward.id);
+      expect(descendingBody[0].userReward!.rewardIdx).toBe(reward.idx);
+      expect(descendingBody[0].userReward!.selectedAt).toBe(
         selectedAt.toISOString(),
       );
-      expect(descendingBody[0].userReward.issuedAt).toBeNull();
+      expect(descendingBody[0].userReward!.issuedAt).toBeNull();
       expect(descendingBody[1].leagueSeason.idx).toBe(firstLeagueSeason.idx);
       expect(descendingBody[1].userRanking.seasonRank).toBe(2);
       expect(descendingBody[1].userRanking.seasonScore).toBe(20);
       expect(descendingBody[1].userRanking.cumulativeRank).toBe(2);
       expect(descendingBody[1].userRanking.cumulativeScore).toBe(20);
-      expect(descendingBody[1].userReward.id).toBe(firstUserReward.id);
-      expect(descendingBody[1].userReward.rewardIdx).toBeNull();
-      expect(descendingBody[1].userReward.selectedAt).toBeNull();
-      expect(descendingBody[1].userReward.issuedAt).toBeNull();
+      expect(descendingBody[1].userReward!.id).toBe(firstUserReward.id);
+      expect(descendingBody[1].userReward!.rewardIdx).toBeNull();
+      expect(descendingBody[1].userReward!.selectedAt).toBeNull();
+      expect(descendingBody[1].userReward!.issuedAt).toBeNull();
     });
 
     it('200 - pagination check', async () => {
@@ -1815,7 +1817,7 @@ describe('League Season E2E test', () => {
         .expect(404);
     });
 
-    it('404 - user reward does not exist', async () => {
+    it('200 - user reward is null when user is not eligible for reward', async () => {
       const loginUser = testHelper.loginUsers.user1;
       const activatedAt = new Date('2026-03-15T00:00:00.000Z');
       const place = await placeSeedHelper.seed({
@@ -1846,12 +1848,16 @@ describe('League Season E2E test', () => {
         finalScore: 10,
       });
 
-      await testHelper
+      const { body } = await testHelper
         .test()
         .get('/league-season/result/all')
         .query({ page: 1 })
         .set('Authorization', `Bearer ${loginUser.web.accessToken}`)
-        .expect(404);
+        .expect(200);
+
+      expect(body.hasNext).toBe(false);
+      expect(body.leagueSeasonResultOverviewList).toHaveLength(1);
+      expect(body.leagueSeasonResultOverviewList[0].userReward).toBeNull();
     });
   });
 });

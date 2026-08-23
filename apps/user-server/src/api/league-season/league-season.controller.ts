@@ -53,7 +53,6 @@ export class LeagueSeasonController {
   @Exception(404, 'League season result not found')
   @Exception(404, 'League season result user ranking not found')
   @Exception(404, 'Place visit statistic not found')
-  @Exception(404, 'User reward not found')
   public async getLeagueSeasonResultByLeagueSeasonIdx(
     @Param('leagueSeasonIdx', ParseIntPipe) leagueSeasonIdx: number,
     @User() user: LoginUser,
@@ -71,7 +70,6 @@ export class LeagueSeasonController {
   @Get('result/all')
   @LoginAuth()
   @Exception(404, 'League season result user ranking not found')
-  @Exception(404, 'User reward not found')
   public async getLeagueSeasonResultAll(
     @User() user: LoginUser,
     @Query() dto: GetLeagueSeasonResultAllDto,
