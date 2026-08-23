@@ -1,5 +1,5 @@
 import { IsKoreanDate } from '@libs/common/decorator/is-korean-date.decorator';
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsOptional, IsString } from 'class-validator';
 
 export class GetLeagueSeasonByDateDto {
   /**
@@ -7,18 +7,18 @@ export class GetLeagueSeasonByDateDto {
    *
    * @example "2026-08-03"
    */
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   @IsKoreanDate()
-  startAt: string;
+  startAt?: string;
 
   /**
    * league season 종료일 날짜 (YYYY-MM-DD)
    *
    * @example "2026-08-17"
    */
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   @IsKoreanDate()
-  endAt: string;
+  endAt?: string;
 }

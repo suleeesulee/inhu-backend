@@ -137,6 +137,43 @@ describe('League Season E2E test', () => {
       ).toBe(false);
     });
 
+    it('200 - get latest activated league season when period is not provided', async () => {
+      const now = Date.now();
+      const activatedAt = new Date(now - 40 * 24 * 60 * 60 * 1000);
+      const [, latestActivatedLeagueSeason] =
+        await leagueSeasonSeedHelper.seedAll([
+          {
+            name: 'Previous Activated League',
+            startAt: new Date(now - 30 * 24 * 60 * 60 * 1000),
+            endAt: new Date(now - 20 * 24 * 60 * 60 * 1000),
+            activatedAt,
+          },
+          {
+            name: 'Latest Activated League',
+            startAt: new Date(now - 10 * 24 * 60 * 60 * 1000),
+            endAt: new Date(now),
+            activatedAt,
+          },
+          {
+            name: 'Newer Inactive League',
+            startAt: new Date(now + 10 * 24 * 60 * 60 * 1000),
+            endAt: new Date(now + 20 * 24 * 60 * 60 * 1000),
+            activatedAt: null,
+          },
+        ]);
+
+      const response = await testHelper
+        .test()
+        .get('/league-season')
+        .expect(200);
+
+      const body: LeagueSeasonEntity = response.body;
+
+      expect(body.idx).toBe(latestActivatedLeagueSeason.idx);
+      expect(body.name).toBe(latestActivatedLeagueSeason.name);
+      expect(body.participantCount).toBe(0);
+    });
+
     it('200 - no reward option and no place visit', async () => {
       const now = new Date();
       const date = now.toISOString().slice(0, 10);
@@ -462,6 +499,17 @@ describe('League Season E2E test', () => {
         .get('/league-season')
         .query({ startAt: '2025-01-01', endAt: '2025-01-31' })
         .expect(404);
+    });
+
+    it('404 - activated league season does not exist when period is not provided', async () => {
+      await leagueSeasonSeedHelper.seed({
+        name: 'Inactive League',
+        startAt: new Date(),
+        endAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+        activatedAt: null,
+      });
+
+      await testHelper.test().get('/league-season').expect(404);
     });
 
     it('404 - inactive league season is not exposed', async () => {

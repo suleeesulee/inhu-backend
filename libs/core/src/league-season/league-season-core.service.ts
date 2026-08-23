@@ -29,8 +29,8 @@ export class LeagueSeasonCoreService {
   }
 
   public async getLeagueSeasonByDate(
-    startAt: string,
-    endAt: string,
+    startAt?: string,
+    endAt?: string,
     activated?: boolean,
   ): Promise<LeagueSeasonModel | null> {
     const leagueSeason =

@@ -47,17 +47,17 @@ export class LeagueSeasonCoreRepository {
   }
 
   public async selectLeagueSeasonByDate(
-    startAt: string,
-    endAt: string,
+    startAt?: string,
+    endAt?: string,
     activated?: boolean,
   ): Promise<SelectLeagueSeason | null> {
     return await this.txHost.tx.leagueSeason.findFirst({
       ...SELECT_LEAGUE_SEASON,
       where: {
-        startAt: `${startAt}T00:00:00Z`,
-        endAt: `${endAt}T23:59:59Z`,
+        ...this.getDatePeriodFilterWhereClause(startAt, endAt),
         ...this.getActivatedAtFilterWhereClause(activated),
       },
+      orderBy: [{ startAt: 'desc' }, { idx: 'desc' }],
     });
   }
 
@@ -318,6 +318,20 @@ export class LeagueSeasonCoreRepository {
     }
 
     return { activatedAt: null };
+  }
+
+  private getDatePeriodFilterWhereClause(
+    startAt?: string,
+    endAt?: string,
+  ): Prisma.LeagueSeasonWhereInput {
+    if (startAt === undefined || endAt === undefined) {
+      return {};
+    }
+
+    return {
+      startAt: `${startAt}T00:00:00Z`,
+      endAt: `${endAt}T23:59:59Z`,
+    };
   }
 
   private getFinalizedAtFilterWhereClause(
