@@ -11,6 +11,8 @@ import { UserCoreService } from '@libs/core/user/user-core.service';
 import { LoginUser } from '@user/common/types/LoginUser';
 import { LeagueSeasonCoreService } from '@libs/core/league-season/league-season-core.service';
 import { Locker } from '@libs/common/decorator/locker.decorator';
+import { UserRewardStatus } from '@libs/core/user-reward/constants/user-reward-status.enum';
+import { GetUserRewardStatusResponseDto } from './dto/response/get-user-reward-status.response.dto';
 
 @Injectable()
 export class UserRewardService {
@@ -20,6 +22,18 @@ export class UserRewardService {
     private readonly userCoreService: UserCoreService,
     private readonly leagueSeasonCoreService: LeagueSeasonCoreService,
   ) {}
+
+  public async getUserRewardStatusByUserIdx(
+    userIdx: number,
+  ): Promise<GetUserRewardStatusResponseDto> {
+    const userReward =
+      await this.userRewardCoreService.getUserRewardByUserIdxAndStatus(
+        userIdx,
+        UserRewardStatus.UNSELECTED,
+      );
+
+    return { hasUnselectedReward: userReward !== null };
+  }
 
   @Locker({
     key: (id: string) => `user-reward:${id}:selection`,

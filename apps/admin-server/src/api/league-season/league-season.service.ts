@@ -32,19 +32,22 @@ export class LeagueSeasonService {
     dto: GetLeagueSeasonAllDto,
   ): Promise<GetLeagueSeasonAllResponseDto> {
     const pageSize = 10;
-    const leagueSeasonList =
-      await this.leagueSeasonCoreService.getLeagueSeasonOverviewAll({
-        take: pageSize + 1,
-        skip: (dto.page - 1) * pageSize,
-        order: dto.order,
-        activated: dto.activated,
-      });
+    const input = {
+      take: pageSize,
+      skip: (dto.page - 1) * pageSize,
+      order: dto.order,
+      activated: dto.activated,
+    };
+    const [leagueSeasonList, count] = await Promise.all([
+      this.leagueSeasonCoreService.getLeagueSeasonOverviewAll(input),
+      this.leagueSeasonCoreService.getLeagueSeasonOverviewCount(input),
+    ]);
 
     return {
-      hasNext: leagueSeasonList.length > pageSize,
-      leagueSeasonOverviewList: leagueSeasonList
-        .slice(0, pageSize)
-        .map(LeagueSeasonOverviewEntity.fromModel),
+      count,
+      leagueSeasonOverviewList: leagueSeasonList.map(
+        LeagueSeasonOverviewEntity.fromModel,
+      ),
     };
   }
 

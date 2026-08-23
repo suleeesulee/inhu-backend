@@ -37,14 +37,18 @@ export class PlaceVisitService {
   ): Promise<GetPlaceVisitAllResponseDto> {
     const pageSize = 10;
     const skip = (dto.page - 1) * pageSize;
+    const placeVisitList =
+      await this.placeVisitCoreService.getPlaceVisitAllByUserIdx(userIdx, {
+        take: pageSize + 1,
+        skip,
+        order: dto.order,
+      });
 
     return {
-      placeVisitList: (
-        await this.placeVisitCoreService.getPlaceVisitAllByUserIdx(userIdx, {
-          take: pageSize,
-          skip,
-        })
-      ).map(PlaceVisitEntity.fromModel),
+      hasNext: placeVisitList.length > pageSize,
+      placeVisitList: placeVisitList
+        .slice(0, pageSize)
+        .map(PlaceVisitEntity.fromModel),
     };
   }
 
@@ -94,6 +98,8 @@ export class PlaceVisitService {
         userIdx,
         nfcIdx: nfc.idx,
         score: nfc.score,
+        latitude: dto.latitude,
+        longitude: dto.longitude,
       }),
     );
   }

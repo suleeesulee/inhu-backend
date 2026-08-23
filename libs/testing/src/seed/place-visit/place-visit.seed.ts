@@ -3,6 +3,7 @@ import { ISeedHelper } from '@libs/testing/interface/seed-helper.interface';
 import { FilledSeedInput } from '@libs/testing/types/SeedFilledValue';
 import { PlaceVisitSeedInput } from './type/place-visit-seed.input';
 import { PlaceVisitSeedOutput } from './type/place-visit-seed.output';
+import { faker } from '@faker-js/faker';
 
 /**
  * Place visit 시드 헬퍼 클래스
@@ -20,6 +21,8 @@ export class PlaceVisitSeedHelper extends ISeedHelper<
       userIdx: input.userIdx,
       nfcIdx: input.nfcIdx,
       score: defaultValue(input.score, 1),
+      latitude: defaultValue(input.latitude, faker.location.latitude()),
+      longitude: defaultValue(input.longitude, faker.location.longitude()),
       createdAt: defaultValue(input.createdAt, new Date()),
     };
   }
@@ -33,6 +36,8 @@ export class PlaceVisitSeedHelper extends ISeedHelper<
         userIdx: filledInput.userIdx,
         nfcIdx: filledInput.nfcIdx,
         score: filledInput.score,
+        latitude: filledInput.latitude,
+        longitude: filledInput.longitude,
         createdAt: filledInput.createdAt,
       },
     });

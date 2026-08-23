@@ -27,6 +27,8 @@ import { leagueSeasonResultSeedDataList } from './data/league-season-result.seed
 import { rewardSeedDataList } from './data/reward.seed';
 import { placeVisitSeedDataList } from './data/place-visit.seed';
 import { userRewardSeedDataList } from './data/user-reward.seed';
+import { NoticeSeedHelper } from '@libs/testing/seed/notice/notice.seed';
+import { noticeSeedDataList } from './data/notice.seed';
 
 const prisma = new PrismaService();
 
@@ -50,6 +52,7 @@ async function main() {
   const rewardSeedHelper = new RewardSeedHelper(prisma);
   const placeVisitSeedHelper = new PlaceVisitSeedHelper(prisma);
   const userRewardSeedHelper = new UserRewardSeedHelper(prisma);
+  const noticeSeedHelper = new NoticeSeedHelper(prisma);
 
   /**
    * 사용자 생성
@@ -59,8 +62,20 @@ async function main() {
     profileImagePath: '/profile/cat.jpg',
   });
   const user2 = await userSeedHelper.seed({ nickname: '인덕이' });
-  const userList = { user1, user2 };
-  const userOutputList = [user1, user2];
+  const user3 = await userSeedHelper.seed({ nickname: '카페수집가' });
+  const user4 = await userSeedHelper.seed({ nickname: '골목대장' });
+  const userList = { user1, user2, user3, user4 };
+  const userOutputList = [user1, user2, user3, user4];
+
+  /**
+   * 공지사항 생성
+   */
+  for (const noticeData of noticeSeedDataList) {
+    await noticeSeedHelper.seed({
+      ...noticeData,
+      authorIdx: userOutputList[noticeData.authorIdx - 1].idx,
+    });
+  }
 
   await freeTagSeedHelper.seedAll([
     { content: '가성비' },
@@ -110,7 +125,7 @@ async function main() {
   /**
    * 장소 생성
    */
-  const placeList: { idx: number }[] = [];
+  const placeList: Awaited<ReturnType<PlaceSeedHelper['seed']>>[] = [];
   for (const placeData of PlaceSeedDataList) {
     const place = await placeSeedHelper.seed(placeData);
     placeList.push(place);
@@ -192,11 +207,20 @@ async function main() {
   /**
    * 장소 방문 생성
    */
+  const placeByIdx = new Map(placeList.map((place) => [place.idx, place]));
   for (const placeVisitData of placeVisitSeedDataList) {
+    const nfc = nfcList[placeVisitData.nfcIdx - 1];
+    const place = placeByIdx.get(nfc.placeIdx);
+    if (!place) {
+      throw new Error(`Place not found for NFC (nfcIdx: ${nfc.idx})`);
+    }
+
     await placeVisitSeedHelper.seed({
       ...placeVisitData,
       userIdx: userOutputList[placeVisitData.userIdx - 1].idx,
-      nfcIdx: nfcList[placeVisitData.nfcIdx - 1].idx,
+      nfcIdx: nfc.idx,
+      latitude: place.roadAddress.addressY,
+      longitude: place.roadAddress.addressX,
     });
   }
 
@@ -221,7 +245,7 @@ async function main() {
    * 사용자 리워드 생성
    */
   for (const userRewardData of userRewardSeedDataList(
-    leagueSeasonResultList[0].id,
+    leagueSeasonResultList.map((leagueSeasonResult) => leagueSeasonResult.id),
   )) {
     await userRewardSeedHelper.seed({
       ...userRewardData,

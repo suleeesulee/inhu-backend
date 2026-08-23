@@ -17,8 +17,8 @@ const previousLeagueSeasonStateList = [
   { name: '종료·집계 미완료', activated: true, finalized: false },
   { name: '비활성화·집계 완료', activated: false, finalized: true },
   { name: '비활성화·집계 미완료', activated: false, finalized: false },
-  { name: '종료·집계 완료·보상 없음', activated: true, finalized: true },
-  { name: '비활성화·집계 완료·보상 일부', activated: false, finalized: true },
+  { name: '종료·집계 완료·보상 선택 가능', activated: true, finalized: true },
+  { name: '종료·집계 완료·보상 발급 가능', activated: true, finalized: true },
   { name: '종료·집계 미완료·보상 없음', activated: true, finalized: false },
   { name: '종료·집계 완료·보상 선택 가능', activated: true, finalized: true },
   { name: '직전 종료·집계 완료', activated: true, finalized: true },
@@ -29,7 +29,7 @@ const previousLeagueSeasonSeedDataList: LeagueSeasonSeedInput[] =
     const startAt = addMonths(currentStartAt, index - 9);
     const endAt = new Date(startAt);
     endAt.setUTCDate(15);
-    endAt.setUTCHours(23, 59, 59, 999);
+    endAt.setUTCHours(23, 59, 59, 0);
 
     const finalizedAt = state.finalized ? new Date(endAt) : null;
     finalizedAt?.setUTCDate(finalizedAt.getUTCDate() + 1);
@@ -53,6 +53,14 @@ const previousLeagueSeasonSeedDataList: LeagueSeasonSeedInput[] =
               rewardIdx: [1, 2, 4, 7, 8, 10][(index + 2) % 6],
               targetRank: 2,
             },
+            {
+              rewardIdx: [1, 2, 4, 7, 8, 10][(index + 3) % 6],
+              targetRank: 3,
+            },
+            {
+              rewardIdx: [1, 2, 4, 7, 8, 10][(index + 4) % 6],
+              targetRank: 4,
+            },
           ],
     };
   });
@@ -64,7 +72,7 @@ const currentLeagueSeason: LeagueSeasonSeedInput = {
   endAt: (() => {
     const endAt = addMonths(currentStartAt, 1);
     endAt.setUTCDate(0);
-    endAt.setUTCHours(23, 59, 59, 999);
+    endAt.setUTCHours(23, 59, 59, 0);
     return endAt;
   })(),
   activatedAt: new Date(currentStartAt),
@@ -72,6 +80,8 @@ const currentLeagueSeason: LeagueSeasonSeedInput = {
   rewardOptionList: [
     { rewardIdx: 1, targetRank: 1 },
     { rewardIdx: 4, targetRank: 2 },
+    { rewardIdx: 7, targetRank: 3 },
+    { rewardIdx: 10, targetRank: 4 },
   ],
 };
 
@@ -84,3 +94,5 @@ export const leagueSeasonSeedDate = {
   currentStartAt,
   previousStartAt: addMonths(currentStartAt, -1),
 };
+
+export const rewardedLeagueSeasonIdxList = [1, 5, 6, 8, 9];

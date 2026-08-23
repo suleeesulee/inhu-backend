@@ -29,8 +29,8 @@ export class LeagueSeasonCoreService {
   }
 
   public async getLeagueSeasonByDate(
-    startAt: string,
-    endAt: string,
+    startAt?: string,
+    endAt?: string,
     activated?: boolean,
   ): Promise<LeagueSeasonModel | null> {
     const leagueSeason =
@@ -58,9 +58,19 @@ export class LeagueSeasonCoreService {
     ).map(LeagueSeasonOverviewModel.fromPrisma);
   }
 
-  public async createLeagueSeasonResult(
-    input: { leagueSeasonIdx: number; userIdx: number; finalScore: number },
-  ): Promise<LeagueSeasonResultModel> {
+  public async getLeagueSeasonOverviewCount(
+    input: GetLeagueSeasonAllInput,
+  ): Promise<number> {
+    return await this.leagueSeasonCoreRepository.selectLeagueSeasonOverviewCount(
+      input,
+    );
+  }
+
+  public async createLeagueSeasonResult(input: {
+    leagueSeasonIdx: number;
+    userIdx: number;
+    finalScore: number;
+  }): Promise<LeagueSeasonResultModel> {
     return LeagueSeasonResultModel.fromPrisma(
       await this.leagueSeasonCoreRepository.insertLeagueSeasonResult(input),
     );

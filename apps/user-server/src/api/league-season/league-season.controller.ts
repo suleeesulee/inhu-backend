@@ -8,9 +8,9 @@ import { LeagueSeasonEntity } from './entity/league-season.entity';
 import { LeagueSeasonService } from './league-season.service';
 import { LeagueSeasonResultEntity } from './entity/league-season-result.entity';
 import { GetLeagueSeasonResultAllDto } from './dto/request/get-league-season-result-all.dto';
-import { LeagueSeasonResultOverviewEntity } from './entity/league-season-result-overview.entity';
 import { GetLeagueSeasonAllDto } from './dto/request/get-league-season-all.dto';
 import { GetLeagueSeasonAllResponseDto } from './dto/response/get-league-season-all.response.dto';
+import { GetLeagueSeasonResultAllResponseDto } from './dto/response/get-league-season-result-all.response.dto';
 
 @Controller('league-season')
 export class LeagueSeasonController {
@@ -18,6 +18,8 @@ export class LeagueSeasonController {
 
   /**
    * 날짜로 리그 시즌 조회
+   * - 랭킹 페이지 진입 시 사용
+   * - 시작날짜와 종료날짜를 모두 입력하지 않을 경우 가장 최신 리그 조회
    */
   @Get()
   @Exception(400, 'Invalid request')
@@ -30,6 +32,7 @@ export class LeagueSeasonController {
 
   /**
    * 리그 시즌 전체 조회
+   * - 이전 시즌 보기 버튼 클릭 시 사용
    */
   @Get('/all')
   @Exception(400, 'Invalid request')
@@ -41,6 +44,7 @@ export class LeagueSeasonController {
 
   /**
    * 특정 리그 시즌 결과 조회
+   * - 리그 시즌 결과 페이지 진입 시 사용
    */
   @Get(':leagueSeasonIdx/result')
   @LoginAuth()
@@ -49,7 +53,6 @@ export class LeagueSeasonController {
   @Exception(404, 'League season result not found')
   @Exception(404, 'League season result user ranking not found')
   @Exception(404, 'Place visit statistic not found')
-  @Exception(404, 'User reward not found')
   public async getLeagueSeasonResultByLeagueSeasonIdx(
     @Param('leagueSeasonIdx', ParseIntPipe) leagueSeasonIdx: number,
     @User() user: LoginUser,
@@ -61,16 +64,16 @@ export class LeagueSeasonController {
   }
 
   /**
-   * 모든 리그 시즌 결과 조회 (리그 참여 내역)
+   * 모든 리그 시즌 결과 조회
+   * - 리그 참여 내역 페이지에서 사용
    */
   @Get('result/all')
   @LoginAuth()
   @Exception(404, 'League season result user ranking not found')
-  @Exception(404, 'User reward not found')
   public async getLeagueSeasonResultAll(
     @User() user: LoginUser,
     @Query() dto: GetLeagueSeasonResultAllDto,
-  ): Promise<LeagueSeasonResultOverviewEntity[]> {
+  ): Promise<GetLeagueSeasonResultAllResponseDto> {
     return await this.leagueSeasonService.getLeagueSeasonResultAll(
       user.idx,
       dto,

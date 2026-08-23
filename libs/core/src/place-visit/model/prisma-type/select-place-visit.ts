@@ -8,6 +8,8 @@ export const SELECT_PLACE_VISIT =
       userIdx: true,
       nfcIdx: true,
       score: true,
+      latitude: true,
+      longitude: true,
       createdAt: true,
       nfc: {
         select: {

@@ -5,6 +5,7 @@ import { SELECT_NFC, SelectNfc } from './model/prisma-type/select-nfc';
 import { CreateNfcInput } from './inputs/create-nfc.input';
 import { UpdateNfcInput } from './inputs/update-nfc.input';
 import { GetNfcAllInput } from './inputs/get-nfc-all.input';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class NfcCoreRepository {
@@ -39,17 +40,22 @@ export class NfcCoreRepository {
       ...SELECT_NFC,
       where: {
         deletedAt: null,
-        placeIdx: input.placeIdx,
-        activatedAt:
-          input.activated === undefined
-            ? undefined
-            : input.activated
-              ? { not: null }
-              : null,
+        ...this.getPlaceIdxFilterWhereClause(input.placeIdx),
+        ...this.getActivatedAtFilterWhereClause(input.activated),
       },
       orderBy: [{ createdAt: order }, { idx: order }],
       take: input.take,
       skip: input.skip,
+    });
+  }
+
+  public async selectNfcCount(input: GetNfcAllInput): Promise<number> {
+    return await this.txHost.tx.nfc.count({
+      where: {
+        deletedAt: null,
+        ...this.getPlaceIdxFilterWhereClause(input.placeIdx),
+        ...this.getActivatedAtFilterWhereClause(input.activated),
+      },
     });
   }
 
@@ -85,5 +91,29 @@ export class NfcCoreRepository {
       data: { deletedAt: new Date() },
       where: { idx, deletedAt: null },
     });
+  }
+
+  private getActivatedAtFilterWhereClause(
+    activated?: boolean,
+  ): Prisma.NfcWhereInput {
+    if (activated === undefined) {
+      return {};
+    }
+
+    if (activated) {
+      return { activatedAt: { not: null } };
+    }
+
+    return { activatedAt: null };
+  }
+
+  private getPlaceIdxFilterWhereClause(
+    placeIdx?: number,
+  ): Prisma.NfcWhereInput {
+    if (placeIdx === undefined) {
+      return {};
+    }
+
+    return { placeIdx };
   }
 }

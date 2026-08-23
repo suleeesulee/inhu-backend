@@ -54,7 +54,7 @@ describe('Nfc E2E test', () => {
       const nfcList: NfcEntity[] = response.body.nfcList;
       const nfcIdxList = nfcList.map((nfc) => nfc.idx);
 
-      expect(response.body.hasNext).toBe(false);
+      expect(response.body.count).toBe(2);
       expect(nfcList).toHaveLength(2);
       expect(nfcIdxList).toEqual(
         expect.arrayContaining([activatedNfc.idx, deactivatedNfc.idx]),
@@ -156,7 +156,7 @@ describe('Nfc E2E test', () => {
       const nfcList: NfcEntity[] = response.body.nfcList;
       const nfcIdxList = nfcList.map((nfc) => nfc.idx);
 
-      expect(response.body.hasNext).toBe(false);
+      expect(response.body.count).toBe(2);
       expect(nfcIdxList).toEqual(
         expect.arrayContaining([firstNfc.idx, secondNfc.idx]),
       );
@@ -208,7 +208,7 @@ describe('Nfc E2E test', () => {
         .query({ page: 1, place: place.idx })
         .expect(200);
 
-      expect(response.body.hasNext).toBe(false);
+      expect(response.body.count).toBe(0);
       expect(response.body.nfcList).toEqual([]);
     });
 
@@ -236,9 +236,9 @@ describe('Nfc E2E test', () => {
         .query({ page: 2 })
         .expect(200);
 
-      expect(firstPageResponse.body.hasNext).toBe(true);
+      expect(firstPageResponse.body.count).toBe(11);
       expect(firstPageResponse.body.nfcList).toHaveLength(10);
-      expect(secondPageResponse.body.hasNext).toBe(false);
+      expect(secondPageResponse.body.count).toBe(11);
       expect(secondPageResponse.body.nfcList).toHaveLength(1);
     });
 
@@ -285,7 +285,7 @@ describe('Nfc E2E test', () => {
         .query({ page: 1 })
         .expect(200);
 
-      expect(response.body.hasNext).toBe(false);
+      expect(response.body.count).toBe(0);
       expect(response.body.nfcList).toEqual([]);
     });
 
@@ -808,7 +808,7 @@ describe('Nfc E2E test', () => {
         .expect(200);
 
       expect(nfc.deletedAt).not.toBeNull();
-      expect(nfcListResponse.body.hasNext).toBe(false);
+      expect(nfcListResponse.body.count).toBe(0);
       expect(nfcListResponse.body.nfcList).toEqual([]);
 
       await testHelper

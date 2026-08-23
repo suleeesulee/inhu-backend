@@ -1,5 +1,9 @@
 import { LeagueSeasonCoreService } from '@libs/core/league-season/league-season-core.service';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { GetLeagueSeasonByDateDto } from './dto/request/get-league-season-by-date.dto';
 import { LeagueSeasonEntity } from './entity/league-season.entity';
 import { LeagueSeasonResultEntity } from './entity/league-season-result.entity';
@@ -10,6 +14,7 @@ import { GetLeagueSeasonResultAllDto } from './dto/request/get-league-season-res
 import { GetLeagueSeasonAllDto } from './dto/request/get-league-season-all.dto';
 import { GetLeagueSeasonAllResponseDto } from './dto/response/get-league-season-all.response.dto';
 import { LeagueSeasonOverviewEntity } from './entity/league-season-overview.entity';
+import { GetLeagueSeasonResultAllResponseDto } from './dto/response/get-league-season-result-all.response.dto';
 
 @Injectable()
 export class LeagueSeasonService {
@@ -22,10 +27,21 @@ export class LeagueSeasonService {
   public async getLeagueSeasonByDate(
     dto: GetLeagueSeasonByDateDto,
   ): Promise<LeagueSeasonEntity> {
+    const { startAt, endAt } = dto;
+
+    if (
+      (startAt === undefined && endAt !== undefined) ||
+      (startAt !== undefined && endAt === undefined)
+    ) {
+      throw new BadRequestException(
+        'Start date and end date must be provided together',
+      );
+    }
+
     const leagueSeason =
       await this.leagueSeasonCoreService.getLeagueSeasonByDate(
-        dto.startAt,
-        dto.endAt,
+        startAt,
+        endAt,
         true,
       );
     if (!leagueSeason) {
@@ -109,9 +125,6 @@ export class LeagueSeasonService {
       await this.userRewardCoreService.getUserRewardByLeagueSeasonResultId(
         leagueSeasonResult.id,
       );
-    if (!userReward) {
-      throw new NotFoundException('User-reward not found');
-    }
 
     return LeagueSeasonResultEntity.fromModel(
       leagueSeasonResult,
@@ -124,28 +137,39 @@ export class LeagueSeasonService {
   public async getLeagueSeasonResultAll(
     userIdx: number,
     dto: GetLeagueSeasonResultAllDto,
-  ): Promise<LeagueSeasonResultOverviewEntity[]> {
+  ): Promise<GetLeagueSeasonResultAllResponseDto> {
     const pageSize = 10;
     const skip = (dto.page - 1) * pageSize;
     const leagueSeasonResultList =
       await this.leagueSeasonCoreService.getLeagueSeasonResultAllByUserIdx(
         userIdx,
         {
-          take: pageSize,
+          take: pageSize + 1,
           skip,
           order: dto.order,
           activated: true,
         },
       );
 
-    if (leagueSeasonResultList.length === 0) {
-      return [];
+    const hasNext = leagueSeasonResultList.length > pageSize;
+    const pagedLeagueSeasonResultList = leagueSeasonResultList.slice(
+      0,
+      pageSize,
+    );
+
+    if (pagedLeagueSeasonResultList.length === 0) {
+      return {
+        hasNext: false,
+        leagueSeasonResultOverviewList: [],
+      };
     }
 
-    const leagueSeasonIdxList = leagueSeasonResultList.map(
+    const leagueSeasonIdxList = pagedLeagueSeasonResultList.map(
       ({ leagueSeason }) => leagueSeason.idx,
     );
-    const leagueSeasonResultIdList = leagueSeasonResultList.map(({ id }) => id);
+    const leagueSeasonResultIdList = pagedLeagueSeasonResultList.map(
+      ({ id }) => id,
+    );
 
     const [userRankingList, userRewardList] = await Promise.all([
       this.leagueSeasonCoreService.getLeagueSeasonResultUserRankingByLeagueSeasonIdxListAndUserIdx(
@@ -170,28 +194,32 @@ export class LeagueSeasonService {
       ]),
     );
 
-    return leagueSeasonResultList.map((leagueSeasonResult) => {
-      const userRanking = userRankingByLeagueSeasonIdx.get(
-        leagueSeasonResult.leagueSeason.idx,
-      );
-      if (!userRanking) {
-        throw new NotFoundException(
-          'League-season-result-user-ranking not found',
+    const leagueSeasonResultOverviewList = pagedLeagueSeasonResultList.map(
+      (leagueSeasonResult) => {
+        const userRanking = userRankingByLeagueSeasonIdx.get(
+          leagueSeasonResult.leagueSeason.idx,
         );
-      }
+        if (!userRanking) {
+          throw new NotFoundException(
+            'League-season-result-user-ranking not found',
+          );
+        }
 
-      const userReward = userRewardByLeagueSeasonResultId.get(
-        leagueSeasonResult.id,
-      );
-      if (!userReward) {
-        throw new NotFoundException('User-reward not found');
-      }
+        const userReward = userRewardByLeagueSeasonResultId.get(
+          leagueSeasonResult.id,
+        );
 
-      return LeagueSeasonResultOverviewEntity.fromModel(
-        leagueSeasonResult,
-        userRanking,
-        userReward,
-      );
-    });
+        return LeagueSeasonResultOverviewEntity.fromModel(
+          leagueSeasonResult,
+          userRanking,
+          userReward ?? null,
+        );
+      },
+    );
+
+    return {
+      hasNext,
+      leagueSeasonResultOverviewList,
+    };
   }
 }

@@ -18,16 +18,20 @@ export class RewardService {
     dto: GetRewardAllDto,
   ): Promise<GetRewardAllResponseDto> {
     const pageSize = 10;
-    const rewardList = await this.rewardCoreService.getRewardAll({
-      take: pageSize + 1,
+    const input = {
+      take: pageSize,
       skip: (dto.page - 1) * pageSize,
       order: dto.order,
       activated: dto.activated,
-    });
+    };
+    const [rewardList, count] = await Promise.all([
+      this.rewardCoreService.getRewardAll(input),
+      this.rewardCoreService.getRewardCount(input),
+    ]);
 
     return {
-      hasNext: rewardList.length > pageSize,
-      rewardList: rewardList.slice(0, pageSize).map(RewardEntity.fromModel),
+      count,
+      rewardList: rewardList.map(RewardEntity.fromModel),
     };
   }
 

@@ -24,17 +24,21 @@ export class NfcService {
 
   public async getNfcAll(dto: GetNfcAllDto): Promise<GetNfcAllResponseDto> {
     const pageSize = 10;
-    const nfcList = await this.nfcCoreService.getNfcAll({
-      take: pageSize + 1,
+    const input = {
+      take: pageSize,
       skip: (dto.page - 1) * pageSize,
       order: dto.order,
       activated: dto.activated,
       placeIdx: dto.place,
-    });
+    };
+    const [nfcList, count] = await Promise.all([
+      this.nfcCoreService.getNfcAll(input),
+      this.nfcCoreService.getNfcCount(input),
+    ]);
 
     return {
-      hasNext: nfcList.length > pageSize,
-      nfcList: nfcList.slice(0, pageSize).map(NfcEntity.fromModel),
+      count,
+      nfcList: nfcList.map(NfcEntity.fromModel),
     };
   }
 

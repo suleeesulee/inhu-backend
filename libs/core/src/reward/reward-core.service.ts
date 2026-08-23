@@ -28,6 +28,10 @@ export class RewardCoreService {
     );
   }
 
+  public async getRewardCount(input: GetRewardAllInput): Promise<number> {
+    return await this.rewardCoreRepository.selectRewardCount(input);
+  }
+
   public async createReward(input: CreateRewardInput): Promise<RewardModel> {
     return RewardModel.fromPrisma(
       await this.rewardCoreRepository.insertReward(input),

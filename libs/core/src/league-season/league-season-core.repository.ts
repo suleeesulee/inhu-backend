@@ -47,17 +47,17 @@ export class LeagueSeasonCoreRepository {
   }
 
   public async selectLeagueSeasonByDate(
-    startAt: string,
-    endAt: string,
+    startAt?: string,
+    endAt?: string,
     activated?: boolean,
   ): Promise<SelectLeagueSeason | null> {
     return await this.txHost.tx.leagueSeason.findFirst({
       ...SELECT_LEAGUE_SEASON,
       where: {
-        startAt: `${startAt}T00:00:00Z`,
-        endAt: `${endAt}T23:59:59Z`,
+        ...this.getDatePeriodFilterWhereClause(startAt, endAt),
         ...this.getActivatedAtFilterWhereClause(activated),
       },
+      orderBy: [{ startAt: 'desc' }, { idx: 'desc' }],
     });
   }
 
@@ -90,6 +90,14 @@ export class LeagueSeasonCoreRepository {
       orderBy: [{ startAt: order }, { idx: order }],
       take: input.take,
       skip: input.skip,
+    });
+  }
+
+  public async selectLeagueSeasonOverviewCount(
+    input: GetLeagueSeasonAllInput,
+  ): Promise<number> {
+    return await this.txHost.tx.leagueSeason.count({
+      where: this.getActivatedAtFilterWhereClause(input.activated),
     });
   }
 
@@ -251,18 +259,17 @@ export class LeagueSeasonCoreRepository {
     });
   }
 
-  public async insertLeagueSeasonResult(
-    input: { leagueSeasonIdx: number; userIdx: number; finalScore: number },
-  ): Promise<SelectLeagueSeasonResult> {
+  public async insertLeagueSeasonResult(input: {
+    leagueSeasonIdx: number;
+    userIdx: number;
+    finalScore: number;
+  }): Promise<SelectLeagueSeasonResult> {
     return await this.txHost.tx.leagueSeasonResult.create({
       ...SELECT_LEAGUE_SEASON_RESULT,
       data: {
         leagueSeasonIdx: input.leagueSeasonIdx,
         userIdx: input.userIdx,
         finalScore: input.finalScore,
-        userRewardList: {
-          create: {},
-        },
       },
     });
   }
@@ -308,6 +315,20 @@ export class LeagueSeasonCoreRepository {
     }
 
     return { activatedAt: null };
+  }
+
+  private getDatePeriodFilterWhereClause(
+    startAt?: string,
+    endAt?: string,
+  ): Prisma.LeagueSeasonWhereInput {
+    if (startAt === undefined || endAt === undefined) {
+      return {};
+    }
+
+    return {
+      startAt: `${startAt}T00:00:00Z`,
+      endAt: `${endAt}T23:59:59Z`,
+    };
   }
 
   private getFinalizedAtFilterWhereClause(

@@ -1,4 +1,12 @@
-import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { Type } from 'class-transformer';
+import {
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+  Max,
+  Min,
+} from 'class-validator';
 
 export class CreatePlaceVisitByNfcDto {
   /**
@@ -27,4 +35,26 @@ export class CreatePlaceVisitByNfcDto {
   @IsNotEmpty()
   @IsString()
   cmac: string;
+
+  /**
+   * 방문 인증 위도
+   *
+   * @example 37.4508371
+   */
+  @Type(() => Number)
+  @IsNumber({ maxDecimalPlaces: 7 })
+  @Min(-90)
+  @Max(90)
+  latitude: number;
+
+  /**
+   * 방문 인증 경도
+   *
+   * @example 126.6531324
+   */
+  @Type(() => Number)
+  @IsNumber({ maxDecimalPlaces: 7 })
+  @Min(-180)
+  @Max(180)
+  longitude: number;
 }

@@ -1,17 +1,22 @@
 import { NfcSeedInput } from '@libs/testing/seed/nfc/type/nfc-seed.input';
+import { leagueSeasonSeedDataList } from './league-season.seed';
+
+const activatedAt = new Date(
+  leagueSeasonSeedDataList[0]!.startAt!.getTime() - 24 * 60 * 60 * 1000,
+);
 
 export const nfcSeedDataList: NfcSeedInput[] = [
   {
     placeIdx: 1,
     score: 1,
     uid: '활성화-NFC-카페-01',
-    activatedAt: new Date(),
+    activatedAt,
   },
   {
     placeIdx: 2,
     score: 2,
     uid: '활성화-NFC-식당-02',
-    activatedAt: new Date(),
+    activatedAt,
   },
   {
     placeIdx: 3,
@@ -23,14 +28,14 @@ export const nfcSeedDataList: NfcSeedInput[] = [
     placeIdx: 4,
     score: 4,
     uid: '삭제된-NFC-카페-04',
-    activatedAt: new Date(),
+    activatedAt,
     deletedAt: new Date(),
   },
   {
     placeIdx: 5,
     score: 5,
     uid: '활성화-NFC-식당-05',
-    activatedAt: new Date(),
+    activatedAt,
   },
   {
     placeIdx: 6,
@@ -42,25 +47,25 @@ export const nfcSeedDataList: NfcSeedInput[] = [
     placeIdx: 7,
     score: 7,
     uid: '활성화-NFC-술집-07',
-    activatedAt: new Date(),
+    activatedAt,
   },
   {
     placeIdx: 8,
     score: 8,
     uid: '활성화-NFC-식당-08',
-    activatedAt: new Date(),
+    activatedAt,
   },
   {
     placeIdx: 9,
     score: 9,
     uid: '삭제된-NFC-카페-09',
-    activatedAt: new Date(),
+    activatedAt,
     deletedAt: new Date(),
   },
   {
     placeIdx: 10,
     score: 10,
     uid: '활성화-NFC-카페-10',
-    activatedAt: new Date(),
+    activatedAt,
   },
 ];

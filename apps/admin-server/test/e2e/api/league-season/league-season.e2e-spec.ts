@@ -49,7 +49,7 @@ describe('League Season E2E test', () => {
       const leagueSeasonOverviewList: LeagueSeasonOverviewEntity[] =
         response.body.leagueSeasonOverviewList;
 
-      expect(response.body.hasNext).toBe(false);
+      expect(response.body.count).toBe(2);
       expect(leagueSeasonOverviewList).toHaveLength(2);
       expect(leagueSeasonOverviewList).toEqual(
         expect.arrayContaining([
@@ -174,9 +174,9 @@ describe('League Season E2E test', () => {
         .query({ page: 2 })
         .expect(200);
 
-      expect(firstPageResponse.body.hasNext).toBe(true);
+      expect(firstPageResponse.body.count).toBe(11);
       expect(firstPageResponse.body.leagueSeasonOverviewList).toHaveLength(10);
-      expect(secondPageResponse.body.hasNext).toBe(false);
+      expect(secondPageResponse.body.count).toBe(11);
       expect(secondPageResponse.body.leagueSeasonOverviewList).toHaveLength(1);
     });
 
@@ -190,7 +190,7 @@ describe('League Season E2E test', () => {
         .query({ page: 1 })
         .expect(200);
 
-      expect(response.body.hasNext).toBe(false);
+      expect(response.body.count).toBe(0);
       expect(response.body.leagueSeasonOverviewList).toEqual([]);
     });
 

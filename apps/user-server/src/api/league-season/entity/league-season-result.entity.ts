@@ -44,8 +44,9 @@ export class LeagueSeasonResultEntity {
 
   /**
    * 리그 시즌 결과 사용자 보상 정보
+   * - 보상 대상이 아닌 경우 null
    */
-  public userReward: UserRewardEntity;
+  public userReward: UserRewardEntity | null;
 
   constructor(data: LeagueSeasonResultEntity) {
     Object.assign(this, data);
@@ -55,7 +56,7 @@ export class LeagueSeasonResultEntity {
     model: LeagueSeasonResultModel,
     userRanking: LeagueSeasonResultUserRankingModel,
     placeVisitStatisticList: PlaceVisitStatisticModel[],
-    userReward: UserRewardModel,
+    userReward: UserRewardModel | null,
   ): LeagueSeasonResultEntity {
     return new LeagueSeasonResultEntity({
       id: model.id,
@@ -68,7 +69,7 @@ export class LeagueSeasonResultEntity {
       placeVisitStatisticList: placeVisitStatisticList.map((stat) =>
         PlaceVisitStatisticEntity.fromModel(stat),
       ),
-      userReward: UserRewardEntity.fromModel(userReward),
+      userReward: userReward ? UserRewardEntity.fromModel(userReward) : null,
     });
   }
 }

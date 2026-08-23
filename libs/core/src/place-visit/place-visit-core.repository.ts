@@ -23,8 +23,10 @@ export class PlaceVisitCoreRepository {
   // 방문 인증 내역용
   public async selectPlaceVisitAllByUserIdx(
     userIdx: number,
-    dto: GetPlaceVisitAllInput,
+    input: GetPlaceVisitAllInput,
   ): Promise<SelectPlaceVisit[]> {
+    const order = input.order ?? 'desc';
+
     return await this.txHost.tx.placeVisit.findMany({
       ...SELECT_PLACE_VISIT,
       where: {
@@ -35,11 +37,9 @@ export class PlaceVisitCoreRepository {
           },
         },
       },
-      orderBy: {
-        createdAt: 'desc',
-      },
-      take: dto.take,
-      skip: dto.skip,
+      orderBy: [{ createdAt: order }, { id: order }],
+      take: input.take,
+      skip: input.skip,
     });
   }
 
@@ -142,6 +142,8 @@ export class PlaceVisitCoreRepository {
         userIdx: input.userIdx,
         nfcIdx: input.nfcIdx,
         score: input.score,
+        latitude: input.latitude,
+        longitude: input.longitude,
       },
     });
   }

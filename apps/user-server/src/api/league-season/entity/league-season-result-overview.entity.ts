@@ -19,7 +19,7 @@ export class LeagueSeasonResultOverviewEntity extends PickType(
   public static fromModel(
     model: LeagueSeasonResultModel,
     userRanking: LeagueSeasonResultUserRankingModel,
-    userReward: UserRewardModel,
+    userReward: UserRewardModel | null,
   ): LeagueSeasonResultOverviewEntity {
     return new LeagueSeasonResultOverviewEntity({
       id: model.id,
@@ -28,7 +28,7 @@ export class LeagueSeasonResultOverviewEntity extends PickType(
         model.leagueSeason,
       ),
       userRanking: LeagueSeasonResultUserRankingEntity.fromModel(userRanking),
-      userReward: UserRewardEntity.fromModel(userReward),
+      userReward: userReward ? UserRewardEntity.fromModel(userReward) : null,
     });
   }
 }

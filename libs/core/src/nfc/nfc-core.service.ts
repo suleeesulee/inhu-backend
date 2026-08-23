@@ -25,6 +25,10 @@ export class NfcCoreService {
     );
   }
 
+  public async getNfcCount(input: GetNfcAllInput): Promise<number> {
+    return await this.nfcCoreRepository.selectNfcCount(input);
+  }
+
   public async createNfc(input: CreateNfcInput): Promise<NfcModel> {
     return NfcModel.fromPrisma(await this.nfcCoreRepository.insertNfc(input));
   }

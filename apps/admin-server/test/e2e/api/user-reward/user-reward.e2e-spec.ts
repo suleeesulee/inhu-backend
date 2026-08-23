@@ -98,7 +98,7 @@ describe('User Reward E2E test', () => {
         })
         .expect(200);
 
-      expect(response.body.hasNext).toBe(false);
+      expect(response.body.count).toBe(1);
       expect(response.body.userRewardList).toHaveLength(1);
 
       const userReward: UserRewardEntity = response.body.userRewardList[0];
@@ -157,9 +157,9 @@ describe('User Reward E2E test', () => {
         .query({ page: 2 })
         .expect(200);
 
-      expect(firstPageResponse.body.hasNext).toBe(true);
+      expect(firstPageResponse.body.count).toBe(11);
       expect(firstPageResponse.body.userRewardList).toHaveLength(10);
-      expect(secondPageResponse.body.hasNext).toBe(false);
+      expect(secondPageResponse.body.count).toBe(11);
       expect(secondPageResponse.body.userRewardList).toHaveLength(1);
     });
 
@@ -212,7 +212,7 @@ describe('User Reward E2E test', () => {
         (userReward: UserRewardEntity) => userReward.id,
       );
 
-      expect(response.body.hasNext).toBe(false);
+      expect(response.body.count).toBe(3);
       expect(userRewardIdList).toEqual(
         expect.arrayContaining([
           unselectedUserReward.id,
@@ -420,7 +420,7 @@ describe('User Reward E2E test', () => {
         .query({ page: 1 })
         .expect(200);
 
-      expect(response.body.hasNext).toBe(false);
+      expect(response.body.count).toBe(0);
       expect(response.body.userRewardList).toEqual([]);
     });
 

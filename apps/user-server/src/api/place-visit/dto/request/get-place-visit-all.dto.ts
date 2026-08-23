@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsInt, IsNotEmpty, Min } from 'class-validator';
+import { IsIn, IsInt, IsNotEmpty, IsOptional, Min } from 'class-validator';
 
 export class GetPlaceVisitAllDto {
   /**
@@ -12,4 +12,13 @@ export class GetPlaceVisitAllDto {
   @IsInt()
   @Min(1)
   page: number;
+
+  /**
+   * 정렬 방향
+   *
+   * @example "desc"
+   */
+  @IsOptional()
+  @IsIn(['asc', 'desc'])
+  order?: 'asc' | 'desc' = 'desc';
 }
