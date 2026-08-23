@@ -62,8 +62,10 @@ async function main() {
     profileImagePath: '/profile/cat.jpg',
   });
   const user2 = await userSeedHelper.seed({ nickname: '인덕이' });
-  const userList = { user1, user2 };
-  const userOutputList = [user1, user2];
+  const user3 = await userSeedHelper.seed({ nickname: '카페수집가' });
+  const user4 = await userSeedHelper.seed({ nickname: '골목대장' });
+  const userList = { user1, user2, user3, user4 };
+  const userOutputList = [user1, user2, user3, user4];
 
   /**
    * 공지사항 생성
@@ -234,7 +236,7 @@ async function main() {
    * 사용자 리워드 생성
    */
   for (const userRewardData of userRewardSeedDataList(
-    leagueSeasonResultList[0].id,
+    leagueSeasonResultList.map((leagueSeasonResult) => leagueSeasonResult.id),
   )) {
     await userRewardSeedHelper.seed({
       ...userRewardData,

@@ -1,5 +1,6 @@
 import { PlaceVisitSeedInput } from '@libs/testing/seed/place-visit/type/place-visit-seed.input';
-import { leagueSeasonSeedDate } from './league-season.seed';
+import { leagueSeasonSeedDataList } from './league-season.seed';
+import { leagueSeasonResultSeedDataList } from './league-season-result.seed';
 
 const getVisitDate = (startAt: Date, day: number): Date => {
   const visitDate = new Date(startAt);
@@ -8,15 +9,60 @@ const getVisitDate = (startAt: Date, day: number): Date => {
   return visitDate;
 };
 
-export const placeVisitSeedDataList: PlaceVisitSeedInput[] = Array.from(
-  { length: 10 },
-  (_, index) => ({
-    userIdx: (index % 2) + 1,
-    nfcIdx: index + 1,
-    score: index + 1,
-    createdAt:
-      index < 5
-        ? getVisitDate(leagueSeasonSeedDate.previousStartAt, index + 1)
-        : getVisitDate(leagueSeasonSeedDate.currentStartAt, index - 4),
-  }),
-);
+const nfcIdxByScore = new Map([
+  [1, 1],
+  [2, 2],
+  [5, 5],
+  [7, 7],
+  [8, 8],
+  [10, 10],
+]);
+
+export const placeVisitSeedDataList: PlaceVisitSeedInput[] = [
+  ...leagueSeasonResultSeedDataList.map((leagueSeasonResult) => ({
+    userIdx: leagueSeasonResult.userIdx,
+    nfcIdx: nfcIdxByScore.get(leagueSeasonResult.finalScore!)!,
+    score: leagueSeasonResult.finalScore,
+    createdAt: getVisitDate(
+      leagueSeasonSeedDataList[leagueSeasonResult.leagueSeasonIdx - 1]!
+        .startAt!,
+      leagueSeasonResult.userIdx + 2,
+    ),
+  })),
+  {
+    userIdx: 1,
+    nfcIdx: 1,
+    score: 1,
+    createdAt: getVisitDate(
+      leagueSeasonSeedDataList[leagueSeasonSeedDataList.length - 1]!.startAt!,
+      3,
+    ),
+  },
+  {
+    userIdx: 2,
+    nfcIdx: 2,
+    score: 2,
+    createdAt: getVisitDate(
+      leagueSeasonSeedDataList[leagueSeasonSeedDataList.length - 1]!.startAt!,
+      4,
+    ),
+  },
+  {
+    userIdx: 3,
+    nfcIdx: 5,
+    score: 5,
+    createdAt: getVisitDate(
+      leagueSeasonSeedDataList[leagueSeasonSeedDataList.length - 1]!.startAt!,
+      5,
+    ),
+  },
+  {
+    userIdx: 4,
+    nfcIdx: 7,
+    score: 7,
+    createdAt: getVisitDate(
+      leagueSeasonSeedDataList[leagueSeasonSeedDataList.length - 1]!.startAt!,
+      6,
+    ),
+  },
+];
