@@ -3,6 +3,7 @@ import { DiscordWebhookContext } from '@libs/common/modules/discord-webhook/cons
 import { DiscordWebhookService } from '@libs/common/modules/discord-webhook/discord-webhook.service';
 import { LeagueSeasonCoreService } from '@libs/core/league-season/league-season-core.service';
 import { PlaceVisitCoreService } from '@libs/core/place-visit/place-visit-core.service';
+import { UserRewardCoreService } from '@libs/core/user-reward/user-reward-core.service';
 import { Transactional } from '@nestjs-cls/transactional';
 import { Injectable } from '@nestjs/common';
 
@@ -11,6 +12,7 @@ export class LeagueSeasonResultCronService {
   constructor(
     private readonly leagueSeasonCoreService: LeagueSeasonCoreService,
     private readonly placeVisitCoreService: PlaceVisitCoreService,
+    private readonly userRewardCoreService: UserRewardCoreService,
     private readonly discordWebhookService: DiscordWebhookService,
   ) {}
 
@@ -68,17 +70,59 @@ export class LeagueSeasonResultCronService {
         leagueSeason.endAt,
       );
 
+    const leagueSeasonResultIdByUserIdx = new Map<number, string>();
     for (const userScore of userScoreList) {
-      await this.leagueSeasonCoreService.createLeagueSeasonResult({
-        leagueSeasonIdx: leagueSeason.idx,
-        userIdx: userScore.userIdx,
-        finalScore: userScore.score,
-      });
+      const leagueSeasonResult =
+        await this.leagueSeasonCoreService.createLeagueSeasonResult({
+          leagueSeasonIdx: leagueSeason.idx,
+          userIdx: userScore.userIdx,
+          finalScore: userScore.score,
+        });
+      leagueSeasonResultIdByUserIdx.set(
+        userScore.userIdx,
+        leagueSeasonResult.id,
+      );
     }
 
     await this.leagueSeasonCoreService.updateLeagueSeasonByIdx(
       leagueSeason.idx,
       { finalizedAt: now },
     );
+
+    const rewardTargetRankSet = new Set(
+      leagueSeason.rewardOptionList.map(
+        (rewardOption) => rewardOption.targetRank,
+      ),
+    );
+    if (rewardTargetRankSet.size === 0) {
+      return;
+    }
+
+    const userRankingList =
+      await this.leagueSeasonCoreService.getLeagueSeasonResultUserRankingAllByLeagueSeasonIdx(
+        leagueSeason.idx,
+      );
+
+    for (const userRanking of userRankingList) {
+      if (!rewardTargetRankSet.has(userRanking.seasonRank)) {
+        continue;
+      }
+
+      const leagueSeasonResultId = leagueSeasonResultIdByUserIdx.get(
+        userRanking.userIdx,
+      );
+      if (!leagueSeasonResultId) {
+        throw new Error(
+          `League season result not found (leagueSeasonIdx: ${leagueSeason.idx}, userIdx: ${userRanking.userIdx})`,
+        );
+      }
+
+      await this.userRewardCoreService.createUserReward({
+        leagueSeasonResultId,
+        rewardIdx: null,
+        selectedAt: null,
+        issuedAt: null,
+      });
+    }
   }
 }
