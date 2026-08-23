@@ -125,7 +125,7 @@ async function main() {
   /**
    * 장소 생성
    */
-  const placeList: { idx: number }[] = [];
+  const placeList: Awaited<ReturnType<PlaceSeedHelper['seed']>>[] = [];
   for (const placeData of PlaceSeedDataList) {
     const place = await placeSeedHelper.seed(placeData);
     placeList.push(place);
@@ -207,11 +207,20 @@ async function main() {
   /**
    * 장소 방문 생성
    */
+  const placeByIdx = new Map(placeList.map((place) => [place.idx, place]));
   for (const placeVisitData of placeVisitSeedDataList) {
+    const nfc = nfcList[placeVisitData.nfcIdx - 1];
+    const place = placeByIdx.get(nfc.placeIdx);
+    if (!place) {
+      throw new Error(`Place not found for NFC (nfcIdx: ${nfc.idx})`);
+    }
+
     await placeVisitSeedHelper.seed({
       ...placeVisitData,
       userIdx: userOutputList[placeVisitData.userIdx - 1].idx,
-      nfcIdx: nfcList[placeVisitData.nfcIdx - 1].idx,
+      nfcIdx: nfc.idx,
+      latitude: place.roadAddress.addressY,
+      longitude: place.roadAddress.addressX,
     });
   }
 
