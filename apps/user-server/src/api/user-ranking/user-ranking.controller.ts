@@ -19,6 +19,8 @@ export class UserRankingController {
 
   /**
    * 특정 리그 사용자 랭킹 조회
+   * - 랭킹 페이지에서 사용
+   * - 시즌 랭킹 조회 시 사용
    */
   @Get('/league-season/:leagueSeasonIdx/season-ranking/all')
   @Exception(404, 'League season not found')
@@ -34,6 +36,8 @@ export class UserRankingController {
 
   /**
    * 누적 사용자 랭킹 조회
+   * - 랭킹 페이지에서 사용
+   * - 누적 랭킹 조회 시 사용
    */
   @Get('/cumulative-ranking/all')
   public async getCumulativeRankingAll(
@@ -44,6 +48,7 @@ export class UserRankingController {
 
   /**
    * 로그인 사용자 랭킹 요약 조회
+   * - 마이페이지에서 사용
    */
   @Get('/user-ranking')
   @LoginAuth()

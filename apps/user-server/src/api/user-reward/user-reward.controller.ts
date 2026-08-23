@@ -12,6 +12,7 @@ export class UserRewardController {
 
   /**
    * 보상 선택
+   * - 리그 시즌 결과 페이지에서 리워드 상품 선택 시 사용
    */
   @Put(':id')
   @LoginAuth()
