@@ -48,7 +48,7 @@ export class RewardService {
     return RewardEntity.fromModel(
       await this.rewardCoreService.createReward({
         name: dto.name,
-        imagePath: dto.imagePath ?? null,
+        imagePath: dto.imagePath,
         activatedAt: null,
       }),
     );

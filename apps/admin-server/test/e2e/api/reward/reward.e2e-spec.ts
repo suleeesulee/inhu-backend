@@ -310,25 +310,6 @@ describe('Reward E2E test', () => {
   });
 
   describe('POST /reward', () => {
-    it('201 - creates inactive reward without image path', async () => {
-      const admin = testHelper.loginAdmin.admin1;
-
-      const response = await testHelper
-        .test()
-        .post('/reward')
-        .set('Cookie', `token=Bearer ${admin.token}`)
-        .send({ name: '이미지 없는 신규 리워드' })
-        .expect(201);
-
-      const reward: RewardEntity = response.body;
-
-      expect(reward.idx).toBeDefined();
-      expect(reward.name).toBe('이미지 없는 신규 리워드');
-      expect(reward.imagePath).toBeNull();
-      expect(reward.activatedAt).toBeNull();
-      expect(reward.createdAt).toBeDefined();
-    });
-
     it('201 - creates inactive reward with image path', async () => {
       const admin = testHelper.loginAdmin.admin1;
       const imagePath = '/reward/new-reward.png';
@@ -352,7 +333,18 @@ describe('Reward E2E test', () => {
         .test()
         .post('/reward')
         .set('Cookie', `token=Bearer ${admin.token}`)
-        .send({})
+        .send({ imagePath: '/reward/name-missing.png' })
+        .expect(400);
+    });
+
+    it('400 - reward image path is missing', async () => {
+      const admin = testHelper.loginAdmin.admin1;
+
+      await testHelper
+        .test()
+        .post('/reward')
+        .set('Cookie', `token=Bearer ${admin.token}`)
+        .send({ name: '이미지 경로가 없는 리워드' })
         .expect(400);
     });
 
@@ -371,7 +363,10 @@ describe('Reward E2E test', () => {
       await testHelper
         .test()
         .post('/reward')
-        .send({ name: '인증 없는 리워드' })
+        .send({
+          name: '인증 없는 리워드',
+          imagePath: '/reward/unauthorized.png',
+        })
         .expect(401);
     });
 
@@ -382,7 +377,10 @@ describe('Reward E2E test', () => {
         .test()
         .post('/reward')
         .set('Cookie', `token=Bearer ${magazineAdmin.token}`)
-        .send({ name: '권한 없는 리워드' })
+        .send({
+          name: '권한 없는 리워드',
+          imagePath: '/reward/forbidden.png',
+        })
         .expect(403);
     });
   });
@@ -411,26 +409,19 @@ describe('Reward E2E test', () => {
       expect(reward.activatedAt).toBeNull();
     });
 
-    it('200 - keeps image path when it is omitted', async () => {
+    it('400 - reward image path is missing', async () => {
       const admin = testHelper.loginAdmin.admin1;
       const rewardSeed = await rewardSeedHelper.seed({
-        name: '이미지 유지 리워드',
-        imagePath: '/reward/keep.png',
+        name: '이미지 필수 리워드',
+        imagePath: '/reward/required.png',
       });
 
       await testHelper
         .test()
         .put(`/reward/${rewardSeed.idx}`)
         .set('Cookie', `token=Bearer ${admin.token}`)
-        .send({ name: '이름만 수정된 리워드' })
-        .expect(200);
-
-      const reward = await testHelper.getPrisma().reward.findUniqueOrThrow({
-        where: { idx: rewardSeed.idx },
-      });
-
-      expect(reward.name).toBe('이름만 수정된 리워드');
-      expect(reward.imagePath).toBe('/reward/keep.png');
+        .send({ name: '이름만 수정하려는 리워드' })
+        .expect(400);
     });
 
     it('400 - reward idx is invalid', async () => {
@@ -440,7 +431,7 @@ describe('Reward E2E test', () => {
         .test()
         .put('/reward/invalid-reward-idx')
         .set('Cookie', `token=Bearer ${admin.token}`)
-        .send({ name: '수정 리워드' })
+        .send({ name: '수정 리워드', imagePath: '/reward/update.png' })
         .expect(400);
     });
 
@@ -451,7 +442,7 @@ describe('Reward E2E test', () => {
         .test()
         .put('/reward/1')
         .set('Cookie', `token=Bearer ${admin.token}`)
-        .send({})
+        .send({ imagePath: '/reward/name-missing.png' })
         .expect(400);
     });
 
@@ -459,7 +450,10 @@ describe('Reward E2E test', () => {
       await testHelper
         .test()
         .put('/reward/1')
-        .send({ name: '인증 없는 수정' })
+        .send({
+          name: '인증 없는 수정',
+          imagePath: '/reward/unauthorized-update.png',
+        })
         .expect(401);
     });
 
@@ -470,7 +464,10 @@ describe('Reward E2E test', () => {
         .test()
         .put('/reward/1')
         .set('Cookie', `token=Bearer ${magazineAdmin.token}`)
-        .send({ name: '권한 없는 수정' })
+        .send({
+          name: '권한 없는 수정',
+          imagePath: '/reward/forbidden-update.png',
+        })
         .expect(403);
     });
 
@@ -481,7 +478,10 @@ describe('Reward E2E test', () => {
         .test()
         .put('/reward/999999')
         .set('Cookie', `token=Bearer ${admin.token}`)
-        .send({ name: '없는 리워드 수정' })
+        .send({
+          name: '없는 리워드 수정',
+          imagePath: '/reward/not-found-update.png',
+        })
         .expect(404);
     });
   });

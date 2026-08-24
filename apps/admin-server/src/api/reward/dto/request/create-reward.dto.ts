@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsNotEmpty, IsString } from 'class-validator';
 
 export class CreateRewardDto {
   /**
@@ -15,7 +15,7 @@ export class CreateRewardDto {
    *
    * @example "/images/rewards/starbucks_coffee.jpg"
    */
-  @IsOptional()
+  @IsNotEmpty()
   @IsString()
-  imagePath?: string;
+  imagePath: string;
 }
