@@ -11,7 +11,7 @@ const addDays = (date: Date, days: number): Date => {
 export const userRewardSeedDataList = (
   leagueSeasonResultIdList: string[],
 ): UserRewardSeedInput[] =>
-  leagueSeasonResultIdList.map((leagueSeasonResultId, index) => {
+  leagueSeasonResultIdList.flatMap((leagueSeasonResultId, index) => {
     const leagueSeasonResult = leagueSeasonResultSeedDataList[index]!;
     const leagueSeason =
       leagueSeasonSeedDataList[leagueSeasonResult.leagueSeasonIdx - 1]!;
@@ -25,19 +25,23 @@ export const userRewardSeedDataList = (
       sameLeagueSeasonResultList.findIndex(
         (result) => result.userIdx === leagueSeasonResult.userIdx,
       ) + 1;
-    const rewardIdx = leagueSeason.rewardOptionList!.find(
+    const rewardOption = leagueSeason.rewardOptionList!.find(
       (rewardOption) => rewardOption.targetRank === rank,
-    )!.rewardIdx;
+    );
+    if (!rewardOption) {
+      return [];
+    }
+
     const status = index % 3;
     const selectedAt =
-      status === 0
-        ? null
-        : addDays(leagueSeason.finalizedAt!, leagueSeasonResult.userIdx);
+      status === 0 ? null : addDays(leagueSeason.finalizedAt!, (rank % 3) + 1);
 
-    return {
-      leagueSeasonResultId,
-      rewardIdx: selectedAt ? rewardIdx : null,
-      selectedAt,
-      issuedAt: status === 2 ? addDays(selectedAt!, 1) : null,
-    };
+    return [
+      {
+        leagueSeasonResultId,
+        rewardIdx: selectedAt ? rewardOption.rewardIdx : null,
+        selectedAt,
+        issuedAt: status === 2 ? addDays(selectedAt!, 1) : null,
+      },
+    ];
   });
