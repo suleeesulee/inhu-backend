@@ -42,7 +42,7 @@ export class CreatePlaceVisitByNfcDto {
    * @example 37.4508371
    */
   @Type(() => Number)
-  @IsNumber({ maxDecimalPlaces: 7 })
+  @IsNumber()
   @Min(-90)
   @Max(90)
   latitude: number;
@@ -53,7 +53,7 @@ export class CreatePlaceVisitByNfcDto {
    * @example 126.6531324
    */
   @Type(() => Number)
-  @IsNumber({ maxDecimalPlaces: 7 })
+  @IsNumber()
   @Min(-180)
   @Max(180)
   longitude: number;
