@@ -1,4 +1,5 @@
 import { LeagueSeasonSeedInput } from '@libs/testing/seed/league-season/type/league-season-seed.input';
+import { activeRewardSeedIdxList } from './reward.seed';
 
 const getStartOfMonth = (date: Date): Date =>
   new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), 1));
@@ -30,6 +31,33 @@ const previousLeagueSeasonStateList = Array.from(
   }),
 );
 
+const getRewardOptionList = (leagueSeasonIndex: number) => {
+  const rewardIdxList = Array.from(
+    { length: 8 },
+    (_, optionIndex) =>
+      activeRewardSeedIdxList[
+        (leagueSeasonIndex + optionIndex) % activeRewardSeedIdxList.length
+      ]!,
+  );
+  const fourthToTenthRewardIdx = rewardIdxList[7]!;
+
+  return [
+    ...rewardIdxList
+      .slice(0, 3)
+      .map((rewardIdx) => ({ rewardIdx, targetRank: 1 })),
+    ...rewardIdxList
+      .slice(3, 5)
+      .map((rewardIdx) => ({ rewardIdx, targetRank: 2 })),
+    ...rewardIdxList
+      .slice(5, 7)
+      .map((rewardIdx) => ({ rewardIdx, targetRank: 3 })),
+    ...Array.from({ length: 7 }, (_, index) => ({
+      rewardIdx: fourthToTenthRewardIdx,
+      targetRank: index + 4,
+    })),
+  ];
+};
+
 const previousLeagueSeasonSeedDataList: LeagueSeasonSeedInput[] =
   previousLeagueSeasonStateList.map((state, index) => {
     const startAt = addMonths(
@@ -51,24 +79,7 @@ const previousLeagueSeasonSeedDataList: LeagueSeasonSeedInput[] =
       endAt,
       activatedAt: state.activated ? new Date(startAt) : null,
       finalizedAt,
-      rewardOptionList: [
-        {
-          rewardIdx: [1, 2, 4, 7, 8, 10][(index + 1) % 6],
-          targetRank: 1,
-        },
-        {
-          rewardIdx: [1, 2, 4, 7, 8, 10][(index + 2) % 6],
-          targetRank: 2,
-        },
-        {
-          rewardIdx: [1, 2, 4, 7, 8, 10][(index + 3) % 6],
-          targetRank: 3,
-        },
-        {
-          rewardIdx: [1, 2, 4, 7, 8, 10][(index + 4) % 6],
-          targetRank: 4,
-        },
-      ],
+      rewardOptionList: getRewardOptionList(index),
     };
   });
 
@@ -84,12 +95,7 @@ const currentLeagueSeason: LeagueSeasonSeedInput = {
   })(),
   activatedAt: new Date(currentStartAt),
   finalizedAt: null,
-  rewardOptionList: [
-    { rewardIdx: 1, targetRank: 1 },
-    { rewardIdx: 4, targetRank: 2 },
-    { rewardIdx: 7, targetRank: 3 },
-    { rewardIdx: 10, targetRank: 4 },
-  ],
+  rewardOptionList: getRewardOptionList(previousLeagueSeasonCount),
 };
 
 export const leagueSeasonSeedDataList: LeagueSeasonSeedInput[] = [
