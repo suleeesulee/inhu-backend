@@ -1,12 +1,34 @@
 import { PlaceVisitSeedInput } from '@libs/testing/seed/place-visit/type/place-visit-seed.input';
 import { leagueSeasonSeedDataList } from './league-season.seed';
-import { leagueSeasonResultSeedDataList } from './league-season-result.seed';
+import {
+  getLeagueSeasonUserScore,
+  leagueSeasonResultSeedDataList,
+} from './league-season-result.seed';
+import { userSeedDataList } from './user.seed';
 
-const getVisitDate = (startAt: Date, day: number): Date => {
-  const visitDate = new Date(startAt);
-  visitDate.setUTCDate(day);
-  visitDate.setUTCHours(10, 0, 0, 0);
-  return visitDate;
+const getVisitDate = (
+  startAt: Date,
+  userIdx: number,
+  visitIndex: number,
+): Date =>
+  new Date(
+    startAt.getTime() + ((userIdx - 1) * 10 + visitIndex + 1) * 60 * 1000,
+  );
+
+const scoreUnitList = [10, 8, 7, 5, 2, 1];
+
+const splitScore = (score: number): number[] => {
+  const result: number[] = [];
+  let remainder = score;
+
+  for (const scoreUnit of scoreUnitList) {
+    while (remainder >= scoreUnit) {
+      result.push(scoreUnit);
+      remainder -= scoreUnit;
+    }
+  }
+
+  return result;
 };
 
 const nfcIdxByScore = new Map([
@@ -19,50 +41,32 @@ const nfcIdxByScore = new Map([
 ]);
 
 export const placeVisitSeedDataList: PlaceVisitSeedInput[] = [
-  ...leagueSeasonResultSeedDataList.map((leagueSeasonResult) => ({
-    userIdx: leagueSeasonResult.userIdx,
-    nfcIdx: nfcIdxByScore.get(leagueSeasonResult.finalScore!)!,
-    score: leagueSeasonResult.finalScore,
-    createdAt: getVisitDate(
-      leagueSeasonSeedDataList[leagueSeasonResult.leagueSeasonIdx - 1]!
-        .startAt!,
-      leagueSeasonResult.userIdx + 2,
-    ),
-  })),
-  {
-    userIdx: 1,
-    nfcIdx: 1,
-    score: 1,
-    createdAt: getVisitDate(
-      leagueSeasonSeedDataList[leagueSeasonSeedDataList.length - 1]!.startAt!,
-      3,
-    ),
-  },
-  {
-    userIdx: 2,
-    nfcIdx: 2,
-    score: 2,
-    createdAt: getVisitDate(
-      leagueSeasonSeedDataList[leagueSeasonSeedDataList.length - 1]!.startAt!,
-      4,
-    ),
-  },
-  {
-    userIdx: 3,
-    nfcIdx: 5,
-    score: 5,
-    createdAt: getVisitDate(
-      leagueSeasonSeedDataList[leagueSeasonSeedDataList.length - 1]!.startAt!,
-      5,
-    ),
-  },
-  {
-    userIdx: 4,
-    nfcIdx: 7,
-    score: 7,
-    createdAt: getVisitDate(
-      leagueSeasonSeedDataList[leagueSeasonSeedDataList.length - 1]!.startAt!,
-      6,
-    ),
-  },
+  ...leagueSeasonResultSeedDataList.flatMap((leagueSeasonResult) =>
+    splitScore(leagueSeasonResult.finalScore!).map((score, visitIndex) => ({
+      userIdx: leagueSeasonResult.userIdx,
+      nfcIdx: nfcIdxByScore.get(score)!,
+      score,
+      createdAt: getVisitDate(
+        leagueSeasonSeedDataList[leagueSeasonResult.leagueSeasonIdx - 1]!
+          .startAt!,
+        leagueSeasonResult.userIdx,
+        visitIndex,
+      ),
+    })),
+  ),
+  ...userSeedDataList.flatMap((_, userIndex) => {
+    const userIdx = userIndex + 1;
+    const score = getLeagueSeasonUserScore(userIndex);
+
+    return splitScore(score).map((visitScore, visitIndex) => ({
+      userIdx,
+      nfcIdx: nfcIdxByScore.get(visitScore)!,
+      score: visitScore,
+      createdAt: getVisitDate(
+        leagueSeasonSeedDataList[leagueSeasonSeedDataList.length - 1]!.startAt!,
+        userIdx,
+        visitIndex,
+      ),
+    }));
+  }),
 ];

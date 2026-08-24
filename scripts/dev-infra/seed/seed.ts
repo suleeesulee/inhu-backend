@@ -29,6 +29,7 @@ import { placeVisitSeedDataList } from './data/place-visit.seed';
 import { userRewardSeedDataList } from './data/user-reward.seed';
 import { NoticeSeedHelper } from '@libs/testing/seed/notice/notice.seed';
 import { noticeSeedDataList } from './data/notice.seed';
+import { userSeedDataList } from './data/user.seed';
 
 const prisma = new PrismaService();
 
@@ -57,15 +58,16 @@ async function main() {
   /**
    * 사용자 생성
    */
-  const user1 = await userSeedHelper.seed({
-    nickname: '맛집탐방가',
-    profileImagePath: '/profile/cat.jpg',
-  });
-  const user2 = await userSeedHelper.seed({ nickname: '인덕이' });
-  const user3 = await userSeedHelper.seed({ nickname: '카페수집가' });
-  const user4 = await userSeedHelper.seed({ nickname: '골목대장' });
+  const userOutputList: Awaited<ReturnType<UserSeedHelper['seed']>>[] = [];
+  for (const userData of userSeedDataList) {
+    userOutputList.push(await userSeedHelper.seed(userData));
+  }
+
+  const user1 = userOutputList[0]!;
+  const user2 = userOutputList[1]!;
+  const user3 = userOutputList[2]!;
+  const user4 = userOutputList[3]!;
   const userList = { user1, user2, user3, user4 };
-  const userOutputList = [user1, user2, user3, user4];
 
   /**
    * 공지사항 생성

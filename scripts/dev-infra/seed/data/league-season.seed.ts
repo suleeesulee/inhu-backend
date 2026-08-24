@@ -12,21 +12,30 @@ const addMonths = (date: Date, months: number): Date => {
 const now = new Date();
 const currentStartAt = getStartOfMonth(now);
 
-const previousLeagueSeasonStateList = [
-  { name: '종료·집계 완료', activated: true, finalized: true },
-  { name: '종료·집계 미완료', activated: true, finalized: false },
-  { name: '비활성화·집계 완료', activated: false, finalized: true },
-  { name: '비활성화·집계 미완료', activated: false, finalized: false },
-  { name: '종료·집계 완료·보상 선택 가능', activated: true, finalized: true },
-  { name: '종료·집계 완료·보상 발급 가능', activated: true, finalized: true },
-  { name: '종료·집계 미완료·보상 없음', activated: true, finalized: false },
-  { name: '종료·집계 완료·보상 선택 가능', activated: true, finalized: true },
-  { name: '직전 종료·집계 완료', activated: true, finalized: true },
-];
+const previousLeagueSeasonCount = 24;
+const inactiveLeagueSeasonIndex = 5;
+const notFinalizedLeagueSeasonIndex = 11;
+
+const previousLeagueSeasonStateList = Array.from(
+  { length: previousLeagueSeasonCount },
+  (_, index) => ({
+    name:
+      index === inactiveLeagueSeasonIndex
+        ? '비활성화·집계 완료'
+        : index === notFinalizedLeagueSeasonIndex
+          ? '종료·집계 미완료'
+          : '종료·집계 완료·리그 참여 이력',
+    activated: index !== inactiveLeagueSeasonIndex,
+    finalized: index !== notFinalizedLeagueSeasonIndex,
+  }),
+);
 
 const previousLeagueSeasonSeedDataList: LeagueSeasonSeedInput[] =
   previousLeagueSeasonStateList.map((state, index) => {
-    const startAt = addMonths(currentStartAt, index - 9);
+    const startAt = addMonths(
+      currentStartAt,
+      index - previousLeagueSeasonCount,
+    );
     const endAt = new Date(startAt);
     endAt.setUTCDate(15);
     endAt.setUTCHours(23, 59, 59, 0);
@@ -42,26 +51,24 @@ const previousLeagueSeasonSeedDataList: LeagueSeasonSeedInput[] =
       endAt,
       activatedAt: state.activated ? new Date(startAt) : null,
       finalizedAt,
-      rewardOptionList: state.name.includes('보상 없음')
-        ? null
-        : [
-            {
-              rewardIdx: [1, 2, 4, 7, 8, 10][(index + 1) % 6],
-              targetRank: 1,
-            },
-            {
-              rewardIdx: [1, 2, 4, 7, 8, 10][(index + 2) % 6],
-              targetRank: 2,
-            },
-            {
-              rewardIdx: [1, 2, 4, 7, 8, 10][(index + 3) % 6],
-              targetRank: 3,
-            },
-            {
-              rewardIdx: [1, 2, 4, 7, 8, 10][(index + 4) % 6],
-              targetRank: 4,
-            },
-          ],
+      rewardOptionList: [
+        {
+          rewardIdx: [1, 2, 4, 7, 8, 10][(index + 1) % 6],
+          targetRank: 1,
+        },
+        {
+          rewardIdx: [1, 2, 4, 7, 8, 10][(index + 2) % 6],
+          targetRank: 2,
+        },
+        {
+          rewardIdx: [1, 2, 4, 7, 8, 10][(index + 3) % 6],
+          targetRank: 3,
+        },
+        {
+          rewardIdx: [1, 2, 4, 7, 8, 10][(index + 4) % 6],
+          targetRank: 4,
+        },
+      ],
     };
   });
 
@@ -95,4 +102,7 @@ export const leagueSeasonSeedDate = {
   previousStartAt: addMonths(currentStartAt, -1),
 };
 
-export const rewardedLeagueSeasonIdxList = [1, 5, 6, 8, 9];
+export const rewardedLeagueSeasonIdxList = previousLeagueSeasonStateList
+  .map((state, index) => ({ ...state, leagueSeasonIdx: index + 1 }))
+  .filter(({ activated, finalized }) => activated && finalized)
+  .map(({ leagueSeasonIdx }) => leagueSeasonIdx);

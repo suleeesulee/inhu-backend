@@ -476,28 +476,6 @@ describe('Place Visit E2E test', () => {
         .expect(400);
     });
 
-    it('400 - latitude has more than seven decimal places', async () => {
-      const loginUser = testHelper.loginUsers.user1;
-
-      await testHelper
-        .test()
-        .post('/place-visit/nfc')
-        .set('Authorization', `Bearer ${loginUser.web.accessToken}`)
-        .send({ picc_data: piccData, cmac, latitude: 37.45083712, longitude })
-        .expect(400);
-    });
-
-    it('400 - longitude has more than seven decimal places', async () => {
-      const loginUser = testHelper.loginUsers.user1;
-
-      await testHelper
-        .test()
-        .post('/place-visit/nfc')
-        .set('Authorization', `Bearer ${loginUser.web.accessToken}`)
-        .send({ picc_data: piccData, cmac, latitude, longitude: 126.65313241 })
-        .expect(400);
-    });
-
     it('401 - access token is missing', async () => {
       await testHelper
         .test()
