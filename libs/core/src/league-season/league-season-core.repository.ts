@@ -34,7 +34,7 @@ export class LeagueSeasonCoreRepository {
   ) {}
 
   public async selectLeagueSeasonByIdx(
-    idx: number,
+    idx?: number,
     activated?: boolean,
   ): Promise<SelectLeagueSeason | null> {
     return await this.txHost.tx.leagueSeason.findFirst({
@@ -43,6 +43,7 @@ export class LeagueSeasonCoreRepository {
         idx,
         ...this.getActivatedAtFilterWhereClause(activated),
       },
+      orderBy: [{ startAt: 'desc' }, { idx: 'desc' }],
     });
   }
 
@@ -247,14 +248,16 @@ export class LeagueSeasonCoreRepository {
         startAt: `${input.startAt}T00:00:00Z`,
         endAt: `${input.endAt}T23:59:59Z`,
         activatedAt: input.activatedAt,
-        rewardOptionList: {
-          createMany: {
-            data: input.rewardOptionList.map((rewardOption) => ({
-              rewardIdx: rewardOption.rewardIdx,
-              targetRank: rewardOption.targetRank,
-            })),
-          },
-        },
+        rewardOptionList: input.rewardOptionList
+          ? {
+              createMany: {
+                data: input.rewardOptionList.map((rewardOption) => ({
+                  rewardIdx: rewardOption.rewardIdx,
+                  targetRank: rewardOption.targetRank,
+                })),
+              },
+            }
+          : undefined,
       },
     });
   }

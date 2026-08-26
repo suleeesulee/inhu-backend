@@ -1,7 +1,6 @@
 import { IsKoreanDate } from '@libs/common/decorator/is-korean-date.decorator';
 import {
   IsArray,
-  IsDate,
   IsNotEmpty,
   IsOptional,
   IsString,
@@ -41,8 +40,9 @@ export class CreateLeagueSeasonDto {
   /**
    * 리그 시즌 보상 옵션 리스트
    */
+  @IsOptional()
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => CreateLeagueRewardOptionDto)
-  rewardOptionList: CreateLeagueRewardOptionDto[];
+  rewardOptionList?: CreateLeagueRewardOptionDto[];
 }

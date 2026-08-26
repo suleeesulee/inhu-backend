@@ -3,7 +3,7 @@ import { Controller, Get, Param, ParseIntPipe, Query } from '@nestjs/common';
 import { LoginAuth } from '@user/common/decorator/login-auth.decorator';
 import { User } from '@user/common/decorator/user.decorator';
 import { LoginUser } from '@user/common/types/LoginUser';
-import { GetLeagueSeasonByDateDto } from './dto/request/get-league-season-by-date.dto';
+import { GetLeagueSeasonByIdxDto } from './dto/request/get-league-season-by-idx.dto';
 import { LeagueSeasonEntity } from './entity/league-season.entity';
 import { LeagueSeasonService } from './league-season.service';
 import { LeagueSeasonResultEntity } from './entity/league-season-result.entity';
@@ -17,17 +17,17 @@ export class LeagueSeasonController {
   constructor(private readonly leagueSeasonService: LeagueSeasonService) {}
 
   /**
-   * 날짜로 리그 시즌 조회
+   * 리그 시즌 조회
    * - 랭킹 페이지 진입 시 사용
-   * - 시작날짜와 종료날짜를 모두 입력하지 않을 경우 가장 최신 리그 조회
+   * - idx를 입력하지 않은 경우 가장 최신 리그 조회
    */
   @Get()
   @Exception(400, 'Invalid request')
   @Exception(404, 'League season not found')
-  public async getLeagueSeasonByDate(
-    @Query() dto: GetLeagueSeasonByDateDto,
+  public async getLeagueSeasonByIdx(
+    @Query() dto: GetLeagueSeasonByIdxDto,
   ): Promise<LeagueSeasonEntity> {
-    return await this.leagueSeasonService.getLeagueSeasonByDate(dto);
+    return await this.leagueSeasonService.getLeagueSeasonByIdx(dto);
   }
 
   /**

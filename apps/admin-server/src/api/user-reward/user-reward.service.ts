@@ -14,6 +14,9 @@ import { GetUserRewardAllDto } from './dto/request/get-user-reward-all.dto';
 import { GetUserRewardAllResponseDto } from './dto/response/get-user-reward-all.response.dto';
 import { UserRewardOverviewEntity } from './entity/user-reward-overview.entity';
 import { UserRewardEntity } from './entity/user-reward.entity';
+import { IssueUserRewardDto } from './dto/request/issue-user-reward.dto';
+import { S3Service } from '@libs/common/modules/s3/s3.service';
+import { userRewardIssueTemplate } from './user-reward-issue.template';
 
 @Injectable()
 export class UserRewardService {
@@ -23,6 +26,7 @@ export class UserRewardService {
     private readonly userCoreService: UserCoreService,
     private readonly rewardCoreService: RewardCoreService,
     private readonly mailService: MailService,
+    private readonly s3Service: S3Service,
   ) {}
 
   public async getUserRewardAll(
@@ -135,7 +139,10 @@ export class UserRewardService {
   @Locker({
     key: (id: string) => `user-reward:${id}:issuance`,
   })
-  public async issueUserRewardById(id: string): Promise<void> {
+  public async issueUserRewardById(
+    id: string,
+    dto: IssueUserRewardDto,
+  ): Promise<void> {
     const userReward = await this.userRewardCoreService.getUserRewardById(id);
     if (!userReward) {
       throw new NotFoundException('User reward not found');
@@ -168,8 +175,16 @@ export class UserRewardService {
 
     await this.mailService.sendMail(
       user.schoolEmail,
-      `[인후] ${leagueSeasonResult.leagueSeason.name} 리워드 발급 안내`,
-      `<p>${user.nickname}님의 리워드가 발급되었습니다.</p><p>리워드: ${reward.name}</p>`,
+      `[인하밥길] ${leagueSeasonResult.leagueSeason.name} 리워드 발급 안내`,
+      userRewardIssueTemplate(
+        user.nickname,
+        leagueSeasonResult.leagueSeason.name,
+        reward.name,
+        dto.content,
+        dto.imagePathList.map((imagePath) =>
+          this.s3Service.getFileUrl(imagePath),
+        ),
+      ),
     );
     await this.userRewardCoreService.updateUserRewardById(id, {
       issuedAt: new Date(),

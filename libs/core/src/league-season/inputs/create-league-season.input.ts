@@ -3,7 +3,7 @@ export class CreateLeagueSeasonInput {
   startAt: string;
   endAt: string;
   activatedAt: Date | null;
-  rewardOptionList: {
+  rewardOptionList?: {
     rewardIdx: number;
     targetRank: number;
   }[];

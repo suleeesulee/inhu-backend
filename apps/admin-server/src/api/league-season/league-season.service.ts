@@ -11,6 +11,8 @@ import { CreateLeagueSeasonDto } from './dto/request/create-league-season.dto';
 import { UpdateLeagueSeasonDto } from './dto/request/update-league-season.dto';
 import { GetLeagueSeasonAllDto } from './dto/request/get-league-season-all.dto';
 import { LeagueSeasonOverviewEntity } from './entity/league-season-overview.entity';
+import { CreateLeagueSeasonLeagueRewardOptionDto } from './dto/request/create-league-season-league-reward-option.dto';
+import { UpdateLeagueSeasonLeagueRewardOptionDto } from './dto/request/update-league-season-league-reward-option.dto';
 
 @Injectable()
 export class LeagueSeasonService {
@@ -62,9 +64,38 @@ export class LeagueSeasonService {
         startAt: dto.startAt,
         endAt: dto.endAt,
         activatedAt: null,
-        rewardOptionList: dto.rewardOptionList,
       }),
     );
+  }
+
+  public async createLeagueSeasonLeagueRewardOptionList(
+    idx: number,
+    dto: CreateLeagueSeasonLeagueRewardOptionDto,
+  ): Promise<void> {
+    const leagueSeason =
+      await this.leagueSeasonCoreService.getLeagueSeasonByIdx(idx);
+    if (!leagueSeason) {
+      throw new NotFoundException(`League season with idx ${idx} not found`);
+    }
+
+    await this.leagueSeasonCoreService.updateLeagueSeasonByIdx(idx, {
+      rewardOptionList: dto.rewardOptionList,
+    });
+  }
+
+  public async updateLeagueSeasonLeagueRewardOptionList(
+    idx: number,
+    dto: UpdateLeagueSeasonLeagueRewardOptionDto,
+  ): Promise<void> {
+    const leagueSeason =
+      await this.leagueSeasonCoreService.getLeagueSeasonByIdx(idx);
+    if (!leagueSeason) {
+      throw new NotFoundException(`League season with idx ${idx} not found`);
+    }
+
+    await this.leagueSeasonCoreService.updateLeagueSeasonByIdx(idx, {
+      rewardOptionList: dto.rewardOptionList,
+    });
   }
 
   public async updateLeagueSeasonByIdx(

@@ -1,6 +1,7 @@
 import { Exception } from '@libs/common/decorator/exception.decorator';
 import { AdminAuth } from '@admin/common/decorator/admin-auth.decorator';
 import {
+  Body,
   Controller,
   Get,
   HttpCode,
@@ -13,6 +14,7 @@ import { GetUserRewardAllDto } from './dto/request/get-user-reward-all.dto';
 import { GetUserRewardAllResponseDto } from './dto/response/get-user-reward-all.response.dto';
 import { UserRewardService } from './user-reward.service';
 import { UserRewardEntity } from './entity/user-reward.entity';
+import { IssueUserRewardDto } from './dto/request/issue-user-reward.dto';
 
 @Controller('user-reward')
 export class UserRewardController {
@@ -56,6 +58,7 @@ export class UserRewardController {
   @HttpCode(200)
   @AdminAuth()
   @Exception(400, 'Invalid user reward id')
+  @Exception(400, 'Invalid request data')
   @Exception(403, 'User school email not found')
   @Exception(404, 'User reward not found')
   @Exception(404, 'League season result not found')
@@ -64,7 +67,8 @@ export class UserRewardController {
   @Exception(409, 'User has not selected a reward')
   public async issueUserRewardById(
     @Param('id', ParseUUIDPipe) id: string,
+    @Body() dto: IssueUserRewardDto,
   ): Promise<void> {
-    return await this.userRewardService.issueUserRewardById(id);
+    return await this.userRewardService.issueUserRewardById(id, dto);
   }
 }

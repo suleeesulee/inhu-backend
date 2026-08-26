@@ -7,6 +7,7 @@ import { RewardCoreModule } from '@libs/core/reward/reward-core.module';
 import { Module } from '@nestjs/common';
 import { UserRewardController } from './user-reward.controller';
 import { UserRewardService } from './user-reward.service';
+import { S3Module } from '@libs/common/modules/s3/s3.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { UserRewardService } from './user-reward.service';
     UserCoreModule,
     RewardCoreModule,
     MailModule,
+    S3Module,
     RedlockModule,
   ],
   controllers: [UserRewardController],
