@@ -93,6 +93,14 @@ export class S3Service {
     );
   }
 
+  public getFileUrl(filePath: string): string {
+    if (/^https?:\/\//.test(filePath)) {
+      return filePath;
+    }
+
+    return `${this.fileHost.replace(/\/$/, '')}/${filePath.replace(/^\//, '')}`;
+  }
+
   public async uploadImageFromUrl(
     options: { path: S3Folder; name: string },
     url: string,

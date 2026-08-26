@@ -1,6 +1,8 @@
 import { AdminServerModule } from '@admin/admin-server.module';
 import { UserRewardEntity } from '@admin/api/user-reward/entity/user-reward.entity';
 import { MailService } from '@libs/common/modules/mail/mail.service';
+import { S3Service } from '@libs/common/modules/s3/s3.service';
+import { userRewardIssueTemplate } from '@admin/api/user-reward/user-reward-issue.template';
 import { UserCoreService } from '@libs/core/user/user-core.service';
 import { UserRewardStatus } from '@libs/core/user-reward/constants/user-reward-status.enum';
 import { LeagueSeasonResultSeedHelper } from '@libs/testing/seed/league-season/league-season-result.seed';
@@ -618,6 +620,11 @@ describe('User Reward E2E test', () => {
   });
 
   describe('POST /user-reward/:id/issue', () => {
+    const issueUserRewardDto = {
+      content: '리워드 상품을 발급해 드립니다.',
+      imagePathList: ['/reward/coupon-front.png', '/reward/coupon-back.png'],
+    };
+
     it('200 - sends reward issue email and updates issued at', async () => {
       const admin = testHelper.loginAdmin.admin1;
       const user = await userSeedHelper.seed({
@@ -654,6 +661,7 @@ describe('User Reward E2E test', () => {
         .test()
         .post(`/user-reward/${userReward.id}/issue`)
         .set('Cookie', `token=Bearer ${admin.token}`)
+        .send(issueUserRewardDto)
         .expect(200);
 
       const issuedUserReward = await testHelper
@@ -665,8 +673,16 @@ describe('User Reward E2E test', () => {
       expect(mailService.sendMail).toHaveBeenCalledTimes(1);
       expect(mailService.sendMail).toHaveBeenCalledWith(
         schoolEmail,
-        `[인후] ${leagueSeason.name} 리워드 발급 안내`,
-        `<p>${user.nickname}님의 리워드가 발급되었습니다.</p><p>리워드: ${reward.name}</p>`,
+        `[인하밥길] ${leagueSeason.name} 리워드 발급 안내`,
+        userRewardIssueTemplate(
+          user.nickname,
+          leagueSeason.name,
+          reward.name,
+          issueUserRewardDto.content,
+          issueUserRewardDto.imagePathList.map((imagePath) =>
+            testHelper.get(S3Service).getFileUrl(imagePath),
+          ),
+        ),
       );
       expect(issuedUserReward.issuedAt).not.toBeNull();
       expect(issuedUserReward.issuedAt?.getTime()).toBeGreaterThanOrEqual(
@@ -681,6 +697,68 @@ describe('User Reward E2E test', () => {
         .test()
         .post('/user-reward/invalid-user-reward-id/issue')
         .set('Cookie', `token=Bearer ${admin.token}`)
+        .send(issueUserRewardDto)
+        .expect(400);
+    });
+
+    it('400 - content is missing', async () => {
+      const admin = testHelper.loginAdmin.admin1;
+
+      await testHelper
+        .test()
+        .post(`/user-reward/${randomUUID()}/issue`)
+        .set('Cookie', `token=Bearer ${admin.token}`)
+        .send({ imagePathList: issueUserRewardDto.imagePathList })
+        .expect(400);
+    });
+
+    it('400 - image path list is missing', async () => {
+      const admin = testHelper.loginAdmin.admin1;
+
+      await testHelper
+        .test()
+        .post(`/user-reward/${randomUUID()}/issue`)
+        .set('Cookie', `token=Bearer ${admin.token}`)
+        .send({ content: issueUserRewardDto.content })
+        .expect(400);
+    });
+
+    it('400 - image path list is empty', async () => {
+      const admin = testHelper.loginAdmin.admin1;
+
+      await testHelper
+        .test()
+        .post(`/user-reward/${randomUUID()}/issue`)
+        .set('Cookie', `token=Bearer ${admin.token}`)
+        .send({ content: issueUserRewardDto.content, imagePathList: [] })
+        .expect(400);
+    });
+
+    it('400 - image path list contains non-string value', async () => {
+      const admin = testHelper.loginAdmin.admin1;
+
+      await testHelper
+        .test()
+        .post(`/user-reward/${randomUUID()}/issue`)
+        .set('Cookie', `token=Bearer ${admin.token}`)
+        .send({ content: issueUserRewardDto.content, imagePathList: [1] })
+        .expect(400);
+    });
+
+    it('400 - image path list exceeds max size', async () => {
+      const admin = testHelper.loginAdmin.admin1;
+
+      await testHelper
+        .test()
+        .post(`/user-reward/${randomUUID()}/issue`)
+        .set('Cookie', `token=Bearer ${admin.token}`)
+        .send({
+          content: issueUserRewardDto.content,
+          imagePathList: Array.from(
+            { length: 6 },
+            (_, index) => `/reward/coupon-${index}.png`,
+          ),
+        })
         .expect(400);
     });
 
@@ -688,6 +766,7 @@ describe('User Reward E2E test', () => {
       await testHelper
         .test()
         .post(`/user-reward/${randomUUID()}/issue`)
+        .send(issueUserRewardDto)
         .expect(401);
     });
 
@@ -715,6 +794,7 @@ describe('User Reward E2E test', () => {
         .test()
         .post(`/user-reward/${userReward.id}/issue`)
         .set('Cookie', `token=Bearer ${admin.token}`)
+        .send(issueUserRewardDto)
         .expect(403);
     });
 
@@ -725,6 +805,7 @@ describe('User Reward E2E test', () => {
         .test()
         .post(`/user-reward/${randomUUID()}/issue`)
         .set('Cookie', `token=Bearer ${magazineAdmin.token}`)
+        .send(issueUserRewardDto)
         .expect(403);
     });
 
@@ -735,6 +816,7 @@ describe('User Reward E2E test', () => {
         .test()
         .post(`/user-reward/${randomUUID()}/issue`)
         .set('Cookie', `token=Bearer ${admin.token}`)
+        .send(issueUserRewardDto)
         .expect(404);
     });
 
@@ -769,6 +851,7 @@ describe('User Reward E2E test', () => {
         .test()
         .post(`/user-reward/${userReward.id}/issue`)
         .set('Cookie', `token=Bearer ${admin.token}`)
+        .send(issueUserRewardDto)
         .expect(404);
     });
 
@@ -797,6 +880,7 @@ describe('User Reward E2E test', () => {
         .test()
         .post(`/user-reward/${userReward.id}/issue`)
         .set('Cookie', `token=Bearer ${admin.token}`)
+        .send(issueUserRewardDto)
         .expect(409);
     });
 
@@ -821,6 +905,7 @@ describe('User Reward E2E test', () => {
         .test()
         .post(`/user-reward/${userReward.id}/issue`)
         .set('Cookie', `token=Bearer ${admin.token}`)
+        .send(issueUserRewardDto)
         .expect(409);
     });
   });
