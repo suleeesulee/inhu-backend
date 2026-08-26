@@ -31,26 +31,20 @@ export class UserRankingService {
       throw new NotFoundException('League season not found');
     }
 
-    const [rankingList, seasonRankingParticipantCount] = await Promise.all([
-      this.userRankingCoreService.getSeasonUserRankingAll(leagueSeasonIdx, {
-        take: pageSize + 1,
-        skip,
-      }),
-      this.userRankingCoreService.getSeasonUserRankingCountByLeagueSeasonIdx(
+    const rankingList =
+      await this.userRankingCoreService.getSeasonUserRankingAll(
         leagueSeasonIdx,
-      ),
-    ]);
+        {
+          take: pageSize + 1,
+          skip,
+        },
+      );
 
     return {
       hasNext: rankingList.length > pageSize,
       seasonUserRankingList: rankingList
         .slice(0, pageSize)
-        .map((ranking) =>
-          SeasonUserRankingEntity.fromModel(
-            ranking,
-            seasonRankingParticipantCount,
-          ),
-        ),
+        .map((ranking) => SeasonUserRankingEntity.fromModel(ranking)),
     };
   }
 
@@ -59,24 +53,17 @@ export class UserRankingService {
   ): Promise<GetCumulativeRankingAllResponseDto> {
     const pageSize = 10;
     const skip = (dto.page - 1) * pageSize;
-    const [rankingList, cumulativeRankingParticipantCount] = await Promise.all([
-      this.userRankingCoreService.getCumulativeUserRankingAll({
+    const rankingList =
+      await this.userRankingCoreService.getCumulativeUserRankingAll({
         take: pageSize + 1,
         skip,
-      }),
-      this.userRankingCoreService.getCumulativeUserRankingCount(),
-    ]);
+      });
 
     return {
       hasNext: rankingList.length > pageSize,
       cumulativeUserRankingList: rankingList
         .slice(0, pageSize)
-        .map((ranking) =>
-          CumulativeUserRankingEntity.fromModel(
-            ranking,
-            cumulativeRankingParticipantCount,
-          ),
-        ),
+        .map((ranking) => CumulativeUserRankingEntity.fromModel(ranking)),
     };
   }
 

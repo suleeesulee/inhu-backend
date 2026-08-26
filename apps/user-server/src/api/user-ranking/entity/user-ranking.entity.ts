@@ -55,11 +55,15 @@ export class UserRankingEntity {
 
   /**
    * 시즌 랭킹 참여자 수
+   *
+   * @example 100
    */
   public seasonRankingParticipantCount: number;
 
   /**
    * 누적 랭킹 참여자 수
+   *
+   * @example 500
    */
   public cumulativeRankingParticipantCount: number;
 

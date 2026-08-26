@@ -4,9 +4,15 @@ import { LeagueSeasonService } from './league-season.service';
 import { LeagueSeasonController } from './league-season.controller';
 import { PlaceVisitCoreModule } from '@libs/core/place-visit/place-visit-core.module';
 import { UserRewardCoreModule } from '@libs/core/user-reward/user-reward-core.module';
+import { UserRankingCoreModule } from '@libs/core/user-ranking/user-ranking-core.module';
 
 @Module({
-  imports: [LeagueSeasonCoreModule, PlaceVisitCoreModule, UserRewardCoreModule],
+  imports: [
+    LeagueSeasonCoreModule,
+    PlaceVisitCoreModule,
+    UserRankingCoreModule,
+    UserRewardCoreModule,
+  ],
   controllers: [LeagueSeasonController],
   providers: [LeagueSeasonService],
 })

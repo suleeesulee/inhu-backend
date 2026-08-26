@@ -116,7 +116,8 @@ describe('League Season E2E test', () => {
       expect(body.endAt).toBe(leagueSeason.endAt.toISOString());
       expect(body.activatedAt).toBe(leagueSeason.activatedAt?.toISOString());
       expect(body.createdAt).toBe(leagueSeason.createdAt.toISOString());
-      expect(body.participantCount).toBe(2);
+      expect(body.seasonRankingParticipantCount).toBe(2);
+      expect(body.cumulativeRankingParticipantCount).toBe(2);
       expect(body.rewardOptionList).toHaveLength(2);
       expect(body.rewardOptionList[0].targetRank).toBe(1);
       expect(body.rewardOptionList[0].reward.idx).toBe(firstReward.idx);
@@ -171,7 +172,8 @@ describe('League Season E2E test', () => {
 
       expect(body.idx).toBe(latestActivatedLeagueSeason.idx);
       expect(body.name).toBe(latestActivatedLeagueSeason.name);
-      expect(body.participantCount).toBe(0);
+      expect(body.seasonRankingParticipantCount).toBe(0);
+      expect(body.cumulativeRankingParticipantCount).toBe(0);
     });
 
     it('200 - no reward option and no place visit', async () => {
@@ -196,7 +198,8 @@ describe('League Season E2E test', () => {
       const body: LeagueSeasonEntity = response.body;
 
       expect(body.idx).toBe(leagueSeason.idx);
-      expect(body.participantCount).toBe(0);
+      expect(body.seasonRankingParticipantCount).toBe(0);
+      expect(body.cumulativeRankingParticipantCount).toBe(0);
       expect(body.rewardOptionList).toStrictEqual([]);
     });
 
@@ -322,7 +325,8 @@ describe('League Season E2E test', () => {
         nextLeagueSeason.startAt.getTime(),
       );
       expect(body.idx).toBe(targetLeagueSeason.idx);
-      expect(body.participantCount).toBe(2);
+      expect(body.seasonRankingParticipantCount).toBe(2);
+      expect(body.cumulativeRankingParticipantCount).toBe(2);
     });
 
     it('200 - include place visits at league season period boundaries', async () => {
@@ -381,7 +385,8 @@ describe('League Season E2E test', () => {
       const body: LeagueSeasonEntity = response.body;
 
       expect(body.idx).toBe(leagueSeason.idx);
-      expect(body.participantCount).toBe(1);
+      expect(body.seasonRankingParticipantCount).toBe(1);
+      expect(body.cumulativeRankingParticipantCount).toBe(1);
     });
 
     it('200 - multiple reward options for same target rank', async () => {
