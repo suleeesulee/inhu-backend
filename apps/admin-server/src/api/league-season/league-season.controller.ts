@@ -17,6 +17,8 @@ import { CreateLeagueSeasonDto } from './dto/request/create-league-season.dto';
 import { UpdateLeagueSeasonDto } from './dto/request/update-league-season.dto';
 import { Exception } from '@libs/common/decorator/exception.decorator';
 import { GetLeagueSeasonAllDto } from './dto/request/get-league-season-all.dto';
+import { CreateLeagueSeasonLeagueRewardOptionDto } from './dto/request/create-league-season-league-reward-option.dto';
+import { UpdateLeagueSeasonLeagueRewardOptionDto } from './dto/request/update-league-season-league-reward-option.dto';
 
 @Controller('league-season')
 export class LeagueSeasonController {
@@ -56,6 +58,36 @@ export class LeagueSeasonController {
     @Body() dto: CreateLeagueSeasonDto,
   ): Promise<LeagueSeasonEntity> {
     return await this.leagueSeasonService.createLeagueSeason(dto);
+  }
+
+  /**
+   * 특정 리그 시즌 보상 옵션 리스트 생성
+   */
+  @Post('/:idx/reward-option')
+  @AdminAuth()
+  public async createLeagueSeasonLeagueRewardOptionList(
+    @Param('idx', ParseIntPipe) idx: number,
+    @Body() dto: CreateLeagueSeasonLeagueRewardOptionDto,
+  ): Promise<void> {
+    return await this.leagueSeasonService.createLeagueSeasonLeagueRewardOptionList(
+      idx,
+      dto,
+    );
+  }
+
+  /**
+   * 특정 리그 시즌 보상 옵션 리스트 수정
+   */
+  @Put('/:idx/reward-option')
+  @AdminAuth()
+  public async updateLeagueSeasonLeagueRewardOptionList(
+    @Param('idx', ParseIntPipe) idx: number,
+    @Body() dto: UpdateLeagueSeasonLeagueRewardOptionDto,
+  ): Promise<void> {
+    return await this.leagueSeasonService.updateLeagueSeasonLeagueRewardOptionList(
+      idx,
+      dto,
+    );
   }
 
   /**
