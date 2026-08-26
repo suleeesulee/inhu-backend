@@ -31,20 +31,26 @@ export class UserRankingService {
       throw new NotFoundException('League season not found');
     }
 
-    const rankingList =
-      await this.userRankingCoreService.getSeasonUserRankingAll(
+    const [rankingList, seasonRankingParticipantCount] = await Promise.all([
+      this.userRankingCoreService.getSeasonUserRankingAll(leagueSeasonIdx, {
+        take: pageSize + 1,
+        skip,
+      }),
+      this.userRankingCoreService.getSeasonUserRankingCountByLeagueSeasonIdx(
         leagueSeasonIdx,
-        {
-          take: pageSize + 1,
-          skip,
-        },
-      );
+      ),
+    ]);
 
     return {
       hasNext: rankingList.length > pageSize,
       seasonUserRankingList: rankingList
         .slice(0, pageSize)
-        .map(SeasonUserRankingEntity.fromModel),
+        .map((ranking) =>
+          SeasonUserRankingEntity.fromModel(
+            ranking,
+            seasonRankingParticipantCount,
+          ),
+        ),
     };
   }
 
@@ -53,31 +59,42 @@ export class UserRankingService {
   ): Promise<GetCumulativeRankingAllResponseDto> {
     const pageSize = 10;
     const skip = (dto.page - 1) * pageSize;
-    const rankingList =
-      await this.userRankingCoreService.getCumulativeUserRankingAll({
+    const [rankingList, cumulativeRankingParticipantCount] = await Promise.all([
+      this.userRankingCoreService.getCumulativeUserRankingAll({
         take: pageSize + 1,
         skip,
-      });
+      }),
+      this.userRankingCoreService.getCumulativeUserRankingCount(),
+    ]);
 
     return {
       hasNext: rankingList.length > pageSize,
       cumulativeUserRankingList: rankingList
         .slice(0, pageSize)
-        .map(CumulativeUserRankingEntity.fromModel),
+        .map((ranking) =>
+          CumulativeUserRankingEntity.fromModel(
+            ranking,
+            cumulativeRankingParticipantCount,
+          ),
+        ),
     };
   }
 
   public async getUserRankingOverview(
     userIdx: number,
   ): Promise<UserRankingOverviewEntity> {
-    const userRanking =
-      await this.userRankingCoreService.getUserRankingOverviewByUserIdx(
-        userIdx,
-      );
+    const [userRanking, participantCount] = await Promise.all([
+      this.userRankingCoreService.getUserRankingOverviewByUserIdx(userIdx),
+      this.userRankingCoreService.getUserRankingOverviewParticipantCount(),
+    ]);
     if (!userRanking) {
       throw new NotFoundException('Latest league season or user not found');
     }
 
-    return UserRankingOverviewEntity.fromModel(userRanking);
+    return UserRankingOverviewEntity.fromModel(
+      userRanking,
+      participantCount.seasonRankingParticipantCount,
+      participantCount.cumulativeRankingParticipantCount,
+    );
   }
 }
