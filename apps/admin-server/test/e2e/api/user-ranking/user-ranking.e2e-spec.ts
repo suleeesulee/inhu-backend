@@ -209,7 +209,9 @@ describe('User Ranking E2E test', () => {
           userIdx: user.idx,
           nfcIdx: nfc.idx,
           score: userList.length - index,
-          createdAt: new Date(`2026-04-${String(index + 1).padStart(2, '0')}T10:00:00.000Z`),
+          createdAt: new Date(
+            `2026-04-${String(index + 1).padStart(2, '0')}T10:00:00.000Z`,
+          ),
         })),
       );
       const admin = testHelper.loginAdmin.admin1;

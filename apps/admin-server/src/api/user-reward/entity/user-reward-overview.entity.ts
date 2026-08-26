@@ -12,7 +12,6 @@ export class UserRewardOverviewEntity extends PickType(UserRewardEntity, [
   'selectedAt',
   'issuedAt',
   'reward',
-  'user',
 ]) {
   constructor(data: UserRewardOverviewEntity) {
     super();
@@ -21,7 +20,6 @@ export class UserRewardOverviewEntity extends PickType(UserRewardEntity, [
 
   public static fromModel(
     model: UserRewardModel,
-    user: UserModel,
     reward: RewardModel | null,
   ): UserRewardOverviewEntity {
     return new UserRewardOverviewEntity({
@@ -30,7 +28,6 @@ export class UserRewardOverviewEntity extends PickType(UserRewardEntity, [
       selectedAt: model.selectedAt,
       issuedAt: model.issuedAt,
       reward: reward ? RewardEntity.fromModel(reward) : null,
-      user: UserEntity.fromModel(user),
     });
   }
 }

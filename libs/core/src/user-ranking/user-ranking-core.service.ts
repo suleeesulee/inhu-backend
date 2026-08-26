@@ -6,6 +6,7 @@ import { CumulativeUserRankingModel } from './model/cumulative-user-ranking.mode
 import { SeasonUserRankingModel } from './model/season-user-ranking.model';
 import { UserRankingOverviewModel } from './model/user-ranking-overview.model';
 import { UserRankingModel } from './model/user-ranking.model';
+import { GetUserRankingAllInput } from './inputs/get-user-ranking-all.input';
 
 @Injectable()
 export class UserRankingCoreService {
@@ -15,12 +16,22 @@ export class UserRankingCoreService {
 
   public async getUserRankingAllByLeagueSeasonIdx(
     leagueSeasonIdx: number,
+    input?: GetUserRankingAllInput,
   ): Promise<UserRankingModel[]> {
     return (
       await this.userRankingCoreRepository.selectUserRankingAllByLeagueSeasonIdx(
         leagueSeasonIdx,
+        input,
       )
     ).map(UserRankingModel.fromQuery);
+  }
+
+  public async getUserRankingCountByLeagueSeasonIdx(
+    leagueSeasonIdx: number,
+  ): Promise<number> {
+    return await this.userRankingCoreRepository.selectUserRankingCountByLeagueSeasonIdx(
+      leagueSeasonIdx,
+    );
   }
 
   public async getSeasonUserRankingAll(

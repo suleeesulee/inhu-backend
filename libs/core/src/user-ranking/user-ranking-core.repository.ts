@@ -20,6 +20,11 @@ import {
 } from './model/prisma-type/select-user-ranking';
 import { GetCumulativeRankingAllInput } from './inputs/get-cumulative-ranking-all.input';
 import { GetSeasonRankingAllInput } from './inputs/get-season-ranking-all.input';
+import { GetUserRankingAllInput } from './inputs/get-user-ranking-all.input';
+import {
+  SELECT_USER_RANKING_COUNT,
+  SelectUserRankingCount,
+} from './model/prisma-type/select-user-ranking-count';
 
 @Injectable()
 export class UserRankingCoreRepository {
@@ -29,11 +34,26 @@ export class UserRankingCoreRepository {
 
   public async selectUserRankingAllByLeagueSeasonIdx(
     leagueSeasonIdx: number,
+    input?: GetUserRankingAllInput,
   ): Promise<SelectUserRanking[]> {
     return await this.txHost.tx.$queryRaw<SelectUserRanking[]>(Prisma.sql`
       ${SELECT_USER_RANKING}
       WHERE ru.league_season_idx = ${leagueSeasonIdx}
+      ORDER BY
+        ru.season_rank ASC NULLS LAST,
+        ru.user_idx ASC
+      ${input ? Prisma.sql`LIMIT ${input.take} OFFSET ${input.skip}` : Prisma.empty}
     `);
+  }
+
+  public async selectUserRankingCountByLeagueSeasonIdx(
+    leagueSeasonIdx: number,
+  ): Promise<number> {
+    const [result] = await this.txHost.tx.$queryRaw<SelectUserRankingCount[]>(
+      SELECT_USER_RANKING_COUNT(leagueSeasonIdx),
+    );
+
+    return result?.count ?? 0;
   }
 
   public async selectSeasonUserRankingAllByLeagueSeasonIdx(
