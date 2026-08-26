@@ -1,14 +1,23 @@
 import { AdminServerModule } from '@admin/admin-server.module';
 import { LeagueSeasonEntity } from '@admin/api/league-season/entity/league-season.entity';
 import { LeagueSeasonOverviewEntity } from '@admin/api/league-season/entity/league-season-overview.entity';
+import { PlaceType } from '@libs/core/place/constants/place-type.constant';
 import { LeagueSeasonSeedHelper } from '@libs/testing/seed/league-season/league-season.seed';
+import { NfcSeedHelper } from '@libs/testing/seed/nfc/nfc.seed';
+import { PlaceVisitSeedHelper } from '@libs/testing/seed/place-visit/place-visit.seed';
+import { PlaceSeedHelper } from '@libs/testing/seed/place/place.seed';
 import { RewardSeedHelper } from '@libs/testing/seed/reward/reward.seed';
+import { UserSeedHelper } from '@libs/testing/seed/user/user.seed';
 import { TestHelper } from '../../setup/test.helper';
 
 describe('League Season E2E test', () => {
   const testHelper = TestHelper.create(AdminServerModule);
   const rewardSeedHelper = testHelper.seedHelper(RewardSeedHelper);
   const leagueSeasonSeedHelper = testHelper.seedHelper(LeagueSeasonSeedHelper);
+  const nfcSeedHelper = testHelper.seedHelper(NfcSeedHelper);
+  const placeVisitSeedHelper = testHelper.seedHelper(PlaceVisitSeedHelper);
+  const placeSeedHelper = testHelper.seedHelper(PlaceSeedHelper);
+  const userSeedHelper = testHelper.seedHelper(UserSeedHelper);
 
   beforeEach(async () => {
     await testHelper.init();
@@ -285,6 +294,7 @@ describe('League Season E2E test', () => {
       expect(responseLeagueSeason.finalizedAt).toBe(
         leagueSeason.finalizedAt?.toISOString(),
       );
+      expect(responseLeagueSeason.participantCount).toBe(0);
       expect(responseLeagueSeason.rewardOptionList).toHaveLength(2);
       expect(
         responseLeagueSeason.rewardOptionList.map(
@@ -328,6 +338,58 @@ describe('League Season E2E test', () => {
       expect(response.body.rewardOptionList[0].reward.idx).toBe(
         visibleReward.idx,
       );
+    });
+
+    it('200 - count distinct participants only within league season period', async () => {
+      const admin = testHelper.loginAdmin.admin1;
+      const [firstUser, secondUser] = await userSeedHelper.seedAll([{}, {}]);
+      const leagueSeason = await leagueSeasonSeedHelper.seed({
+        startAt: new Date('2026-09-01T00:00:00.000Z'),
+        endAt: new Date('2026-09-07T23:59:59.999Z'),
+      });
+      const place = await placeSeedHelper.seed({
+        type: PlaceType.CAFE,
+        activatedAt: new Date('2026-08-31T00:00:00.000Z'),
+      });
+      const nfc = await nfcSeedHelper.seed({
+        placeIdx: place.idx,
+        score: 10,
+        activatedAt: new Date('2026-08-31T00:00:00.000Z'),
+      });
+      await placeVisitSeedHelper.seedAll([
+        {
+          userIdx: firstUser.idx,
+          nfcIdx: nfc.idx,
+          score: nfc.score,
+          createdAt: leagueSeason.startAt,
+        },
+        {
+          userIdx: firstUser.idx,
+          nfcIdx: nfc.idx,
+          score: nfc.score,
+          createdAt: new Date('2026-09-04T12:00:00.000Z'),
+        },
+        {
+          userIdx: secondUser.idx,
+          nfcIdx: nfc.idx,
+          score: nfc.score,
+          createdAt: leagueSeason.endAt,
+        },
+        {
+          userIdx: secondUser.idx,
+          nfcIdx: nfc.idx,
+          score: nfc.score,
+          createdAt: new Date(leagueSeason.endAt.getTime() + 1),
+        },
+      ]);
+
+      const response = await testHelper
+        .test()
+        .get(`/league-season/${leagueSeason.idx}`)
+        .set('Cookie', `token=Bearer ${admin.token}`)
+        .expect(200);
+
+      expect(response.body.participantCount).toBe(2);
     });
 
     it('400 - league season idx is invalid', async () => {
@@ -388,6 +450,7 @@ describe('League Season E2E test', () => {
       expect(leagueSeason.endAt).toBe('2026-10-14T23:59:59.000Z');
       expect(leagueSeason.activatedAt).toBeNull();
       expect(leagueSeason.finalizedAt).toBeNull();
+      expect(leagueSeason.participantCount).toBe(0);
       expect(leagueSeason.rewardOptionList).toStrictEqual([]);
     });
 

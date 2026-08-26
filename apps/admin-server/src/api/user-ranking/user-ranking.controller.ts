@@ -9,6 +9,9 @@ import { Exception } from '@libs/common/decorator/exception.decorator';
 export class UserRankingController {
   constructor(private readonly userRankingService: UserRankingService) {}
 
+  /**
+   * 특정 리그 시즌 사용자 랭킹 조회
+   */
   @Get('league-season/:leagueSeasonIdx/user-ranking')
   @AdminAuth()
   @Exception(400, 'Invalid league season idx')
