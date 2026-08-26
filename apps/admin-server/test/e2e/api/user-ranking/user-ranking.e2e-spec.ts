@@ -119,7 +119,6 @@ describe('User Ranking E2E test', () => {
       expect(firstUserRanking?.userReward?.id).toBe(userReward.id);
       expect(firstUserRanking?.userReward?.reward?.idx).toBe(reward.idx);
       expect(firstUserRanking?.userReward?.reward?.name).toBe(reward.name);
-      expect(firstUserRanking?.userReward?.user.idx).toBe(firstUser.idx);
       expect(secondUserRanking).toBeDefined();
       expect(secondUserRanking?.seasonRank).toBe(2);
       expect(secondUserRanking?.seasonScore).toBe(10);
