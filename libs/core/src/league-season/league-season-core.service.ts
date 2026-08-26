@@ -17,7 +17,7 @@ export class LeagueSeasonCoreService {
   ) {}
 
   public async getLeagueSeasonByIdx(
-    idx: number,
+    idx?: number,
     activated?: boolean,
   ): Promise<LeagueSeasonModel | null> {
     const leagueSeason =

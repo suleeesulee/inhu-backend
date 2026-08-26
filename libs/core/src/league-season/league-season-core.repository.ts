@@ -34,7 +34,7 @@ export class LeagueSeasonCoreRepository {
   ) {}
 
   public async selectLeagueSeasonByIdx(
-    idx: number,
+    idx?: number,
     activated?: boolean,
   ): Promise<SelectLeagueSeason | null> {
     return await this.txHost.tx.leagueSeason.findFirst({
@@ -43,6 +43,7 @@ export class LeagueSeasonCoreRepository {
         idx,
         ...this.getActivatedAtFilterWhereClause(activated),
       },
+      orderBy: [{ startAt: 'desc' }, { idx: 'desc' }],
     });
   }
 

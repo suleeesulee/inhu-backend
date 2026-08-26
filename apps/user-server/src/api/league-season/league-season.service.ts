@@ -4,7 +4,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { GetLeagueSeasonByDateDto } from './dto/request/get-league-season-by-date.dto';
+import { GetLeagueSeasonByIdxDto } from './dto/request/get-league-season-by-idx.dto';
 import { LeagueSeasonEntity } from './entity/league-season.entity';
 import { LeagueSeasonResultEntity } from './entity/league-season-result.entity';
 import { PlaceVisitCoreService } from '@libs/core/place-visit/place-visit-core.service';
@@ -24,25 +24,12 @@ export class LeagueSeasonService {
     private readonly userRewardCoreService: UserRewardCoreService,
   ) {}
 
-  public async getLeagueSeasonByDate(
-    dto: GetLeagueSeasonByDateDto,
+  public async getLeagueSeasonByIdx(
+    dto: GetLeagueSeasonByIdxDto,
   ): Promise<LeagueSeasonEntity> {
-    const { startAt, endAt } = dto;
-
-    if (
-      (startAt === undefined && endAt !== undefined) ||
-      (startAt !== undefined && endAt === undefined)
-    ) {
-      throw new BadRequestException(
-        'Start date and end date must be provided together',
-      );
-    }
-
     const leagueSeason =
-      await this.leagueSeasonCoreService.getLeagueSeasonByDate(
-        startAt,
-        endAt,
-        true,
+      await this.leagueSeasonCoreService.getLeagueSeasonByIdx(
+        dto.leagueSeasonIdx,
       );
     if (!leagueSeason) {
       throw new NotFoundException('League season not found');
