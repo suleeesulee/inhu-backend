@@ -1,44 +1,20 @@
 import { LeagueSeasonCoreService } from '@libs/core/league-season/league-season-core.service';
 import { UserRankingCoreService } from '@libs/core/user-ranking/user-ranking-core.service';
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { GetCumulativeRankingAllDto } from './dto/request/get-ranking-all.dto';
 import { GetSeasonRankingAllResponseDto } from './dto/response/get-season-ranking-all.response.dto';
 import { GetCumulativeRankingAllResponseDto } from './dto/response/get-cumulative-ranking-all.response.dto';
 import { CumulativeUserRankingEntity } from './entity/cumulative-user-ranking.entity';
 import { SeasonUserRankingEntity } from './entity/season-user-ranking.entity';
 import { UserRankingOverviewEntity } from './entity/user-ranking-overview.entity';
-import { UserRankingEntity } from './entity/user-ranking.entity';
 import { GetSeasonRankingAllDto } from './dto/request/get-season-ranking-all.dto';
-
-const RANKING_CACHE_TTL_SECONDS = 30;
 
 @Injectable()
 export class UserRankingService {
-  private readonly logger = new Logger(UserRankingService.name);
-
   constructor(
     private readonly userRankingCoreService: UserRankingCoreService,
     private readonly leagueSeasonCoreService: LeagueSeasonCoreService,
   ) {}
-
-  public async getUserRankingAllByLeagueSeasonIdx(
-    leagueSeasonIdx: number,
-  ): Promise<UserRankingEntity[]> {
-    const leagueSeason =
-      await this.leagueSeasonCoreService.getLeagueSeasonByIdx(
-        leagueSeasonIdx,
-        true,
-      );
-    if (!leagueSeason) {
-      throw new NotFoundException('League season not found');
-    }
-
-    return (
-      await this.userRankingCoreService.getUserRankingAllByLeagueSeasonIdx(
-        leagueSeasonIdx,
-      )
-    ).map(UserRankingEntity.fromModel);
-  }
 
   public async getSeasonRankingAll(
     leagueSeasonIdx: number,

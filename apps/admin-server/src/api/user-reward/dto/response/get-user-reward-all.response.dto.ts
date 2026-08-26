@@ -1,6 +1,6 @@
-import { UserRewardOverviewEntity } from '../../entity/user-reward-overview.entity';
+import { UserRewardEntity } from '../../entity/user-reward.entity';
 
 export class GetUserRewardAllResponseDto {
   public count: number;
-  public userRewardList: UserRewardOverviewEntity[];
+  public userRewardList: UserRewardEntity[];
 }

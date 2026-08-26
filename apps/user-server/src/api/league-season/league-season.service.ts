@@ -30,6 +30,7 @@ export class LeagueSeasonService {
     const leagueSeason =
       await this.leagueSeasonCoreService.getLeagueSeasonByIdx(
         dto.leagueSeasonIdx,
+        true,
       );
     if (!leagueSeason) {
       throw new NotFoundException('League season not found');

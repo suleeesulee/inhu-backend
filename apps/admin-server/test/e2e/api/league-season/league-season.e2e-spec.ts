@@ -365,143 +365,316 @@ describe('League Season E2E test', () => {
     });
   });
 
-  // describe('POST /league-season', () => {
-  //   it('201 - creates inactive league season with date boundaries and reward options', async () => {
-  //     const admin = testHelper.loginAdmin.admin1;
-  //     const [firstReward, secondReward] = await rewardSeedHelper.seedAll([
-  //       { name: '생성 리워드 1' },
-  //       { name: '생성 리워드 2' },
-  //     ]);
+  describe('POST /league-season', () => {
+    it('201 - creates inactive league season without reward options', async () => {
+      const admin = testHelper.loginAdmin.admin1;
 
-  //     const response = await testHelper
-  //       .test()
-  //       .post('/league-season')
-  //       .set('Cookie', `token=Bearer ${admin.token}`)
-  //       .send({
-  //         name: '2026년 10월 첫 번째 리그',
-  //         startAt: '2026-10-01',
-  //         endAt: '2026-10-14',
-  //         rewardOptionList: [
-  //           { rewardIdx: firstReward.idx, targetRank: 1 },
-  //           { rewardIdx: secondReward.idx, targetRank: 1 },
-  //         ],
-  //       })
-  //       .expect(201);
+      const response = await testHelper
+        .test()
+        .post('/league-season')
+        .set('Cookie', `token=Bearer ${admin.token}`)
+        .send({
+          name: '2026년 10월 첫 번째 리그',
+          startAt: '2026-10-01',
+          endAt: '2026-10-14',
+        })
+        .expect(201);
 
-  //     const leagueSeason: LeagueSeasonEntity = response.body;
+      const leagueSeason: LeagueSeasonEntity = response.body;
 
-  //     expect(leagueSeason.idx).toBeDefined();
-  //     expect(leagueSeason.name).toBe('2026년 10월 첫 번째 리그');
-  //     expect(leagueSeason.startAt).toBe('2026-10-01T00:00:00.000Z');
-  //     expect(leagueSeason.endAt).toBe('2026-10-14T23:59:59.000Z');
-  //     expect(leagueSeason.activatedAt).toBeNull();
-  //     expect(leagueSeason.finalizedAt).toBeNull();
-  //     expect(leagueSeason.rewardOptionList).toHaveLength(2);
-  //     expect(
-  //       leagueSeason.rewardOptionList.map((option) => option.reward.idx),
-  //     ).toEqual(expect.arrayContaining([firstReward.idx, secondReward.idx]));
-  //     expect(
-  //       leagueSeason.rewardOptionList.map((option) => option.targetRank),
-  //     ).toEqual([1, 1]);
-  //   });
+      expect(leagueSeason.idx).toBeDefined();
+      expect(leagueSeason.name).toBe('2026년 10월 첫 번째 리그');
+      expect(leagueSeason.startAt).toBe('2026-10-01T00:00:00.000Z');
+      expect(leagueSeason.endAt).toBe('2026-10-14T23:59:59.000Z');
+      expect(leagueSeason.activatedAt).toBeNull();
+      expect(leagueSeason.finalizedAt).toBeNull();
+      expect(leagueSeason.rewardOptionList).toStrictEqual([]);
+    });
 
-  //   it('201 - creates one-day league season with inclusive start and end boundaries', async () => {
-  //     const admin = testHelper.loginAdmin.admin1;
+    it('201 - creates one-day league season with inclusive start and end boundaries', async () => {
+      const admin = testHelper.loginAdmin.admin1;
 
-  //     const response = await testHelper
-  //       .test()
-  //       .post('/league-season')
-  //       .set('Cookie', `token=Bearer ${admin.token}`)
-  //       .send({
-  //         name: '하루짜리 리그',
-  //         startAt: '2026-11-11',
-  //         endAt: '2026-11-11',
-  //         rewardOptionList: [],
-  //       })
-  //       .expect(201);
+      const response = await testHelper
+        .test()
+        .post('/league-season')
+        .set('Cookie', `token=Bearer ${admin.token}`)
+        .send({
+          name: '하루짜리 리그',
+          startAt: '2026-11-11',
+          endAt: '2026-11-11',
+        })
+        .expect(201);
 
-  //     expect(response.body.startAt).toBe('2026-11-11T00:00:00.000Z');
-  //     expect(response.body.endAt).toBe('2026-11-11T23:59:59.000Z');
-  //   });
+      expect(response.body.startAt).toBe('2026-11-11T00:00:00.000Z');
+      expect(response.body.endAt).toBe('2026-11-11T23:59:59.000Z');
+    });
 
-  //   it('400 - start date is after end date', async () => {
-  //     const admin = testHelper.loginAdmin.admin1;
+    it('400 - start date is after end date', async () => {
+      const admin = testHelper.loginAdmin.admin1;
 
-  //     await testHelper
-  //       .test()
-  //       .post('/league-season')
-  //       .set('Cookie', `token=Bearer ${admin.token}`)
-  //       .send({
-  //         name: '역전된 기간 리그',
-  //         startAt: '2026-12-15',
-  //         endAt: '2026-12-14',
-  //         rewardOptionList: [],
-  //       })
-  //       .expect(400);
-  //   });
+      await testHelper
+        .test()
+        .post('/league-season')
+        .set('Cookie', `token=Bearer ${admin.token}`)
+        .send({
+          name: '역전된 기간 리그',
+          startAt: '2026-12-15',
+          endAt: '2026-12-14',
+        })
+        .expect(400);
+    });
 
-  //   it('400 - league season date format is invalid', async () => {
-  //     const admin = testHelper.loginAdmin.admin1;
+    it('400 - league season date format is invalid', async () => {
+      const admin = testHelper.loginAdmin.admin1;
 
-  //     await testHelper
-  //       .test()
-  //       .post('/league-season')
-  //       .set('Cookie', `token=Bearer ${admin.token}`)
-  //       .send({
-  //         name: '잘못된 날짜 리그',
-  //         startAt: '2026-12-32',
-  //         endAt: '2026-12-31',
-  //         rewardOptionList: [],
-  //       })
-  //       .expect(400);
-  //   });
+      await testHelper
+        .test()
+        .post('/league-season')
+        .set('Cookie', `token=Bearer ${admin.token}`)
+        .send({
+          name: '잘못된 날짜 리그',
+          startAt: '2026-12-32',
+          endAt: '2026-12-31',
+        })
+        .expect(400);
+    });
 
-  //   it('400 - reward option target rank is invalid', async () => {
-  //     const admin = testHelper.loginAdmin.admin1;
-  //     const reward = await rewardSeedHelper.seed({});
+    it('401 - access token is missing', async () => {
+      await testHelper
+        .test()
+        .post('/league-season')
+        .send({
+          name: '인증 없는 리그',
+          startAt: '2026-12-01',
+          endAt: '2026-12-14',
+        })
+        .expect(401);
+    });
 
-  //     await testHelper
-  //       .test()
-  //       .post('/league-season')
-  //       .set('Cookie', `token=Bearer ${admin.token}`)
-  //       .send({
-  //         name: '잘못된 리워드 옵션 리그',
-  //         startAt: '2026-12-01',
-  //         endAt: '2026-12-14',
-  //         rewardOptionList: [{ rewardIdx: reward.idx, targetRank: 0 }],
-  //       })
-  //       .expect(400);
-  //   });
+    it('403 - insufficient role', async () => {
+      const magazineAdmin = testHelper.loginAdmin.magazineAdmin1;
 
-  //   it('401 - access token is missing', async () => {
-  //     await testHelper
-  //       .test()
-  //       .post('/league-season')
-  //       .send({
-  //         name: '인증 없는 리그',
-  //         startAt: '2026-12-01',
-  //         endAt: '2026-12-14',
-  //         rewardOptionList: [],
-  //       })
-  //       .expect(401);
-  //   });
+      await testHelper
+        .test()
+        .post('/league-season')
+        .set('Cookie', `token=Bearer ${magazineAdmin.token}`)
+        .send({
+          name: '권한 없는 리그',
+          startAt: '2026-12-01',
+          endAt: '2026-12-14',
+        })
+        .expect(403);
+    });
+  });
 
-  //   it('403 - insufficient role', async () => {
-  //     const magazineAdmin = testHelper.loginAdmin.magazineAdmin1;
+  describe('POST /league-season/:idx/reward-option', () => {
+    it('201 - creates multiple reward options for league season', async () => {
+      const admin = testHelper.loginAdmin.admin1;
+      const leagueSeason = await leagueSeasonSeedHelper.seed({
+        rewardOptionList: null,
+      });
+      const [firstReward, secondReward, thirdReward] =
+        await rewardSeedHelper.seedAll([
+          { name: '1등 선택 상품 A' },
+          { name: '1등 선택 상품 B' },
+          { name: '2등 상품' },
+        ]);
 
-  //     await testHelper
-  //       .test()
-  //       .post('/league-season')
-  //       .set('Cookie', `token=Bearer ${magazineAdmin.token}`)
-  //       .send({
-  //         name: '권한 없는 리그',
-  //         startAt: '2026-12-01',
-  //         endAt: '2026-12-14',
-  //         rewardOptionList: [],
-  //       })
-  //       .expect(403);
-  //   });
-  // });
+      await testHelper
+        .test()
+        .post(`/league-season/${leagueSeason.idx}/reward-option`)
+        .set('Cookie', `token=Bearer ${admin.token}`)
+        .send({
+          rewardOptionList: [
+            { rewardIdx: firstReward.idx, targetRank: 1 },
+            { rewardIdx: secondReward.idx, targetRank: 1 },
+            { rewardIdx: thirdReward.idx, targetRank: 2 },
+          ],
+        })
+        .expect(201);
+
+      const rewardOptionList = await testHelper
+        .getPrisma()
+        .leagueRewardOption.findMany({
+          where: { leagueSeasonIdx: leagueSeason.idx },
+        });
+
+      expect(rewardOptionList).toHaveLength(3);
+      expect(
+        rewardOptionList.map(({ rewardIdx, targetRank }) => ({
+          rewardIdx,
+          targetRank,
+        })),
+      ).toEqual(
+        expect.arrayContaining([
+          { rewardIdx: firstReward.idx, targetRank: 1 },
+          { rewardIdx: secondReward.idx, targetRank: 1 },
+          { rewardIdx: thirdReward.idx, targetRank: 2 },
+        ]),
+      );
+    });
+
+    it('400 - league season idx is invalid', async () => {
+      const admin = testHelper.loginAdmin.admin1;
+
+      await testHelper
+        .test()
+        .post('/league-season/invalid-league-season-idx/reward-option')
+        .set('Cookie', `token=Bearer ${admin.token}`)
+        .send({ rewardOptionList: [] })
+        .expect(400);
+    });
+
+    it('400 - reward option target rank is invalid', async () => {
+      const admin = testHelper.loginAdmin.admin1;
+      const leagueSeason = await leagueSeasonSeedHelper.seed({});
+      const reward = await rewardSeedHelper.seed({});
+
+      await testHelper
+        .test()
+        .post(`/league-season/${leagueSeason.idx}/reward-option`)
+        .set('Cookie', `token=Bearer ${admin.token}`)
+        .send({
+          rewardOptionList: [{ rewardIdx: reward.idx, targetRank: 0 }],
+        })
+        .expect(400);
+    });
+
+    it('401 - access token is missing', async () => {
+      await testHelper
+        .test()
+        .post('/league-season/1/reward-option')
+        .send({ rewardOptionList: [] })
+        .expect(401);
+    });
+
+    it('403 - insufficient role', async () => {
+      const magazineAdmin = testHelper.loginAdmin.magazineAdmin1;
+
+      await testHelper
+        .test()
+        .post('/league-season/1/reward-option')
+        .set('Cookie', `token=Bearer ${magazineAdmin.token}`)
+        .send({ rewardOptionList: [] })
+        .expect(403);
+    });
+
+    it('404 - league season does not exist', async () => {
+      const admin = testHelper.loginAdmin.admin1;
+
+      await testHelper
+        .test()
+        .post('/league-season/999999/reward-option')
+        .set('Cookie', `token=Bearer ${admin.token}`)
+        .send({ rewardOptionList: [] })
+        .expect(404);
+    });
+  });
+
+  describe('PUT /league-season/:idx/reward-option', () => {
+    it('200 - replaces existing reward options', async () => {
+      const admin = testHelper.loginAdmin.admin1;
+      const [oldReward, firstReward, secondReward] =
+        await rewardSeedHelper.seedAll([
+          { name: '교체 전 상품' },
+          { name: '교체 후 상품 A' },
+          { name: '교체 후 상품 B' },
+        ]);
+      const leagueSeason = await leagueSeasonSeedHelper.seed({
+        rewardOptionList: [{ rewardIdx: oldReward.idx, targetRank: 1 }],
+      });
+
+      await testHelper
+        .test()
+        .put(`/league-season/${leagueSeason.idx}/reward-option`)
+        .set('Cookie', `token=Bearer ${admin.token}`)
+        .send({
+          rewardOptionList: [
+            { rewardIdx: firstReward.idx, targetRank: 1 },
+            { rewardIdx: secondReward.idx, targetRank: 2 },
+          ],
+        })
+        .expect(200);
+
+      const rewardOptionList = await testHelper
+        .getPrisma()
+        .leagueRewardOption.findMany({
+          where: { leagueSeasonIdx: leagueSeason.idx },
+        });
+
+      expect(rewardOptionList).toHaveLength(2);
+      expect(
+        rewardOptionList.map(({ rewardIdx, targetRank }) => ({
+          rewardIdx,
+          targetRank,
+        })),
+      ).toEqual(
+        expect.arrayContaining([
+          { rewardIdx: firstReward.idx, targetRank: 1 },
+          { rewardIdx: secondReward.idx, targetRank: 2 },
+        ]),
+      );
+      expect(
+        rewardOptionList.some(({ rewardIdx }) => rewardIdx === oldReward.idx),
+      ).toBe(false);
+    });
+
+    it('400 - league season idx is invalid', async () => {
+      const admin = testHelper.loginAdmin.admin1;
+
+      await testHelper
+        .test()
+        .put('/league-season/invalid-league-season-idx/reward-option')
+        .set('Cookie', `token=Bearer ${admin.token}`)
+        .send({ rewardOptionList: [] })
+        .expect(400);
+    });
+
+    it('400 - reward option target rank is invalid', async () => {
+      const admin = testHelper.loginAdmin.admin1;
+      const leagueSeason = await leagueSeasonSeedHelper.seed({});
+      const reward = await rewardSeedHelper.seed({});
+
+      await testHelper
+        .test()
+        .put(`/league-season/${leagueSeason.idx}/reward-option`)
+        .set('Cookie', `token=Bearer ${admin.token}`)
+        .send({
+          rewardOptionList: [{ rewardIdx: reward.idx, targetRank: 0 }],
+        })
+        .expect(400);
+    });
+
+    it('401 - access token is missing', async () => {
+      await testHelper
+        .test()
+        .put('/league-season/1/reward-option')
+        .send({ rewardOptionList: [] })
+        .expect(401);
+    });
+
+    it('403 - insufficient role', async () => {
+      const magazineAdmin = testHelper.loginAdmin.magazineAdmin1;
+
+      await testHelper
+        .test()
+        .put('/league-season/1/reward-option')
+        .set('Cookie', `token=Bearer ${magazineAdmin.token}`)
+        .send({ rewardOptionList: [] })
+        .expect(403);
+    });
+
+    it('404 - league season does not exist', async () => {
+      const admin = testHelper.loginAdmin.admin1;
+
+      await testHelper
+        .test()
+        .put('/league-season/999999/reward-option')
+        .set('Cookie', `token=Bearer ${admin.token}`)
+        .send({ rewardOptionList: [] })
+        .expect(404);
+    });
+  });
 
   describe('PUT /league-season/:idx', () => {
     it('200 - updates period boundaries and replaces reward option list', async () => {
