@@ -6,6 +6,8 @@ export class UserRankingOverviewEntity extends PickType(UserRankingEntity, [
   'seasonRank',
   'cumulativeRank',
   'cumulativeScore',
+  'seasonRankingParticipantCount',
+  'cumulativeRankingParticipantCount',
 ]) {
   constructor(data: UserRankingOverviewEntity) {
     super();
@@ -14,11 +16,15 @@ export class UserRankingOverviewEntity extends PickType(UserRankingEntity, [
 
   public static fromModel(
     model: UserRankingOverviewModel,
+    seasonRankingParticipantCount: number,
+    cumulativeRankingParticipantCount: number,
   ): UserRankingOverviewEntity {
     return new UserRankingOverviewEntity({
       seasonRank: model.seasonRank,
       cumulativeRank: model.cumulativeRank,
       cumulativeScore: model.cumulativeScore,
+      seasonRankingParticipantCount,
+      cumulativeRankingParticipantCount,
     });
   }
 }

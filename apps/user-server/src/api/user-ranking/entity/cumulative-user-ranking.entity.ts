@@ -8,6 +8,7 @@ export class CumulativeUserRankingEntity extends PickType(UserRankingEntity, [
   'cumulativeRank',
   'cumulativeScore',
   'cumulativeLatestVisitAt',
+  'cumulativeRankingParticipantCount',
 ]) {
   constructor(data: CumulativeUserRankingEntity) {
     super();
@@ -16,6 +17,7 @@ export class CumulativeUserRankingEntity extends PickType(UserRankingEntity, [
 
   public static fromModel(
     model: CumulativeUserRankingModel,
+    cumulativeRankingParticipantCount: number,
   ): CumulativeUserRankingEntity {
     return new CumulativeUserRankingEntity({
       userIdx: model.userIdx,
@@ -23,6 +25,7 @@ export class CumulativeUserRankingEntity extends PickType(UserRankingEntity, [
       cumulativeRank: model.cumulativeRank,
       cumulativeScore: model.cumulativeScore,
       cumulativeLatestVisitAt: model.cumulativeLatestVisitAt,
+      cumulativeRankingParticipantCount,
     });
   }
 }
