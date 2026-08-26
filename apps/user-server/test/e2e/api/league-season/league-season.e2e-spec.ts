@@ -33,502 +33,485 @@ describe('League Season E2E test', () => {
     await testHelper.destroy();
   });
 
-  // describe('GET /league-season', () => {
-  //   it('200 - league season field check', async () => {
-  //     const loginUser1 = testHelper.loginUsers.user1;
-  //     const loginUser2 = testHelper.loginUsers.user2;
-  //     const now = new Date();
-  //     const date = now.toISOString().slice(0, 10);
-  //     const [firstReward, secondReward, deletedOptionReward] =
-  //       await rewardSeedHelper.seedAll([
-  //         {
-  //           name: 'First place reward',
-  //           imagePath: '/reward/first-place.png',
-  //           activatedAt: now,
-  //         },
-  //         {
-  //           name: 'Second place reward',
-  //           imagePath: '/reward/second-place.png',
-  //           activatedAt: now,
-  //         },
-  //         {
-  //           name: 'Deleted option reward',
-  //           imagePath: '/reward/deleted-option.png',
-  //           activatedAt: now,
-  //         },
-  //       ]);
-  //     const leagueSeason = await leagueSeasonSeedHelper.seed({
-  //       name: 'Current League',
-  //       createdAt: now,
-  //       startAt: new Date(`${date}T00:00:00.000Z`),
-  //       endAt: new Date(`${date}T23:59:59.000Z`),
-  //       activatedAt: now,
-  //       finalizedAt: null,
-  //       rewardOptionList: [
-  //         {
-  //           rewardIdx: firstReward.idx,
-  //           targetRank: 1,
-  //         },
-  //         {
-  //           rewardIdx: secondReward.idx,
-  //           targetRank: 2,
-  //         },
-  //         {
-  //           rewardIdx: deletedOptionReward.idx,
-  //           targetRank: 3,
-  //           deletedAt: now,
-  //         },
-  //       ],
-  //     });
-  //     const place = await placeSeedHelper.seed({
-  //       type: PlaceType.CAFE,
-  //       activatedAt: now,
-  //     });
-  //     const nfc = await nfcSeedHelper.seed({
-  //       placeIdx: place.idx,
-  //       score: 10,
-  //       activatedAt: now,
-  //     });
-  //     await placeVisitSeedHelper.seedAll([
-  //       {
-  //         userIdx: loginUser1.idx,
-  //         nfcIdx: nfc.idx,
-  //         score: nfc.score,
-  //       },
-  //       {
-  //         userIdx: loginUser2.idx,
-  //         nfcIdx: nfc.idx,
-  //         score: nfc.score,
-  //       },
-  //     ]);
+  describe('GET /league-season', () => {
+    it('200 - league season field check', async () => {
+      const loginUser1 = testHelper.loginUsers.user1;
+      const loginUser2 = testHelper.loginUsers.user2;
+      const now = new Date();
+      const date = now.toISOString().slice(0, 10);
+      const [firstReward, secondReward, deletedOptionReward] =
+        await rewardSeedHelper.seedAll([
+          {
+            name: 'First place reward',
+            imagePath: '/reward/first-place.png',
+            activatedAt: now,
+          },
+          {
+            name: 'Second place reward',
+            imagePath: '/reward/second-place.png',
+            activatedAt: now,
+          },
+          {
+            name: 'Deleted option reward',
+            imagePath: '/reward/deleted-option.png',
+            activatedAt: now,
+          },
+        ]);
+      const leagueSeason = await leagueSeasonSeedHelper.seed({
+        name: 'Current League',
+        createdAt: now,
+        startAt: new Date(`${date}T00:00:00.000Z`),
+        endAt: new Date(`${date}T23:59:59.000Z`),
+        activatedAt: now,
+        finalizedAt: null,
+        rewardOptionList: [
+          {
+            rewardIdx: firstReward.idx,
+            targetRank: 1,
+          },
+          {
+            rewardIdx: secondReward.idx,
+            targetRank: 2,
+          },
+          {
+            rewardIdx: deletedOptionReward.idx,
+            targetRank: 3,
+            deletedAt: now,
+          },
+        ],
+      });
+      const place = await placeSeedHelper.seed({
+        type: PlaceType.CAFE,
+        activatedAt: now,
+      });
+      const nfc = await nfcSeedHelper.seed({
+        placeIdx: place.idx,
+        score: 10,
+        activatedAt: now,
+      });
+      await placeVisitSeedHelper.seedAll([
+        {
+          userIdx: loginUser1.idx,
+          nfcIdx: nfc.idx,
+          score: nfc.score,
+        },
+        {
+          userIdx: loginUser2.idx,
+          nfcIdx: nfc.idx,
+          score: nfc.score,
+        },
+      ]);
 
-  //     const response = await testHelper
-  //       .test()
-  //       .get('/league-season')
-  //       .query({ startAt: date, endAt: date })
-  //       .expect(200);
+      const response = await testHelper
+        .test()
+        .get('/league-season')
+        .query({ leagueSeasonIdx: leagueSeason.idx })
+        .expect(200);
 
-  //     const body: LeagueSeasonEntity = response.body;
+      const body: LeagueSeasonEntity = response.body;
 
-  //     expect(body.idx).toBe(leagueSeason.idx);
-  //     expect(body.name).toBe(leagueSeason.name);
-  //     expect(body.startAt).toBe(leagueSeason.startAt.toISOString());
-  //     expect(body.endAt).toBe(leagueSeason.endAt.toISOString());
-  //     expect(body.activatedAt).toBe(leagueSeason.activatedAt?.toISOString());
-  //     expect(body.createdAt).toBe(leagueSeason.createdAt.toISOString());
-  //     expect(body.participantCount).toBe(2);
-  //     expect(body.rewardOptionList).toHaveLength(2);
-  //     expect(body.rewardOptionList[0].targetRank).toBe(1);
-  //     expect(body.rewardOptionList[0].reward.idx).toBe(firstReward.idx);
-  //     expect(body.rewardOptionList[0].reward.name).toBe(firstReward.name);
-  //     expect(body.rewardOptionList[0].reward.imagePath).toBe(
-  //       firstReward.imagePath,
-  //     );
-  //     expect(body.rewardOptionList[1].targetRank).toBe(2);
-  //     expect(body.rewardOptionList[1].reward.idx).toBe(secondReward.idx);
-  //     expect(body.rewardOptionList[1].reward.name).toBe(secondReward.name);
-  //     expect(body.rewardOptionList[1].reward.imagePath).toBe(
-  //       secondReward.imagePath,
-  //     );
-  //     expect(
-  //       body.rewardOptionList.some(
-  //         ({ reward }) => reward.idx === deletedOptionReward.idx,
-  //       ),
-  //     ).toBe(false);
-  //   });
+      expect(body.idx).toBe(leagueSeason.idx);
+      expect(body.name).toBe(leagueSeason.name);
+      expect(body.startAt).toBe(leagueSeason.startAt.toISOString());
+      expect(body.endAt).toBe(leagueSeason.endAt.toISOString());
+      expect(body.activatedAt).toBe(leagueSeason.activatedAt?.toISOString());
+      expect(body.createdAt).toBe(leagueSeason.createdAt.toISOString());
+      expect(body.seasonRankingParticipantCount).toBe(2);
+      expect(body.cumulativeRankingParticipantCount).toBe(2);
+      expect(body.rewardOptionList).toHaveLength(2);
+      expect(body.rewardOptionList[0].targetRank).toBe(1);
+      expect(body.rewardOptionList[0].reward.idx).toBe(firstReward.idx);
+      expect(body.rewardOptionList[0].reward.name).toBe(firstReward.name);
+      expect(body.rewardOptionList[0].reward.imagePath).toBe(
+        firstReward.imagePath,
+      );
+      expect(body.rewardOptionList[1].targetRank).toBe(2);
+      expect(body.rewardOptionList[1].reward.idx).toBe(secondReward.idx);
+      expect(body.rewardOptionList[1].reward.name).toBe(secondReward.name);
+      expect(body.rewardOptionList[1].reward.imagePath).toBe(
+        secondReward.imagePath,
+      );
+      expect(
+        body.rewardOptionList.some(
+          ({ reward }) => reward.idx === deletedOptionReward.idx,
+        ),
+      ).toBe(false);
+    });
 
-  //   it('200 - get latest activated league season when period is not provided', async () => {
-  //     const now = Date.now();
-  //     const activatedAt = new Date(now - 40 * 24 * 60 * 60 * 1000);
-  //     const [, latestActivatedLeagueSeason] =
-  //       await leagueSeasonSeedHelper.seedAll([
-  //         {
-  //           name: 'Previous Activated League',
-  //           startAt: new Date(now - 30 * 24 * 60 * 60 * 1000),
-  //           endAt: new Date(now - 20 * 24 * 60 * 60 * 1000),
-  //           activatedAt,
-  //         },
-  //         {
-  //           name: 'Latest Activated League',
-  //           startAt: new Date(now - 10 * 24 * 60 * 60 * 1000),
-  //           endAt: new Date(now),
-  //           activatedAt,
-  //         },
-  //         {
-  //           name: 'Newer Inactive League',
-  //           startAt: new Date(now + 10 * 24 * 60 * 60 * 1000),
-  //           endAt: new Date(now + 20 * 24 * 60 * 60 * 1000),
-  //           activatedAt: null,
-  //         },
-  //       ]);
+    it('200 - get latest activated league season when idx is not provided', async () => {
+      const now = Date.now();
+      const activatedAt = new Date(now - 40 * 24 * 60 * 60 * 1000);
+      const [, latestActivatedLeagueSeason] =
+        await leagueSeasonSeedHelper.seedAll([
+          {
+            name: 'Previous Activated League',
+            startAt: new Date(now - 30 * 24 * 60 * 60 * 1000),
+            endAt: new Date(now - 20 * 24 * 60 * 60 * 1000),
+            activatedAt,
+          },
+          {
+            name: 'Latest Activated League',
+            startAt: new Date(now - 10 * 24 * 60 * 60 * 1000),
+            endAt: new Date(now),
+            activatedAt,
+          },
+          {
+            name: 'Newer Inactive League',
+            startAt: new Date(now + 10 * 24 * 60 * 60 * 1000),
+            endAt: new Date(now + 20 * 24 * 60 * 60 * 1000),
+            activatedAt: null,
+          },
+        ]);
 
-  //     const response = await testHelper
-  //       .test()
-  //       .get('/league-season')
-  //       .expect(200);
+      const response = await testHelper
+        .test()
+        .get('/league-season')
+        .expect(200);
 
-  //     const body: LeagueSeasonEntity = response.body;
+      const body: LeagueSeasonEntity = response.body;
 
-  //     expect(body.idx).toBe(latestActivatedLeagueSeason.idx);
-  //     expect(body.name).toBe(latestActivatedLeagueSeason.name);
-  //     expect(body.participantCount).toBe(0);
-  //   });
+      expect(body.idx).toBe(latestActivatedLeagueSeason.idx);
+      expect(body.name).toBe(latestActivatedLeagueSeason.name);
+      expect(body.seasonRankingParticipantCount).toBe(0);
+      expect(body.cumulativeRankingParticipantCount).toBe(0);
+    });
 
-  //   it('200 - no reward option and no place visit', async () => {
-  //     const now = new Date();
-  //     const date = now.toISOString().slice(0, 10);
-  //     const leagueSeason = await leagueSeasonSeedHelper.seed({
-  //       name: 'League without reward and visit',
-  //       createdAt: now,
-  //       startAt: new Date(`${date}T00:00:00.000Z`),
-  //       endAt: new Date(`${date}T23:59:59.000Z`),
-  //       activatedAt: now,
-  //       finalizedAt: null,
-  //       rewardOptionList: null,
-  //     });
+    it('200 - no reward option and no place visit', async () => {
+      const now = new Date();
+      const date = now.toISOString().slice(0, 10);
+      const leagueSeason = await leagueSeasonSeedHelper.seed({
+        name: 'League without reward and visit',
+        createdAt: now,
+        startAt: new Date(`${date}T00:00:00.000Z`),
+        endAt: new Date(`${date}T23:59:59.000Z`),
+        activatedAt: now,
+        finalizedAt: null,
+        rewardOptionList: null,
+      });
 
-  //     const response = await testHelper
-  //       .test()
-  //       .get('/league-season')
-  //       .query({ startAt: date, endAt: date })
-  //       .expect(200);
+      const response = await testHelper
+        .test()
+        .get('/league-season')
+        .query({ leagueSeasonIdx: leagueSeason.idx })
+        .expect(200);
 
-  //     const body: LeagueSeasonEntity = response.body;
+      const body: LeagueSeasonEntity = response.body;
 
-  //     expect(body.idx).toBe(leagueSeason.idx);
-  //     expect(body.participantCount).toBe(0);
-  //     expect(body.rewardOptionList).toStrictEqual([]);
-  //   });
+      expect(body.idx).toBe(leagueSeason.idx);
+      expect(body.seasonRankingParticipantCount).toBe(0);
+      expect(body.cumulativeRankingParticipantCount).toBe(0);
+      expect(body.rewardOptionList).toStrictEqual([]);
+    });
 
-  //   it('200 - get only league season matching exact period', async () => {
-  //     const targetStartAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
-  //     targetStartAt.setUTCHours(0, 0, 0, 0);
-  //     const targetEndAt = new Date(targetStartAt);
-  //     targetEndAt.setUTCHours(23, 59, 59, 0);
-  //     const otherStartAt = new Date(
-  //       targetStartAt.getTime() + 24 * 60 * 60 * 1000,
-  //     );
-  //     const otherEndAt = new Date(targetEndAt.getTime() + 24 * 60 * 60 * 1000);
-  //     const [targetLeagueSeason] = await leagueSeasonSeedHelper.seedAll([
-  //       {
-  //         name: 'Target League',
-  //         createdAt: new Date('2026-01-01T00:00:00.000Z'),
-  //         startAt: targetStartAt,
-  //         endAt: targetEndAt,
-  //         activatedAt: new Date('2026-01-02T00:00:00.000Z'),
-  //         finalizedAt: null,
-  //       },
-  //       {
-  //         name: 'Other League',
-  //         createdAt: new Date('2026-01-03T00:00:00.000Z'),
-  //         startAt: otherStartAt,
-  //         endAt: otherEndAt,
-  //         activatedAt: new Date('2026-01-04T00:00:00.000Z'),
-  //         finalizedAt: null,
-  //       },
-  //     ]);
+    it('200 - get only league season matching idx', async () => {
+      const targetStartAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
+      targetStartAt.setUTCHours(0, 0, 0, 0);
+      const targetEndAt = new Date(targetStartAt);
+      targetEndAt.setUTCHours(23, 59, 59, 0);
+      const otherStartAt = new Date(
+        targetStartAt.getTime() + 24 * 60 * 60 * 1000,
+      );
+      const otherEndAt = new Date(targetEndAt.getTime() + 24 * 60 * 60 * 1000);
+      const [targetLeagueSeason] = await leagueSeasonSeedHelper.seedAll([
+        {
+          name: 'Target League',
+          createdAt: new Date('2026-01-01T00:00:00.000Z'),
+          startAt: targetStartAt,
+          endAt: targetEndAt,
+          activatedAt: new Date('2026-01-02T00:00:00.000Z'),
+          finalizedAt: null,
+        },
+        {
+          name: 'Other League',
+          createdAt: new Date('2026-01-03T00:00:00.000Z'),
+          startAt: otherStartAt,
+          endAt: otherEndAt,
+          activatedAt: new Date('2026-01-04T00:00:00.000Z'),
+          finalizedAt: null,
+        },
+      ]);
 
-  //     const response = await testHelper
-  //       .test()
-  //       .get('/league-season')
-  //       .query({
-  //         startAt: targetStartAt.toISOString().slice(0, 10),
-  //         endAt: targetEndAt.toISOString().slice(0, 10),
-  //       })
-  //       .expect(200);
+      const response = await testHelper
+        .test()
+        .get('/league-season')
+        .query({ leagueSeasonIdx: targetLeagueSeason.idx })
+        .expect(200);
 
-  //     const body: LeagueSeasonEntity = response.body;
+      const body: LeagueSeasonEntity = response.body;
 
-  //     expect(body.idx).toBe(targetLeagueSeason.idx);
-  //     expect(body.name).toBe(targetLeagueSeason.name);
-  //   });
+      expect(body.idx).toBe(targetLeagueSeason.idx);
+      expect(body.name).toBe(targetLeagueSeason.name);
+    });
 
-  //   it('200 - count only place visits within target league season period', async () => {
-  //     const loginUser1 = testHelper.loginUsers.user1;
-  //     const loginUser2 = testHelper.loginUsers.user2;
-  //     const createdAt = new Date('2026-06-01T00:00:00.000Z');
-  //     const [previousLeagueSeason, targetLeagueSeason, nextLeagueSeason] =
-  //       await leagueSeasonSeedHelper.seedAll([
-  //         {
-  //           name: 'Previous League',
-  //           createdAt,
-  //           startAt: new Date('2026-07-01T00:00:00.000Z'),
-  //           endAt: new Date('2026-07-07T23:59:59.000Z'),
-  //           activatedAt: createdAt,
-  //           finalizedAt: new Date('2026-07-08T00:00:00.000Z'),
-  //         },
-  //         {
-  //           name: 'Target League',
-  //           createdAt,
-  //           startAt: new Date('2026-08-01T00:00:00.000Z'),
-  //           endAt: new Date('2026-08-07T23:59:59.000Z'),
-  //           activatedAt: createdAt,
-  //           finalizedAt: new Date('2026-08-08T00:00:00.000Z'),
-  //         },
-  //         {
-  //           name: 'Next League',
-  //           createdAt,
-  //           startAt: new Date('2026-08-09T00:00:00.000Z'),
-  //           endAt: new Date('2026-08-13T23:59:59.000Z'),
-  //           activatedAt: createdAt,
-  //           finalizedAt: new Date('2026-08-14T00:00:00.000Z'),
-  //         },
-  //       ]);
-  //     const place = await placeSeedHelper.seed({
-  //       type: PlaceType.CAFE,
-  //       activatedAt: createdAt,
-  //     });
-  //     const nfc = await nfcSeedHelper.seed({
-  //       placeIdx: place.idx,
-  //       score: 10,
-  //       activatedAt: createdAt,
-  //     });
-  //     await placeVisitSeedHelper.seedAll([
-  //       {
-  //         userIdx: loginUser1.idx,
-  //         nfcIdx: nfc.idx,
-  //         score: nfc.score,
-  //         createdAt: new Date('2026-07-03T10:00:00.000Z'),
-  //       },
-  //       {
-  //         userIdx: loginUser1.idx,
-  //         nfcIdx: nfc.idx,
-  //         score: nfc.score,
-  //         createdAt: new Date('2026-08-03T10:00:00.000Z'),
-  //       },
-  //       {
-  //         userIdx: loginUser2.idx,
-  //         nfcIdx: nfc.idx,
-  //         score: nfc.score,
-  //         createdAt: new Date('2026-08-05T10:00:00.000Z'),
-  //       },
-  //       {
-  //         userIdx: loginUser2.idx,
-  //         nfcIdx: nfc.idx,
-  //         score: nfc.score,
-  //         createdAt: new Date('2026-08-10T10:00:00.000Z'),
-  //       },
-  //     ]);
+    it('200 - count only place visits within target league season period', async () => {
+      const loginUser1 = testHelper.loginUsers.user1;
+      const loginUser2 = testHelper.loginUsers.user2;
+      const createdAt = new Date('2026-06-01T00:00:00.000Z');
+      const [previousLeagueSeason, targetLeagueSeason, nextLeagueSeason] =
+        await leagueSeasonSeedHelper.seedAll([
+          {
+            name: 'Previous League',
+            createdAt,
+            startAt: new Date('2026-07-01T00:00:00.000Z'),
+            endAt: new Date('2026-07-07T23:59:59.000Z'),
+            activatedAt: createdAt,
+            finalizedAt: new Date('2026-07-08T00:00:00.000Z'),
+          },
+          {
+            name: 'Target League',
+            createdAt,
+            startAt: new Date('2026-08-01T00:00:00.000Z'),
+            endAt: new Date('2026-08-07T23:59:59.000Z'),
+            activatedAt: createdAt,
+            finalizedAt: new Date('2026-08-08T00:00:00.000Z'),
+          },
+          {
+            name: 'Next League',
+            createdAt,
+            startAt: new Date('2026-08-09T00:00:00.000Z'),
+            endAt: new Date('2026-08-13T23:59:59.000Z'),
+            activatedAt: createdAt,
+            finalizedAt: new Date('2026-08-14T00:00:00.000Z'),
+          },
+        ]);
+      const place = await placeSeedHelper.seed({
+        type: PlaceType.CAFE,
+        activatedAt: createdAt,
+      });
+      const nfc = await nfcSeedHelper.seed({
+        placeIdx: place.idx,
+        score: 10,
+        activatedAt: createdAt,
+      });
+      await placeVisitSeedHelper.seedAll([
+        {
+          userIdx: loginUser1.idx,
+          nfcIdx: nfc.idx,
+          score: nfc.score,
+          createdAt: new Date('2026-07-03T10:00:00.000Z'),
+        },
+        {
+          userIdx: loginUser1.idx,
+          nfcIdx: nfc.idx,
+          score: nfc.score,
+          createdAt: new Date('2026-08-03T10:00:00.000Z'),
+        },
+        {
+          userIdx: loginUser2.idx,
+          nfcIdx: nfc.idx,
+          score: nfc.score,
+          createdAt: new Date('2026-08-05T10:00:00.000Z'),
+        },
+        {
+          userIdx: loginUser2.idx,
+          nfcIdx: nfc.idx,
+          score: nfc.score,
+          createdAt: new Date('2026-08-10T10:00:00.000Z'),
+        },
+      ]);
 
-  //     const response = await testHelper
-  //       .test()
-  //       .get('/league-season')
-  //       .query({ startAt: '2026-08-01', endAt: '2026-08-07' })
-  //       .expect(200);
+      const response = await testHelper
+        .test()
+        .get('/league-season')
+        .query({ leagueSeasonIdx: targetLeagueSeason.idx })
+        .expect(200);
 
-  //     const body: LeagueSeasonEntity = response.body;
+      const body: LeagueSeasonEntity = response.body;
 
-  //     expect(previousLeagueSeason.endAt.getTime()).toBeLessThan(
-  //       targetLeagueSeason.startAt.getTime(),
-  //     );
-  //     expect(targetLeagueSeason.endAt.getTime()).toBeLessThan(
-  //       nextLeagueSeason.startAt.getTime(),
-  //     );
-  //     expect(body.idx).toBe(targetLeagueSeason.idx);
-  //     expect(body.participantCount).toBe(2);
-  //   });
+      expect(previousLeagueSeason.endAt.getTime()).toBeLessThan(
+        targetLeagueSeason.startAt.getTime(),
+      );
+      expect(targetLeagueSeason.endAt.getTime()).toBeLessThan(
+        nextLeagueSeason.startAt.getTime(),
+      );
+      expect(body.idx).toBe(targetLeagueSeason.idx);
+      expect(body.seasonRankingParticipantCount).toBe(2);
+      expect(body.cumulativeRankingParticipantCount).toBe(2);
+    });
 
-  //   it('200 - include place visits at league season period boundaries', async () => {
-  //     const loginUser = testHelper.loginUsers.user1;
-  //     const createdAt = new Date('2026-06-01T00:00:00.000Z');
-  //     const leagueSeason = await leagueSeasonSeedHelper.seed({
-  //       name: 'Boundary League',
-  //       createdAt,
-  //       startAt: new Date('2026-08-01T00:00:00.000Z'),
-  //       endAt: new Date('2026-08-07T23:59:59.000Z'),
-  //       activatedAt: createdAt,
-  //       finalizedAt: new Date('2026-08-08T00:00:00.000Z'),
-  //     });
-  //     const place = await placeSeedHelper.seed({
-  //       type: PlaceType.CAFE,
-  //       activatedAt: createdAt,
-  //     });
-  //     const nfc = await nfcSeedHelper.seed({
-  //       placeIdx: place.idx,
-  //       score: 10,
-  //       activatedAt: createdAt,
-  //     });
-  //     await placeVisitSeedHelper.seedAll([
-  //       {
-  //         userIdx: loginUser.idx,
-  //         nfcIdx: nfc.idx,
-  //         score: nfc.score,
-  //         createdAt: new Date('2026-07-31T23:59:59.999Z'),
-  //       },
-  //       {
-  //         userIdx: loginUser.idx,
-  //         nfcIdx: nfc.idx,
-  //         score: nfc.score,
-  //         createdAt: leagueSeason.startAt,
-  //       },
-  //       {
-  //         userIdx: loginUser.idx,
-  //         nfcIdx: nfc.idx,
-  //         score: nfc.score,
-  //         createdAt: leagueSeason.endAt,
-  //       },
-  //       {
-  //         userIdx: loginUser.idx,
-  //         nfcIdx: nfc.idx,
-  //         score: nfc.score,
-  //         createdAt: new Date('2026-08-07T23:59:59.001Z'),
-  //       },
-  //     ]);
+    it('200 - include place visits at league season period boundaries', async () => {
+      const loginUser = testHelper.loginUsers.user1;
+      const createdAt = new Date('2026-06-01T00:00:00.000Z');
+      const leagueSeason = await leagueSeasonSeedHelper.seed({
+        name: 'Boundary League',
+        createdAt,
+        startAt: new Date('2026-08-01T00:00:00.000Z'),
+        endAt: new Date('2026-08-07T23:59:59.000Z'),
+        activatedAt: createdAt,
+        finalizedAt: new Date('2026-08-08T00:00:00.000Z'),
+      });
+      const place = await placeSeedHelper.seed({
+        type: PlaceType.CAFE,
+        activatedAt: createdAt,
+      });
+      const nfc = await nfcSeedHelper.seed({
+        placeIdx: place.idx,
+        score: 10,
+        activatedAt: createdAt,
+      });
+      await placeVisitSeedHelper.seedAll([
+        {
+          userIdx: loginUser.idx,
+          nfcIdx: nfc.idx,
+          score: nfc.score,
+          createdAt: new Date('2026-07-31T23:59:59.999Z'),
+        },
+        {
+          userIdx: loginUser.idx,
+          nfcIdx: nfc.idx,
+          score: nfc.score,
+          createdAt: leagueSeason.startAt,
+        },
+        {
+          userIdx: loginUser.idx,
+          nfcIdx: nfc.idx,
+          score: nfc.score,
+          createdAt: leagueSeason.endAt,
+        },
+        {
+          userIdx: loginUser.idx,
+          nfcIdx: nfc.idx,
+          score: nfc.score,
+          createdAt: new Date('2026-08-07T23:59:59.001Z'),
+        },
+      ]);
 
-  //     const response = await testHelper
-  //       .test()
-  //       .get('/league-season')
-  //       .query({ startAt: '2026-08-01', endAt: '2026-08-07' })
-  //       .expect(200);
+      const response = await testHelper
+        .test()
+        .get('/league-season')
+        .query({ leagueSeasonIdx: leagueSeason.idx })
+        .expect(200);
 
-  //     const body: LeagueSeasonEntity = response.body;
+      const body: LeagueSeasonEntity = response.body;
 
-  //     expect(body.idx).toBe(leagueSeason.idx);
-  //     expect(body.participantCount).toBe(1);
-  //   });
+      expect(body.idx).toBe(leagueSeason.idx);
+      expect(body.seasonRankingParticipantCount).toBe(1);
+      expect(body.cumulativeRankingParticipantCount).toBe(1);
+    });
 
-  //   it('200 - multiple reward options for same target rank', async () => {
-  //     const activatedAt = new Date();
-  //     const [firstReward, secondReward, otherLeagueReward] =
-  //       await rewardSeedHelper.seedAll([
-  //         {
-  //           name: 'First selectable reward',
-  //           activatedAt,
-  //         },
-  //         {
-  //           name: 'Second selectable reward',
-  //           activatedAt,
-  //         },
-  //         {
-  //           name: 'Other league reward',
-  //           activatedAt,
-  //         },
-  //       ]);
-  //     const targetStartAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
-  //     targetStartAt.setUTCHours(0, 0, 0, 0);
-  //     const targetEndAt = new Date(targetStartAt);
-  //     targetEndAt.setUTCHours(23, 59, 59, 0);
-  //     const otherStartAt = new Date(
-  //       targetStartAt.getTime() + 24 * 60 * 60 * 1000,
-  //     );
-  //     const otherEndAt = new Date(targetEndAt.getTime() + 24 * 60 * 60 * 1000);
-  //     const [targetLeagueSeason] = await leagueSeasonSeedHelper.seedAll([
-  //       {
-  //         name: 'Selectable Reward League',
-  //         startAt: targetStartAt,
-  //         endAt: targetEndAt,
-  //         activatedAt,
-  //         finalizedAt: null,
-  //         rewardOptionList: [
-  //           { rewardIdx: firstReward.idx, targetRank: 1 },
-  //           { rewardIdx: secondReward.idx, targetRank: 1 },
-  //         ],
-  //       },
-  //       {
-  //         name: 'Other Reward League',
-  //         startAt: otherStartAt,
-  //         endAt: otherEndAt,
-  //         activatedAt,
-  //         finalizedAt: null,
-  //         rewardOptionList: [
-  //           { rewardIdx: otherLeagueReward.idx, targetRank: 1 },
-  //         ],
-  //       },
-  //     ]);
+    it('200 - multiple reward options for same target rank', async () => {
+      const activatedAt = new Date();
+      const [firstReward, secondReward, otherLeagueReward] =
+        await rewardSeedHelper.seedAll([
+          {
+            name: 'First selectable reward',
+            activatedAt,
+          },
+          {
+            name: 'Second selectable reward',
+            activatedAt,
+          },
+          {
+            name: 'Other league reward',
+            activatedAt,
+          },
+        ]);
+      const targetStartAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
+      targetStartAt.setUTCHours(0, 0, 0, 0);
+      const targetEndAt = new Date(targetStartAt);
+      targetEndAt.setUTCHours(23, 59, 59, 0);
+      const otherStartAt = new Date(
+        targetStartAt.getTime() + 24 * 60 * 60 * 1000,
+      );
+      const otherEndAt = new Date(targetEndAt.getTime() + 24 * 60 * 60 * 1000);
+      const [targetLeagueSeason] = await leagueSeasonSeedHelper.seedAll([
+        {
+          name: 'Selectable Reward League',
+          startAt: targetStartAt,
+          endAt: targetEndAt,
+          activatedAt,
+          finalizedAt: null,
+          rewardOptionList: [
+            { rewardIdx: firstReward.idx, targetRank: 1 },
+            { rewardIdx: secondReward.idx, targetRank: 1 },
+          ],
+        },
+        {
+          name: 'Other Reward League',
+          startAt: otherStartAt,
+          endAt: otherEndAt,
+          activatedAt,
+          finalizedAt: null,
+          rewardOptionList: [
+            { rewardIdx: otherLeagueReward.idx, targetRank: 1 },
+          ],
+        },
+      ]);
 
-  //     const response = await testHelper
-  //       .test()
-  //       .get('/league-season')
-  //       .query({
-  //         startAt: targetLeagueSeason.startAt.toISOString().slice(0, 10),
-  //         endAt: targetLeagueSeason.endAt.toISOString().slice(0, 10),
-  //       })
-  //       .expect(200);
+      const response = await testHelper
+        .test()
+        .get('/league-season')
+        .query({ leagueSeasonIdx: targetLeagueSeason.idx })
+        .expect(200);
 
-  //     const body: LeagueSeasonEntity = response.body;
+      const body: LeagueSeasonEntity = response.body;
 
-  //     expect(body.rewardOptionList).toHaveLength(2);
-  //     expect(
-  //       body.rewardOptionList.map(({ targetRank }) => targetRank),
-  //     ).toStrictEqual([1, 1]);
-  //     expect(
-  //       body.rewardOptionList.map(({ reward }) => reward.idx).sort(),
-  //     ).toStrictEqual([firstReward.idx, secondReward.idx].sort());
-  //     expect(
-  //       body.rewardOptionList.some(
-  //         ({ reward }) => reward.idx === otherLeagueReward.idx,
-  //       ),
-  //     ).toBe(false);
-  //   });
+      expect(body.rewardOptionList).toHaveLength(2);
+      expect(
+        body.rewardOptionList.map(({ targetRank }) => targetRank),
+      ).toStrictEqual([1, 1]);
+      expect(
+        body.rewardOptionList.map(({ reward }) => reward.idx).sort(),
+      ).toStrictEqual([firstReward.idx, secondReward.idx].sort());
+      expect(
+        body.rewardOptionList.some(
+          ({ reward }) => reward.idx === otherLeagueReward.idx,
+        ),
+      ).toBe(false);
+    });
 
-  //   it('400 - start date is missing', async () => {
-  //     await testHelper
-  //       .test()
-  //       .get('/league-season')
-  //       .query({ endAt: '2026-08-31' })
-  //       .expect(400);
-  //   });
+    it('400 - league season idx is not an integer', async () => {
+      await testHelper
+        .test()
+        .get('/league-season')
+        .query({ leagueSeasonIdx: 1.5 })
+        .expect(400);
+    });
 
-  //   it('400 - end date is missing', async () => {
-  //     await testHelper
-  //       .test()
-  //       .get('/league-season')
-  //       .query({ startAt: '2026-08-01' })
-  //       .expect(400);
-  //   });
+    it('400 - league season idx is not a number', async () => {
+      await testHelper
+        .test()
+        .get('/league-season')
+        .query({ leagueSeasonIdx: 'invalid-idx' })
+        .expect(400);
+    });
 
-  //   it('400 - start date format is invalid', async () => {
-  //     await testHelper
-  //       .test()
-  //       .get('/league-season')
-  //       .query({ startAt: '2026-08-32', endAt: '2026-08-31' })
-  //       .expect(400);
-  //   });
+    it('404 - league season does not exist', async () => {
+      await testHelper
+        .test()
+        .get('/league-season')
+        .query({ leagueSeasonIdx: 999999 })
+        .expect(404);
+    });
 
-  //   it('400 - end date format is invalid', async () => {
-  //     await testHelper
-  //       .test()
-  //       .get('/league-season')
-  //       .query({ startAt: '2026-08-01', endAt: 'invalid-date' })
-  //       .expect(400);
-  //   });
+    it('404 - activated league season does not exist when period is not provided', async () => {
+      await leagueSeasonSeedHelper.seed({
+        name: 'Inactive League',
+        startAt: new Date(),
+        endAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+        activatedAt: null,
+      });
 
-  //   it('404 - league season does not exist', async () => {
-  //     await testHelper
-  //       .test()
-  //       .get('/league-season')
-  //       .query({ startAt: '2025-01-01', endAt: '2025-01-31' })
-  //       .expect(404);
-  //   });
+      await testHelper.test().get('/league-season').expect(404);
+    });
 
-  //   it('404 - activated league season does not exist when period is not provided', async () => {
-  //     await leagueSeasonSeedHelper.seed({
-  //       name: 'Inactive League',
-  //       startAt: new Date(),
-  //       endAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-  //       activatedAt: null,
-  //     });
+    it('404 - inactive league season is not exposed', async () => {
+      const inactiveLeagueSeason = await leagueSeasonSeedHelper.seed({
+        name: 'Inactive League',
+        createdAt: new Date('2026-07-01T00:00:00.000Z'),
+        startAt: new Date('2026-10-01T00:00:00.000Z'),
+        endAt: new Date('2026-10-07T23:59:59.000Z'),
+        activatedAt: null,
+        finalizedAt: null,
+      });
 
-  //     await testHelper.test().get('/league-season').expect(404);
-  //   });
-
-  //   it('404 - inactive league season is not exposed', async () => {
-  //     await leagueSeasonSeedHelper.seed({
-  //       name: 'Inactive League',
-  //       createdAt: new Date('2026-07-01T00:00:00.000Z'),
-  //       startAt: new Date('2026-10-01T00:00:00.000Z'),
-  //       endAt: new Date('2026-10-07T23:59:59.000Z'),
-  //       activatedAt: null,
-  //       finalizedAt: null,
-  //     });
-
-  //     await testHelper
-  //       .test()
-  //       .get('/league-season')
-  //       .query({ startAt: '2026-10-01', endAt: '2026-10-07' })
-  //       .expect(404);
-  //   });
-  // });
+      await testHelper
+        .test()
+        .get('/league-season')
+        .query({ leagueSeasonIdx: inactiveLeagueSeason.idx })
+        .expect(404);
+    });
+  });
 
   describe('GET /league-season/all', () => {
     it('200 - league season overview field and default order check', async () => {

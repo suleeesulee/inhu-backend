@@ -9,7 +9,6 @@ import { GetSeasonRankingAllDto } from './dto/request/get-season-ranking-all.dto
 import { GetCumulativeRankingAllResponseDto } from './dto/response/get-cumulative-ranking-all.response.dto';
 import { GetSeasonRankingAllResponseDto } from './dto/response/get-season-ranking-all.response.dto';
 import { UserRankingOverviewEntity } from './entity/user-ranking-overview.entity';
-import { UserRankingEntity } from './entity/user-ranking.entity';
 import { UserRankingService } from './user-ranking.service';
 
 @Controller()

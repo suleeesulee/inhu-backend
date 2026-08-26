@@ -12,7 +12,6 @@ import {
 } from '@nestjs/common';
 import { GetUserRewardAllDto } from './dto/request/get-user-reward-all.dto';
 import { GetUserRewardAllResponseDto } from './dto/response/get-user-reward-all.response.dto';
-import { UserRewardOverviewEntity } from './entity/user-reward-overview.entity';
 import { UserRewardEntity } from './entity/user-reward.entity';
 import { IssueUserRewardDto } from './dto/request/issue-user-reward.dto';
 import { S3Service } from '@libs/common/modules/s3/s3.service';
@@ -91,7 +90,7 @@ export class UserRewardService {
           throw new NotFoundException('Reward not found');
         }
 
-        return UserRewardOverviewEntity.fromModel(
+        return UserRewardEntity.fromModel(
           userReward,
           leagueSeasonResult,
           user,

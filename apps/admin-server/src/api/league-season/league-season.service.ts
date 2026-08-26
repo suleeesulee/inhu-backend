@@ -1,4 +1,5 @@
 import { LeagueSeasonCoreService } from '@libs/core/league-season/league-season-core.service';
+import { PlaceVisitCoreService } from '@libs/core/place-visit/place-visit-core.service';
 import {
   BadRequestException,
   ConflictException,
@@ -18,6 +19,7 @@ import { UpdateLeagueSeasonLeagueRewardOptionDto } from './dto/request/update-le
 export class LeagueSeasonService {
   constructor(
     private readonly leagueSeasonCoreService: LeagueSeasonCoreService,
+    private readonly placeVisitCoreService: PlaceVisitCoreService,
   ) {}
 
   public async getLeagueSeasonByIdx(idx: number): Promise<LeagueSeasonEntity> {
@@ -27,7 +29,13 @@ export class LeagueSeasonService {
       throw new NotFoundException(`League season with idx ${idx} not found`);
     }
 
-    return LeagueSeasonEntity.fromModel(leagueSeason);
+    const participantCount =
+      await this.placeVisitCoreService.getPlaceVisitParticipantCountByDatePeriod(
+        leagueSeason.startAt,
+        leagueSeason.endAt,
+      );
+
+    return LeagueSeasonEntity.fromModel(leagueSeason, participantCount);
   }
 
   public async getLeagueSeasonAll(
@@ -65,6 +73,7 @@ export class LeagueSeasonService {
         endAt: dto.endAt,
         activatedAt: null,
       }),
+      0,
     );
   }
 

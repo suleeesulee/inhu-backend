@@ -53,11 +53,29 @@ export class UserRankingEntity {
    */
   public cumulativeLatestVisitAt: Date | null;
 
+  /**
+   * 시즌 랭킹 참여자 수
+   *
+   * @example 100
+   */
+  public seasonRankingParticipantCount: number;
+
+  /**
+   * 누적 랭킹 참여자 수
+   *
+   * @example 500
+   */
+  public cumulativeRankingParticipantCount: number;
+
   constructor(data: UserRankingEntity) {
     Object.assign(this, data);
   }
 
-  public static fromModel(model: UserRankingModel): UserRankingEntity {
+  public static fromModel(
+    model: UserRankingModel,
+    seasonRankingParticipantCount: number,
+    cumulativeRankingParticipantCount: number,
+  ): UserRankingEntity {
     return new UserRankingEntity({
       userIdx: model.userIdx,
       nickname: model.nickname,
@@ -67,6 +85,8 @@ export class UserRankingEntity {
       cumulativeRank: model.cumulativeRank,
       cumulativeScore: model.cumulativeScore,
       cumulativeLatestVisitAt: model.cumulativeLatestVisitAt,
+      seasonRankingParticipantCount,
+      cumulativeRankingParticipantCount,
     });
   }
 }

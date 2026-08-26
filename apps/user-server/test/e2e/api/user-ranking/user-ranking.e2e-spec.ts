@@ -1032,6 +1032,8 @@ describe('User Ranking E2E test', () => {
         seasonRank: 2,
         cumulativeRank: 1,
         cumulativeScore: 65,
+        seasonRankingParticipantCount: 2,
+        cumulativeRankingParticipantCount: 2,
       });
     });
 
@@ -1107,6 +1109,8 @@ describe('User Ranking E2E test', () => {
         seasonRank: 2,
         cumulativeRank: 1,
         cumulativeScore: 110,
+        seasonRankingParticipantCount: 2,
+        cumulativeRankingParticipantCount: 2,
       });
     });
 
@@ -1134,6 +1138,8 @@ describe('User Ranking E2E test', () => {
         seasonRank: null,
         cumulativeRank: null,
         cumulativeScore: 0,
+        seasonRankingParticipantCount: 0,
+        cumulativeRankingParticipantCount: 0,
       });
     });
 

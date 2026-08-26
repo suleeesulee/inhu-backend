@@ -38,7 +38,10 @@ export class LeagueSeasonResultEntity {
     return new LeagueSeasonResultEntity({
       id: model.id,
       createdAt: model.createdAt,
-      leagueSeason: LeagueSeasonEntity.fromModel(model.leagueSeason),
+      leagueSeason: LeagueSeasonEntity.fromModel(
+        model.leagueSeason,
+        model.participantCount,
+      ),
       participantCount: model.participantCount,
     });
   }

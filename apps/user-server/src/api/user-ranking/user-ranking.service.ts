@@ -1,44 +1,20 @@
 import { LeagueSeasonCoreService } from '@libs/core/league-season/league-season-core.service';
 import { UserRankingCoreService } from '@libs/core/user-ranking/user-ranking-core.service';
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { GetCumulativeRankingAllDto } from './dto/request/get-ranking-all.dto';
 import { GetSeasonRankingAllResponseDto } from './dto/response/get-season-ranking-all.response.dto';
 import { GetCumulativeRankingAllResponseDto } from './dto/response/get-cumulative-ranking-all.response.dto';
 import { CumulativeUserRankingEntity } from './entity/cumulative-user-ranking.entity';
 import { SeasonUserRankingEntity } from './entity/season-user-ranking.entity';
 import { UserRankingOverviewEntity } from './entity/user-ranking-overview.entity';
-import { UserRankingEntity } from './entity/user-ranking.entity';
 import { GetSeasonRankingAllDto } from './dto/request/get-season-ranking-all.dto';
-
-const RANKING_CACHE_TTL_SECONDS = 30;
 
 @Injectable()
 export class UserRankingService {
-  private readonly logger = new Logger(UserRankingService.name);
-
   constructor(
     private readonly userRankingCoreService: UserRankingCoreService,
     private readonly leagueSeasonCoreService: LeagueSeasonCoreService,
   ) {}
-
-  public async getUserRankingAllByLeagueSeasonIdx(
-    leagueSeasonIdx: number,
-  ): Promise<UserRankingEntity[]> {
-    const leagueSeason =
-      await this.leagueSeasonCoreService.getLeagueSeasonByIdx(
-        leagueSeasonIdx,
-        true,
-      );
-    if (!leagueSeason) {
-      throw new NotFoundException('League season not found');
-    }
-
-    return (
-      await this.userRankingCoreService.getUserRankingAllByLeagueSeasonIdx(
-        leagueSeasonIdx,
-      )
-    ).map(UserRankingEntity.fromModel);
-  }
 
   public async getSeasonRankingAll(
     leagueSeasonIdx: number,
@@ -68,7 +44,7 @@ export class UserRankingService {
       hasNext: rankingList.length > pageSize,
       seasonUserRankingList: rankingList
         .slice(0, pageSize)
-        .map(SeasonUserRankingEntity.fromModel),
+        .map((ranking) => SeasonUserRankingEntity.fromModel(ranking)),
     };
   }
 
@@ -87,21 +63,25 @@ export class UserRankingService {
       hasNext: rankingList.length > pageSize,
       cumulativeUserRankingList: rankingList
         .slice(0, pageSize)
-        .map(CumulativeUserRankingEntity.fromModel),
+        .map((ranking) => CumulativeUserRankingEntity.fromModel(ranking)),
     };
   }
 
   public async getUserRankingOverview(
     userIdx: number,
   ): Promise<UserRankingOverviewEntity> {
-    const userRanking =
-      await this.userRankingCoreService.getUserRankingOverviewByUserIdx(
-        userIdx,
-      );
+    const [userRanking, participantCount] = await Promise.all([
+      this.userRankingCoreService.getUserRankingOverviewByUserIdx(userIdx),
+      this.userRankingCoreService.getUserRankingOverviewParticipantCount(),
+    ]);
     if (!userRanking) {
       throw new NotFoundException('Latest league season or user not found');
     }
 
-    return UserRankingOverviewEntity.fromModel(userRanking);
+    return UserRankingOverviewEntity.fromModel(
+      userRanking,
+      participantCount.seasonRankingParticipantCount,
+      participantCount.cumulativeRankingParticipantCount,
+    );
   }
 }

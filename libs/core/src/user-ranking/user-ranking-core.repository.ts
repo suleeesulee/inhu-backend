@@ -20,6 +20,23 @@ import {
 } from './model/prisma-type/select-user-ranking';
 import { GetCumulativeRankingAllInput } from './inputs/get-cumulative-ranking-all.input';
 import { GetSeasonRankingAllInput } from './inputs/get-season-ranking-all.input';
+import { GetUserRankingAllInput } from './inputs/get-user-ranking-all.input';
+import {
+  SELECT_USER_RANKING_COUNT,
+  SelectUserRankingCount,
+} from './model/prisma-type/select-user-ranking-count';
+import {
+  SELECT_SEASON_USER_RANKING_COUNT,
+  SelectSeasonUserRankingCount,
+} from './model/prisma-type/select-season-user-ranking-count';
+import {
+  SELECT_CUMULATIVE_USER_RANKING_COUNT,
+  SelectCumulativeUserRankingCount,
+} from './model/prisma-type/select-cumulative-user-ranking-count';
+import {
+  SELECT_USER_RANKING_OVERVIEW_PARTICIPANT_COUNT,
+  SelectUserRankingOverviewParticipantCount,
+} from './model/prisma-type/select-user-ranking-overview-participant-count';
 
 @Injectable()
 export class UserRankingCoreRepository {
@@ -29,11 +46,26 @@ export class UserRankingCoreRepository {
 
   public async selectUserRankingAllByLeagueSeasonIdx(
     leagueSeasonIdx: number,
+    input?: GetUserRankingAllInput,
   ): Promise<SelectUserRanking[]> {
     return await this.txHost.tx.$queryRaw<SelectUserRanking[]>(Prisma.sql`
       ${SELECT_USER_RANKING}
       WHERE ru.league_season_idx = ${leagueSeasonIdx}
+      ORDER BY
+        ru.season_rank ASC NULLS LAST,
+        ru.user_idx ASC
+      ${input ? Prisma.sql`LIMIT ${input.take} OFFSET ${input.skip}` : Prisma.empty}
     `);
+  }
+
+  public async selectUserRankingCountByLeagueSeasonIdx(
+    leagueSeasonIdx: number,
+  ): Promise<number> {
+    const [result] = await this.txHost.tx.$queryRaw<SelectUserRankingCount[]>(
+      SELECT_USER_RANKING_COUNT(leagueSeasonIdx),
+    );
+
+    return result?.count ?? 0;
   }
 
   public async selectSeasonUserRankingAllByLeagueSeasonIdx(
@@ -52,6 +84,16 @@ export class UserRankingCoreRepository {
     );
   }
 
+  public async selectSeasonUserRankingCountByLeagueSeasonIdx(
+    leagueSeasonIdx: number,
+  ): Promise<number> {
+    const [result] = await this.txHost.tx.$queryRaw<
+      SelectSeasonUserRankingCount[]
+    >(SELECT_SEASON_USER_RANKING_COUNT(leagueSeasonIdx));
+
+    return result?.count ?? 0;
+  }
+
   public async selectCumulativeUserRankingAll(
     input: GetCumulativeRankingAllInput,
   ): Promise<SelectCumulativeUserRanking[]> {
@@ -67,6 +109,14 @@ export class UserRankingCoreRepository {
     );
   }
 
+  public async selectCumulativeUserRankingCount(): Promise<number> {
+    const [result] = await this.txHost.tx.$queryRaw<
+      SelectCumulativeUserRankingCount[]
+    >(SELECT_CUMULATIVE_USER_RANKING_COUNT);
+
+    return result?.count ?? 0;
+  }
+
   public async selectUserRankingOverviewByUserIdx(
     userIdx: number,
   ): Promise<SelectUserRankingOverview | null> {
@@ -78,5 +128,18 @@ export class UserRankingCoreRepository {
       `);
 
     return userRanking ?? null;
+  }
+
+  public async selectUserRankingOverviewParticipantCount(): Promise<SelectUserRankingOverviewParticipantCount> {
+    const [participantCount] = await this.txHost.tx.$queryRaw<
+      SelectUserRankingOverviewParticipantCount[]
+    >(SELECT_USER_RANKING_OVERVIEW_PARTICIPANT_COUNT);
+
+    return {
+      seasonRankingParticipantCount:
+        participantCount?.seasonRankingParticipantCount ?? 0,
+      cumulativeRankingParticipantCount:
+        participantCount?.cumulativeRankingParticipantCount ?? 0,
+    };
   }
 }
