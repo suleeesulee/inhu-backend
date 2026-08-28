@@ -41,6 +41,7 @@ export const SELECT_USER_RANKING_OVERVIEW: Prisma.Sql = Prisma.sql`
       ON TRUE
     LEFT JOIN place_visit_tb AS pv
       ON pv.user_idx = u.idx
+      AND pv.deleted_at IS NULL
     WHERE u.deleted_at IS NULL
     GROUP BY
       u.idx,
