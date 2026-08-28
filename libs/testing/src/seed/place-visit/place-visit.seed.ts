@@ -24,6 +24,7 @@ export class PlaceVisitSeedHelper extends ISeedHelper<
       latitude: defaultValue(input.latitude, faker.location.latitude()),
       longitude: defaultValue(input.longitude, faker.location.longitude()),
       createdAt: defaultValue(input.createdAt, new Date()),
+      deletedAt: defaultValue(input.deletedAt, null),
     };
   }
 
@@ -39,6 +40,7 @@ export class PlaceVisitSeedHelper extends ISeedHelper<
         latitude: filledInput.latitude,
         longitude: filledInput.longitude,
         createdAt: filledInput.createdAt,
+        deletedAt: filledInput.deletedAt,
       },
     });
 

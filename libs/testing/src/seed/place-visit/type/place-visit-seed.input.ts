@@ -10,4 +10,5 @@ export type PlaceVisitSeedInput = {
   latitude?: number;
   longitude?: number;
   createdAt?: Date;
+  deletedAt?: Date | null;
 };
