@@ -82,11 +82,27 @@ export class PlaceVisitCoreService {
     );
   }
 
+  public async getPlaceVisitScoreByUserIdxAndDatePeriod(
+    userIdx: number,
+    startAt: Date,
+    endAt: Date,
+  ): Promise<number> {
+    return await this.placeVisitCoreRepository.selectPlaceVisitScoreByUserIdxAndDatePeriod(
+      userIdx,
+      startAt,
+      endAt,
+    );
+  }
+
   public async createPlaceVisit(
     input: CreatePlaceVisitInput,
   ): Promise<PlaceVisitModel> {
     return PlaceVisitModel.fromPrisma(
       await this.placeVisitCoreRepository.insertPlaceVisit(input),
     );
+  }
+
+  public async deletePlaceVisitById(id: string): Promise<void> {
+    await this.placeVisitCoreRepository.softDeletePlaceVisitById(id);
   }
 }
