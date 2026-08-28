@@ -2,8 +2,12 @@ import { LeagueSeasonResultModel } from '@libs/core/league-season/model/league-s
 import { LeagueSeasonCoreService } from '@libs/core/league-season/league-season-core.service';
 import { PlaceVisitCoreService } from '@libs/core/place-visit/place-visit-core.service';
 import { UserRewardCoreService } from '@libs/core/user-reward/user-reward-core.service';
+import { UserCoreService } from '@libs/core/user/user-core.service';
 import { Transactional } from '@nestjs-cls/transactional';
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { GetPlaceVisitAllDto } from './dto/request/get-place-visit-all.dto';
+import { GetPlaceVisitAllResponseDto } from './dto/response/get-place-visit-all.response.dto';
+import { PlaceVisitEntity } from './entity/place-visit.entity';
 
 @Injectable()
 export class PlaceVisitService {
@@ -11,7 +15,41 @@ export class PlaceVisitService {
     private readonly placeVisitCoreService: PlaceVisitCoreService,
     private readonly leagueSeasonCoreService: LeagueSeasonCoreService,
     private readonly userRewardCoreService: UserRewardCoreService,
+    private readonly userCoreService: UserCoreService,
   ) {}
+
+  public async getPlaceVisitAll(
+    dto: GetPlaceVisitAllDto,
+  ): Promise<GetPlaceVisitAllResponseDto> {
+    const pageSize = 10;
+    const input = {
+      take: pageSize,
+      skip: (dto.page - 1) * pageSize,
+      order: dto.order,
+      placeIdx: dto.place,
+      userIdx: dto.user,
+    };
+    const [placeVisitList, count] = await Promise.all([
+      this.placeVisitCoreService.getPlaceVisitAll(input),
+      this.placeVisitCoreService.getPlaceVisitCount(input),
+    ]);
+    const userList = await this.userCoreService.getUserAllByIdxList(
+      placeVisitList.map(({ userIdx }) => userIdx),
+    );
+    const userMap = new Map(userList.map((user) => [user.idx, user]));
+
+    return {
+      count,
+      placeVisitList: placeVisitList.map((placeVisit) => {
+        const user = userMap.get(placeVisit.userIdx);
+        if (!user) {
+          throw new NotFoundException('User not found');
+        }
+
+        return PlaceVisitEntity.fromModel(placeVisit, user);
+      }),
+    };
+  }
 
   @Transactional()
   public async deletePlaceVisitById(id: string): Promise<void> {

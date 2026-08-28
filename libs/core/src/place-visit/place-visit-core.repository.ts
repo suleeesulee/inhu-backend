@@ -20,6 +20,36 @@ export class PlaceVisitCoreRepository {
     private readonly txHost: TransactionHost<TransactionalAdapterPrisma>,
   ) {}
 
+  public async selectPlaceVisitAll(
+    input: GetPlaceVisitAllInput,
+  ): Promise<SelectPlaceVisit[]> {
+    const order = input.order ?? 'desc';
+
+    return await this.txHost.tx.placeVisit.findMany({
+      ...SELECT_PLACE_VISIT,
+      where: {
+        deletedAt: null,
+        ...this.getPlaceIdxFilterWhereClause(input.placeIdx),
+        ...this.getUserIdxFilterWhereClause(input.userIdx),
+      },
+      orderBy: [{ createdAt: order }, { id: order }],
+      take: input.take,
+      skip: input.skip,
+    });
+  }
+
+  public async selectPlaceVisitCount(
+    input: GetPlaceVisitAllInput,
+  ): Promise<number> {
+    return await this.txHost.tx.placeVisit.count({
+      where: {
+        deletedAt: null,
+        ...this.getPlaceIdxFilterWhereClause(input.placeIdx),
+        ...this.getUserIdxFilterWhereClause(input.userIdx),
+      },
+    });
+  }
+
   // 방문 인증 내역용
   public async selectPlaceVisitAllByUserIdx(
     userIdx: number,
@@ -174,5 +204,25 @@ export class PlaceVisitCoreRepository {
       where: { id, deletedAt: null },
       data: { deletedAt: new Date() },
     });
+  }
+
+  private getPlaceIdxFilterWhereClause(
+    placeIdx?: number,
+  ): Prisma.PlaceVisitWhereInput {
+    if (placeIdx === undefined) {
+      return {};
+    }
+
+    return { nfc: { placeIdx } };
+  }
+
+  private getUserIdxFilterWhereClause(
+    userIdx?: number,
+  ): Prisma.PlaceVisitWhereInput {
+    if (userIdx === undefined) {
+      return {};
+    }
+
+    return { userIdx };
   }
 }

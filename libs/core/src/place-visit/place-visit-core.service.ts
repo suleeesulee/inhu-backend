@@ -12,6 +12,20 @@ export class PlaceVisitCoreService {
     private readonly placeVisitCoreRepository: PlaceVisitCoreRepository,
   ) {}
 
+  public async getPlaceVisitAll(
+    input: GetPlaceVisitAllInput,
+  ): Promise<PlaceVisitModel[]> {
+    return (await this.placeVisitCoreRepository.selectPlaceVisitAll(input)).map(
+      PlaceVisitModel.fromPrisma,
+    );
+  }
+
+  public async getPlaceVisitCount(
+    input: GetPlaceVisitAllInput,
+  ): Promise<number> {
+    return await this.placeVisitCoreRepository.selectPlaceVisitCount(input);
+  }
+
   public async getPlaceVisitAllByUserIdx(
     userIdx: number,
     input: GetPlaceVisitAllInput,
