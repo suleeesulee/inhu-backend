@@ -1941,7 +1941,8 @@
           "DWKzKV1RZQB4-QVdW92zI",
           "2X3qt0Px9-h_PzqOVqet6",
           "BoEeLDMUx5w1AOYvsExAF",
-          "92GpqzdjsiszXR17vrzeq"
+          "92GpqzdjsiszXR17vrzeq",
+          "placeVisitDeletedAt"
         ],
         "seqColumnIds": [
           "Hgc4_dFkNL-CmHAUXSgve",
@@ -1955,7 +1956,8 @@
           "DWKzKV1RZQB4-QVdW92zI",
           "2X3qt0Px9-h_PzqOVqet6",
           "BoEeLDMUx5w1AOYvsExAF",
-          "92GpqzdjsiszXR17vrzeq"
+          "92GpqzdjsiszXR17vrzeq",
+          "placeVisitDeletedAt"
         ],
         "ui": {
           "x": 3907.363,
@@ -9164,6 +9166,26 @@
         "meta": {
           "updateAt": 1782456870749,
           "createAt": 1782456860766
+        }
+      },
+      "placeVisitDeletedAt": {
+        "id": "placeVisitDeletedAt",
+        "tableId": "-VaUEhFBfs0ehmRWEGrnc",
+        "name": "deleted_at",
+        "comment": "",
+        "dataType": "timestamp with time zone",
+        "default": "",
+        "options": 0,
+        "ui": {
+          "keys": 0,
+          "widthName": 63,
+          "widthComment": 60,
+          "widthDataType": 147,
+          "widthDefault": 60
+        },
+        "meta": {
+          "updateAt": 1787900000000,
+          "createAt": 1787900000000
         }
       },
       "Zeg7nbpxmhlHmpxRybS7E": {
