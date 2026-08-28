@@ -1,0 +1,110 @@
+import { TransactionHost } from '@nestjs-cls/transactional';
+import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-prisma';
+import { Injectable } from '@nestjs/common';
+import { SELECT_REWARD, SelectReward } from './model/prisma-type/select-reward';
+import { CreateRewardInput } from './inputs/create-reward.input';
+import { UpdateRewardInput } from './inputs/update-reward.input';
+import { GetRewardAllInput } from './inputs/get-reward-all.input';
+import { Prisma } from '@prisma/client';
+
+@Injectable()
+export class RewardCoreRepository {
+  constructor(
+    private readonly txHost: TransactionHost<TransactionalAdapterPrisma>,
+  ) {}
+
+  public async selectRewardByIdx(idx: number): Promise<SelectReward | null> {
+    return await this.txHost.tx.reward.findUnique({
+      ...SELECT_REWARD,
+      where: {
+        idx,
+        deletedAt: null,
+      },
+    });
+  }
+
+  public async selectRewardAllByIdxList(
+    idxList: number[],
+  ): Promise<SelectReward[]> {
+    if (idxList.length === 0) {
+      return [];
+    }
+
+    return await this.txHost.tx.reward.findMany({
+      ...SELECT_REWARD,
+      where: { idx: { in: idxList } },
+    });
+  }
+
+  public async selectRewardAll(
+    input: GetRewardAllInput,
+  ): Promise<SelectReward[]> {
+    const order = input.order ?? 'desc';
+
+    return await this.txHost.tx.reward.findMany({
+      ...SELECT_REWARD,
+      where: {
+        deletedAt: null,
+        ...this.getActivatedAtFilterWhereClause(input.activated),
+      },
+      orderBy: [{ createdAt: order }, { idx: order }],
+      take: input.take,
+      skip: input.skip,
+    });
+  }
+
+  public async selectRewardCount(input: GetRewardAllInput): Promise<number> {
+    return await this.txHost.tx.reward.count({
+      where: {
+        deletedAt: null,
+        ...this.getActivatedAtFilterWhereClause(input.activated),
+      },
+    });
+  }
+
+  public async insertReward(input: CreateRewardInput): Promise<SelectReward> {
+    return await this.txHost.tx.reward.create({
+      ...SELECT_REWARD,
+      data: {
+        name: input.name,
+        imagePath: input.imagePath,
+        activatedAt: input.activatedAt,
+      },
+    });
+  }
+
+  public async updateRewardByIdx(
+    idx: number,
+    input: UpdateRewardInput,
+  ): Promise<void> {
+    await this.txHost.tx.reward.update({
+      where: { idx },
+      data: {
+        name: input.name,
+        imagePath: input.imagePath,
+        activatedAt: input.activatedAt,
+      },
+    });
+  }
+
+  public async softDeleteRewardByIdx(idx: number): Promise<void> {
+    await this.txHost.tx.reward.update({
+      data: { deletedAt: new Date() },
+      where: { idx, deletedAt: null },
+    });
+  }
+
+  private getActivatedAtFilterWhereClause(
+    activated?: boolean,
+  ): Prisma.RewardWhereInput {
+    if (activated === undefined) {
+      return {};
+    }
+
+    if (activated) {
+      return { activatedAt: { not: null } };
+    }
+
+    return { activatedAt: null };
+  }
+}

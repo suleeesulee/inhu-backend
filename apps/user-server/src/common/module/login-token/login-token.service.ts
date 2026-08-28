@@ -68,10 +68,13 @@ export class LoginTokenService {
 
   /**
    * refresh token verify 하기
+   *
+   * - Refresh Token 자체를 Verify합니다.
+   * - Refresh Token이 Redis에 존재하는지 확인합니다.
    */
   public async verifyRefreshToken(
     refreshToken: string,
-  ): Promise<RefreshTokenPayload & { jti: string }> {
+  ): Promise<RefreshTokenPayload & { jti: string; exp: number }> {
     const payload = await this.onlyVerifyRefreshToken(refreshToken);
 
     const refreshTokenId = payload.jti;
@@ -143,10 +146,10 @@ export class LoginTokenService {
    */
   private async onlyVerifyRefreshToken(
     refreshToken: string,
-  ): Promise<RefreshTokenPayload & { jti: string }> {
+  ): Promise<RefreshTokenPayload & { jti: string; exp: number }> {
     try {
       return await this.jwtService.verifyAsync<
-        RefreshTokenPayload & { jti: string }
+        RefreshTokenPayload & { jti: string; exp: number }
       >(refreshToken);
     } catch (err) {
       throw new InvalidRefreshTokenException('invalid refresh token');
@@ -251,5 +254,14 @@ export class LoginTokenService {
    */
   public async invalidateAllRefreshTokens(userIdx: number): Promise<void> {
     await this.refreshTokenStorage.removeAllRefreshTokensByUserIdx(userIdx);
+  }
+
+  /**
+   * refresh token 정보를 가져오는 함수
+   */
+  public async getRefreshTokenMetaData(
+    refreshToken: string,
+  ): Promise<null | string> {
+    return null;
   }
 }

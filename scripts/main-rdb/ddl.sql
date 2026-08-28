@@ -89,6 +89,20 @@ CREATE INDEX index_free_tag_content_like_active
   ON free_tag_tb (content text_pattern_ops)
   WHERE deleted_at IS NULL;
 
+CREATE TABLE installation_tb
+(
+  id                       uuid                     NOT NULL,
+  user_idx                 int                     ,
+  platform                 varchar                  NOT NULL,
+  app_version              varchar                  NOT NULL,
+  refresh_token_expires_at timestamp with time zone,
+  updated_at               timestamp with time zone NOT NULL DEFAULT NOW(),
+  created_at               timestamp with time zone NOT NULL DEFAULT NOW(),
+  PRIMARY KEY (id)
+);
+
+COMMENT ON COLUMN installation_tb.platform IS 'ios / android';
+
 CREATE TABLE keyword_tb
 (
   idx        int                      NOT NULL,
@@ -119,6 +133,7 @@ CREATE TABLE league_season_tb
   name         varchar                  NOT NULL,
   start_at     timestamp with time zone NOT NULL,
   end_at       timestamp with time zone NOT NULL,
+  activated_at timestamp with time zone,
   created_at   timestamp with time zone NOT NULL DEFAULT NOW(),
   finalized_at timestamp with time zone,
   PRIMARY KEY (idx)
@@ -127,6 +142,10 @@ CREATE TABLE league_season_tb
 CREATE INDEX idx_league_season_unfinalized_end
   ON league_season_tb (end_at)
   WHERE finalized_at IS NULL;
+
+CREATE INDEX idx_league_season_activated_start
+  ON league_season_tb (start_at DESC, idx DESC)
+  WHERE activated_at IS NOT NULL;
 
 CREATE TABLE magazine_like_tb
 (
@@ -265,7 +284,7 @@ CREATE TABLE nfc_tb
   idx          int                      NOT NULL GENERATED ALWAYS AS IDENTITY,
   place_idx    int                      NOT NULL,
   score        int                      NOT NULL,
-  token_hash   varchar                  NOT NULL,
+  uid          varchar                  NOT NULL,
   activated_at timestamp with time zone,
   created_at   timestamp with time zone NOT NULL DEFAULT NOW(),
   deleted_at   timestamp with time zone,
@@ -407,6 +426,8 @@ CREATE TABLE place_visit_tb
   user_idx   int                      NOT NULL,
   nfc_idx    int                      NOT NULL,
   score      int                      NOT NULL,
+  latitude   numeric                  NOT NULL,
+  longitude  numeric                  NOT NULL,
   created_at timestamp with time zone NOT NULL DEFAULT NOW(),
   PRIMARY KEY (id)
 );
@@ -418,6 +439,17 @@ CREATE INDEX idx_place_visit_user_created
 CREATE INDEX idx_place_visit_nfc_created
   ON place_visit_tb (nfc_idx, created_at DESC);
 
+CREATE TABLE push_token_tb
+(
+  id              uuid                     NOT NULL,
+  expo_push_token varchar                  NOT NULL,
+  last_seen_at    timestamp with time zone NOT NULL DEFAULT NOW(),
+  created_at      timestamp with time zone NOT NULL DEFAULT NOW(),
+  PRIMARY KEY (id)
+);
+
+COMMENT ON COLUMN push_token_tb.last_seen_at IS 'push token을 마지막으로 갱신한 시점';
+
 CREATE TABLE review_image_tb
 (
   idx        int     NOT NULL GENERATED ALWAYS AS IDENTITY,
@@ -426,7 +458,7 @@ CREATE TABLE review_image_tb
   PRIMARY KEY (idx)
 );
 
-CREATE TABLE reward_option_tb
+CREATE TABLE league_reward_option_tb
 (
   id                uuid                     NOT NULL DEFAULT uuid_generate_v4(),
   league_season_idx int                      NOT NULL,
@@ -437,8 +469,8 @@ CREATE TABLE reward_option_tb
   PRIMARY KEY (id)
 );
 
-CREATE INDEX idx_reward_option_reward
-  ON reward_option_tb (reward_idx);
+CREATE INDEX idx_league_reward_option_reward
+  ON league_reward_option_tb (reward_idx);
 
 CREATE TABLE reward_tb
 (
@@ -548,12 +580,12 @@ CREATE TABLE user_provider_tb
 
 CREATE TABLE user_reward_tb
 (
-  id                        uuid                     NOT NULL DEFAULT uuid_generate_v4(),
-  reward_idx                int                      NOT NULL,
-  league_season_result_idx uuid                     NOT NULL,
-  created_at                timestamp with time zone NOT NULL DEFAULT NOW(),
-  selected_at               timestamp with time zone,
-  issued_at                 timestamp with time zone,
+  id                      uuid                     NOT NULL DEFAULT uuid_generate_v4(),
+  reward_idx              int                      ,
+  league_season_result_id uuid                     NOT NULL,
+  created_at              timestamp with time zone NOT NULL DEFAULT NOW(),
+  selected_at             timestamp with time zone,
+  issued_at               timestamp with time zone,
   PRIMARY KEY (id)
 );
 
@@ -632,6 +664,16 @@ CREATE TABLE blog_review_tb
   created_at                timestamp with time zone NOT NULL DEFAULT NOW(),
   uploaded_at               timestamp with time zone NOT NULL,
   deleted_at                timestamp with time zone,
+  PRIMARY KEY (idx)
+);
+
+CREATE TABLE notice_tb
+(
+  idx        int                      NOT NULL GENERATED ALWAYS AS IDENTITY,
+  author_idx int                      NOT NULL,
+  title      varchar                  NOT NULL,
+  content    varchar                  NOT NULL,
+  created_at timestamp with time zone NOT NULL DEFAULT NOW(),
   PRIMARY KEY (idx)
 );
 
@@ -963,16 +1005,16 @@ ALTER TABLE league_season_result_tb
 
 ALTER TABLE user_reward_tb
   ADD CONSTRAINT FK_league_season_result_tb_TO_user_reward_tb
-    FOREIGN KEY (league_season_result_idx)
+    FOREIGN KEY (league_season_result_id)
     REFERENCES league_season_result_tb (id);
 
-ALTER TABLE reward_option_tb
-  ADD CONSTRAINT FK_league_season_tb_TO_reward_option_tb
+ALTER TABLE league_reward_option_tb
+  ADD CONSTRAINT FK_league_season_tb_TO_league_reward_option_tb
     FOREIGN KEY (league_season_idx)
     REFERENCES league_season_tb (idx);
 
-ALTER TABLE reward_option_tb
-  ADD CONSTRAINT FK_reward_tb_TO_reward_option_tb
+ALTER TABLE league_reward_option_tb
+  ADD CONSTRAINT FK_reward_tb_TO_league_reward_option_tb
     FOREIGN KEY (reward_idx)
     REFERENCES reward_tb (idx);
 
@@ -989,4 +1031,19 @@ ALTER TABLE user_reward_tb
 ALTER TABLE user_email_tb
   ADD CONSTRAINT FK_user_tb_TO_user_email_tb
     FOREIGN KEY (idx)
+    REFERENCES user_tb (idx);
+
+ALTER TABLE installation_tb
+  ADD CONSTRAINT FK_user_tb_TO_installation_tb
+    FOREIGN KEY (user_idx)
+    REFERENCES user_tb (idx);
+
+ALTER TABLE push_token_tb
+  ADD CONSTRAINT FK_installation_tb_TO_push_token_tb
+    FOREIGN KEY (id)
+    REFERENCES installation_tb (id);
+
+ALTER TABLE notice_tb
+  ADD CONSTRAINT FK_user_tb_TO_notice_tb
+    FOREIGN KEY (author_idx)
     REFERENCES user_tb (idx);

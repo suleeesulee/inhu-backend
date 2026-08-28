@@ -15,6 +15,21 @@ import { magazineSectionSeedDataList } from './data/magazine-section.seed';
 import { MagazineSectionSeedHelper } from '@libs/testing/seed/magazine-section/magazine-section';
 import { cafeteriaSeedDataList } from './data/cafeteria.seed';
 import { CafeteriaSeedHelper } from '@libs/testing/seed/cafeteria/cafeteria.seed';
+import { NfcSeedHelper } from '@libs/testing/seed/nfc/nfc.seed';
+import { LeagueSeasonSeedHelper } from '@libs/testing/seed/league-season/league-season.seed';
+import { LeagueSeasonResultSeedHelper } from '@libs/testing/seed/league-season/league-season-result.seed';
+import { RewardSeedHelper } from '@libs/testing/seed/reward/reward.seed';
+import { PlaceVisitSeedHelper } from '@libs/testing/seed/place-visit/place-visit.seed';
+import { UserRewardSeedHelper } from '@libs/testing/seed/user-reward/user-reward.seed';
+import { nfcSeedDataList } from './data/nfc.seed';
+import { leagueSeasonSeedDataList } from './data/league-season.seed';
+import { leagueSeasonResultSeedDataList } from './data/league-season-result.seed';
+import { rewardSeedDataList } from './data/reward.seed';
+import { placeVisitSeedDataList } from './data/place-visit.seed';
+import { userRewardSeedDataList } from './data/user-reward.seed';
+import { NoticeSeedHelper } from '@libs/testing/seed/notice/notice.seed';
+import { noticeSeedDataList } from './data/notice.seed';
+import { userSeedDataList } from './data/user.seed';
 
 const prisma = new PrismaService();
 
@@ -32,16 +47,37 @@ async function main() {
   const placeSectionSeedHelper = new PlaceSectionSeedHelper(prisma);
   const magazineSectionSeedHelper = new MagazineSectionSeedHelper(prisma);
   const cafeteriaSeedHelper = new CafeteriaSeedHelper(prisma);
+  const nfcSeedHelper = new NfcSeedHelper(prisma);
+  const leagueSeasonSeedHelper = new LeagueSeasonSeedHelper(prisma);
+  const leagueSeasonResultSeedHelper = new LeagueSeasonResultSeedHelper(prisma);
+  const rewardSeedHelper = new RewardSeedHelper(prisma);
+  const placeVisitSeedHelper = new PlaceVisitSeedHelper(prisma);
+  const userRewardSeedHelper = new UserRewardSeedHelper(prisma);
+  const noticeSeedHelper = new NoticeSeedHelper(prisma);
 
   /**
    * 사용자 생성
    */
-  const user1 = await userSeedHelper.seed({
-    nickname: '맛집탐방가',
-    profileImagePath: '/profile/cat.jpg',
-  });
-  const user2 = await userSeedHelper.seed({ nickname: '인덕이' });
-  const userList = { user1, user2 };
+  const userOutputList: Awaited<ReturnType<UserSeedHelper['seed']>>[] = [];
+  for (const userData of userSeedDataList) {
+    userOutputList.push(await userSeedHelper.seed(userData));
+  }
+
+  const user1 = userOutputList[0]!;
+  const user2 = userOutputList[1]!;
+  const user3 = userOutputList[2]!;
+  const user4 = userOutputList[3]!;
+  const userList = { user1, user2, user3, user4 };
+
+  /**
+   * 공지사항 생성
+   */
+  for (const noticeData of noticeSeedDataList) {
+    await noticeSeedHelper.seed({
+      ...noticeData,
+      authorIdx: userOutputList[noticeData.authorIdx - 1].idx,
+    });
+  }
 
   await freeTagSeedHelper.seedAll([
     { content: '가성비' },
@@ -91,8 +127,10 @@ async function main() {
   /**
    * 장소 생성
    */
+  const placeList: Awaited<ReturnType<PlaceSeedHelper['seed']>>[] = [];
   for (const placeData of PlaceSeedDataList) {
     const place = await placeSeedHelper.seed(placeData);
+    placeList.push(place);
 
     // 장소의 리뷰 목록 시딩
     if (placeData.reviewList && placeData.reviewList.length > 0) {
@@ -125,6 +163,98 @@ async function main() {
         });
       }
     }
+  }
+
+  /**
+   * 리워드 생성
+   */
+  const rewardList: Awaited<ReturnType<RewardSeedHelper['seed']>>[] = [];
+  for (const rewardData of rewardSeedDataList) {
+    rewardList.push(await rewardSeedHelper.seed(rewardData));
+  }
+
+  /**
+   * 리그 시즌 생성
+   */
+  const leagueSeasonList: Awaited<
+    ReturnType<LeagueSeasonSeedHelper['seed']>
+  >[] = [];
+  for (const leagueSeasonData of leagueSeasonSeedDataList) {
+    leagueSeasonList.push(
+      await leagueSeasonSeedHelper.seed({
+        ...leagueSeasonData,
+        rewardOptionList: leagueSeasonData.rewardOptionList?.map(
+          (rewardOption) => ({
+            ...rewardOption,
+            rewardIdx: rewardList[rewardOption.rewardIdx - 1].idx,
+          }),
+        ),
+      }),
+    );
+  }
+
+  /**
+   * NFC 생성
+   */
+  const nfcList: Awaited<ReturnType<NfcSeedHelper['seed']>>[] = [];
+  for (const nfcData of nfcSeedDataList) {
+    nfcList.push(
+      await nfcSeedHelper.seed({
+        ...nfcData,
+        placeIdx: placeList[nfcData.placeIdx - 1].idx,
+      }),
+    );
+  }
+
+  /**
+   * 장소 방문 생성
+   */
+  const placeByIdx = new Map(placeList.map((place) => [place.idx, place]));
+  for (const placeVisitData of placeVisitSeedDataList) {
+    const nfc = nfcList[placeVisitData.nfcIdx - 1];
+    const place = placeByIdx.get(nfc.placeIdx);
+    if (!place) {
+      throw new Error(`Place not found for NFC (nfcIdx: ${nfc.idx})`);
+    }
+
+    await placeVisitSeedHelper.seed({
+      ...placeVisitData,
+      userIdx: userOutputList[placeVisitData.userIdx - 1].idx,
+      nfcIdx: nfc.idx,
+      latitude: place.roadAddress.addressY,
+      longitude: place.roadAddress.addressX,
+    });
+  }
+
+  /**
+   * 리그 시즌 결과 생성
+   */
+  const leagueSeasonResultList: Awaited<
+    ReturnType<LeagueSeasonResultSeedHelper['seed']>
+  >[] = [];
+  for (const leagueSeasonResultData of leagueSeasonResultSeedDataList) {
+    leagueSeasonResultList.push(
+      await leagueSeasonResultSeedHelper.seed({
+        ...leagueSeasonResultData,
+        leagueSeasonIdx:
+          leagueSeasonList[leagueSeasonResultData.leagueSeasonIdx - 1].idx,
+        userIdx: userOutputList[leagueSeasonResultData.userIdx - 1].idx,
+      }),
+    );
+  }
+
+  /**
+   * 사용자 리워드 생성
+   */
+  for (const userRewardData of userRewardSeedDataList(
+    leagueSeasonResultList.map((leagueSeasonResult) => leagueSeasonResult.id),
+  )) {
+    await userRewardSeedHelper.seed({
+      ...userRewardData,
+      rewardIdx: userRewardData.rewardIdx
+        ? rewardList[userRewardData.rewardIdx - 1].idx
+        : null,
+    });
   }
 
   /**

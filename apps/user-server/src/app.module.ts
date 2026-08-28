@@ -32,6 +32,12 @@ import { MetricInterceptor } from '@libs/common/interceptors/metric.interceptor'
 import { MetricModule } from '@libs/common/modules/metric/metric.module';
 import { PrometheusApiModule } from './api/prometheus/prometheus.module';
 import { UserMailModule } from './api/mail/user-mail.module';
+import { LeagueSeasonModule } from './api/league-season/league-season.module';
+import { UserRankingModule } from './api/user-ranking/user-ranking.module';
+import { UserRewardModule } from './api/user-reward/user-reward.module';
+import { PlaceVisitModule } from './api/place-visit/place-visit.module';
+import { InstallationLifecycleModule } from './api/installation-lifecyle/installation-lifecycle.module';
+import { NoticeModule } from './api/notice/notice.module';
 
 @Module({
   imports: [
@@ -71,6 +77,12 @@ import { UserMailModule } from './api/mail/user-mail.module';
     MetricModule,
     PrometheusApiModule,
     UserMailModule,
+    LeagueSeasonModule,
+    UserRankingModule,
+    UserRewardModule,
+    PlaceVisitModule,
+    InstallationLifecycleModule,
+    NoticeModule,
   ],
   providers: [
     {

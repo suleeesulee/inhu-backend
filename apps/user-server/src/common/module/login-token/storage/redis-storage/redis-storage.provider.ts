@@ -126,4 +126,43 @@ export class RedisStorageProvider implements IRefreshTokenStorage {
   private getFieldKey(issuedBy: TokenIssuedBy, refreshTokenId: string): string {
     return `${issuedBy}-${refreshTokenId}`;
   }
+
+  /**
+   * 특정 사용자의 APP Refresh Token 만료 시각 조회
+   *
+   * @returns Unix timestamp (초) 문자열, 없으면 null
+   */
+  public async getExpiredAtByUserIdx(userIdx: number): Promise<null | string> {
+    const HASH_KEY = this.getHashKey(userIdx);
+
+    console.log(HASH_KEY);
+
+    const keys = await this.redisService.hkeys(HASH_KEY);
+    const appTokenField = keys.find((key) =>
+      key.startsWith(`${TokenIssuedBy.APP}-`),
+    );
+
+    if (!appTokenField) {
+      console.log('appTokenFIeld 가 없어요');
+      return null;
+    }
+
+    const result = await this.redisService.call(
+      'HEXPIRETIME',
+      HASH_KEY,
+      'FIELDS',
+      1,
+      appTokenField,
+    );
+    console.log(result);
+    console.log(typeof result);
+
+    // if (!result || result[0] <= 0) {
+    //   return null;
+    // }
+
+    // return String(result[0]);
+
+    return null;
+  }
 }

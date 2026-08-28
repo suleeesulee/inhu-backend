@@ -9,7 +9,7 @@ import { PlaceType } from '@libs/core/place/constants/place-type.constant';
 import { MainCategory } from '@libs/core/category/constants/main-category.constant';
 import { MoodCategory } from '@libs/core/category/constants/mood-category.constant';
 //
-const PLACE_IMAGE = {
+export const PLACE_IMAGE = {
   BAKERY: '/place/bakery.jpg',
   HOSPITAL: '/place/hospital.jpg',
   MOSCOW: '/place/moscow.jpg',

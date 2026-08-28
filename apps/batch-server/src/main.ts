@@ -25,18 +25,18 @@ async function bootstrap() {
     },
   );
 
-  if (getMode() === 'production') {
-    try {
-      const discordWebhookService = app.get(DiscordWebhookService);
-      await discordWebhookService.sendWebhookMessage(
-        `🚀 ${DiscordWebhookContext.BATCH_SERVER} 배포 알림`,
-        `배치 서버가 성공적으로 시작되었습니다.`,
-        DiscordWebhookContext.BATCH_SERVER,
-      );
-    } catch (err) {
-      console.log(err);
-    }
-  }
+  // if (getMode() === 'production') {
+  //   try {
+  //     const discordWebhookService = app.get(DiscordWebhookService);
+  //     await discordWebhookService.sendWebhookMessage(
+  //       `🚀 ${DiscordWebhookContext.BATCH_SERVER} 배포 알림`,
+  //       `배치 서버가 성공적으로 시작되었습니다.`,
+  //       DiscordWebhookContext.BATCH_SERVER,
+  //     );
+  //   } catch (err) {
+  //     console.log(err);
+  //   }
+  // }
   await app.listen();
 }
 bootstrap();
