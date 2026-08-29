@@ -103,6 +103,12 @@ describe('Place Visit E2E test', () => {
         nfcIdx: deletedPlaceNfc.idx,
         createdAt: new Date('2026-08-04T10:00:00.000Z'),
       });
+      const softDeletedPlaceVisit = await placeVisitSeedHelper.seed({
+        userIdx: loginUser.idx,
+        nfcIdx: nfc.idx,
+        createdAt: new Date('2026-08-05T10:00:00.000Z'),
+        deletedAt: new Date('2026-08-06T10:00:00.000Z'),
+      });
 
       const response = await testHelper
         .test()
@@ -124,6 +130,10 @@ describe('Place Visit E2E test', () => {
       expect(placeVisitList.some(({ id }) => id === deletedPlaceVisit.id)).toBe(
         false,
       );
+      expect(
+        placeVisitList.some(({ id }) => id === softDeletedPlaceVisit.id),
+      ).toBe(false);
+      expect(placeVisitList[0]).not.toHaveProperty('deletedAt');
       expect(placeVisitList[0]).toEqual(
         expect.objectContaining({
           id: latestPlaceVisit.id,
