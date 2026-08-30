@@ -23,10 +23,7 @@ import { MailService } from './mail.service';
             },
           },
           defaults: {
-            from: {
-              name: '인하밥길',
-              address: 'service@inhu.co.kr',
-            },
+            from: `"${config.get<string>('mail.from.name')}" <${config.get<string>('mail.from.address')}>`,
           },
         };
       },
