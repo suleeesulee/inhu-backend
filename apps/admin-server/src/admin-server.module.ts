@@ -40,6 +40,7 @@ import { LeagueSeasonModule } from './api/league-season/league-season.module';
 import { UserRewardModule } from './api/user-reward/user-reward.module';
 import { NoticeModule } from './api/notice/notice.module';
 import { UserRankingModule } from './api/user-ranking/user-ranking.module';
+import { PlaceVisitModule } from './api/place-visit/place-visit.module';
 
 @Module({
   imports: [
@@ -85,6 +86,7 @@ import { UserRankingModule } from './api/user-ranking/user-ranking.module';
     UserRewardModule,
     NoticeModule,
     UserRankingModule,
+    PlaceVisitModule,
   ],
   providers: [
     {

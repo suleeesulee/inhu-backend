@@ -34,6 +34,7 @@ export const SELECT_USER_RANKING: Prisma.Sql = Prisma.sql`
     CROSS JOIN user_tb AS u
     LEFT JOIN place_visit_tb AS pv
       ON pv.user_idx = u.idx
+      AND pv.deleted_at IS NULL
     WHERE ls.activated_at IS NOT NULL
       AND u.deleted_at IS NULL
     GROUP BY

@@ -13,7 +13,9 @@ export const SELECT_LEAGUE_SEASON_RESULT =
           ...SELECT_LEAGUE_SEASON.select,
           _count: {
             select: {
-              leagueSeasonResultList: true,
+              leagueSeasonResultList: {
+                where: { finalScore: { gt: 0 } },
+              },
             },
           },
         },

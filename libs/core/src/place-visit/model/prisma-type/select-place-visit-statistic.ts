@@ -24,6 +24,7 @@ export const SELECT_PLACE_VISIT_STATISTIC = (
     AND pv.user_idx = ${userIdx}
     AND pv.created_at >= ${startAt}
     AND pv.created_at <= ${endAt}
+    AND pv.deleted_at IS NULL
   WHERE pt.idx IN (
     ${PlaceType.CAFE},
     ${PlaceType.RESTAURANT},

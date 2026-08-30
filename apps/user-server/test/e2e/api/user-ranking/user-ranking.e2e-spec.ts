@@ -483,6 +483,66 @@ describe('User Ranking E2E test', () => {
       );
     });
 
+    it('200 - exclude soft deleted place visit from season ranking', async () => {
+      const loginUser = testHelper.loginUsers.user1;
+      const otherUser = testHelper.loginUsers.user2;
+      const leagueSeason = await leagueSeasonSeedHelper.seed({
+        name: 'Soft Deleted Visit Season Ranking League',
+        startAt: new Date('2026-06-01T00:00:00.000Z'),
+        endAt: new Date('2026-06-15T23:59:59.999Z'),
+        activatedAt: new Date('2026-05-31T00:00:00.000Z'),
+      });
+      const place = await placeSeedHelper.seed({
+        type: PlaceType.CAFE,
+        activatedAt: new Date('2026-05-31T00:00:00.000Z'),
+      });
+      const nfc = await nfcSeedHelper.seed({
+        placeIdx: place.idx,
+        activatedAt: new Date('2026-05-31T00:00:00.000Z'),
+      });
+      await placeVisitSeedHelper.seedAll([
+        {
+          userIdx: loginUser.idx,
+          nfcIdx: nfc.idx,
+          score: 10,
+          createdAt: new Date('2026-06-03T10:00:00.000Z'),
+        },
+        {
+          userIdx: loginUser.idx,
+          nfcIdx: nfc.idx,
+          score: 100,
+          createdAt: new Date('2026-06-04T10:00:00.000Z'),
+          deletedAt: new Date('2026-06-16T00:00:00.000Z'),
+        },
+        {
+          userIdx: otherUser.idx,
+          nfcIdx: nfc.idx,
+          score: 20,
+          createdAt: new Date('2026-06-05T10:00:00.000Z'),
+        },
+      ]);
+
+      const response = await testHelper
+        .test()
+        .get(`/league-season/${leagueSeason.idx}/season-ranking/all`)
+        .query({ page: 1 })
+        .expect(200);
+      const body: GetSeasonRankingAllResponseDto = response.body;
+
+      expect(
+        body.seasonUserRankingList.map(
+          ({ userIdx, seasonRank, seasonScore }) => ({
+            userIdx,
+            seasonRank,
+            seasonScore,
+          }),
+        ),
+      ).toStrictEqual([
+        { userIdx: otherUser.idx, seasonRank: 1, seasonScore: 20 },
+        { userIdx: loginUser.idx, seasonRank: 2, seasonScore: 10 },
+      ]);
+    });
+
     it('200 - empty season ranking', async () => {
       const leagueSeason = await leagueSeasonSeedHelper.seed({
         name: 'Empty Ranking League',
@@ -905,6 +965,60 @@ describe('User Ranking E2E test', () => {
       );
     });
 
+    it('200 - exclude soft deleted place visit from cumulative ranking', async () => {
+      const loginUser = testHelper.loginUsers.user1;
+      const otherUser = testHelper.loginUsers.user2;
+      const place = await placeSeedHelper.seed({
+        type: PlaceType.CAFE,
+        activatedAt: new Date('2026-01-01T00:00:00.000Z'),
+      });
+      const nfc = await nfcSeedHelper.seed({
+        placeIdx: place.idx,
+        activatedAt: new Date('2026-01-01T00:00:00.000Z'),
+      });
+      await placeVisitSeedHelper.seedAll([
+        {
+          userIdx: loginUser.idx,
+          nfcIdx: nfc.idx,
+          score: 10,
+          createdAt: new Date('2026-01-03T10:00:00.000Z'),
+        },
+        {
+          userIdx: loginUser.idx,
+          nfcIdx: nfc.idx,
+          score: 100,
+          createdAt: new Date('2026-01-04T10:00:00.000Z'),
+          deletedAt: new Date('2026-01-05T00:00:00.000Z'),
+        },
+        {
+          userIdx: otherUser.idx,
+          nfcIdx: nfc.idx,
+          score: 20,
+          createdAt: new Date('2026-01-05T10:00:00.000Z'),
+        },
+      ]);
+
+      const response = await testHelper
+        .test()
+        .get('/cumulative-ranking/all')
+        .query({ page: 1 })
+        .expect(200);
+      const body: GetCumulativeRankingAllResponseDto = response.body;
+
+      expect(
+        body.cumulativeUserRankingList.map(
+          ({ userIdx, cumulativeRank, cumulativeScore }) => ({
+            userIdx,
+            cumulativeRank,
+            cumulativeScore,
+          }),
+        ),
+      ).toStrictEqual([
+        { userIdx: otherUser.idx, cumulativeRank: 1, cumulativeScore: 20 },
+        { userIdx: loginUser.idx, cumulativeRank: 2, cumulativeScore: 10 },
+      ]);
+    });
+
     it('200 - empty cumulative ranking', async () => {
       const response = await testHelper
         .test()
@@ -1109,6 +1223,62 @@ describe('User Ranking E2E test', () => {
         seasonRank: 2,
         cumulativeRank: 1,
         cumulativeScore: 110,
+        seasonRankingParticipantCount: 2,
+        cumulativeRankingParticipantCount: 2,
+      });
+    });
+
+    it('200 - exclude soft deleted place visit from ranking overview', async () => {
+      const loginUser = testHelper.loginUsers.user1;
+      const otherUser = testHelper.loginUsers.user2;
+      const now = new Date();
+      const day = 24 * 60 * 60 * 1000;
+      await leagueSeasonSeedHelper.seed({
+        name: 'Soft Deleted Visit Ranking Overview League',
+        startAt: new Date(now.getTime() - 5 * day),
+        endAt: new Date(now.getTime() + 5 * day),
+        activatedAt: new Date(now.getTime() - 6 * day),
+      });
+      const place = await placeSeedHelper.seed({
+        type: PlaceType.CAFE,
+        activatedAt: new Date(now.getTime() - 6 * day),
+      });
+      const nfc = await nfcSeedHelper.seed({
+        placeIdx: place.idx,
+        activatedAt: new Date(now.getTime() - 6 * day),
+      });
+      await placeVisitSeedHelper.seedAll([
+        {
+          userIdx: loginUser.idx,
+          nfcIdx: nfc.idx,
+          score: 10,
+          createdAt: new Date(now.getTime() - 3 * day),
+        },
+        {
+          userIdx: loginUser.idx,
+          nfcIdx: nfc.idx,
+          score: 100,
+          createdAt: new Date(now.getTime() - 2 * day),
+          deletedAt: new Date(now.getTime() - day),
+        },
+        {
+          userIdx: otherUser.idx,
+          nfcIdx: nfc.idx,
+          score: 20,
+          createdAt: new Date(now.getTime() - day),
+        },
+      ]);
+
+      const response = await testHelper
+        .test()
+        .get('/user-ranking')
+        .set('Authorization', `Bearer ${loginUser.web.accessToken}`)
+        .expect(200);
+
+      expect(response.body).toStrictEqual({
+        seasonRank: 2,
+        cumulativeRank: 2,
+        cumulativeScore: 10,
         seasonRankingParticipantCount: 2,
         cumulativeRankingParticipantCount: 2,
       });

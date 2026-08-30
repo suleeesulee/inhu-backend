@@ -5,7 +5,7 @@ const activatedAt = new Date(
   leagueSeasonSeedDataList[0]!.startAt!.getTime() - 24 * 60 * 60 * 1000,
 );
 
-export const nfcSeedDataList: NfcSeedInput[] = [
+const nfcStateSeedDataList: NfcSeedInput[] = [
   {
     placeIdx: 1,
     score: 1,
@@ -69,3 +69,41 @@ export const nfcSeedDataList: NfcSeedInput[] = [
     activatedAt,
   },
 ];
+
+export const placeVisitScoreUnitList = [10, 8, 7, 5, 2, 1];
+
+const placeVisitNfcSeedDataList: NfcSeedInput[] = Array.from(
+  { length: 30 },
+  (_, placeIndex) =>
+    placeVisitScoreUnitList.map((score) => ({
+      placeIdx: placeIndex + 11,
+      score,
+      uid: `방문시딩-NFC-장소-${String(placeIndex + 11).padStart(2, '0')}-점수-${String(score).padStart(2, '0')}`,
+      activatedAt,
+    })),
+).flat();
+
+export const nfcSeedDataList: NfcSeedInput[] = [
+  ...nfcStateSeedDataList,
+  ...placeVisitNfcSeedDataList,
+];
+
+export const activeNfcSeedIdxListByScore = nfcSeedDataList.reduce(
+  (nfcIdxListByScore, nfc, index) => {
+    if (
+      !nfc.activatedAt ||
+      nfc.deletedAt ||
+      !placeVisitScoreUnitList.includes(nfc.score ?? 0)
+    ) {
+      return nfcIdxListByScore;
+    }
+
+    const score = nfc.score!;
+    const nfcIdxList = nfcIdxListByScore.get(score) ?? [];
+    nfcIdxList.push(index + 1);
+    nfcIdxListByScore.set(score, nfcIdxList);
+
+    return nfcIdxListByScore;
+  },
+  new Map<number, number[]>(),
+);

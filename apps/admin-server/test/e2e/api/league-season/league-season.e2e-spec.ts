@@ -342,7 +342,8 @@ describe('League Season E2E test', () => {
 
     it('200 - count distinct participants only within league season period', async () => {
       const admin = testHelper.loginAdmin.admin1;
-      const [firstUser, secondUser] = await userSeedHelper.seedAll([{}, {}]);
+      const [firstUser, secondUser, deletedVisitUser] =
+        await userSeedHelper.seedAll([{}, {}, {}]);
       const leagueSeason = await leagueSeasonSeedHelper.seed({
         startAt: new Date('2026-09-01T00:00:00.000Z'),
         endAt: new Date('2026-09-07T23:59:59.999Z'),
@@ -380,6 +381,13 @@ describe('League Season E2E test', () => {
           nfcIdx: nfc.idx,
           score: nfc.score,
           createdAt: new Date(leagueSeason.endAt.getTime() + 1),
+        },
+        {
+          userIdx: deletedVisitUser.idx,
+          nfcIdx: nfc.idx,
+          score: nfc.score,
+          createdAt: new Date('2026-09-05T12:00:00.000Z'),
+          deletedAt: new Date('2026-09-08T00:00:00.000Z'),
         },
       ]);
 

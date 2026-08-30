@@ -183,6 +183,80 @@ describe('User Ranking E2E test', () => {
       ).toBe(2);
     });
 
+    it('200 - exclude soft deleted place visit from score, rank, latest visit, and count', async () => {
+      const [firstUser, secondUser] = await userSeedHelper.seedAll([
+        { nickname: '삭제 방문 제외 첫 사용자' },
+        { nickname: '삭제 방문 제외 둘째 사용자' },
+      ]);
+      const leagueSeason = await leagueSeasonSeedHelper.seed({
+        startAt: new Date('2026-04-01T00:00:00.000Z'),
+        endAt: new Date('2026-04-15T23:59:59.999Z'),
+        activatedAt: new Date('2026-03-31T00:00:00.000Z'),
+      });
+      const place = await placeSeedHelper.seed({
+        type: PlaceType.CAFE,
+        activatedAt: new Date('2026-03-31T00:00:00.000Z'),
+      });
+      const nfc = await nfcSeedHelper.seed({
+        placeIdx: place.idx,
+        activatedAt: new Date('2026-03-31T00:00:00.000Z'),
+      });
+      const [firstActiveVisit, , secondActiveVisit] =
+        await placeVisitSeedHelper.seedAll([
+          {
+            userIdx: firstUser.idx,
+            nfcIdx: nfc.idx,
+            score: 10,
+            createdAt: new Date('2026-04-03T10:00:00.000Z'),
+          },
+          {
+            userIdx: firstUser.idx,
+            nfcIdx: nfc.idx,
+            score: 100,
+            createdAt: new Date('2026-04-14T10:00:00.000Z'),
+            deletedAt: new Date('2026-04-16T00:00:00.000Z'),
+          },
+          {
+            userIdx: secondUser.idx,
+            nfcIdx: nfc.idx,
+            score: 20,
+            createdAt: new Date('2026-04-04T10:00:00.000Z'),
+          },
+        ]);
+      const admin = testHelper.loginAdmin.admin1;
+
+      const response = await testHelper
+        .test()
+        .get(`/league-season/${leagueSeason.idx}/user-ranking`)
+        .set('Cookie', `token=Bearer ${admin.token}`)
+        .query({ page: 1 })
+        .expect(200);
+      const userRankingList: UserRankingEntity[] =
+        response.body.userRankingList;
+      const firstRanking = userRankingList.find(
+        ({ user }) => user.idx === firstUser.idx,
+      );
+      const secondRanking = userRankingList.find(
+        ({ user }) => user.idx === secondUser.idx,
+      );
+
+      expect(response.body.count).toBe(
+        await testHelper.getPrisma().user.count({
+          where: { deletedAt: null },
+        }),
+      );
+      expect(firstRanking?.seasonScore).toBe(10);
+      expect(firstRanking?.seasonRank).toBe(2);
+      expect(firstRanking?.seasonLatestVisitAt).toBe(
+        firstActiveVisit.createdAt.toISOString(),
+      );
+      expect(secondRanking?.seasonScore).toBe(20);
+      expect(secondRanking?.seasonRank).toBe(1);
+      expect(secondRanking?.seasonLatestVisitAt).toBe(
+        secondActiveVisit.createdAt.toISOString(),
+      );
+    });
+
     it('200 - count and pagination check', async () => {
       const userList = await userSeedHelper.seedAll(
         Array.from({ length: 11 }, (_, index) => ({
