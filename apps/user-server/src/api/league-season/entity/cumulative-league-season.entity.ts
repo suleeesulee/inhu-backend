@@ -1,4 +1,4 @@
-export class CumulativeSeasonEntity {
+export class CumulativeLeagueSeasonEntity {
   /**
    * 누적 league season 참여자 수
    *
@@ -6,7 +6,7 @@ export class CumulativeSeasonEntity {
    */
   public cumulativeRankingParticipantCount: number;
 
-  constructor(data: CumulativeSeasonEntity) {
+  constructor(data: CumulativeLeagueSeasonEntity) {
     Object.assign(this, data);
   }
 }

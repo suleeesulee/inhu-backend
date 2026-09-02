@@ -16,7 +16,7 @@ import { GetLeagueSeasonAllResponseDto } from './dto/response/get-league-season-
 import { LeagueSeasonOverviewEntity } from './entity/league-season-overview.entity';
 import { GetLeagueSeasonResultAllResponseDto } from './dto/response/get-league-season-result-all.response.dto';
 import { UserRankingCoreService } from '@libs/core/user-ranking/user-ranking-core.service';
-import { CumulativeSeasonEntity } from './entity/cumulative-season.entity';
+import { CumulativeLeagueSeasonEntity } from './entity/cumulative-league-season.entity';
 
 @Injectable()
 export class LeagueSeasonService {
@@ -50,11 +50,11 @@ export class LeagueSeasonService {
     );
   }
 
-  public async getCumulativeSeason(): Promise<CumulativeSeasonEntity> {
+  public async getCumulativeLeagueSeason(): Promise<CumulativeLeagueSeasonEntity> {
     const cumulativeRankingParticipantCount =
       await this.userRankingCoreService.getCumulativeUserRankingCount();
 
-    return new CumulativeSeasonEntity({
+    return new CumulativeLeagueSeasonEntity({
       cumulativeRankingParticipantCount,
     });
   }

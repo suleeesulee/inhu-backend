@@ -10,7 +10,7 @@ import { UserSeedHelper } from '@libs/testing/seed/user/user.seed';
 import { GetLeagueSeasonAllResponseDto } from '@user/api/league-season/dto/response/get-league-season-all.response.dto';
 import { LeagueSeasonResultOverviewEntity } from '@user/api/league-season/entity/league-season-result-overview.entity';
 import { LeagueSeasonResultEntity } from '@user/api/league-season/entity/league-season-result.entity';
-import { CumulativeSeasonEntity } from '@user/api/league-season/entity/cumulative-season.entity';
+import { CumulativeLeagueSeasonEntity } from '@user/api/league-season/entity/cumulative-league-season.entity';
 import { LeagueSeasonEntity } from '@user/api/league-season/entity/league-season.entity';
 import { AppModule } from '@user/app.module';
 import { TestHelper } from '../../setup/test.helper';
@@ -522,7 +522,7 @@ describe('League Season E2E test', () => {
   });
 
   describe('GET /league-season/cumulative', () => {
-    it('200 - cumulative season field and distinct participant count check', async () => {
+    it('200 - cumulative league season field and distinct participant count check', async () => {
       const loginUser1 = testHelper.loginUsers.user1;
       const loginUser2 = testHelper.loginUsers.user2;
       const [otherUser, deletedUser, deletedVisitOnlyUser] =
@@ -595,20 +595,20 @@ describe('League Season E2E test', () => {
         .get('/league-season/cumulative')
         .expect(200);
 
-      const body: CumulativeSeasonEntity = response.body;
+      const body: CumulativeLeagueSeasonEntity = response.body;
 
       expect(body).toStrictEqual({
         cumulativeRankingParticipantCount: 3,
       });
     });
 
-    it('200 - empty cumulative season participant check', async () => {
+    it('200 - empty cumulative league season participant check', async () => {
       const response = await testHelper
         .test()
         .get('/league-season/cumulative')
         .expect(200);
 
-      const body: CumulativeSeasonEntity = response.body;
+      const body: CumulativeLeagueSeasonEntity = response.body;
 
       expect(body).toStrictEqual({
         cumulativeRankingParticipantCount: 0,

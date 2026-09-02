@@ -11,7 +11,7 @@ import { GetLeagueSeasonResultAllDto } from './dto/request/get-league-season-res
 import { GetLeagueSeasonAllDto } from './dto/request/get-league-season-all.dto';
 import { GetLeagueSeasonAllResponseDto } from './dto/response/get-league-season-all.response.dto';
 import { GetLeagueSeasonResultAllResponseDto } from './dto/response/get-league-season-result-all.response.dto';
-import { CumulativeSeasonEntity } from './entity/cumulative-season.entity';
+import { CumulativeLeagueSeasonEntity } from './entity/cumulative-league-season.entity';
 
 @Controller('league-season')
 export class LeagueSeasonController {
@@ -47,8 +47,8 @@ export class LeagueSeasonController {
    * 누적 리그 정보 조회
    */
   @Get('/cumulative')
-  public async getCumulativeSeason(): Promise<CumulativeSeasonEntity> {
-    return await this.leagueSeasonService.getCumulativeSeason();
+  public async getCumulativeLeagueSeason(): Promise<CumulativeLeagueSeasonEntity> {
+    return await this.leagueSeasonService.getCumulativeLeagueSeason();
   }
 
   /**
