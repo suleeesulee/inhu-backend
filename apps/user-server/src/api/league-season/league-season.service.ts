@@ -16,6 +16,7 @@ import { GetLeagueSeasonAllResponseDto } from './dto/response/get-league-season-
 import { LeagueSeasonOverviewEntity } from './entity/league-season-overview.entity';
 import { GetLeagueSeasonResultAllResponseDto } from './dto/response/get-league-season-result-all.response.dto';
 import { UserRankingCoreService } from '@libs/core/user-ranking/user-ranking-core.service';
+import { CumulativeLeagueSeasonEntity } from './entity/cumulative-league-season.entity';
 
 @Injectable()
 export class LeagueSeasonService {
@@ -38,19 +39,24 @@ export class LeagueSeasonService {
       throw new NotFoundException('League season not found');
     }
 
-    const [seasonRankingParticipantCount, cumulativeRankingParticipantCount] =
-      await Promise.all([
-        this.userRankingCoreService.getSeasonUserRankingCountByLeagueSeasonIdx(
-          leagueSeason.idx,
-        ),
-        this.userRankingCoreService.getCumulativeUserRankingCount(),
-      ]);
+    const seasonRankingParticipantCount =
+      await this.userRankingCoreService.getSeasonUserRankingCountByLeagueSeasonIdx(
+        leagueSeason.idx,
+      );
 
     return LeagueSeasonEntity.fromModel(
       leagueSeason,
       seasonRankingParticipantCount,
-      cumulativeRankingParticipantCount,
     );
+  }
+
+  public async getCumulativeLeagueSeason(): Promise<CumulativeLeagueSeasonEntity> {
+    const cumulativeRankingParticipantCount =
+      await this.userRankingCoreService.getCumulativeUserRankingCount();
+
+    return new CumulativeLeagueSeasonEntity({
+      cumulativeRankingParticipantCount,
+    });
   }
 
   public async getLeagueSeasonAll(

@@ -114,6 +114,13 @@ export class PlaceEntity {
    */
   public typeList: PlaceType[];
 
+  /**
+   * NFC 존재 여부
+   *
+   * @example true
+   */
+  public hasNfc: boolean;
+
   constructor(data: PlaceEntity) {
     Object.assign(this, data);
   }
@@ -142,6 +149,7 @@ export class PlaceEntity {
       mainCategoryList: model.mainCategoryList,
       moodCategoryList: model.moodCategoryList,
       typeList: model.typeList,
+      hasNfc: model.hasNfc,
     });
   }
 }

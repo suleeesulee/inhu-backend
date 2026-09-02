@@ -6,6 +6,7 @@ import { PlaceType } from '@libs/core/place/constants/place-type.constant';
 import { WeeklyCloseType } from '@libs/core/place/constants/weekly-close-type.constant';
 import { BookmarkSeedHelper } from '@libs/testing/seed/bookmark/bookmark.seed';
 import { MenuSeedHelper } from '@libs/testing/seed/menu/menu.seed';
+import { NfcSeedHelper } from '@libs/testing/seed/nfc/nfc.seed';
 import { PlaceOwnerSeedHelper } from '@libs/testing/seed/place-owner/place-owner.seed';
 import { PlaceSeedHelper } from '@libs/testing/seed/place/place.seed';
 import { SearchTagSeedHelper } from '@libs/testing/seed/search-tag/search-tag.seed';
@@ -23,6 +24,7 @@ describe('Place E2E test', () => {
   const placeSeedHelper = testHelper.seedHelper(PlaceSeedHelper);
   const bookmarkSeedHelper = testHelper.seedHelper(BookmarkSeedHelper);
   const menuSeedHelper = testHelper.seedHelper(MenuSeedHelper);
+  const nfcSeedHelper = testHelper.seedHelper(NfcSeedHelper);
   const placeOwnerSeedHelper = testHelper.seedHelper(PlaceOwnerSeedHelper);
   const searchTagSeedHelper = testHelper.seedHelper(SearchTagSeedHelper);
 
@@ -70,6 +72,7 @@ describe('Place E2E test', () => {
           MoodCategory.DESSERT_HOTSPOT,
         ],
       });
+      await nfcSeedHelper.seed({ placeIdx: placeSeed.idx });
 
       const response = await testHelper
         .test()
@@ -94,6 +97,7 @@ describe('Place E2E test', () => {
       expect(place.reviewCount).toBe(placeSeed.reviewCount);
       expect(place.topKeywordList.map(({ idx }) => idx)).toStrictEqual([2, 1]);
       expect(place.bookmark).toBe(false);
+      expect(place.hasNfc).toBe(true);
       expect(place.imagePathList.sort()).toEqual(place.imagePathList.sort());
       expect(place.type).toBe(placeSeed.type);
       expect(place.mainCategoryList[0]).toBe(MainCategory.BAKERY);
@@ -3786,6 +3790,7 @@ describe('Place E2E test', () => {
       expect(place.reviewCount).toBe(placeSeed.reviewCount);
       expect(place.topKeywordList.map(({ idx }) => idx)).toStrictEqual([2, 1]);
       expect(place.bookmark).toBe(false);
+      expect(place.hasNfc).toBe(false);
       expect(place.imagePathList.sort()).toEqual(placeSeed.placeImgList.sort());
       expect(place.isClosedOnHoliday).toBe(placeSeed.isClosedOnHoliday);
       expect(place.type).toBe(placeSeed.type);

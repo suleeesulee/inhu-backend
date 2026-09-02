@@ -20,6 +20,7 @@ export class PlaceOverviewEntity extends PickType(PlaceEntity, [
   'mainCategoryList',
   'moodCategoryList',
   'typeList',
+  'hasNfc',
 ]) {
   constructor(data: PlaceOverviewEntity) {
     super();
@@ -46,6 +47,7 @@ export class PlaceOverviewEntity extends PickType(PlaceEntity, [
       mainCategoryList: model.mainCategoryList,
       moodCategoryList: model.moodCategoryList,
       typeList: model.typeList,
+      hasNfc: model.hasNfc,
     });
   }
 }

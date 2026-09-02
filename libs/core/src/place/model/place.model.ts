@@ -112,6 +112,11 @@ export class PlaceModel {
 
   public searchTagList: SearchTagModel[];
 
+  /**
+   * NFC 존재 여부
+   */
+  public hasNfc: boolean;
+
   constructor(data: PlaceModel) {
     Object.assign(this, data);
   }
@@ -158,6 +163,7 @@ export class PlaceModel {
       searchTagList: place.placeSearchTagMappingList.map(({ searchTag }) =>
         SearchTagModel.fromPrisma(searchTag),
       ),
+      hasNfc: place.nfcList.length > 0,
     });
   }
 }
