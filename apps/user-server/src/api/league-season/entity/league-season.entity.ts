@@ -44,13 +44,6 @@ export class LeagueSeasonEntity {
   public seasonRankingParticipantCount: number;
 
   /**
-   * 누적 league season 참여자 수
-   *
-   * @example 500
-   */
-  public cumulativeRankingParticipantCount: number;
-
-  /**
    * league season 보상 옵션 리스트
    */
   public rewardOptionList: LeagueRewardOptionEntity[];
@@ -62,7 +55,6 @@ export class LeagueSeasonEntity {
   public static fromModel(
     model: LeagueSeasonModel,
     seasonRankingParticipantCount: number,
-    cumulativeRankingParticipantCount: number,
   ): LeagueSeasonEntity {
     return new LeagueSeasonEntity({
       idx: model.idx,
@@ -72,7 +64,6 @@ export class LeagueSeasonEntity {
       activatedAt: model.activatedAt,
       createdAt: model.createdAt,
       seasonRankingParticipantCount,
-      cumulativeRankingParticipantCount,
       rewardOptionList: model.rewardOptionList.map((rewardOption) =>
         LeagueRewardOptionEntity.fromModel(rewardOption),
       ),

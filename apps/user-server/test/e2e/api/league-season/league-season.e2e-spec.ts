@@ -10,6 +10,7 @@ import { UserSeedHelper } from '@libs/testing/seed/user/user.seed';
 import { GetLeagueSeasonAllResponseDto } from '@user/api/league-season/dto/response/get-league-season-all.response.dto';
 import { LeagueSeasonResultOverviewEntity } from '@user/api/league-season/entity/league-season-result-overview.entity';
 import { LeagueSeasonResultEntity } from '@user/api/league-season/entity/league-season-result.entity';
+import { CumulativeSeasonEntity } from '@user/api/league-season/entity/cumulative-season.entity';
 import { LeagueSeasonEntity } from '@user/api/league-season/entity/league-season.entity';
 import { AppModule } from '@user/app.module';
 import { TestHelper } from '../../setup/test.helper';
@@ -128,7 +129,7 @@ describe('League Season E2E test', () => {
       expect(body.activatedAt).toBe(leagueSeason.activatedAt?.toISOString());
       expect(body.createdAt).toBe(leagueSeason.createdAt.toISOString());
       expect(body.seasonRankingParticipantCount).toBe(2);
-      expect(body.cumulativeRankingParticipantCount).toBe(2);
+      expect(body).not.toHaveProperty('cumulativeRankingParticipantCount');
       expect(body.rewardOptionList).toHaveLength(2);
       expect(body.rewardOptionList[0].targetRank).toBe(1);
       expect(body.rewardOptionList[0].reward.idx).toBe(firstReward.idx);
@@ -184,7 +185,6 @@ describe('League Season E2E test', () => {
       expect(body.idx).toBe(latestActivatedLeagueSeason.idx);
       expect(body.name).toBe(latestActivatedLeagueSeason.name);
       expect(body.seasonRankingParticipantCount).toBe(0);
-      expect(body.cumulativeRankingParticipantCount).toBe(0);
     });
 
     it('200 - no reward option and no place visit', async () => {
@@ -210,7 +210,6 @@ describe('League Season E2E test', () => {
 
       expect(body.idx).toBe(leagueSeason.idx);
       expect(body.seasonRankingParticipantCount).toBe(0);
-      expect(body.cumulativeRankingParticipantCount).toBe(0);
       expect(body.rewardOptionList).toStrictEqual([]);
     });
 
@@ -337,7 +336,6 @@ describe('League Season E2E test', () => {
       );
       expect(body.idx).toBe(targetLeagueSeason.idx);
       expect(body.seasonRankingParticipantCount).toBe(2);
-      expect(body.cumulativeRankingParticipantCount).toBe(2);
     });
 
     it('200 - include place visits at league season period boundaries', async () => {
@@ -397,7 +395,6 @@ describe('League Season E2E test', () => {
 
       expect(body.idx).toBe(leagueSeason.idx);
       expect(body.seasonRankingParticipantCount).toBe(1);
-      expect(body.cumulativeRankingParticipantCount).toBe(1);
     });
 
     it('200 - multiple reward options for same target rank', async () => {
@@ -521,6 +518,101 @@ describe('League Season E2E test', () => {
         .get('/league-season')
         .query({ leagueSeasonIdx: inactiveLeagueSeason.idx })
         .expect(404);
+    });
+  });
+
+  describe('GET /league-season/cumulative', () => {
+    it('200 - cumulative season field and distinct participant count check', async () => {
+      const loginUser1 = testHelper.loginUsers.user1;
+      const loginUser2 = testHelper.loginUsers.user2;
+      const [otherUser, deletedUser, deletedVisitOnlyUser] =
+        await userSeedHelper.seedAll([
+          { nickname: '누적 리그 참여 사용자' },
+          {
+            nickname: '탈퇴한 누적 리그 참여 사용자',
+            deletedAt: new Date('2026-08-20T00:00:00.000Z'),
+          },
+          { nickname: '삭제된 방문만 존재하는 사용자' },
+        ]);
+      const activatedAt = new Date('2026-05-01T00:00:00.000Z');
+      const place = await placeSeedHelper.seed({
+        type: PlaceType.CAFE,
+        activatedAt,
+      });
+      const nfc = await nfcSeedHelper.seed({
+        placeIdx: place.idx,
+        score: 10,
+        activatedAt,
+      });
+      await placeVisitSeedHelper.seedAll([
+        {
+          userIdx: loginUser1.idx,
+          nfcIdx: nfc.idx,
+          score: nfc.score,
+          createdAt: new Date('2026-06-01T00:00:00.000Z'),
+        },
+        {
+          userIdx: loginUser1.idx,
+          nfcIdx: nfc.idx,
+          score: nfc.score,
+          createdAt: new Date('2026-07-15T12:00:00.000Z'),
+        },
+        {
+          userIdx: loginUser1.idx,
+          nfcIdx: nfc.idx,
+          score: nfc.score,
+          createdAt: new Date('2026-08-31T23:59:59.000Z'),
+        },
+        {
+          userIdx: loginUser2.idx,
+          nfcIdx: nfc.idx,
+          score: nfc.score,
+          createdAt: new Date('2026-06-10T10:00:00.000Z'),
+        },
+        {
+          userIdx: otherUser.idx,
+          nfcIdx: nfc.idx,
+          score: nfc.score,
+          createdAt: new Date('2026-08-10T10:00:00.000Z'),
+        },
+        {
+          userIdx: deletedUser.idx,
+          nfcIdx: nfc.idx,
+          score: nfc.score,
+          createdAt: new Date('2026-08-01T10:00:00.000Z'),
+        },
+        {
+          userIdx: deletedVisitOnlyUser.idx,
+          nfcIdx: nfc.idx,
+          score: nfc.score,
+          createdAt: new Date('2026-08-05T10:00:00.000Z'),
+          deletedAt: new Date('2026-08-06T00:00:00.000Z'),
+        },
+      ]);
+
+      const response = await testHelper
+        .test()
+        .get('/league-season/cumulative')
+        .expect(200);
+
+      const body: CumulativeSeasonEntity = response.body;
+
+      expect(body).toStrictEqual({
+        cumulativeRankingParticipantCount: 3,
+      });
+    });
+
+    it('200 - empty cumulative season participant check', async () => {
+      const response = await testHelper
+        .test()
+        .get('/league-season/cumulative')
+        .expect(200);
+
+      const body: CumulativeSeasonEntity = response.body;
+
+      expect(body).toStrictEqual({
+        cumulativeRankingParticipantCount: 0,
+      });
     });
   });
 
