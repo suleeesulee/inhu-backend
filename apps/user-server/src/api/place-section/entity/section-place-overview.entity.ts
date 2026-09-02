@@ -6,6 +6,7 @@ import { PlaceOverviewEntity } from '@user/api/place/entity/place-overview.entit
 
 export class SectionPlaceOverviewEntity extends OmitType(PlaceOverviewEntity, [
   'bookmark',
+  'hasNfc',
 ]) {
   constructor(data: SectionPlaceOverviewEntity) {
     super();
