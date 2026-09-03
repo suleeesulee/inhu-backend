@@ -10,6 +10,8 @@ import { CreateMagazineImagePresignedUrlsDto } from './dto/request/create-magazi
 import { CreateProfileImagePresignedUrlDto } from './dto/request/create-profile-image-presigned-url.dto';
 import { CreateReviewImagePresignedUrlsDto } from './dto/request/create-review-image-presigned-url.dto';
 import { CreateRewardImagePresignedUrlDto } from './dto/request/create-reward-image-presigned-url.dto';
+import { CreateUserRewardImagePresignedUrlsDto } from './dto/request/create-user-reward-image-presigned-url.dto';
+import { PrivatePresignedUrlModel } from '@libs/common/modules/s3/model/private-presigned-url.model';
 
 @Injectable()
 export class S3UploadService {
@@ -87,6 +89,17 @@ export class S3UploadService {
     return await this.s3Service.getPresignedUrl({
       folder: S3Folder.REWARD,
       extension: dto.extension,
+      maxSize: 5,
+      contentType: ContentType.IMAGE,
+    });
+  }
+
+  public async createUserRewardImagePresignedUrls(
+    dto: CreateUserRewardImagePresignedUrlsDto,
+  ): Promise<PrivatePresignedUrlModel[]> {
+    return await this.s3Service.getPrivatePresignedUrls({
+      folder: S3Folder.USER_REWARD,
+      extensions: dto.extensions,
       maxSize: 5,
       contentType: ContentType.IMAGE,
     });

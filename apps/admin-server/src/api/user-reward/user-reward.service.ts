@@ -5,6 +5,7 @@ import { UserRewardCoreService } from '@libs/core/user-reward/user-reward-core.s
 import { LeagueSeasonCoreService } from '@libs/core/league-season/league-season-core.service';
 import { RewardCoreService } from '@libs/core/reward/reward-core.service';
 import {
+  BadRequestException,
   ConflictException,
   ForbiddenException,
   Injectable,
@@ -172,6 +173,27 @@ export class UserRewardService {
       throw new NotFoundException('Reward not found');
     }
 
+    dto.imagePathList.forEach((imagePath) =>
+      this.validateUserRewardImagePath(imagePath),
+    );
+    const imageDataUrlList = await Promise.all(
+      dto.imagePathList.map(async (imagePath) => {
+        const image = await this.s3Service.getPrivateFile(imagePath);
+        if (!image) {
+          throw new NotFoundException('User reward image not found');
+        }
+        const contentType = this.getUserRewardImageContentType(image);
+        if (!contentType) {
+          throw new BadRequestException('Invalid user reward image type');
+        }
+        if (image.byteLength > 5 * 1024 * 1024) {
+          throw new BadRequestException('User reward image is too large');
+        }
+
+        return `data:${contentType};base64,${image.toString('base64')}`;
+      }),
+    );
+
     await this.mailService.sendMail(
       user.schoolEmail,
       `[인하밥길] ${leagueSeasonResult.leagueSeason.name} 리워드 발급 안내`,
@@ -180,13 +202,48 @@ export class UserRewardService {
         leagueSeasonResult.leagueSeason.name,
         reward.name,
         dto.content,
-        dto.imagePathList.map((imagePath) =>
-          this.s3Service.getFileUrl(imagePath),
-        ),
+        imageDataUrlList,
       ),
     );
-    await this.userRewardCoreService.updateUserRewardById(id, {
-      issuedAt: new Date(),
-    });
+    // await this.userRewardCoreService.updateUserRewardById(id, {
+    //   issuedAt: new Date(),
+    // });
+  }
+
+  private validateUserRewardImagePath(imagePath: string): void {
+    const pattern = new RegExp(
+      '^/user-reward/' +
+        '[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-' +
+        '[89ab][0-9a-f]{3}-[0-9a-f]{12}\\.(jpg|jpeg|png|webp)$',
+      'i',
+    );
+
+    if (!pattern.test(imagePath)) {
+      throw new BadRequestException('Invalid user reward image path');
+    }
+  }
+
+  private getUserRewardImageContentType(content: Buffer): string | null {
+    const pngSignature = Buffer.from([
+      0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a,
+    ]);
+    if (content.subarray(0, pngSignature.length).equals(pngSignature)) {
+      return 'image/png';
+    }
+
+    const jpegSignature = Buffer.from([0xff, 0xd8, 0xff]);
+    if (content.subarray(0, jpegSignature.length).equals(jpegSignature)) {
+      return 'image/jpeg';
+    }
+
+    const webpSignature = Buffer.from('WEBP');
+    if (
+      content.subarray(0, 4).toString() === 'RIFF' &&
+      content.subarray(8, 12).equals(webpSignature)
+    ) {
+      return 'image/webp';
+    }
+
+    return null;
   }
 }
