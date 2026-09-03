@@ -12,6 +12,7 @@ import { GetLeagueSeasonAllDto } from './dto/request/get-league-season-all.dto';
 import { GetLeagueSeasonAllResponseDto } from './dto/response/get-league-season-all.response.dto';
 import { GetLeagueSeasonResultAllResponseDto } from './dto/response/get-league-season-result-all.response.dto';
 import { CumulativeLeagueSeasonEntity } from './entity/cumulative-league-season.entity';
+import { LeagueRewardOptionEntity } from './entity/league-reward-option.entity';
 
 @Controller('league-season')
 export class LeagueSeasonController {
@@ -49,6 +50,20 @@ export class LeagueSeasonController {
   @Get('/cumulative')
   public async getCumulativeLeagueSeason(): Promise<CumulativeLeagueSeasonEntity> {
     return await this.leagueSeasonService.getCumulativeLeagueSeason();
+  }
+
+  /**
+   * 특정 리그 시즌 보상 옵션 전체 조회
+   */
+  @Get('/:leagueSeasonIdx/reward-option/all')
+  @Exception(400, 'Invalid request')
+  @Exception(404, 'League season not found')
+  public async getLeagueRewardOptionAllByLeagueSeasonIdx(
+    @Param('leagueSeasonIdx', ParseIntPipe) leagueSeasonIdx: number,
+  ): Promise<LeagueRewardOptionEntity[]> {
+    return await this.leagueSeasonService.getLeagueRewardOptionAllByLeagueSeasonIdx(
+      leagueSeasonIdx,
+    );
   }
 
   /**

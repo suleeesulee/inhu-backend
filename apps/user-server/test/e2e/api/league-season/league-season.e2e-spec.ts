@@ -11,6 +11,7 @@ import { GetLeagueSeasonAllResponseDto } from '@user/api/league-season/dto/respo
 import { LeagueSeasonResultOverviewEntity } from '@user/api/league-season/entity/league-season-result-overview.entity';
 import { LeagueSeasonResultEntity } from '@user/api/league-season/entity/league-season-result.entity';
 import { CumulativeLeagueSeasonEntity } from '@user/api/league-season/entity/cumulative-league-season.entity';
+import { LeagueRewardOptionEntity } from '@user/api/league-season/entity/league-reward-option.entity';
 import { LeagueSeasonEntity } from '@user/api/league-season/entity/league-season.entity';
 import { AppModule } from '@user/app.module';
 import { TestHelper } from '../../setup/test.helper';
@@ -613,6 +614,175 @@ describe('League Season E2E test', () => {
       expect(body).toStrictEqual({
         cumulativeRankingParticipantCount: 0,
       });
+    });
+  });
+
+  describe('GET /league-season/:leagueSeasonIdx/reward-option/all', () => {
+    it('200 - league reward option field and filtering check', async () => {
+      const activatedAt = new Date('2026-08-01T00:00:00.000Z');
+      const [
+        firstReward,
+        secondReward,
+        commonReward,
+        deletedOptionReward,
+        otherLeagueReward,
+      ] = await rewardSeedHelper.seedAll([
+        {
+          name: 'First selectable reward',
+          imagePath: '/reward/first-selectable.png',
+          activatedAt,
+        },
+        {
+          name: 'Second selectable reward',
+          imagePath: '/reward/second-selectable.png',
+          activatedAt,
+        },
+        {
+          name: 'Common reward',
+          imagePath: '/reward/common.png',
+          activatedAt,
+        },
+        {
+          name: 'Deleted option reward',
+          imagePath: '/reward/deleted-option.png',
+          activatedAt,
+        },
+        {
+          name: 'Other league reward',
+          imagePath: '/reward/other-league.png',
+          activatedAt,
+        },
+      ]);
+      const [targetLeagueSeason] = await leagueSeasonSeedHelper.seedAll([
+        {
+          name: 'Target League',
+          startAt: new Date('2026-09-01T00:00:00.000Z'),
+          endAt: new Date('2026-09-15T23:59:59.000Z'),
+          activatedAt,
+          rewardOptionList: [
+            { rewardIdx: firstReward.idx, targetRank: 1 },
+            { rewardIdx: secondReward.idx, targetRank: 1 },
+            { rewardIdx: commonReward.idx, targetRank: 4 },
+            {
+              rewardIdx: deletedOptionReward.idx,
+              targetRank: 2,
+              deletedAt: new Date('2026-08-15T00:00:00.000Z'),
+            },
+          ],
+        },
+        {
+          name: 'Other League',
+          startAt: new Date('2026-10-01T00:00:00.000Z'),
+          endAt: new Date('2026-10-15T23:59:59.000Z'),
+          activatedAt,
+          rewardOptionList: [
+            { rewardIdx: otherLeagueReward.idx, targetRank: 1 },
+          ],
+        },
+      ]);
+      const persistedRewardOptionList = await testHelper
+        .getPrisma()
+        .leagueRewardOption.findMany({
+          where: {
+            leagueSeasonIdx: targetLeagueSeason.idx,
+            deletedAt: null,
+          },
+        });
+
+      const response = await testHelper
+        .test()
+        .get(`/league-season/${targetLeagueSeason.idx}/reward-option/all`)
+        .expect(200);
+
+      const body: LeagueRewardOptionEntity[] = response.body;
+      const firstRewardOption = body.find(
+        ({ reward }) => reward.idx === firstReward.idx,
+      );
+      const secondRewardOption = body.find(
+        ({ reward }) => reward.idx === secondReward.idx,
+      );
+      const commonRewardOption = body.find(
+        ({ reward }) => reward.idx === commonReward.idx,
+      );
+
+      expect(body).toHaveLength(3);
+      expect(firstRewardOption?.id).toBe(
+        persistedRewardOptionList.find(
+          ({ rewardIdx }) => rewardIdx === firstReward.idx,
+        )?.id,
+      );
+      expect(firstRewardOption?.targetRank).toBe(1);
+      expect(firstRewardOption?.createdAt).toBeDefined();
+      expect(firstRewardOption?.reward).toMatchObject({
+        idx: firstReward.idx,
+        name: firstReward.name,
+        imagePath: firstReward.imagePath,
+        activatedAt: firstReward.activatedAt?.toISOString(),
+      });
+      expect(secondRewardOption?.targetRank).toBe(1);
+      expect(secondRewardOption?.reward.idx).toBe(secondReward.idx);
+      expect(commonRewardOption?.targetRank).toBe(4);
+      expect(commonRewardOption?.reward.idx).toBe(commonReward.idx);
+      expect(
+        body.some(({ reward }) => reward.idx === deletedOptionReward.idx),
+      ).toBe(false);
+      expect(
+        body.some(({ reward }) => reward.idx === otherLeagueReward.idx),
+      ).toBe(false);
+    });
+
+    it('200 - empty league reward option list', async () => {
+      const leagueSeason = await leagueSeasonSeedHelper.seed({
+        name: 'League without reward option',
+        startAt: new Date('2026-09-01T00:00:00.000Z'),
+        endAt: new Date('2026-09-15T23:59:59.000Z'),
+        activatedAt: new Date('2026-08-01T00:00:00.000Z'),
+        rewardOptionList: null,
+      });
+
+      const response = await testHelper
+        .test()
+        .get(`/league-season/${leagueSeason.idx}/reward-option/all`)
+        .expect(200);
+
+      const body: LeagueRewardOptionEntity[] = response.body;
+
+      expect(body).toStrictEqual([]);
+    });
+
+    it('400 - league season idx is not an integer', async () => {
+      await testHelper
+        .test()
+        .get('/league-season/1.5/reward-option/all')
+        .expect(400);
+    });
+
+    it('400 - league season idx is not a number', async () => {
+      await testHelper
+        .test()
+        .get('/league-season/invalid-idx/reward-option/all')
+        .expect(400);
+    });
+
+    it('404 - league season does not exist', async () => {
+      await testHelper
+        .test()
+        .get('/league-season/999999/reward-option/all')
+        .expect(404);
+    });
+
+    it('404 - inactive league season is not exposed', async () => {
+      const inactiveLeagueSeason = await leagueSeasonSeedHelper.seed({
+        name: 'Inactive League',
+        startAt: new Date('2026-09-01T00:00:00.000Z'),
+        endAt: new Date('2026-09-15T23:59:59.000Z'),
+        activatedAt: null,
+      });
+
+      await testHelper
+        .test()
+        .get(`/league-season/${inactiveLeagueSeason.idx}/reward-option/all`)
+        .expect(404);
     });
   });
 
