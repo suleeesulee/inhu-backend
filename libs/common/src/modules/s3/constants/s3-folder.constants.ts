@@ -13,4 +13,5 @@ export enum S3Folder {
   BLOG_REVIEW = 'blog-review',
   MAGAZINE = 'magazine',
   REWARD = 'reward',
+  USER_REWARD = 'user-reward',
 }
