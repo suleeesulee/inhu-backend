@@ -622,7 +622,7 @@ describe('User Reward E2E test', () => {
   describe('POST /user-reward/:id/issue', () => {
     const issueUserRewardDto = {
       content: '리워드 상품을 발급해 드립니다.',
-      imagePathList: ['/reward/coupon-front.png', '/reward/coupon-back.png'],
+      imagePathList: ['/user-reward/example/image.png'],
     };
 
     it('200 - sends reward issue email and updates issued at', async () => {
@@ -655,13 +655,38 @@ describe('User Reward E2E test', () => {
         rewardIdx: reward.idx,
         selectedAt: new Date(),
       });
+      const imagePathList = [
+        '/user-reward/550e8400-e29b-41d4-a716-446655440000.png',
+        '/user-reward/550e8400-e29b-41d4-a716-446655440001.jpg',
+      ];
+      const imageContentList = [
+        Buffer.concat([
+          Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]),
+          Buffer.from('first reward image'),
+        ]),
+        Buffer.concat([
+          Buffer.from([0xff, 0xd8, 0xff]),
+          Buffer.from('second reward image'),
+        ]),
+      ];
+      const imageDataUrlList = [
+        `data:image/png;base64,${imageContentList[0].toString('base64')}`,
+        `data:image/jpeg;base64,${imageContentList[1].toString('base64')}`,
+      ];
+      const s3ServiceMock = jest
+        .spyOn(testHelper.get(S3Service), 'getPrivateFile')
+        .mockImplementation(async (imagePath) => {
+          const index = imagePathList.indexOf(imagePath);
+
+          return index === -1 ? null : imageContentList[index];
+        });
       const beforeRequest = new Date();
 
       await testHelper
         .test()
         .post(`/user-reward/${userReward.id}/issue`)
         .set('Cookie', `token=Bearer ${admin.token}`)
-        .send(issueUserRewardDto)
+        .send({ ...issueUserRewardDto, imagePathList })
         .expect(200);
 
       const issuedUserReward = await testHelper
@@ -679,15 +704,18 @@ describe('User Reward E2E test', () => {
           leagueSeason.name,
           reward.name,
           issueUserRewardDto.content,
-          issueUserRewardDto.imagePathList.map((imagePath) =>
-            testHelper.get(S3Service).getFileUrl(imagePath),
-          ),
+          imageDataUrlList,
         ),
       );
+      expect(s3ServiceMock).toHaveBeenCalledTimes(2);
+      expect(s3ServiceMock).toHaveBeenNthCalledWith(1, imagePathList[0]);
+      expect(s3ServiceMock).toHaveBeenNthCalledWith(2, imagePathList[1]);
       expect(issuedUserReward.issuedAt).not.toBeNull();
       expect(issuedUserReward.issuedAt?.getTime()).toBeGreaterThanOrEqual(
         beforeRequest.getTime(),
       );
+
+      s3ServiceMock.mockRestore();
     });
 
     it('400 - user reward id is invalid', async () => {
