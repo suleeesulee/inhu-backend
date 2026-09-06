@@ -4,6 +4,8 @@ import { LoginAdminForTest, LoginAdminHelper } from './login-admin.helper';
 import { ITestHelper } from '@libs/testing/interface/test-helper.interface';
 import { Type } from '@libs/common/types/Type';
 import { OpenAIService } from '@libs/common/modules/openAI/openAI.service';
+import { ApnsPushNotificationProvider } from '@libs/common/modules/push-notification/provider/apns/apns-push-notification.provider';
+import { FcmPushNotificationProvider } from '@libs/common/modules/push-notification/provider/fcm/fcm-push-notification.provider';
 
 export class TestHelper extends ITestHelper {
   /**
@@ -24,6 +26,14 @@ export class TestHelper extends ITestHelper {
     helper.overrideProvider(OpenAIService).useValue({
       complete: jest.fn().mockResolvedValue({ stations: [] }),
       completeWithImage: jest.fn().mockResolvedValue({ stations: [] }),
+    });
+
+    helper.overrideProvider(ApnsPushNotificationProvider).useValue({
+      send: jest.fn().mockResolvedValue(undefined),
+    });
+
+    helper.overrideProvider(FcmPushNotificationProvider).useValue({
+      send: jest.fn().mockResolvedValue(undefined),
     });
 
     return helper;
