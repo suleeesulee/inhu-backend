@@ -41,6 +41,7 @@ import { UserRewardModule } from './api/user-reward/user-reward.module';
 import { NoticeModule } from './api/notice/notice.module';
 import { UserRankingModule } from './api/user-ranking/user-ranking.module';
 import { PlaceVisitModule } from './api/place-visit/place-visit.module';
+import { AdminPushNotificationModule } from './api/push-notification/admin-push-notification.module';
 
 @Module({
   imports: [
@@ -87,6 +88,7 @@ import { PlaceVisitModule } from './api/place-visit/place-visit.module';
     NoticeModule,
     UserRankingModule,
     PlaceVisitModule,
+    AdminPushNotificationModule,
   ],
   providers: [
     {
