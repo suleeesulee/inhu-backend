@@ -2284,7 +2284,7 @@
       },
       "L77g_fzh1l_J78pqkWq5P": {
         "id": "L77g_fzh1l_J78pqkWq5P",
-        "name": "user_notification_tb",
+        "name": "login_user_notification_tb",
         "comment": "",
         "columnIds": [
           "KK0kCqcYC6wU5q-P26VLF",

@@ -278,7 +278,7 @@ model User {
   service1ResultList        Service1Result[]
   service2ResultList        Service2Result[]
   userEmail                 UserEmail?
-  userNotification          UserNotification[]
+  loginUserNotificationList LoginUserNotification[]
   userProvider              UserProvider?
   withdrawServiceResultList WithdrawServiceResult[]
 
@@ -821,26 +821,26 @@ model NotificationCampaign {
 }
 
 model Notification {
-  id                       String                   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
-  title                    String                   @db.VarChar
-  content                  String                   @db.VarChar
-  pageType                 Int                      @map("page_type")
-  createdAt                DateTime                 @default(now()) @map("created_at") @db.Timestamptz(6)
-  notificationCampaignList NotificationCampaign[]
-  userNotificationList     UserNotification[]
+  id                        String                  @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  title                     String                  @db.VarChar
+  content                   String                  @db.VarChar
+  pageType                  Int                     @map("page_type")
+  createdAt                 DateTime                @default(now()) @map("created_at") @db.Timestamptz(6)
+  notificationCampaignList  NotificationCampaign[]
+  loginUserNotificationList LoginUserNotification[]
 
   @@index([createdAt(sort: Desc), id(sort: Desc)], map: "idx_notification_created_at_id")
   @@map("notification_tb")
 }
 
-model UserNotification {
+model LoginUserNotification {
   notificationId String       @map("notification_id") @db.Uuid
   userIdx        Int          @map("user_idx")
   createdAt      DateTime     @default(now()) @map("created_at") @db.Timestamptz(6)
-  notification   Notification @relation(fields: [notificationId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_notification_tb_to_user_notification_tb")
-  user           User         @relation(fields: [userIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_user_tb_to_user_notification_tb")
+  notification   Notification @relation(fields: [notificationId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_notification_tb_to_login_user_notification_tb")
+  user           User         @relation(fields: [userIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_user_tb_to_login_user_notification_tb")
 
   @@id([notificationId, userIdx])
-  @@index([userIdx, createdAt(sort: Desc), notificationId], map: "idx_user_notification_user_created_at_notification")
-  @@map("user_notification_tb")
+  @@index([userIdx, createdAt(sort: Desc), notificationId], map: "idx_login_user_notification_user_created_at_notification")
+  @@map("login_user_notification_tb")
 }

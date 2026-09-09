@@ -621,7 +621,7 @@ CREATE TABLE user_email_tb
   PRIMARY KEY (idx)
 );
 
-CREATE TABLE user_notification_tb
+CREATE TABLE login_user_notification_tb
 (
   notification_id uuid                     NOT NULL,
   user_idx        int                      NOT NULL,
@@ -629,8 +629,8 @@ CREATE TABLE user_notification_tb
   PRIMARY KEY (notification_id, user_idx)
 );
 
-CREATE INDEX idx_user_notification_user_created_at_notification
-ON user_notification_tb (
+CREATE INDEX idx_login_user_notification_user_created_at_notification
+ON login_user_notification_tb (
   user_idx,
   created_at DESC,
   notification_id
@@ -1104,13 +1104,13 @@ ALTER TABLE notice_tb
     FOREIGN KEY (author_idx)
     REFERENCES user_tb (idx);
 
-ALTER TABLE user_notification_tb
-  ADD CONSTRAINT FK_notification_tb_TO_user_notification_tb
+ALTER TABLE login_user_notification_tb
+  ADD CONSTRAINT FK_notification_tb_TO_login_user_notification_tb
     FOREIGN KEY (notification_id)
     REFERENCES notification_tb (id);
 
-ALTER TABLE user_notification_tb
-  ADD CONSTRAINT FK_user_tb_TO_user_notification_tb
+ALTER TABLE login_user_notification_tb
+  ADD CONSTRAINT FK_user_tb_TO_login_user_notification_tb
     FOREIGN KEY (user_idx)
     REFERENCES user_tb (idx);
 

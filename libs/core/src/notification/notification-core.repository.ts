@@ -13,9 +13,9 @@ import {
   SelectNotificationCampaign,
 } from './model/prisma-type/select-notification-campaign';
 import {
-  SELECT_USER_NOTIFICATION,
-  SelectUserNotification,
-} from './model/prisma-type/select-user-notification';
+  SELECT_LOGIN_USER_NOTIFICATION,
+  SelectLoginUserNotification,
+} from './model/prisma-type/select-login-user-notification';
 
 @Injectable()
 export class NotificationCoreRepository {
@@ -60,12 +60,12 @@ export class NotificationCoreRepository {
     });
   }
 
-  public async selectUserNotificationAllByUserIdx(
+  public async selectLoginUserNotificationAllByUserIdx(
     userIdx: number,
     input: GetNotificationAllInput,
-  ): Promise<SelectUserNotification[]> {
-    return await this.txHost.tx.userNotification.findMany({
-      ...SELECT_USER_NOTIFICATION,
+  ): Promise<SelectLoginUserNotification[]> {
+    return await this.txHost.tx.loginUserNotification.findMany({
+      ...SELECT_LOGIN_USER_NOTIFICATION,
       where: { userIdx },
       orderBy: [{ createdAt: 'desc' }, { notificationId: 'desc' }],
       take: input.take,
@@ -73,15 +73,15 @@ export class NotificationCoreRepository {
     });
   }
 
-  public async selectUserNotificationCountByUserIdx(
+  public async selectLoginUserNotificationCountByUserIdx(
     userIdx: number,
   ): Promise<number> {
-    return await this.txHost.tx.userNotification.count({
+    return await this.txHost.tx.loginUserNotification.count({
       where: { userIdx },
     });
   }
 
-  public async insertUserNotificationAll(
+  public async insertLoginUserNotificationAll(
     notificationId: string,
     userIdxList: number[],
   ): Promise<void> {
@@ -89,7 +89,7 @@ export class NotificationCoreRepository {
       return;
     }
 
-    await this.txHost.tx.userNotification.createMany({
+    await this.txHost.tx.loginUserNotification.createMany({
       data: userIdxList.map((userIdx) => ({
         notificationId,
         userIdx,

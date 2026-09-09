@@ -4,7 +4,7 @@ import { GetNotificationAllInput } from './inputs/get-notification-all.input';
 import { UpdateNotificationCampaignInput } from './inputs/update-notification-campaign.input';
 import { NotificationCampaignModel } from './model/notification-campaign.model';
 import { NotificationModel } from './model/notification.model';
-import { UserNotificationModel } from './model/user-notification.model';
+import { LoginUserNotificationModel } from './model/login-user-notification.model';
 import { NotificationCoreRepository } from './notification-core.repository';
 
 /**
@@ -47,31 +47,31 @@ export class NotificationCoreService {
     );
   }
 
-  public async getUserNotificationAllByUserIdx(
+  public async getLoginUserNotificationAllByUserIdx(
     userIdx: number,
     input: GetNotificationAllInput,
-  ): Promise<UserNotificationModel[]> {
+  ): Promise<LoginUserNotificationModel[]> {
     return (
-      await this.notificationCoreRepository.selectUserNotificationAllByUserIdx(
+      await this.notificationCoreRepository.selectLoginUserNotificationAllByUserIdx(
         userIdx,
         input,
       )
-    ).map(UserNotificationModel.fromPrisma);
+    ).map(LoginUserNotificationModel.fromPrisma);
   }
 
-  public async getUserNotificationCountByUserIdx(
+  public async getLoginUserNotificationCountByUserIdx(
     userIdx: number,
   ): Promise<number> {
-    return await this.notificationCoreRepository.selectUserNotificationCountByUserIdx(
+    return await this.notificationCoreRepository.selectLoginUserNotificationCountByUserIdx(
       userIdx,
     );
   }
 
-  public async createUserNotificationAll(
+  public async createLoginUserNotificationAll(
     notificationId: string,
     userIdxList: number[],
   ): Promise<void> {
-    await this.notificationCoreRepository.insertUserNotificationAll(
+    await this.notificationCoreRepository.insertLoginUserNotificationAll(
       notificationId,
       userIdxList,
     );
