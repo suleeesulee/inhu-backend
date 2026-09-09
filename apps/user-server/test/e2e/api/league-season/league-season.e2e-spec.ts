@@ -717,8 +717,8 @@ describe('League Season E2E test', () => {
         idx: firstReward.idx,
         name: firstReward.name,
         imagePath: firstReward.imagePath,
-        activatedAt: firstReward.activatedAt?.toISOString(),
       });
+      expect(firstRewardOption?.reward).not.toHaveProperty('activatedAt');
       expect(secondRewardOption?.targetRank).toBe(1);
       expect(secondRewardOption?.reward.idx).toBe(secondReward.idx);
       expect(commonRewardOption?.targetRank).toBe(4);
