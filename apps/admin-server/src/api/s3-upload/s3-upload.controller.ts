@@ -156,6 +156,7 @@ export class S3UploadController {
 
   /**
    * 사용자 리워드 기프티콘 이미지 Private Presigned URL 생성
+   * - 프론트에서 formData.append('acl', 'public-read'); 코드 제거 후 사용
    */
   @Post('/user-reward-image/presigned-urls')
   @HttpCode(201)
