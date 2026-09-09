@@ -1,13 +1,27 @@
-import { Injectable } from '@nestjs/common';
-import { PushTokenCoreRepository } from './push-token-core.repository';
 import { Transactional } from '@nestjs-cls/transactional';
+import { Injectable } from '@nestjs/common';
+import { GetPushTokenAllInput } from './inputs/get-push-token-all.input';
 import { PushTokenModel } from './model/push-token.model';
+import { PushTokenCoreRepository } from './push-token-core.repository';
 
 @Injectable()
 export class PushTokenCoreService {
   constructor(
     private readonly pushTokenCoreRepository: PushTokenCoreRepository,
   ) {}
+
+  /**
+   * 푸시 알림 발송 대상 조회
+   *
+   * @publicApi
+   */
+  public async getPushTokenAll(
+    input: GetPushTokenAllInput,
+  ): Promise<PushTokenModel[]> {
+    return (await this.pushTokenCoreRepository.selectPushTokenAll(input)).map(
+      PushTokenModel.fromPrisma,
+    );
+  }
 
   /**
    * push token 동기화
