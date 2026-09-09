@@ -34,10 +34,12 @@ describe('User Ranking E2E test', () => {
 
   describe('GET /league-season/:leagueSeasonIdx/user-ranking', () => {
     it('200 - field, ranking order, user, and user reward check', async () => {
-      const [firstUser, secondUser] = await userSeedHelper.seedAll([
-        { nickname: '랭킹 1위 사용자' },
-        { nickname: '랭킹 2위 사용자' },
-      ]);
+      const [firstUser, secondUser, otherSeasonUser] =
+        await userSeedHelper.seedAll([
+          { nickname: '랭킹 1위 사용자' },
+          { nickname: '랭킹 2위 사용자' },
+          { nickname: '다른 시즌만 참여한 사용자' },
+        ]);
       const reward = await rewardSeedHelper.seed({
         name: '1위 선택 리워드',
         activatedAt: new Date('2026-01-01T00:00:00.000Z'),
@@ -71,6 +73,12 @@ describe('User Ranking E2E test', () => {
           score: 10,
           createdAt: new Date('2026-02-04T10:00:00.000Z'),
         },
+        {
+          userIdx: otherSeasonUser.idx,
+          nfcIdx: nfc.idx,
+          score: 5,
+          createdAt: new Date('2026-01-20T10:00:00.000Z'),
+        },
       ]);
       const leagueSeasonResult = await leagueSeasonResultSeedHelper.seed({
         leagueSeasonIdx: leagueSeason.idx,
@@ -99,11 +107,9 @@ describe('User Ranking E2E test', () => {
       const secondUserRanking = userRankingList.find(
         ({ user }) => user.idx === secondUser.idx,
       );
-      const userCount = await testHelper.getPrisma().user.count({
-        where: { deletedAt: null },
-      });
 
-      expect(response.body.count).toBe(userCount);
+      expect(response.body.count).toBe(2);
+      expect(userRankingList).toHaveLength(2);
       expect(firstUserRanking).toBeDefined();
       expect(firstUserRanking?.seasonRank).toBe(1);
       expect(firstUserRanking?.seasonScore).toBe(20);
@@ -126,6 +132,9 @@ describe('User Ranking E2E test', () => {
         secondVisit.createdAt.toISOString(),
       );
       expect(secondUserRanking?.userReward).toBeNull();
+      expect(
+        userRankingList.some(({ user }) => user.idx === otherSeasonUser.idx),
+      ).toBe(false);
     });
 
     it('200 - same score is ranked by who reached it first', async () => {
@@ -240,11 +249,8 @@ describe('User Ranking E2E test', () => {
         ({ user }) => user.idx === secondUser.idx,
       );
 
-      expect(response.body.count).toBe(
-        await testHelper.getPrisma().user.count({
-          where: { deletedAt: null },
-        }),
-      );
+      expect(response.body.count).toBe(2);
+      expect(userRankingList).toHaveLength(2);
       expect(firstRanking?.seasonScore).toBe(10);
       expect(firstRanking?.seasonRank).toBe(2);
       expect(firstRanking?.seasonLatestVisitAt).toBe(
@@ -302,9 +308,7 @@ describe('User Ranking E2E test', () => {
         .query({ page: 2 })
         .expect(200);
 
-      const count = await testHelper.getPrisma().user.count({
-        where: { deletedAt: null },
-      });
+      const count = userList.length;
       const firstPageUserIdxList = firstPageResponse.body.userRankingList.map(
         ({ user }: UserRankingEntity) => user.idx,
       );
