@@ -205,9 +205,9 @@ export class UserRewardService {
         imageDataUrlList,
       ),
     );
-    // await this.userRewardCoreService.updateUserRewardById(id, {
-    //   issuedAt: new Date(),
-    // });
+    await this.userRewardCoreService.updateUserRewardById(id, {
+      issuedAt: new Date(),
+    });
   }
 
   private validateUserRewardImagePath(imagePath: string): void {
