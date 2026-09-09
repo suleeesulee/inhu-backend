@@ -6,7 +6,7 @@ import { UserRewardCoreService } from '@libs/core/user-reward/user-reward-core.s
 import { RewardCoreService } from '@libs/core/reward/reward-core.service';
 import { GetUserRankingAllDto } from './dto/request/get-user-ranking-all.dto';
 import { GetUserRankingAllResponseDto } from './dto/response/get-user-ranking-all.response.dto';
-import { UserRankingEntity } from './entity/user-ranking.entity';
+import { UserRankingOverviewEntity } from './entity/user-ranking-overview.entity';
 
 @Injectable()
 export class UserRankingService {
@@ -94,7 +94,7 @@ export class UserRankingService {
           throw new NotFoundException('Reward not found');
         }
 
-        return UserRankingEntity.fromModel(
+        return UserRankingOverviewEntity.fromModel(
           userRanking,
           user,
           userReward,
