@@ -20,7 +20,7 @@ export class IssueUserRewardDto {
   /**
    * 리워드 발급 이미지 경로 목록
    *
-   * @example ["/reward/coupon-1.png", "/reward/coupon-2.png"]
+   * @example ["/user-reward/c37409c8-11b4-4c24-b2c5-3747aad1b846.png"]
    */
   @UniqueArray()
   @IsArray()

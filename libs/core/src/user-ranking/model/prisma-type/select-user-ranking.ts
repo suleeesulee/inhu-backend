@@ -43,6 +43,13 @@ export const SELECT_USER_RANKING: Prisma.Sql = Prisma.sql`
       ls.end_at,
       u.idx,
       u.nickname
+    HAVING COALESCE(
+      SUM(pv.score) FILTER (
+        WHERE pv.created_at >= ls.start_at
+          AND pv.created_at <= ls.end_at
+      ),
+      0
+    ) > 0
   ),
   ranked_user AS (
     SELECT
