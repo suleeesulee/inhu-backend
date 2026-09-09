@@ -1,5 +1,5 @@
 import { AdminServerModule } from '@admin/admin-server.module';
-import { UserRankingEntity } from '@admin/api/user-ranking/entity/user-ranking.entity';
+import { UserRankingOverviewEntity } from '@admin/api/user-ranking/entity/user-ranking-overview.entity';
 import { PlaceType } from '@libs/core/place/constants/place-type.constant';
 import { LeagueSeasonResultSeedHelper } from '@libs/testing/seed/league-season/league-season-result.seed';
 import { LeagueSeasonSeedHelper } from '@libs/testing/seed/league-season/league-season.seed';
@@ -99,7 +99,7 @@ describe('User Ranking E2E test', () => {
         .query({ page: 1 })
         .expect(200);
 
-      const userRankingList: UserRankingEntity[] =
+      const userRankingList: UserRankingOverviewEntity[] =
         response.body.userRankingList;
       const firstUserRanking = userRankingList.find(
         ({ user }) => user.idx === firstUser.idx,
@@ -116,11 +116,9 @@ describe('User Ranking E2E test', () => {
       expect(firstUserRanking?.seasonLatestVisitAt).toBe(
         firstVisit.createdAt.toISOString(),
       );
-      expect(firstUserRanking?.cumulativeRank).toBe(1);
-      expect(firstUserRanking?.cumulativeScore).toBe(20);
-      expect(firstUserRanking?.cumulativeLatestVisitAt).toBe(
-        firstVisit.createdAt.toISOString(),
-      );
+      expect(firstUserRanking).not.toHaveProperty('cumulativeRank');
+      expect(firstUserRanking).not.toHaveProperty('cumulativeScore');
+      expect(firstUserRanking).not.toHaveProperty('cumulativeLatestVisitAt');
       expect(firstUserRanking?.user.nickname).toBe(firstUser.nickname);
       expect(firstUserRanking?.userReward?.id).toBe(userReward.id);
       expect(firstUserRanking?.userReward?.reward?.idx).toBe(reward.idx);
@@ -179,7 +177,7 @@ describe('User Ranking E2E test', () => {
         .query({ page: 1 })
         .expect(200);
 
-      const userRankingList: UserRankingEntity[] =
+      const userRankingList: UserRankingOverviewEntity[] =
         response.body.userRankingList;
 
       expect(
@@ -240,7 +238,7 @@ describe('User Ranking E2E test', () => {
         .set('Cookie', `token=Bearer ${admin.token}`)
         .query({ page: 1 })
         .expect(200);
-      const userRankingList: UserRankingEntity[] =
+      const userRankingList: UserRankingOverviewEntity[] =
         response.body.userRankingList;
       const firstRanking = userRankingList.find(
         ({ user }) => user.idx === firstUser.idx,
@@ -310,10 +308,10 @@ describe('User Ranking E2E test', () => {
 
       const count = userList.length;
       const firstPageUserIdxList = firstPageResponse.body.userRankingList.map(
-        ({ user }: UserRankingEntity) => user.idx,
+        ({ user }: UserRankingOverviewEntity) => user.idx,
       );
       const secondPageUserIdxList = secondPageResponse.body.userRankingList.map(
-        ({ user }: UserRankingEntity) => user.idx,
+        ({ user }: UserRankingOverviewEntity) => user.idx,
       );
 
       expect(firstPageResponse.body.count).toBe(count);
