@@ -1,6 +1,7 @@
 import { TransactionHost } from '@nestjs-cls/transactional';
 import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-prisma';
 import { Injectable } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 import { CreateNotificationInput } from './inputs/create-notification.input';
 import { GetNotificationAllInput } from './inputs/get-notification-all.input';
 import { UpdateNotificationCampaignInput } from './inputs/update-notification-campaign.input';
@@ -37,6 +38,7 @@ export class NotificationCoreRepository {
   ): Promise<SelectNotification[]> {
     return await this.txHost.tx.notification.findMany({
       ...SELECT_NOTIFICATION,
+      where: this.getNotificationWhere(input.userIdx),
       orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
       take: input.take,
       skip: input.skip,
@@ -135,5 +137,18 @@ export class NotificationCoreRepository {
         completedAt: input.completedAt,
       },
     });
+  }
+
+  private getNotificationWhere(
+    userIdx?: number,
+  ): Prisma.NotificationWhereInput {
+    return {
+      OR: [
+        { loginUserNotificationList: { none: {} } },
+        ...(userIdx === undefined
+          ? []
+          : [{ loginUserNotificationList: { some: { userIdx } } }]),
+      ],
+    };
   }
 }
