@@ -21,6 +21,15 @@ export class PushTokenCoreRepository {
     });
   }
 
+  public async selectPushTokenByUserIdx(
+    userIdx: number,
+  ): Promise<SelectPushToken | null> {
+    return await this.txHost.tx.pushToken.findFirst({
+      select: SELECT_PUSH_TOKEN.select,
+      where: { installation: { userIdx } },
+    });
+  }
+
   public async insertPushToken(id: string, expoPushToken: string) {
     return await this.txHost.tx.pushToken.create({
       data: { id, expoPushToken },
