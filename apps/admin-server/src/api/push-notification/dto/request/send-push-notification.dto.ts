@@ -11,6 +11,8 @@ import {
 export class SendPushNotificationDto {
   /**
    * 푸시 알림을 받을 user idx
+   *
+   * @example 1
    */
   @IsNotEmpty()
   @Type(() => Number)
@@ -19,6 +21,8 @@ export class SendPushNotificationDto {
 
   /**
    * 디바이스 플랫폼
+   *
+   * @example 'ios'
    */
   @IsNotEmpty()
   @IsString()
@@ -27,6 +31,8 @@ export class SendPushNotificationDto {
 
   /**
    * 푸시 알림 제목
+   *
+   * @example '알림 제목'
    */
   @IsNotEmpty()
   @IsString()
@@ -34,6 +40,8 @@ export class SendPushNotificationDto {
 
   /**
    * 푸시 알림 본문
+   *
+   * @example '알림 본문'
    */
   @IsNotEmpty()
   @IsString()
