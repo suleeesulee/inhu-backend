@@ -20,16 +20,6 @@ export class SendPushNotificationDto {
   userIdx: number;
 
   /**
-   * 디바이스 플랫폼
-   *
-   * @example 'ios'
-   */
-  @IsNotEmpty()
-  @IsString()
-  @IsIn(['ios', 'android'])
-  platform: 'ios' | 'android';
-
-  /**
    * 푸시 알림 제목
    *
    * @example '알림 제목'
