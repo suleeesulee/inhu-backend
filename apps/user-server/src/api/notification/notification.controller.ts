@@ -13,6 +13,7 @@ export class NotificationController {
 
   /**
    * 공개 알림 및 로그인 사용자의 개인 알림 목록 조회
+   * - 알림 페이지에서 알림 목록 조회 시 사용
    */
   @Get('all')
   public async getNotificationAll(
