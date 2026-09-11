@@ -13,11 +13,17 @@ import { MailService } from './mail.service';
       useFactory: (config: ConfigService) => {
         return {
           transport: {
-            service: 'gmail',
+            host: config.get<string>('mail.host'),
+            port: config.get<number>('mail.port'),
+            secure: false,
+            requireTLS: true,
             auth: {
               user: config.get<string>('mail.user'),
               pass: config.get<string>('mail.pass'),
             },
+          },
+          defaults: {
+            from: `"${config.get<string>('mail.from.name')}" <${config.get<string>('mail.from.address')}>`,
           },
         };
       },

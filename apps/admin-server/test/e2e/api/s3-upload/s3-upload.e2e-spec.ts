@@ -277,4 +277,123 @@ describe('s3-upload E2E test', () => {
         .expect(400);
     });
   });
+
+  describe('POST /s3-upload/reward-image/presigned-url', () => {
+    it('201 - successfully retrieves presigned post data for reward image upload', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+      const mockS3Response = {
+        url: 'https://your-bucket.s3.amazonaws.com/',
+        fields: {
+          Key: 'reward/some-uuid-for.png',
+          Policy: 'base64-encoded-policy-string',
+          'X-Amz-Signature': 'signature-string',
+        },
+        fileHost: 'https://your-bucket.s3.amazonaws.com/',
+        filePath: 'reward/some-uuid-for.png',
+      };
+      const s3ServiceMock = jest
+        .spyOn(testHelper.get(S3Service), 'getPresignedUrl')
+        .mockResolvedValue(mockS3Response);
+
+      const response = await testHelper
+        .test()
+        .post('/s3-upload/reward-image/presigned-url')
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send({ extension: ImageExtension.PNG })
+        .expect(201);
+
+      expect(response.body).toStrictEqual(mockS3Response);
+      expect(s3ServiceMock).toHaveBeenCalledWith({
+        folder: S3Folder.REWARD,
+        extension: ImageExtension.PNG,
+        maxSize: 5,
+        contentType: ContentType.IMAGE,
+      });
+
+      s3ServiceMock.mockRestore();
+    });
+
+    it('400 - extension field is not provided', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+
+      await testHelper
+        .test()
+        .post('/s3-upload/reward-image/presigned-url')
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .expect(400);
+    });
+
+    it('400 - extension is not in ImageExtension type', async () => {
+      const loginUser = testHelper.loginAdmin.admin1;
+
+      await testHelper
+        .test()
+        .post('/s3-upload/reward-image/presigned-url')
+        .set('Cookie', `token=Bearer ${loginUser.token}`)
+        .send({ extension: 'unknown_extension' })
+        .expect(400);
+    });
+
+    it('401 - access token is missing', async () => {
+      await testHelper
+        .test()
+        .post('/s3-upload/reward-image/presigned-url')
+        .send({ extension: ImageExtension.JPG })
+        .expect(401);
+    });
+  });
+
+  // describe('POST /s3-upload/user-reward-image/presigned-urls', () => {
+  //   it('201 - multiple private user reward image presigned urls', async () => {
+  //     const loginUser = testHelper.loginAdmin.admin1;
+  //     const extensions = [ImageExtension.PNG, ImageExtension.JPG];
+  //     const mockS3Response = extensions.map((extension, index) => ({
+  //       url: 'https://private-bucket.s3.amazonaws.com/',
+  //       fields: {
+  //         Key: `user-reward/private-${index}.${extension}`,
+  //         Policy: `policy-${index}`,
+  //       },
+  //       filePath: `/user-reward/private-${index}.${extension}`,
+  //     }));
+  //     const s3ServiceMock = jest
+  //       .spyOn(testHelper.get(S3Service), 'getPrivatePresignedUrls')
+  //       .mockResolvedValue(mockS3Response);
+
+  //     const response = await testHelper
+  //       .test()
+  //       .post('/s3-upload/user-reward-image/presigned-urls')
+  //       .set('Cookie', `token=Bearer ${loginUser.token}`)
+  //       .send({ extensions })
+  //       .expect(201);
+
+  //     expect(response.body).toStrictEqual(mockS3Response);
+  //     expect(s3ServiceMock).toHaveBeenCalledWith({
+  //       folder: S3Folder.USER_REWARD,
+  //       extensions,
+  //       maxSize: 5,
+  //       contentType: ContentType.IMAGE,
+  //     });
+
+  //     s3ServiceMock.mockRestore();
+  //   });
+
+  //   it('400 - extension is not in ImageExtension type', async () => {
+  //     const loginUser = testHelper.loginAdmin.admin1;
+
+  //     await testHelper
+  //       .test()
+  //       .post('/s3-upload/user-reward-image/presigned-urls')
+  //       .set('Cookie', `token=Bearer ${loginUser.token}`)
+  //       .send({ extensions: ['gif'] })
+  //       .expect(400);
+  //   });
+
+  //   it('401 - access token is missing', async () => {
+  //     await testHelper
+  //       .test()
+  //       .post('/s3-upload/user-reward-image/presigned-urls')
+  //       .send({ extensions: [ImageExtension.PNG] })
+  //       .expect(401);
+  //   });
+  // });
 });

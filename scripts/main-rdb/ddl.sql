@@ -429,6 +429,7 @@ CREATE TABLE place_visit_tb
   latitude   numeric                  NOT NULL,
   longitude  numeric                  NOT NULL,
   created_at timestamp with time zone NOT NULL DEFAULT NOW(),
+  deleted_at timestamp with time zone,
   PRIMARY KEY (id)
 );
 

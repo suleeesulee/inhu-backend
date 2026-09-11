@@ -1,6 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { S3Client } from '@aws-sdk/client-s3';
+import {
+  GetObjectCommand,
+  S3Client,
+  S3ServiceException,
+} from '@aws-sdk/client-s3';
 import { GetPresignedUrlInput } from './input/get-presigned-url.input';
 import { PresignedUrlModel } from './model/presigned-url.model';
 import { v4 as uuidv4 } from 'uuid';
@@ -10,6 +14,7 @@ import { HttpService } from '@nestjs/axios';
 import { Upload } from '@aws-sdk/lib-storage';
 import { S3Folder } from '@libs/common/modules/s3/constants/s3-folder.constants';
 import { UploadedFileModel } from '@libs/common/modules/s3/model/uploaded-file.model';
+import { PrivatePresignedUrlModel } from './model/private-presigned-url.model';
 
 /**
  * S3 서비스
@@ -20,6 +25,7 @@ import { UploadedFileModel } from '@libs/common/modules/s3/model/uploaded-file.m
 export class S3Service {
   private readonly s3Client: S3Client;
   private readonly bucketName: string;
+  private readonly privateBucketName: string;
   private readonly region: string;
   private readonly fileHost: string;
 
@@ -29,14 +35,16 @@ export class S3Service {
   ) {
     const region = configService.get<string>('s3.region');
     const bucketName = configService.get<string>('s3.bucketName');
+    const privateBucketName = configService.get<string>('s3.privateBucketName');
     const fileHost = configService.get<string>('s3.fileHost') || '';
 
-    if (!region || !bucketName) {
+    if (!region || !bucketName || !privateBucketName) {
       throw new Error('S3 environment variables are not configured.');
     }
 
     this.region = region;
     this.bucketName = bucketName;
+    this.privateBucketName = privateBucketName;
     this.fileHost = fileHost;
 
     this.s3Client = new S3Client({
@@ -93,12 +101,63 @@ export class S3Service {
     );
   }
 
-  public getFileUrl(filePath: string): string {
-    if (/^https?:\/\//.test(filePath)) {
-      return filePath;
-    }
+  /**
+   * Private S3 업로드를 위한 Presigned URL 여러 개 생성
+   */
+  async getPrivatePresignedUrls({
+    folder,
+    extensions,
+    maxSize,
+    contentType,
+  }: GetPresignedUrlsInput): Promise<PrivatePresignedUrlModel[]> {
+    return await Promise.all(
+      extensions.map(async (extension) => {
+        const key = `${folder}/${uuidv4()}.${extension}`;
+        const result = await createPresignedPost(this.s3Client, {
+          Bucket: this.privateBucketName,
+          Key: key,
+          Expires: 5 * 60,
+          Conditions: [
+            ['content-length-range', 1, maxSize * 1024 * 1024],
+            ['starts-with', '$Content-Type', contentType],
+          ],
+        });
 
-    return `${this.fileHost.replace(/\/$/, '')}/${filePath.replace(/^\//, '')}`;
+        return {
+          ...result,
+          filePath: `/${key}`,
+        };
+      }),
+    );
+  }
+
+  /**
+   * Private S3 파일 조회
+   */
+  async getPrivateFile(filePath: string): Promise<Buffer | null> {
+    try {
+      const result = await this.s3Client.send(
+        new GetObjectCommand({
+          Bucket: this.privateBucketName,
+          Key: filePath.replace(/^\/+/, ''),
+        }),
+      );
+
+      if (!result.Body) {
+        return null;
+      }
+
+      return Buffer.from(await result.Body.transformToByteArray());
+    } catch (error) {
+      if (
+        error instanceof S3ServiceException &&
+        error.$metadata.httpStatusCode === 404
+      ) {
+        return null;
+      }
+
+      throw error;
+    }
   }
 
   public async uploadImageFromUrl(

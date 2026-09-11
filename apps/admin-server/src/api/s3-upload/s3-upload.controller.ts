@@ -10,6 +10,8 @@ import { AdminRole } from '../auth/admin-role.enum';
 import { CreateProfileImagePresignedUrlDto } from './dto/request/create-profile-image-presigned-url.dto';
 import { CreateReviewImagePresignedUrlsDto } from './dto/request/create-review-image-presigned-url.dto';
 import { CreateRewardImagePresignedUrlDto } from './dto/request/create-reward-image-presigned-url.dto';
+import { CreateUserRewardImagePresignedUrlsDto } from './dto/request/create-user-reward-image-presigned-url.dto';
+import { PrivatePresignedUrlEntity } from './entity/private-presigned-url.entity';
 
 @Controller('s3-upload')
 @ApiTags('s3-upload')
@@ -150,5 +152,20 @@ export class S3UploadController {
     @Body() dto: CreateRewardImagePresignedUrlDto,
   ): Promise<PresignedUrlEntity> {
     return this.s3UploadService.createRewardImagePresignedUrl(dto);
+  }
+
+  /**
+   * 사용자 리워드 기프티콘 이미지 Private Presigned URL 생성
+   * - 프론트에서 formData.append('acl', 'public-read'); 코드 제거 후 사용
+   */
+  @Post('/user-reward-image/presigned-urls')
+  @HttpCode(201)
+  @AdminAuth()
+  async createUserRewardImagePresignedUrls(
+    @Body() dto: CreateUserRewardImagePresignedUrlsDto,
+  ): Promise<PrivatePresignedUrlEntity[]> {
+    return (
+      await this.s3UploadService.createUserRewardImagePresignedUrls(dto)
+    ).map(PrivatePresignedUrlEntity.fromModel);
   }
 }

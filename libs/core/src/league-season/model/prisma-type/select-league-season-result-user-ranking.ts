@@ -42,6 +42,8 @@ export const SELECT_LEAGUE_SEASON_RESULT_USER_RANKING = (
       ON pv.user_idx = lsr.user_idx
       AND pv.created_at >= tls.start_at
       AND pv.created_at <= tls.end_at
+      AND pv.deleted_at IS NULL
+    WHERE lsr.final_score > 0
     GROUP BY
       tls.idx,
       lsr.user_idx,
@@ -78,6 +80,7 @@ export const SELECT_LEAGUE_SEASON_RESULT_USER_RANKING = (
       AND ls.finalized_at IS NOT NULL
     JOIN league_season_result_tb AS lsr
       ON lsr.league_season_idx = ls.idx
+      AND lsr.final_score > 0
   ),
   cumulative_user_score AS (
     SELECT
@@ -99,6 +102,7 @@ export const SELECT_LEAGUE_SEASON_RESULT_USER_RANKING = (
       ON pv.user_idx = clsr.user_idx
       AND pv.created_at >= clsr.start_at
       AND pv.created_at <= clsr.end_at
+      AND pv.deleted_at IS NULL
     GROUP BY
       clsr.target_league_season_idx,
       clsr.user_idx

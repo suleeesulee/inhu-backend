@@ -1,6 +1,7 @@
 export default () => ({
   s3: {
     bucketName: process.env.AWS_S3_BUCKET_NAME,
+    privateBucketName: process.env.AWS_S3_PRIVATE_BUCKET_NAME,
     region: process.env.AWS_REGION,
     fileHost: process.env.AWS_S3_FILE_HOST,
   },

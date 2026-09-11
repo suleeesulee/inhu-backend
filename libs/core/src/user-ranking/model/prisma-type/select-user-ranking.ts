@@ -34,6 +34,7 @@ export const SELECT_USER_RANKING: Prisma.Sql = Prisma.sql`
     CROSS JOIN user_tb AS u
     LEFT JOIN place_visit_tb AS pv
       ON pv.user_idx = u.idx
+      AND pv.deleted_at IS NULL
     WHERE ls.activated_at IS NOT NULL
       AND u.deleted_at IS NULL
     GROUP BY
@@ -42,6 +43,13 @@ export const SELECT_USER_RANKING: Prisma.Sql = Prisma.sql`
       ls.end_at,
       u.idx,
       u.nickname
+    HAVING COALESCE(
+      SUM(pv.score) FILTER (
+        WHERE pv.created_at >= ls.start_at
+          AND pv.created_at <= ls.end_at
+      ),
+      0
+    ) > 0
   ),
   ranked_user AS (
     SELECT

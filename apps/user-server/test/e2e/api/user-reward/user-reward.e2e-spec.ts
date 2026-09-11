@@ -29,6 +29,128 @@ describe('User Reward E2E test', () => {
     await testHelper.destroy();
   });
 
+  describe('GET /user-reward/status', () => {
+    it('200 - has unselected reward', async () => {
+      const loginUser = testHelper.loginUsers.user1;
+      const leagueSeason = await leagueSeasonSeedHelper.seed({
+        startAt: new Date('2026-01-01T00:00:00.000Z'),
+        endAt: new Date('2026-01-15T23:59:59.999Z'),
+        activatedAt: new Date('2025-12-31T00:00:00.000Z'),
+        finalizedAt: new Date('2026-01-16T00:00:00.000Z'),
+      });
+      const leagueSeasonResult = await leagueSeasonResultSeedHelper.seed({
+        leagueSeasonIdx: leagueSeason.idx,
+        userIdx: loginUser.idx,
+        finalScore: 100,
+      });
+      await userRewardSeedHelper.seed({
+        leagueSeasonResultId: leagueSeasonResult.id,
+        rewardIdx: null,
+        selectedAt: null,
+        issuedAt: null,
+      });
+
+      const response = await testHelper
+        .test()
+        .get('/user-reward/status')
+        .set('Authorization', `Bearer ${loginUser.web.accessToken}`)
+        .expect(200);
+
+      expect(response.body).toStrictEqual({ hasUnselectedReward: true });
+    });
+
+    it('200 - ignores selected, issued, and another user rewards', async () => {
+      const loginUser = testHelper.loginUsers.user1;
+      const otherUser = testHelper.loginUsers.user2;
+      const reward = await rewardSeedHelper.seed({
+        activatedAt: new Date('2025-12-31T00:00:00.000Z'),
+      });
+      const [selectedLeagueSeason, issuedLeagueSeason, otherLeagueSeason] =
+        await leagueSeasonSeedHelper.seedAll([
+          {
+            startAt: new Date('2026-01-01T00:00:00.000Z'),
+            endAt: new Date('2026-01-07T23:59:59.999Z'),
+            activatedAt: new Date('2025-12-31T00:00:00.000Z'),
+            finalizedAt: new Date('2026-01-08T00:00:00.000Z'),
+          },
+          {
+            startAt: new Date('2026-02-01T00:00:00.000Z'),
+            endAt: new Date('2026-02-07T23:59:59.999Z'),
+            activatedAt: new Date('2026-01-31T00:00:00.000Z'),
+            finalizedAt: new Date('2026-02-08T00:00:00.000Z'),
+          },
+          {
+            startAt: new Date('2026-03-01T00:00:00.000Z'),
+            endAt: new Date('2026-03-07T23:59:59.999Z'),
+            activatedAt: new Date('2026-02-28T00:00:00.000Z'),
+            finalizedAt: new Date('2026-03-08T00:00:00.000Z'),
+          },
+        ]);
+      const [selectedResult, issuedResult, otherResult] =
+        await leagueSeasonResultSeedHelper.seedAll([
+          {
+            leagueSeasonIdx: selectedLeagueSeason.idx,
+            userIdx: loginUser.idx,
+            finalScore: 100,
+          },
+          {
+            leagueSeasonIdx: issuedLeagueSeason.idx,
+            userIdx: loginUser.idx,
+            finalScore: 90,
+          },
+          {
+            leagueSeasonIdx: otherLeagueSeason.idx,
+            userIdx: otherUser.idx,
+            finalScore: 80,
+          },
+        ]);
+      await userRewardSeedHelper.seedAll([
+        {
+          leagueSeasonResultId: selectedResult.id,
+          rewardIdx: reward.idx,
+          selectedAt: new Date('2026-01-08T01:00:00.000Z'),
+          issuedAt: null,
+        },
+        {
+          leagueSeasonResultId: issuedResult.id,
+          rewardIdx: reward.idx,
+          selectedAt: new Date('2026-02-08T01:00:00.000Z'),
+          issuedAt: new Date('2026-02-08T02:00:00.000Z'),
+        },
+        {
+          leagueSeasonResultId: otherResult.id,
+          rewardIdx: null,
+          selectedAt: null,
+          issuedAt: null,
+        },
+      ]);
+
+      const response = await testHelper
+        .test()
+        .get('/user-reward/status')
+        .set('Authorization', `Bearer ${loginUser.web.accessToken}`)
+        .expect(200);
+
+      expect(response.body).toStrictEqual({ hasUnselectedReward: false });
+    });
+
+    it('200 - user reward does not exist', async () => {
+      const loginUser = testHelper.loginUsers.user1;
+
+      const response = await testHelper
+        .test()
+        .get('/user-reward/status')
+        .set('Authorization', `Bearer ${loginUser.web.accessToken}`)
+        .expect(200);
+
+      expect(response.body).toStrictEqual({ hasUnselectedReward: false });
+    });
+
+    it('401 - access token is missing', async () => {
+      await testHelper.test().get('/user-reward/status').expect(401);
+    });
+  });
+
   describe('PUT /user-reward/:id', () => {
     it('200 - successfully select reward (one of the ones)', async () => {
       const loginUser = testHelper.loginUsers.user1;

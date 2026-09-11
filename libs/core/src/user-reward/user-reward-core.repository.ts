@@ -118,6 +118,23 @@ export class UserRewardCoreRepository {
     });
   }
 
+  public async deleteUnselectedUserRewardAllByLeagueSeasonResultIdList(
+    leagueSeasonResultIdList: string[],
+  ): Promise<void> {
+    if (leagueSeasonResultIdList.length === 0) {
+      return;
+    }
+
+    await this.txHost.tx.userReward.deleteMany({
+      where: {
+        leagueSeasonResultId: { in: leagueSeasonResultIdList },
+        rewardIdx: null,
+        selectedAt: null,
+        issuedAt: null,
+      },
+    });
+  }
+
   private getStatusFilterWhereClause(
     status?: UserRewardStatus,
   ): Prisma.UserRewardWhereInput {

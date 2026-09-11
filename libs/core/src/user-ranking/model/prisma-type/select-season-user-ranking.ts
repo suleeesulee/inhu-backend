@@ -34,6 +34,7 @@ export const SELECT_SEASON_USER_RANKING = (
       ON pv.user_idx = u.idx
       AND pv.created_at >= tls.start_at
       AND pv.created_at <= tls.end_at
+      AND pv.deleted_at IS NULL
     WHERE u.deleted_at IS NULL
     GROUP BY
       u.idx,

@@ -27,6 +27,7 @@ export class BookmarkedPlaceOverviewModel extends PickType(PlaceOverviewModel, [
   'isClosedOnHoliday',
   'createdAt',
   'permanentlyClosedAt',
+  'hasNfc',
   'imgPathList',
   'activatedAt',
   'topKeywordList',
@@ -63,6 +64,7 @@ export class BookmarkedPlaceOverviewModel extends PickType(PlaceOverviewModel, [
       createdAt: place.createdAt,
       activatedAt: place.activatedAt,
       permanentlyClosedAt: place.permanentlyClosedAt,
+      hasNfc: place.nfcList.length > 0,
       imgPathList: place.placeImageList.map((image) => image.path),
       topKeywordList: place.placeKeywordCountList.map(({ keyword }) =>
         KeywordModel.fromPrisma(keyword),

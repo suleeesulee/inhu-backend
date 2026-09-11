@@ -77,4 +77,12 @@ export class UserRewardCoreService {
   ): Promise<void> {
     await this.userRewardCoreRepository.updateUserRewardById(id, input);
   }
+
+  public async deleteUnselectedUserRewardAllByLeagueSeasonResultIdList(
+    leagueSeasonResultIdList: string[],
+  ): Promise<void> {
+    await this.userRewardCoreRepository.deleteUnselectedUserRewardAllByLeagueSeasonResultIdList(
+      leagueSeasonResultIdList,
+    );
+  }
 }

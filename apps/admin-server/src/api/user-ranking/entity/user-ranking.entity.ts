@@ -11,7 +11,7 @@ export class UserRankingEntity {
    *
    * @example 1
    */
-  public seasonRank: number | null;
+  public seasonRank: number;
 
   /**
    * 시즌 점수
@@ -23,14 +23,14 @@ export class UserRankingEntity {
   /**
    * 시즌 내 가장 최근 방문 일시
    */
-  public seasonLatestVisitAt: Date | null;
+  public seasonLatestVisitAt: Date;
 
   /**
    * 누적 랭킹
    *
    * @example 1
    */
-  public cumulativeRank: number | null;
+  public cumulativeRank: number;
 
   /**
    * 누적 점수
@@ -42,7 +42,7 @@ export class UserRankingEntity {
   /**
    * 누적 기준 가장 최근 방문 일시
    */
-  public cumulativeLatestVisitAt: Date | null;
+  public cumulativeLatestVisitAt: Date;
 
   /**
    * 사용자 정보
@@ -65,12 +65,12 @@ export class UserRankingEntity {
     reward: RewardModel | null,
   ): UserRankingEntity {
     return new UserRankingEntity({
-      seasonRank: model.seasonRank,
+      seasonRank: model.seasonRank!,
       seasonScore: model.seasonScore,
-      seasonLatestVisitAt: model.seasonLatestVisitAt,
-      cumulativeRank: model.cumulativeRank,
+      seasonLatestVisitAt: model.seasonLatestVisitAt!,
+      cumulativeRank: model.cumulativeRank!,
       cumulativeScore: model.cumulativeScore,
-      cumulativeLatestVisitAt: model.cumulativeLatestVisitAt,
+      cumulativeLatestVisitAt: model.cumulativeLatestVisitAt!,
       user: UserEntity.fromModel(user),
       userReward: userReward
         ? UserRewardOverviewEntity.fromModel(userReward, reward)

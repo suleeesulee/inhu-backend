@@ -20,6 +20,36 @@ export class PlaceVisitCoreRepository {
     private readonly txHost: TransactionHost<TransactionalAdapterPrisma>,
   ) {}
 
+  public async selectPlaceVisitAll(
+    input: GetPlaceVisitAllInput,
+  ): Promise<SelectPlaceVisit[]> {
+    const order = input.order ?? 'desc';
+
+    return await this.txHost.tx.placeVisit.findMany({
+      ...SELECT_PLACE_VISIT,
+      where: {
+        deletedAt: null,
+        ...this.getPlaceIdxFilterWhereClause(input.placeIdx),
+        ...this.getUserIdxFilterWhereClause(input.userIdx),
+      },
+      orderBy: [{ createdAt: order }, { id: order }],
+      take: input.take,
+      skip: input.skip,
+    });
+  }
+
+  public async selectPlaceVisitCount(
+    input: GetPlaceVisitAllInput,
+  ): Promise<number> {
+    return await this.txHost.tx.placeVisit.count({
+      where: {
+        deletedAt: null,
+        ...this.getPlaceIdxFilterWhereClause(input.placeIdx),
+        ...this.getUserIdxFilterWhereClause(input.userIdx),
+      },
+    });
+  }
+
   // 방문 인증 내역용
   public async selectPlaceVisitAllByUserIdx(
     userIdx: number,
@@ -31,6 +61,7 @@ export class PlaceVisitCoreRepository {
       ...SELECT_PLACE_VISIT,
       where: {
         userIdx,
+        deletedAt: null,
         nfc: {
           place: {
             deletedAt: null,
@@ -50,11 +81,7 @@ export class PlaceVisitCoreRepository {
       ...SELECT_PLACE_VISIT,
       where: {
         id,
-        nfc: {
-          place: {
-            deletedAt: null,
-          },
-        },
+        deletedAt: null,
       },
     });
   }
@@ -65,6 +92,7 @@ export class PlaceVisitCoreRepository {
   ): Promise<number> {
     return await this.txHost.tx.placeVisit.count({
       where: {
+        deletedAt: null,
         createdAt: {
           gte: `${startAt}T00:00:00Z`,
           lte: `${endAt}T23:59:59Z`,
@@ -79,6 +107,7 @@ export class PlaceVisitCoreRepository {
   ): Promise<number> {
     return await this.txHost.tx.placeVisit.count({
       where: {
+        deletedAt: null,
         createdAt: {
           gte: startAt,
           lte: endAt,
@@ -98,6 +127,7 @@ export class PlaceVisitCoreRepository {
       FROM place_visit_tb
       WHERE created_at >= ${startAt}
         AND created_at <= ${endAt}
+        AND deleted_at IS NULL
     `);
 
     return result.participantCount;
@@ -116,12 +146,33 @@ export class PlaceVisitCoreRepository {
         JOIN user_tb AS u ON u.idx = pv.user_idx
         WHERE pv.created_at >= ${startAt}
           AND pv.created_at <= ${endAt}
+          AND pv.deleted_at IS NULL
           AND u.deleted_at IS NULL
         GROUP BY pv.user_idx
         HAVING SUM(pv.score) > 0
         ORDER BY pv.user_idx ASC
       `,
     );
+  }
+
+  public async selectPlaceVisitScoreByUserIdxAndDatePeriod(
+    userIdx: number,
+    startAt: Date,
+    endAt: Date,
+  ): Promise<number> {
+    const result = await this.txHost.tx.placeVisit.aggregate({
+      _sum: { score: true },
+      where: {
+        userIdx,
+        deletedAt: null,
+        createdAt: {
+          gte: startAt,
+          lte: endAt,
+        },
+      },
+    });
+
+    return result._sum.score ?? 0;
   }
 
   public async selectPlaceVisitStatisticAllByUserIdxAndPeriod(
@@ -146,5 +197,32 @@ export class PlaceVisitCoreRepository {
         longitude: input.longitude,
       },
     });
+  }
+
+  public async softDeletePlaceVisitById(id: string): Promise<void> {
+    await this.txHost.tx.placeVisit.update({
+      where: { id, deletedAt: null },
+      data: { deletedAt: new Date() },
+    });
+  }
+
+  private getPlaceIdxFilterWhereClause(
+    placeIdx?: number,
+  ): Prisma.PlaceVisitWhereInput {
+    if (placeIdx === undefined) {
+      return {};
+    }
+
+    return { nfc: { placeIdx } };
+  }
+
+  private getUserIdxFilterWhereClause(
+    userIdx?: number,
+  ): Prisma.PlaceVisitWhereInput {
+    if (userIdx === undefined) {
+      return {};
+    }
+
+    return { userIdx };
   }
 }

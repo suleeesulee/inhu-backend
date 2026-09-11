@@ -3,7 +3,7 @@ export const userRewardIssueTemplate = (
   leagueSeasonName: string,
   rewardName: string,
   content: string,
-  imageUrlList: string[],
+  imageDataUrlList: string[],
 ) => `
 <!doctype html>
 <html lang="ko">
@@ -127,13 +127,13 @@ export const userRewardIssueTemplate = (
                   border="0"
                   style="margin: 0 0 24px;"
                 >
-                  ${imageUrlList
+                  ${imageDataUrlList
                     .map(
-                      (imageUrl, index) => `
+                      (imageDataUrl, index) => `
                         <tr>
                           <td align="center" style="padding: ${index === 0 ? '0' : '16px 0 0'};">
                             <img
-                              src="${imageUrl}"
+                              src="${imageDataUrl}"
                               alt="${rewardName} 이미지 ${index + 1}"
                               width="496"
                               style="

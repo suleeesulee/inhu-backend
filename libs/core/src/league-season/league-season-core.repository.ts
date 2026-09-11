@@ -62,6 +62,19 @@ export class LeagueSeasonCoreRepository {
     });
   }
 
+  public async selectLeagueSeasonByDateTime(
+    date: Date,
+  ): Promise<SelectLeagueSeason | null> {
+    return await this.txHost.tx.leagueSeason.findFirst({
+      ...SELECT_LEAGUE_SEASON,
+      where: {
+        startAt: { lte: date },
+        endAt: { gte: date },
+      },
+      orderBy: [{ startAt: 'desc' }, { idx: 'desc' }],
+    });
+  }
+
   public async selectLeagueSeasonAll(
     input: GetLeagueSeasonAllInput,
   ): Promise<SelectLeagueSeason[]> {
@@ -153,6 +166,7 @@ export class LeagueSeasonCoreRepository {
       ...SELECT_LEAGUE_SEASON_RESULT,
       where: {
         userIdx,
+        finalScore: { gt: 0 },
         leagueSeason: this.getActivatedAtFilterWhereClause(input.activated),
       },
       orderBy: [
@@ -177,6 +191,16 @@ export class LeagueSeasonCoreRepository {
         userIdx,
         leagueSeason: this.getActivatedAtFilterWhereClause(activated),
       },
+    });
+  }
+
+  public async selectLeagueSeasonResultAllByLeagueSeasonIdx(
+    leagueSeasonIdx: number,
+  ): Promise<SelectLeagueSeasonResult[]> {
+    return await this.txHost.tx.leagueSeasonResult.findMany({
+      ...SELECT_LEAGUE_SEASON_RESULT,
+      where: { leagueSeasonIdx },
+      orderBy: [{ createdAt: 'asc' }, { id: 'asc' }],
     });
   }
 
@@ -303,6 +327,16 @@ export class LeagueSeasonCoreRepository {
             }
           : undefined,
       },
+    });
+  }
+
+  public async updateLeagueSeasonResultById(
+    id: string,
+    input: { finalScore: number },
+  ): Promise<void> {
+    await this.txHost.tx.leagueSeasonResult.update({
+      where: { id },
+      data: { finalScore: input.finalScore },
     });
   }
 

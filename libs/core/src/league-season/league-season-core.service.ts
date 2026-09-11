@@ -42,6 +42,14 @@ export class LeagueSeasonCoreService {
     return leagueSeason && LeagueSeasonModel.fromPrisma(leagueSeason);
   }
 
+  public async getLeagueSeasonByDateTime(
+    date: Date,
+  ): Promise<LeagueSeasonModel | null> {
+    const leagueSeason =
+      await this.leagueSeasonCoreRepository.selectLeagueSeasonByDateTime(date);
+    return leagueSeason && LeagueSeasonModel.fromPrisma(leagueSeason);
+  }
+
   public async getLeagueSeasonAll(
     input: GetLeagueSeasonAllInput,
   ): Promise<LeagueSeasonModel[]> {
@@ -148,6 +156,16 @@ export class LeagueSeasonCoreService {
     );
   }
 
+  public async getLeagueSeasonResultAllByLeagueSeasonIdx(
+    leagueSeasonIdx: number,
+  ): Promise<LeagueSeasonResultModel[]> {
+    return (
+      await this.leagueSeasonCoreRepository.selectLeagueSeasonResultAllByLeagueSeasonIdx(
+        leagueSeasonIdx,
+      )
+    ).map(LeagueSeasonResultModel.fromPrisma);
+  }
+
   public async getLeagueSeasonResultUserRankingAllByLeagueSeasonIdx(
     leagueSeasonIdx: number,
   ): Promise<LeagueSeasonResultUserRankingModel[]> {
@@ -220,5 +238,15 @@ export class LeagueSeasonCoreService {
     input: UpdateLeagueSeasonInput,
   ): Promise<void> {
     await this.leagueSeasonCoreRepository.updateLeagueSeasonByIdx(idx, input);
+  }
+
+  public async updateLeagueSeasonResultById(
+    id: string,
+    input: { finalScore: number },
+  ): Promise<void> {
+    await this.leagueSeasonCoreRepository.updateLeagueSeasonResultById(
+      id,
+      input,
+    );
   }
 }

@@ -14,6 +14,11 @@ export const SELECT_PLACE = Prisma.validator<Prisma.PlaceDefaultArgs>()({
     isClosedOnHoliday: true,
     createdAt: true,
     permanentlyClosedAt: true,
+    nfcList: {
+      select: { idx: true },
+      where: { deletedAt: null },
+      take: 1,
+    },
     placeKeywordCountList: {
       take: 2,
       orderBy: {

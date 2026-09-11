@@ -23,11 +23,6 @@ export class RewardEntity {
   public imagePath: string | null;
 
   /**
-   * 리워드 활성화 시간
-   */
-  public activatedAt: Date | null;
-
-  /**
    * 생성 시간
    */
   public createdAt: Date;
@@ -41,7 +36,6 @@ export class RewardEntity {
       idx: model.idx,
       name: model.name,
       imagePath: model.imagePath,
-      activatedAt: model.activatedAt,
       createdAt: model.createdAt,
     });
   }
