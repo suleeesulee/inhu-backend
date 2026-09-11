@@ -13,6 +13,7 @@ import { LogPrismaService } from '@libs/common/modules/log-prisma/log-prisma.ser
 import { CdcModule } from './cdc/cdc.module';
 import { LOG_PRISMA_KEY } from '@libs/common/modules/log-prisma/LOG_PRISMA_KEY';
 import { LeagueSeasonResultCronModule } from './league-season-result-cron/league-season-result-cron.module';
+import { NotificationCampaignModule } from './notification-campaign/notification-campaign.module';
 
 @Module({
   imports: [
@@ -41,6 +42,7 @@ import { LeagueSeasonResultCronModule } from './league-season-result-cron/league
     CdcModule,
     DiscordWebhookModule,
     ScheduleModule.forRoot(),
+    NotificationCampaignModule,
   ],
 })
 export class BatchServerModule {}
