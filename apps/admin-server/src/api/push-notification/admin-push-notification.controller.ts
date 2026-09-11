@@ -3,12 +3,13 @@ import { PushNotificationService } from '@libs/common/modules/push-notification/
 import { Body, Controller, Post } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { SendPushNotificationDto } from './dto/request/send-push-notification.dto';
+import { AdminPushNotificationService } from './admin-push-notification.service';
 
 @Controller('push-notification')
 @ApiTags('PushNotification')
 export class AdminPushNotificationController {
   constructor(
-    private readonly pushNotificationService: PushNotificationService,
+    private readonly adminPushNotificationService: AdminPushNotificationService,
   ) {}
 
   /**
@@ -19,6 +20,6 @@ export class AdminPushNotificationController {
   public async sendPushNotification(
     @Body() dto: SendPushNotificationDto,
   ): Promise<void> {
-    await this.pushNotificationService.send(dto);
+    await this.adminPushNotificationService.sendPushNotification(dto);
   }
 }

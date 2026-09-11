@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PushTokenCoreRepository } from './push-token-core.repository';
 import { Transactional } from '@nestjs-cls/transactional';
+import { PushTokenModel } from './model/push-token.model';
 
 @Injectable()
 export class PushTokenCoreService {
@@ -43,6 +44,15 @@ export class PushTokenCoreService {
     }
 
     await this.pushTokenCoreRepository.updatePushToken(id, expoPushTokenInput);
+  }
+
+  public async getPushTokenByUserIdx(
+    userIdx: number,
+  ): Promise<PushTokenModel | null> {
+    const pushToken =
+      await this.pushTokenCoreRepository.selectPushTokenByUserIdx(userIdx);
+
+    return pushToken && PushTokenModel.fromPrisma(pushToken);
   }
 
   // /**
