@@ -35,6 +35,8 @@ jobs:
           files: |
             apps/user-server/**
             libs/**
+            package.json
+            package-lock.json
           files_ignore: |
             **/*.md
             libs/testing/**
@@ -47,6 +49,8 @@ jobs:
           files: |
             apps/admin-server/**
             libs/**
+            package.json
+            package-lock.json
           files_ignore: |
             **/*.md
             libs/testing/**
@@ -59,6 +63,8 @@ jobs:
           files: |
             apps/batch-server/**
             libs/**
+            package.json
+            package-lock.json
           files_ignore: |
             **/*.md
             libs/testing/**
@@ -87,6 +93,8 @@ jobs:
             apps/**/src/**
             libs/**
             prisma/**
+            package.json
+            package-lock.json
             scripts/dev-infra/**
             scripts/rdb/**
           files_ignore: |
