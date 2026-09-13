@@ -34,21 +34,6 @@ export class AuthController {
     this.MAIN_PAGE_URL = this.configService.get<string>('MAIN_PAGE_URL') || '/';
   }
 
-  @Get('test-error-log')
-  testErrorLog() {
-    console.log('Testing a non-crashing error log...');
-
-    console.error(
-      '서버 중단 없는 에러 로그 테스트입니다. 이 메시지가 디스코드에 보여야 합니다.',
-    );
-
-    return {
-      status: 'OK',
-      message:
-        'Error log has been sent, but the server is still running perfectly!',
-    };
-  }
-
   /**
    * access token을 재발급하는 엔드포인트
    */
@@ -75,32 +60,32 @@ export class AuthController {
     return await this.authService.reissueAccessToken(refreshToken);
   }
 
-  // !temporary guest login for test
-  @Post('/guest/login/web')
-  public async guestLoginWeb(
-    @Res({ passthrough: true }) res: Response,
-    @Body() dto: GuestLoginDto,
-  ) {
-    const { accessToken, refreshToken } = await this.authService.guestLogin(
-      TokenIssuedBy.WEB,
-      dto,
-    );
+  // // !temporary guest login for test
+  // @Post('/guest/login/web')
+  // public async guestLoginWeb(
+  //   @Res({ passthrough: true }) res: Response,
+  //   @Body() dto: GuestLoginDto,
+  // ) {
+  //   const { accessToken, refreshToken } = await this.authService.guestLogin(
+  //     TokenIssuedBy.WEB,
+  //     dto,
+  //   );
 
-    res.cookie('refreshToken', `Bearer ${refreshToken}`, cookieConfig());
+  //   res.cookie('refreshToken', `Bearer ${refreshToken}`, cookieConfig());
 
-    return { accessToken };
-  }
+  //   return { accessToken };
+  // }
 
-  // !temporary guest login for test
-  @Post('/guest/login/app')
-  public async guestLoginApp(@Body() dto: GuestLoginDto) {
-    const { accessToken, refreshToken } = await this.authService.guestLogin(
-      TokenIssuedBy.APP,
-      dto,
-    );
+  // // !temporary guest login for test
+  // @Post('/guest/login/app')
+  // public async guestLoginApp(@Body() dto: GuestLoginDto) {
+  //   const { accessToken, refreshToken } = await this.authService.guestLogin(
+  //     TokenIssuedBy.APP,
+  //     dto,
+  //   );
 
-    return { accessToken, refreshToken };
-  }
+  //   return { accessToken, refreshToken };
+  // }
 
   /**
    * Social Login Redirect를 처리하는 엔드포인트
