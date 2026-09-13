@@ -61,3 +61,8 @@ report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 inhabobgil-ga4-key.json
 FCM_admin_key.json
 *.p8
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
