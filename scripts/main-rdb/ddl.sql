@@ -285,6 +285,7 @@ CREATE TABLE nfc_tb
   place_idx    int                      NOT NULL,
   score        int                      NOT NULL,
   uid          varchar                  NOT NULL,
+  cooldown     int                      NOT NULL DEFAULT 0,
   activated_at timestamp with time zone,
   created_at   timestamp with time zone NOT NULL DEFAULT NOW(),
   deleted_at   timestamp with time zone,
