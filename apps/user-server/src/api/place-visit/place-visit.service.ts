@@ -24,6 +24,7 @@ import { Locker } from '@libs/common/decorator/locker.decorator';
 @Injectable()
 export class PlaceVisitService {
   private readonly masterKey: Buffer;
+  private readonly defaultCooldownSeconds: number;
 
   constructor(
     private readonly placeVisitCoreService: PlaceVisitCoreService,
@@ -31,6 +32,9 @@ export class PlaceVisitService {
     configService: ConfigService,
   ) {
     this.masterKey = this.readKey(configService, 'nfc.masterKey');
+    this.defaultCooldownSeconds = configService.getOrThrow<number>(
+      'nfc.defaultCooldownSeconds',
+    );
   }
 
   public async getPlaceVisitAllByUserIdx(
@@ -117,7 +121,9 @@ export class PlaceVisitService {
     placeIdx: number,
     cooldown: number,
   ): Promise<void> {
-    if (cooldown === 0) {
+    const appliedCooldown =
+      cooldown === 0 ? this.defaultCooldownSeconds : cooldown;
+    if (appliedCooldown === 0) {
       return;
     }
 
@@ -134,7 +140,7 @@ export class PlaceVisitService {
     }
 
     const cooldownEndsAt =
-      latestPlaceVisit.createdAt.getTime() + cooldown * 1000;
+      latestPlaceVisit.createdAt.getTime() + appliedCooldown * 1000;
     const remainingMilliseconds = cooldownEndsAt - Date.now();
     if (remainingMilliseconds <= 0) {
       return;
