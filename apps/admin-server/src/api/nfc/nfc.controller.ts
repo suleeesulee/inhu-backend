@@ -75,9 +75,13 @@ export class NfcController {
     return await this.nfcService.updateNfcByIdx(idx, dto);
   }
 
+  /**
+   * 특정 장소에 속한 nfc 전체 수정
+   */
   @Put('place/:placeIdx/nfc/all')
   @AdminAuth()
   @Exception(400, 'Invalid nfc update request')
+  @Exception(404, 'Place not found')
   public async updateNfcAllByPlaceIdx(
     @Param('placeIdx', ParseIntPipe) placeIdx: number,
     @Body() dto: UpdateNfcAllByPlaceIdxDto,
