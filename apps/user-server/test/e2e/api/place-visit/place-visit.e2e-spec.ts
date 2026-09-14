@@ -369,6 +369,29 @@ describe('Place Visit E2E test', () => {
       });
     });
 
+    it('409 - default cooldown applies when nfc cooldown is zero', async () => {
+      const loginUser = testHelper.loginUsers.user1;
+      const place = await placeSeedHelper.seed({ activatedAt: new Date() });
+      const nfc = await nfcSeedHelper.seed({
+        placeIdx: place.idx,
+        uid: uid.toString('hex').toUpperCase(),
+        activatedAt: new Date(),
+        cooldown: 0,
+      });
+      await placeVisitSeedHelper.seed({
+        userIdx: loginUser.idx,
+        nfcIdx: nfc.idx,
+        createdAt: new Date(Date.now() - 30 * 60 * 1000),
+      });
+
+      await testHelper
+        .test()
+        .post('/place-visit/nfc')
+        .set('Authorization', `Bearer ${loginUser.web.accessToken}`)
+        .send({ picc_data: piccData, cmac, latitude, longitude })
+        .expect(409, { message: 'NFC cooldown is active' });
+    });
+
     it('201 - cooldown does not apply to another place', async () => {
       const loginUser = testHelper.loginUsers.user1;
       const [previousPlace, currentPlace] = await placeSeedHelper.seedAll([
@@ -428,7 +451,7 @@ describe('Place Visit E2E test', () => {
         .expect(201);
     });
 
-    it('201 - create place visit after cooldown expires', async () => {
+    it('201 - nfc cooldown overrides the default cooldown', async () => {
       const loginUser = testHelper.loginUsers.user1;
       const place = await placeSeedHelper.seed({ activatedAt: new Date() });
       const nfc = await nfcSeedHelper.seed({
