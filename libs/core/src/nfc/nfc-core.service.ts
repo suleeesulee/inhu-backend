@@ -40,6 +40,13 @@ export class NfcCoreService {
     await this.nfcCoreRepository.updateNfcByIdx(idx, input);
   }
 
+  public async updateNfcAllByPlaceIdx(
+    placeIdx: number,
+    input: UpdateNfcInput,
+  ): Promise<void> {
+    await this.nfcCoreRepository.updateNfcAllByPlaceIdx(placeIdx, input);
+  }
+
   public async deleteNfcByIdx(idx: number): Promise<void> {
     await this.nfcCoreRepository.softDeleteNfcByIdx(idx);
   }

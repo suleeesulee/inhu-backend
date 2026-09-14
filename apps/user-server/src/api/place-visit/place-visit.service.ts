@@ -9,6 +9,7 @@ import {
 } from '@libs/core/nfc/nfc-crypto';
 import {
   BadRequestException,
+  ConflictException,
   ForbiddenException,
   Injectable,
   NotFoundException,
@@ -18,6 +19,7 @@ import { GetPlaceVisitAllDto } from './dto/request/get-place-visit-all.dto';
 import { GetPlaceVisitAllResponseDto } from './dto/response/get-place-visit-all.response.dto';
 import { PlaceVisitEntity } from './entity/place-visit.entity';
 import { CreatePlaceVisitByNfcDto } from './dto/request/create-place-visit-by-nfc.dto';
+import { Locker } from '@libs/common/decorator/locker.decorator';
 
 @Injectable()
 export class PlaceVisitService {
@@ -52,6 +54,10 @@ export class PlaceVisitService {
     };
   }
 
+  @Locker({
+    key: (userIdx: number) => `place-visit:${userIdx}`,
+    ttl: 10_000,
+  })
   public async createPlaceVisitByNfc(
     userIdx: number,
     dto: CreatePlaceVisitByNfcDto,
@@ -93,6 +99,8 @@ export class PlaceVisitService {
       throw new ForbiddenException('Invalid NFC MAC');
     }
 
+    await this.validatePlaceVisitCooldown(userIdx, nfc.placeIdx, nfc.cooldown);
+
     return PlaceVisitEntity.fromModel(
       await this.placeVisitCoreService.createPlaceVisit({
         userIdx,
@@ -102,6 +110,39 @@ export class PlaceVisitService {
         longitude: dto.longitude,
       }),
     );
+  }
+
+  private async validatePlaceVisitCooldown(
+    userIdx: number,
+    placeIdx: number,
+    cooldown: number,
+  ): Promise<void> {
+    if (cooldown === 0) {
+      return;
+    }
+
+    const [latestPlaceVisit] =
+      await this.placeVisitCoreService.getPlaceVisitAll({
+        userIdx,
+        placeIdx,
+        take: 1,
+        skip: 0,
+        order: 'desc',
+      });
+    if (!latestPlaceVisit) {
+      return;
+    }
+
+    const cooldownEndsAt =
+      latestPlaceVisit.createdAt.getTime() + cooldown * 1000;
+    const remainingMilliseconds = cooldownEndsAt - Date.now();
+    if (remainingMilliseconds <= 0) {
+      return;
+    }
+
+    throw new ConflictException({
+      message: 'NFC cooldown is active',
+    });
   }
 
   private readKey(configService: ConfigService, name: string): Buffer {

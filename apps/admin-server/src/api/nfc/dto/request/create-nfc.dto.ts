@@ -25,4 +25,15 @@ export class CreateNfcDto {
   @IsString()
   @Matches(/^[0-9A-F]{14}$/)
   uid: string;
+
+  /**
+   * NFC 쿨다운 시간 (초 단위)
+   *
+   * @example 60
+   */
+  @IsNotEmpty()
+  @Type(() => Number)
+  @IsInt()
+  @Min(0)
+  cooldown: number;
 }

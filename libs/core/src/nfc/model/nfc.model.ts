@@ -24,6 +24,11 @@ export class NfcModel {
   public uid: string;
 
   /**
+   * NFC 쿨다운 시간
+   */
+  public cooldown: number;
+
+  /**
    * NFC 활성화 시간
    */
   public activatedAt: Date | null;
@@ -43,6 +48,7 @@ export class NfcModel {
       placeIdx: nfc.placeIdx,
       score: nfc.score,
       uid: nfc.uid,
+      cooldown: nfc.cooldown,
       activatedAt: nfc.activatedAt,
       createdAt: nfc.createdAt,
     });

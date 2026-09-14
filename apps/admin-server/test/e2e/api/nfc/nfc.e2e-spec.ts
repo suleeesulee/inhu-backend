@@ -456,7 +456,7 @@ describe('Nfc E2E test', () => {
         .test()
         .post(`/place/${place.idx}/nfc`)
         .set('Cookie', `token=Bearer ${admin.token}`)
-        .send({ score: 0, uid: '04de5f1eacc045' })
+        .send({ score: 0, uid: '04de5f1eacc045', cooldown: 60 })
         .expect(201);
 
       const nfc: NfcEntity = response.body;
@@ -465,6 +465,7 @@ describe('Nfc E2E test', () => {
       expect(nfc.placeIdx).toBe(place.idx);
       expect(nfc.score).toBe(0);
       expect(nfc.uid).toBe('04DE5F1EACC045');
+      expect(nfc.cooldown).toBe(60);
       expect(nfc.activatedAt).toBeNull();
       expect(nfc.createdAt).toBeDefined();
     });
@@ -477,7 +478,7 @@ describe('Nfc E2E test', () => {
         .test()
         .post(`/place/${place.idx}/nfc`)
         .set('Cookie', `token=Bearer ${admin.token}`)
-        .send({ score: -1, uid: '04DE5F1EACC046' })
+        .send({ score: -1, uid: '04DE5F1EACC046', cooldown: 60 })
         .expect(400);
     });
 
@@ -489,7 +490,7 @@ describe('Nfc E2E test', () => {
         .test()
         .post(`/place/${place.idx}/nfc`)
         .set('Cookie', `token=Bearer ${admin.token}`)
-        .send({ score: 1, uid: 'invalid-nfc-uid' })
+        .send({ score: 1, uid: 'invalid-nfc-uid', cooldown: 60 })
         .expect(400);
     });
 
@@ -500,7 +501,7 @@ describe('Nfc E2E test', () => {
         .test()
         .post('/place/invalid-place-idx/nfc')
         .set('Cookie', `token=Bearer ${admin.token}`)
-        .send({ score: 1, uid: '04DE5F1EACC047' })
+        .send({ score: 1, uid: '04DE5F1EACC047', cooldown: 60 })
         .expect(400);
     });
 
@@ -508,7 +509,7 @@ describe('Nfc E2E test', () => {
       await testHelper
         .test()
         .post('/place/1/nfc')
-        .send({ score: 1, uid: '04DE5F1EACC048' })
+        .send({ score: 1, uid: '04DE5F1EACC048', cooldown: 60 })
         .expect(401);
     });
 
@@ -520,7 +521,7 @@ describe('Nfc E2E test', () => {
         .test()
         .post(`/place/${place.idx}/nfc`)
         .set('Cookie', `token=Bearer ${magazineAdmin.token}`)
-        .send({ score: 1, uid: '04DE5F1EACC049' })
+        .send({ score: 1, uid: '04DE5F1EACC049', cooldown: 60 })
         .expect(403);
     });
   });
@@ -534,6 +535,7 @@ describe('Nfc E2E test', () => {
         placeIdx: place.idx,
         score: 3,
         uid: '04DE5F1EACC050',
+        cooldown: 30,
         activatedAt,
       });
 
@@ -541,7 +543,7 @@ describe('Nfc E2E test', () => {
         .test()
         .put(`/nfc/${nfcSeed.idx}`)
         .set('Cookie', `token=Bearer ${admin.token}`)
-        .send({ score: 10, uid: nfcSeed.uid })
+        .send({ score: 10, uid: nfcSeed.uid, cooldown: 60 })
         .expect(200);
 
       const nfc = await testHelper.getPrisma().nfc.findUniqueOrThrow({
@@ -550,6 +552,7 @@ describe('Nfc E2E test', () => {
 
       expect(nfc.score).toBe(10);
       expect(nfc.uid).toBe(nfcSeed.uid);
+      expect(nfc.cooldown).toBe(60);
       expect(nfc.activatedAt).toEqual(activatedAt);
     });
 
@@ -560,6 +563,7 @@ describe('Nfc E2E test', () => {
         placeIdx: place.idx,
         score: 3,
         uid: '04DE5F1EACC051',
+        cooldown: 30,
         activatedAt: new Date(),
       });
 
@@ -567,7 +571,7 @@ describe('Nfc E2E test', () => {
         .test()
         .put(`/nfc/${nfcSeed.idx}`)
         .set('Cookie', `token=Bearer ${admin.token}`)
-        .send({ score: 7, uid: '04DE5F1EACC052' })
+        .send({ score: 7, uid: '04DE5F1EACC052', cooldown: 60 })
         .expect(200);
 
       const nfc = await testHelper.getPrisma().nfc.findUniqueOrThrow({
@@ -576,6 +580,7 @@ describe('Nfc E2E test', () => {
 
       expect(nfc.score).toBe(7);
       expect(nfc.uid).toBe('04DE5F1EACC052');
+      expect(nfc.cooldown).toBe(60);
       expect(nfc.activatedAt).toBeNull();
     });
 
@@ -586,7 +591,7 @@ describe('Nfc E2E test', () => {
         .test()
         .put('/nfc/invalid-nfc-idx')
         .set('Cookie', `token=Bearer ${admin.token}`)
-        .send({ score: 1, uid: '04DE5F1EACC053' })
+        .send({ score: 1, uid: '04DE5F1EACC053', cooldown: 60 })
         .expect(400);
     });
 
@@ -599,7 +604,7 @@ describe('Nfc E2E test', () => {
         .test()
         .put(`/nfc/${nfcSeed.idx}`)
         .set('Cookie', `token=Bearer ${admin.token}`)
-        .send({ score: 1, uid: 'invalid-nfc-uid' })
+        .send({ score: 1, uid: 'invalid-nfc-uid', cooldown: 60 })
         .expect(400);
     });
 
@@ -607,7 +612,7 @@ describe('Nfc E2E test', () => {
       await testHelper
         .test()
         .put('/nfc/1')
-        .send({ score: 1, uid: '04DE5F1EACC054' })
+        .send({ score: 1, uid: '04DE5F1EACC054', cooldown: 60 })
         .expect(401);
     });
 
@@ -618,7 +623,7 @@ describe('Nfc E2E test', () => {
         .test()
         .put('/nfc/1')
         .set('Cookie', `token=Bearer ${magazineAdmin.token}`)
-        .send({ score: 1, uid: '04DE5F1EACC055' })
+        .send({ score: 1, uid: '04DE5F1EACC055', cooldown: 60 })
         .expect(403);
     });
 
@@ -629,7 +634,88 @@ describe('Nfc E2E test', () => {
         .test()
         .put('/nfc/999999')
         .set('Cookie', `token=Bearer ${admin.token}`)
-        .send({ score: 1, uid: '04DE5F1EACC056' })
+        .send({ score: 1, uid: '04DE5F1EACC056', cooldown: 60 })
+        .expect(404);
+    });
+  });
+
+  describe('PUT /place/:placeIdx/nfc/all', () => {
+    it('200 - updates cooldown for every nfc in the place only', async () => {
+      const admin = testHelper.loginAdmin.admin1;
+      const [targetPlace, otherPlace] = await placeSeedHelper.seedAll([{}, {}]);
+      const [firstNfc, secondNfc, otherNfc] = await nfcSeedHelper.seedAll([
+        { placeIdx: targetPlace.idx, cooldown: 30 },
+        { placeIdx: targetPlace.idx, cooldown: 30 },
+        { placeIdx: otherPlace.idx, cooldown: 30 },
+      ]);
+
+      await testHelper
+        .test()
+        .put(`/place/${targetPlace.idx}/nfc/all`)
+        .set('Cookie', `token=Bearer ${admin.token}`)
+        .send({ cooldown: 120 })
+        .expect(200);
+
+      const nfcList = await testHelper.getPrisma().nfc.findMany({
+        where: { idx: { in: [firstNfc.idx, secondNfc.idx, otherNfc.idx] } },
+        orderBy: { idx: 'asc' },
+      });
+
+      expect(nfcList.map(({ cooldown }) => cooldown)).toStrictEqual([
+        120, 120, 30,
+      ]);
+    });
+
+    it('400 - cooldown is negative', async () => {
+      const admin = testHelper.loginAdmin.admin1;
+      const place = await placeSeedHelper.seed({});
+
+      await testHelper
+        .test()
+        .put(`/place/${place.idx}/nfc/all`)
+        .set('Cookie', `token=Bearer ${admin.token}`)
+        .send({ cooldown: -1 })
+        .expect(400);
+    });
+
+    it('400 - place idx is invalid', async () => {
+      const admin = testHelper.loginAdmin.admin1;
+
+      await testHelper
+        .test()
+        .put('/place/invalid-place-idx/nfc/all')
+        .set('Cookie', `token=Bearer ${admin.token}`)
+        .send({ cooldown: 60 })
+        .expect(400);
+    });
+
+    it('401 - access token is missing', async () => {
+      await testHelper
+        .test()
+        .put('/place/1/nfc/all')
+        .send({ cooldown: 60 })
+        .expect(401);
+    });
+
+    it('403 - insufficient role', async () => {
+      const magazineAdmin = testHelper.loginAdmin.magazineAdmin1;
+
+      await testHelper
+        .test()
+        .put('/place/1/nfc/all')
+        .set('Cookie', `token=Bearer ${magazineAdmin.token}`)
+        .send({ cooldown: 60 })
+        .expect(403);
+    });
+
+    it('404 - place does not exist', async () => {
+      const admin = testHelper.loginAdmin.admin1;
+
+      await testHelper
+        .test()
+        .put('/place/999999/nfc/all')
+        .set('Cookie', `token=Bearer ${admin.token}`)
+        .send({ cooldown: 60 })
         .expect(404);
     });
   });

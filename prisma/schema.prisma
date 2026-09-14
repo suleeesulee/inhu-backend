@@ -688,6 +688,7 @@ model Nfc {
   placeIdx       Int            @map("place_idx")
   score          Int
   uid            String         @map("uid") @db.VarChar
+  cooldown       Int            @default(0)
   activatedAt    DateTime?      @map("activated_at") @db.Timestamptz(6)
   createdAt      DateTime       @default(now()) @map("created_at") @db.Timestamptz(6)
   deletedAt      DateTime?      @map("deleted_at") @db.Timestamptz(6)

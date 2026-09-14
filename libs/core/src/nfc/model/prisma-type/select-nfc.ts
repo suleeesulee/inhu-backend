@@ -6,6 +6,7 @@ export const SELECT_NFC = Prisma.validator<Prisma.NfcDefaultArgs>()({
     placeIdx: true,
     score: true,
     uid: true,
+    cooldown: true,
     activatedAt: true,
     createdAt: true,
   },
