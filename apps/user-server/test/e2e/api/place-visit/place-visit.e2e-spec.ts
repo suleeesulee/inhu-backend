@@ -335,6 +335,150 @@ describe('Place Visit E2E test', () => {
       );
     });
 
+    it('409 - cooldown applies to every NFC in the same place', async () => {
+      const loginUser = testHelper.loginUsers.user1;
+      const place = await placeSeedHelper.seed({ activatedAt: new Date() });
+      const [previousNfc] = await nfcSeedHelper.seedAll([
+        {
+          placeIdx: place.idx,
+          activatedAt: new Date(),
+          cooldown: 60,
+        },
+        {
+          placeIdx: place.idx,
+          uid: uid.toString('hex').toUpperCase(),
+          activatedAt: new Date(),
+          cooldown: 60,
+        },
+      ]);
+      await placeVisitSeedHelper.seed({
+        userIdx: loginUser.idx,
+        nfcIdx: previousNfc.idx,
+        createdAt: new Date(Date.now() - 30_000),
+      });
+
+      const response = await testHelper
+        .test()
+        .post('/place-visit/nfc')
+        .set('Authorization', `Bearer ${loginUser.web.accessToken}`)
+        .send({ picc_data: piccData, cmac, latitude, longitude })
+        .expect(409);
+
+      expect(response.body).toEqual({
+        message: 'NFC cooldown is active',
+      });
+    });
+
+    it('201 - cooldown does not apply to another place', async () => {
+      const loginUser = testHelper.loginUsers.user1;
+      const [previousPlace, currentPlace] = await placeSeedHelper.seedAll([
+        { activatedAt: new Date() },
+        { activatedAt: new Date() },
+      ]);
+      const [previousNfc, currentNfc] = await nfcSeedHelper.seedAll([
+        {
+          placeIdx: previousPlace.idx,
+          activatedAt: new Date(),
+          cooldown: 60,
+        },
+        {
+          placeIdx: currentPlace.idx,
+          uid: uid.toString('hex').toUpperCase(),
+          activatedAt: new Date(),
+          cooldown: 60,
+        },
+      ]);
+      await placeVisitSeedHelper.seed({
+        userIdx: loginUser.idx,
+        nfcIdx: previousNfc.idx,
+        createdAt: new Date(),
+      });
+
+      const response = await testHelper
+        .test()
+        .post('/place-visit/nfc')
+        .set('Authorization', `Bearer ${loginUser.web.accessToken}`)
+        .send({ picc_data: piccData, cmac, latitude, longitude })
+        .expect(201);
+
+      expect(response.body.nfcIdx).toBe(currentNfc.idx);
+    });
+
+    it('201 - cooldown does not apply to another user', async () => {
+      const loginUser = testHelper.loginUsers.user1;
+      const otherUser = testHelper.loginUsers.user2;
+      const place = await placeSeedHelper.seed({ activatedAt: new Date() });
+      const nfc = await nfcSeedHelper.seed({
+        placeIdx: place.idx,
+        uid: uid.toString('hex').toUpperCase(),
+        activatedAt: new Date(),
+        cooldown: 60,
+      });
+      await placeVisitSeedHelper.seed({
+        userIdx: otherUser.idx,
+        nfcIdx: nfc.idx,
+        createdAt: new Date(),
+      });
+
+      await testHelper
+        .test()
+        .post('/place-visit/nfc')
+        .set('Authorization', `Bearer ${loginUser.web.accessToken}`)
+        .send({ picc_data: piccData, cmac, latitude, longitude })
+        .expect(201);
+    });
+
+    it('201 - create place visit after cooldown expires', async () => {
+      const loginUser = testHelper.loginUsers.user1;
+      const place = await placeSeedHelper.seed({ activatedAt: new Date() });
+      const nfc = await nfcSeedHelper.seed({
+        placeIdx: place.idx,
+        uid: uid.toString('hex').toUpperCase(),
+        activatedAt: new Date(),
+        cooldown: 60,
+      });
+      await placeVisitSeedHelper.seed({
+        userIdx: loginUser.idx,
+        nfcIdx: nfc.idx,
+        createdAt: new Date(Date.now() - 61_000),
+      });
+
+      await testHelper
+        .test()
+        .post('/place-visit/nfc')
+        .set('Authorization', `Bearer ${loginUser.web.accessToken}`)
+        .send({ picc_data: piccData, cmac, latitude, longitude })
+        .expect(201);
+    });
+
+    it('201/409 - concurrent requests create only one place visit', async () => {
+      const loginUser = testHelper.loginUsers.user1;
+      const place = await placeSeedHelper.seed({ activatedAt: new Date() });
+      const nfc = await nfcSeedHelper.seed({
+        placeIdx: place.idx,
+        uid: uid.toString('hex').toUpperCase(),
+        activatedAt: new Date(),
+        cooldown: 60,
+      });
+      const request = () =>
+        testHelper
+          .test()
+          .post('/place-visit/nfc')
+          .set('Authorization', `Bearer ${loginUser.web.accessToken}`)
+          .send({ picc_data: piccData, cmac, latitude, longitude });
+
+      const responses = await Promise.all([request(), request()]);
+
+      expect(responses.map(({ status }) => status).sort()).toStrictEqual([
+        201, 409,
+      ]);
+      await expect(
+        testHelper.getPrisma().placeVisit.count({
+          where: { userIdx: loginUser.idx, nfcIdx: nfc.idx },
+        }),
+      ).resolves.toBe(1);
+    });
+
     it('201 - create place visit when encrypted data is included', async () => {
       const loginUser = testHelper.loginUsers.user1;
       const place = await placeSeedHelper.seed({ activatedAt: new Date() });
