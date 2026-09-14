@@ -86,6 +86,18 @@ export class NfcCoreRepository {
     });
   }
 
+  public async updateNfcAllByPlaceIdx(placeIdx: number, input: UpdateNfcInput) {
+    await this.txHost.tx.nfc.updateMany({
+      where: { placeIdx },
+      data: {
+        score: input.score,
+        uid: input.uid,
+        cooldown: input.cooldown,
+        activatedAt: input.activatedAt,
+      },
+    });
+  }
+
   public async softDeleteNfcByIdx(idx: number): Promise<void> {
     await this.txHost.tx.nfc.update({
       data: { deletedAt: new Date() },

@@ -30,6 +30,13 @@ export class NfcEntity {
   public uid: string;
 
   /**
+   * NFC 쿨다운 시간 (초 단위)
+   *
+   * @example 60
+   */
+  public cooldown: number;
+
+  /**
    * NFC 활성화 시간
    */
   public activatedAt: Date | null;
@@ -49,6 +56,7 @@ export class NfcEntity {
       placeIdx: model.placeIdx,
       score: model.score,
       uid: model.uid,
+      cooldown: model.cooldown,
       activatedAt: model.activatedAt,
       createdAt: model.createdAt,
     });
