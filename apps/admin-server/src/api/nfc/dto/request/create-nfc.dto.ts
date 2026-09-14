@@ -29,7 +29,7 @@ export class CreateNfcDto {
   /**
    * NFC 쿨다운 시간 (초 단위)
    *
-   * @example 60 (1분)
+   * @example 60
    */
   @IsNotEmpty()
   @Type(() => Number)
