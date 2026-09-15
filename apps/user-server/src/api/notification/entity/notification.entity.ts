@@ -1,4 +1,6 @@
 import { NotificationModel } from '@libs/core/notification/model/notification.model';
+import { IsEnumValue } from '@libs/common/decorator/is-enum-value.decorator';
+import { NotificationPageType } from '@libs/core/notification/constants/notification-page-type.constant';
 
 export class NotificationEntity {
   /**
@@ -19,7 +21,8 @@ export class NotificationEntity {
   /**
    * 알림 클릭 시 이동할 페이지 타입
    */
-  public pageType: number;
+  @IsEnumValue(NotificationPageType)
+  public pageType: NotificationPageType;
 
   /**
    * 생성 시간

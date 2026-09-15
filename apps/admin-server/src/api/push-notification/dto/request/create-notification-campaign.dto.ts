@@ -1,5 +1,7 @@
 import { Type } from 'class-transformer';
-import { IsInt, IsNotEmpty, IsString } from 'class-validator';
+import { IsNotEmpty, IsString } from 'class-validator';
+import { IsEnumValue } from '@libs/common/decorator/is-enum-value.decorator';
+import { NotificationPageType } from '@libs/core/notification/constants/notification-page-type.constant';
 
 export class CreateNotificationCampaignDto {
   /**
@@ -22,10 +24,8 @@ export class CreateNotificationCampaignDto {
 
   /**
    * 알림 클릭 시 이동할 페이지 타입
-   *
-   * @example 1
    */
   @Type(() => Number)
-  @IsInt()
-  public pageType: number;
+  @IsEnumValue(NotificationPageType)
+  public pageType: NotificationPageType;
 }

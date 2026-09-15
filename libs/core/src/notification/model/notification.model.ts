@@ -1,4 +1,5 @@
 import { SelectNotification } from './prisma-type/select-notification';
+import { NotificationPageType } from '../constants/notification-page-type.constant';
 
 /**
  * @publicApi
@@ -7,7 +8,7 @@ export class NotificationModel {
   public id: string;
   public title: string;
   public content: string;
-  public pageType: number;
+  public pageType: NotificationPageType;
   public createdAt: Date;
 
   constructor(data: NotificationModel) {
@@ -21,7 +22,7 @@ export class NotificationModel {
       id: notification.id,
       title: notification.title,
       content: notification.content,
-      pageType: notification.pageType,
+      pageType: notification.pageType as NotificationPageType,
       createdAt: notification.createdAt,
     });
   }
