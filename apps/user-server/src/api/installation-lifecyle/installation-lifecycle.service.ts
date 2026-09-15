@@ -18,6 +18,19 @@ export class InstallationLifecycleService {
   public async registerLifecycle(dto: RegisterInstallationLifecycleDto) {
     const input = await this.processDtoToInput(dto);
 
+    const previousInstallation =
+      input.userIdx === null
+        ? null
+        : await this.installationLifecycleCoreService.getInstallationIdByUserIdx(
+            input.userIdx,
+          );
+
+    if (previousInstallation) {
+      await this.installationLifecycleCoreService.disconnectInstallationIdWithUser(
+        previousInstallation.id,
+      );
+    }
+
     await this.installationLifecycleCoreService.upsertInstallationLifecycle(
       input,
     );
