@@ -69,20 +69,20 @@ export class PushTokenCoreService {
     return pushToken && PushTokenModel.fromPrisma(pushToken);
   }
 
-  // /**
-  //  * push token 삭제 (hard delete)
-  //  * 앱 삭제 감지 등으로 해당 token이 더 이상 유효하지 않을 때 사용
-  //  * 토큰이 존재하지 않으면 무시함
-  //  *
-  //  * @publicApi
-  //  */
-  // public async deletePushTokenIfExists(id: string): Promise<void> {
-  //   const existing = await this.pushTokenCoreRepository.selectPushTokenById(id);
+  /**
+   * push token 삭제 (hard delete)
+   * 앱 삭제 감지 등으로 해당 token이 더 이상 유효하지 않을 때 사용
+   * 토큰이 존재하지 않으면 무시함
+   *
+   * @publicApi
+   */
+  public async deletePushTokenIfExists(id: string): Promise<void> {
+    const existing = await this.pushTokenCoreRepository.selectPushTokenById(id);
 
-  //   if (!existing) return;
+    if (!existing) return;
 
-  //   await this.pushTokenCoreRepository.deletePushToken(id);
-  // }
+    await this.pushTokenCoreRepository.deletePushToken(id);
+  }
 
   // /**
   //  * push token 조회

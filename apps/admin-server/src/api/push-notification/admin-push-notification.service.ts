@@ -1,4 +1,5 @@
 import { PushNotificationService } from '@libs/common/modules/push-notification/push-notification.service';
+import { ApnsDeviceTokenUnregisteredException } from '@libs/common/modules/push-notification/provider/apns/apns-push-notification.provider';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { SendPushNotificationDto } from './dto/request/send-push-notification.dto';
 import { PushTokenCoreService } from '@libs/core/push-notification/push-token-core.service';
@@ -37,13 +38,21 @@ export class AdminPushNotificationService {
       );
     }
 
-    await this.pushNotificationService.send({
-      token: pushToken.expoPushToken,
-      platform: installation.platform as 'ios' | 'android',
-      title: dto.title,
-      body: dto.body,
-      data: dto.data,
-    });
+    try {
+      await this.pushNotificationService.send({
+        token: pushToken.expoPushToken,
+        platform: installation.platform as 'ios' | 'android',
+        title: dto.title,
+        body: dto.body,
+        data: dto.data,
+      });
+    } catch (error) {
+      if (error instanceof ApnsDeviceTokenUnregisteredException) {
+        await this.pushTokenCoreService.deletePushTokenIfExists(pushToken.id);
+      }
+
+      throw error;
+    }
   }
 
   public async createNotificationCampaign(

@@ -1,6 +1,7 @@
 import { DiscordWebhookContext } from '@libs/common/modules/discord-webhook/constants/discord-webhook-context.enum';
 import { DiscordWebhookService } from '@libs/common/modules/discord-webhook/discord-webhook.service';
 import { PushNotificationService } from '@libs/common/modules/push-notification/push-notification.service';
+import { ApnsDeviceTokenUnregisteredException } from '@libs/common/modules/push-notification/provider/apns/apns-push-notification.provider';
 import { NotificationCampaignModel } from '@libs/core/notification/model/notification-campaign.model';
 import { NotificationCoreService } from '@libs/core/notification/notification-core.service';
 import { PushTokenCoreService } from '@libs/core/push-notification/push-token-core.service';
@@ -69,14 +70,24 @@ export class NotificationCampaignService {
       );
 
       const resultList = await Promise.allSettled(
-        pushTokenList.map((pushToken) =>
-          this.pushNotificationService.send({
-            token: pushToken.expoPushToken,
-            platform: pushToken.platform,
-            title: campaign.notification.title,
-            body: campaign.notification.content,
-          }),
-        ),
+        pushTokenList.map(async (pushToken) => {
+          try {
+            await this.pushNotificationService.send({
+              token: pushToken.expoPushToken,
+              platform: pushToken.platform,
+              title: campaign.notification.title,
+              body: campaign.notification.content,
+            });
+          } catch (error) {
+            if (error instanceof ApnsDeviceTokenUnregisteredException) {
+              await this.pushTokenCoreService.deletePushTokenIfExists(
+                pushToken.id,
+              );
+            }
+
+            throw error;
+          }
+        }),
       );
 
       const successCount = resultList.filter(
