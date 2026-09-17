@@ -7,6 +7,12 @@ export const SELECT_PUSH_TOKEN =
       expoPushToken: true,
       lastSeenAt: true,
       createdAt: true,
+      installation: {
+        select: {
+          userIdx: true,
+          platform: true,
+        },
+      },
     },
   });
 

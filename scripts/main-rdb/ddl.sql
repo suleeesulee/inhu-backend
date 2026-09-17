@@ -295,6 +295,55 @@ CREATE TABLE nfc_tb
 CREATE INDEX idx_nfc_place_deleted
   ON nfc_tb (place_idx, deleted_at);
 
+CREATE TABLE notice_tb
+(
+  idx        int                      NOT NULL GENERATED ALWAYS AS IDENTITY,
+  author_idx int                      NOT NULL,
+  title      varchar                  NOT NULL,
+  content    varchar                  NOT NULL,
+  created_at timestamp with time zone NOT NULL DEFAULT NOW(),
+  PRIMARY KEY (idx)
+);
+
+CREATE TABLE notification_campaign_tb
+(
+  id              uuid                     NOT NULL DEFAULT uuid_generate_v4(),
+  notification_id uuid                     NOT NULL,
+  target_count    int                      NOT NULL,
+  success_count   int                      NOT NULL,
+  fail_count      int                      NOT NULL,
+  completed_at    timestamp with time zone,
+  created_at      timestamp with time zone NOT NULL DEFAULT NOW(),
+  PRIMARY KEY (id)
+);
+
+CREATE INDEX idx_notification_campaign_notification_created_at
+ON notification_campaign_tb (
+  notification_id,
+  created_at DESC
+);
+CREATE INDEX idx_notification_campaign_incomplete
+ON notification_campaign_tb (
+  created_at
+)
+WHERE completed_at IS NULL;
+
+CREATE TABLE notification_tb
+(
+  id         uuid                     NOT NULL DEFAULT uuid_generate_v4(),
+  title      varchar                  NOT NULL,
+  content    varchar                  NOT NULL,
+  page_type  int                      NOT NULL,
+  created_at timestamp with time zone NOT NULL DEFAULT NOW(),
+  PRIMARY KEY (id)
+);
+
+CREATE INDEX idx_notification_created_at_id
+ON notification_tb (
+  created_at DESC,
+  id DESC
+);
+
 CREATE TABLE operating_hour_tb
 (
   idx       int      NOT NULL GENERATED ALWAYS AS IDENTITY,
@@ -572,6 +621,21 @@ CREATE TABLE user_email_tb
   PRIMARY KEY (idx)
 );
 
+CREATE TABLE login_user_notification_tb
+(
+  notification_id uuid                     NOT NULL,
+  user_idx        int                      NOT NULL,
+  created_at      timestamp with time zone NOT NULL DEFAULT NOW(),
+  PRIMARY KEY (notification_id, user_idx)
+);
+
+CREATE INDEX idx_login_user_notification_user_created_at_notification
+ON login_user_notification_tb (
+  user_idx,
+  created_at DESC,
+  notification_id
+);
+
 CREATE TABLE user_provider_tb
 (
   idx    int     NOT NULL,
@@ -666,16 +730,6 @@ CREATE TABLE blog_review_tb
   created_at                timestamp with time zone NOT NULL DEFAULT NOW(),
   uploaded_at               timestamp with time zone NOT NULL,
   deleted_at                timestamp with time zone,
-  PRIMARY KEY (idx)
-);
-
-CREATE TABLE notice_tb
-(
-  idx        int                      NOT NULL GENERATED ALWAYS AS IDENTITY,
-  author_idx int                      NOT NULL,
-  title      varchar                  NOT NULL,
-  content    varchar                  NOT NULL,
-  created_at timestamp with time zone NOT NULL DEFAULT NOW(),
   PRIMARY KEY (idx)
 );
 
@@ -1049,3 +1103,18 @@ ALTER TABLE notice_tb
   ADD CONSTRAINT FK_user_tb_TO_notice_tb
     FOREIGN KEY (author_idx)
     REFERENCES user_tb (idx);
+
+ALTER TABLE login_user_notification_tb
+  ADD CONSTRAINT FK_notification_tb_TO_login_user_notification_tb
+    FOREIGN KEY (notification_id)
+    REFERENCES notification_tb (id);
+
+ALTER TABLE login_user_notification_tb
+  ADD CONSTRAINT FK_user_tb_TO_login_user_notification_tb
+    FOREIGN KEY (user_idx)
+    REFERENCES user_tb (idx);
+
+ALTER TABLE notification_campaign_tb
+  ADD CONSTRAINT FK_notification_tb_TO_notification_campaign_tb
+    FOREIGN KEY (notification_id)
+    REFERENCES notification_tb (id);

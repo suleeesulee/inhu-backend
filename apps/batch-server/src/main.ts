@@ -24,6 +24,7 @@ async function bootstrap() {
       },
     },
   );
+  app.enableShutdownHooks();
 
   // if (getMode() === 'production') {
   //   try {

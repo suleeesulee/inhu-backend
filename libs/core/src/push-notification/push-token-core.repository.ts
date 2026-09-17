@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { TransactionHost } from '@nestjs-cls/transactional';
 import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-prisma';
+import { GetPushTokenAllInput } from './inputs/get-push-token-all.input';
 import {
   SELECT_PUSH_TOKEN,
   SelectPushToken,
@@ -27,6 +28,26 @@ export class PushTokenCoreRepository {
     return await this.txHost.tx.pushToken.findFirst({
       select: SELECT_PUSH_TOKEN.select,
       where: { installation: { userIdx } },
+    });
+  }
+
+  public async selectPushTokenAll(
+    input: GetPushTokenAllInput,
+  ): Promise<SelectPushToken[]> {
+    return await this.txHost.tx.pushToken.findMany({
+      ...SELECT_PUSH_TOKEN,
+      where:
+        input.userIdxList === undefined
+          ? undefined
+          : {
+              installation: {
+                userIdx: { in: input.userIdxList },
+              },
+            },
+      orderBy: { id: 'asc' },
+      take: input.take,
+      cursor: input.cursorId ? { id: input.cursorId } : undefined,
+      skip: input.cursorId ? 1 : undefined,
     });
   }
 
