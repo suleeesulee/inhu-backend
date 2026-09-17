@@ -1,9 +1,9 @@
-import { Type } from 'class-transformer';
-import { IsNotEmpty, IsString } from 'class-validator';
 import { IsEnumValue } from '@libs/common/decorator/is-enum-value.decorator';
 import { NotificationPageType } from '@libs/core/notification/constants/notification-page-type.constant';
+import { Type } from 'class-transformer';
+import { IsNotEmpty, IsString } from 'class-validator';
 
-export class CreateNotificationCampaignDto {
+export class CreateNotificationDto {
   /**
    * 알림 제목
    *

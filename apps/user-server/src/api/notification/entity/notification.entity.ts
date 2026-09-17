@@ -21,7 +21,6 @@ export class NotificationEntity {
   /**
    * 알림 클릭 시 이동할 페이지 타입
    */
-  @IsEnumValue(NotificationPageType)
   public pageType: NotificationPageType;
 
   /**

@@ -1,7 +1,7 @@
 import { AdminAuth } from '@admin/common/decorator/admin-auth.decorator';
 import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { CreateNotificationCampaignDto } from './dto/request/create-notification-campaign.dto';
+import { BroadcastNotificationDto } from './dto/request/broadcast-notification.dto';
 import { SendPushNotificationDto } from './dto/request/send-push-notification.dto';
 import { AdminPushNotificationService } from './admin-push-notification.service';
 
@@ -13,15 +13,15 @@ export class AdminPushNotificationController {
   ) {}
 
   /**
-   * 전체 사용자 대상 알림 캠페인 생성
+   * 전체 사용자 대상 알림 발송
    */
   @Post('broadcast')
   @HttpCode(HttpStatus.ACCEPTED)
   @AdminAuth()
-  public async createNotificationCampaign(
-    @Body() dto: CreateNotificationCampaignDto,
+  public async broadcastNotification(
+    @Body() dto: BroadcastNotificationDto,
   ): Promise<void> {
-    await this.adminPushNotificationService.createNotificationCampaign(dto);
+    await this.adminPushNotificationService.broadcastNotification(dto);
   }
 
   /**
