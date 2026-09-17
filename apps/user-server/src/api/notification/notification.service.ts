@@ -16,7 +16,7 @@ export class NotificationService {
   ): Promise<GetNotificationAllResponseDto> {
     const PAGE_SIZE = 10;
     const notificationList =
-      await this.notificationCoreService.getNotificationAll({
+      await this.notificationCoreService.getNotificationAllForUser({
         take: PAGE_SIZE + 1,
         skip: (dto.page - 1) * PAGE_SIZE,
         userIdx,

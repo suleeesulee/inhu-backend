@@ -38,6 +38,17 @@ export class NotificationCoreRepository {
   ): Promise<SelectNotification[]> {
     return await this.txHost.tx.notification.findMany({
       ...SELECT_NOTIFICATION,
+      orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
+      take: input.take,
+      skip: input.skip,
+    });
+  }
+
+  public async selectNotificationAllForUser(
+    input: GetNotificationAllInput,
+  ): Promise<SelectNotification[]> {
+    return await this.txHost.tx.notification.findMany({
+      ...SELECT_NOTIFICATION,
       where: this.getNotificationWhere(input.userIdx),
       orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
       take: input.take,

@@ -35,6 +35,14 @@ export class NotificationCoreService {
     ).map(NotificationModel.fromPrisma);
   }
 
+  public async getNotificationAllForUser(
+    input: GetNotificationAllInput,
+  ): Promise<NotificationModel[]> {
+    return (
+      await this.notificationCoreRepository.selectNotificationAllForUser(input)
+    ).map(NotificationModel.fromPrisma);
+  }
+
   public async getNotificationCount(): Promise<number> {
     return await this.notificationCoreRepository.selectNotificationCount();
   }
