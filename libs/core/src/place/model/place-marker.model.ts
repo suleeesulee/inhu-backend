@@ -25,6 +25,7 @@ export class PlaceMarkerModel extends PickType(PlaceModel, [
   'isClosedOnHoliday',
   'createdAt',
   'permanentlyClosedAt',
+  'hasNfc',
   'imgPathList',
   'activatedAt',
   'topKeywordList',
@@ -54,6 +55,7 @@ export class PlaceMarkerModel extends PickType(PlaceModel, [
       createdAt: place.createdAt,
       activatedAt: place.activatedAt,
       permanentlyClosedAt: place.permanentlyClosedAt,
+      hasNfc: place.nfcList.length > 0,
       imgPathList: place.placeImageList.map((image) => image.path),
       topKeywordList: place.placeKeywordCountList.map(({ keyword }) =>
         KeywordModel.fromPrisma(keyword),

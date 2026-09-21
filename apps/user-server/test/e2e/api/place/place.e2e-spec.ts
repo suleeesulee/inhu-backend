@@ -2380,6 +2380,7 @@ describe('Place E2E test', () => {
           MoodCategory.DESSERT_HOTSPOT,
         ],
       });
+      await nfcSeedHelper.seed({ placeIdx: placeSeed.idx });
 
       const response = await testHelper
         .test()
@@ -2405,6 +2406,7 @@ describe('Place E2E test', () => {
       expect(place.type).toBe(placeSeed.type);
       expect(place.mainCategoryList).toEqual(placeSeed.mainCategoryList);
       expect(place.moodCategoryList).toEqual(placeSeed.moodCategoryList);
+      expect(place.hasNfc).toBe(true);
     });
 
     it('200 - orderby time check', async () => {
@@ -3772,7 +3774,6 @@ describe('Place E2E test', () => {
           MoodCategory.DESSERT_HOTSPOT,
         ],
       });
-
       const response = await testHelper
         .test()
         .get(`/place/${placeSeed.idx}`)
@@ -3920,6 +3921,7 @@ describe('Place E2E test', () => {
           MoodCategory.DESSERT_HOTSPOT,
         ],
       });
+      await nfcSeedHelper.seed({ placeIdx: placeSeed.idx });
 
       const response = await testHelper
         .test()
@@ -3941,6 +3943,7 @@ describe('Place E2E test', () => {
       expect(place.roadAddress.addressX).toBe(placeSeed.roadAddress.addressX);
       expect(place.roadAddress.addressY).toBe(placeSeed.roadAddress.addressY);
       expect(place.imagePathList.sort()).toEqual(placeSeed.placeImgList.sort());
+      expect(place.hasNfc).toBe(true);
     });
 
     it('weight check', async () => {
