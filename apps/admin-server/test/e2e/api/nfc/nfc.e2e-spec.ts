@@ -65,12 +65,20 @@ describe('Nfc E2E test', () => {
           expect.objectContaining({
             idx: activatedNfc.idx,
             placeIdx: firstPlace.idx,
+            place: expect.objectContaining({
+              idx: firstPlace.idx,
+              name: firstPlace.name,
+            }),
             score: activatedNfc.score,
             uid: activatedNfc.uid,
           }),
           expect.objectContaining({
             idx: deactivatedNfc.idx,
             placeIdx: secondPlace.idx,
+            place: expect.objectContaining({
+              idx: secondPlace.idx,
+              name: secondPlace.name,
+            }),
             score: deactivatedNfc.score,
             uid: deactivatedNfc.uid,
             activatedAt: null,
@@ -391,6 +399,18 @@ describe('Nfc E2E test', () => {
 
       expect(nfc.idx).toBe(nfcSeed.idx);
       expect(nfc.placeIdx).toBe(place.idx);
+      expect(nfc.place).toEqual({
+        idx: place.idx,
+        name: place.name,
+        tel: place.tel,
+        roadAddress: {
+          name: place.roadAddress.name,
+          detail: place.roadAddress.detail,
+          addressX: place.roadAddress.addressX,
+          addressY: place.roadAddress.addressY,
+        },
+        imagePathList: place.placeImgList,
+      });
       expect(nfc.score).toBe(nfcSeed.score);
       expect(nfc.uid).toBe(nfcSeed.uid);
       expect(nfc.activatedAt).toBeNull();
@@ -463,6 +483,9 @@ describe('Nfc E2E test', () => {
 
       expect(nfc.idx).toBeDefined();
       expect(nfc.placeIdx).toBe(place.idx);
+      expect(nfc.place).toEqual(
+        expect.objectContaining({ idx: place.idx, name: place.name }),
+      );
       expect(nfc.score).toBe(0);
       expect(nfc.uid).toBe('04DE5F1EACC045');
       expect(nfc.cooldown).toBeNull();

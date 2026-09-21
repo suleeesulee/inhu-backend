@@ -1,4 +1,5 @@
 import { SelectNfc } from './prisma-type/select-nfc';
+import { NfcPlaceModel } from './nfc-place.model';
 
 export class NfcModel {
   /**
@@ -38,6 +39,11 @@ export class NfcModel {
    */
   public createdAt: Date;
 
+  /**
+   * NFC가 설치된 장소
+   */
+  public place: NfcPlaceModel;
+
   constructor(data: NfcModel) {
     Object.assign(this, data);
   }
@@ -51,6 +57,7 @@ export class NfcModel {
       cooldown: nfc.cooldown,
       activatedAt: nfc.activatedAt,
       createdAt: nfc.createdAt,
+      place: NfcPlaceModel.fromPrisma(nfc.place),
     });
   }
 }
