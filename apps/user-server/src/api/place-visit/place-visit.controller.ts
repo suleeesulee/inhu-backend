@@ -39,7 +39,7 @@ export class PlaceVisitController {
   @Exception(400, 'Invalid NFC payload')
   @Exception(403, 'NFC is inactive or SDM MAC is invalid')
   @Exception(404, 'NFC not found')
-  @Exception(409, 'NFC cooldown is active')
+  @Exception(409, `NFC cooldown is active. xxx seconds remaining`)
   public async createPlaceVisitByNfc(
     @Body() dto: CreatePlaceVisitByNfcDto,
     @User() user: LoginUser,
