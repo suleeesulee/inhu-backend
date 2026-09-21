@@ -63,12 +63,17 @@ export class NfcService {
       throw new NotFoundException(`Place with idx ${placeIdx} not found`);
     }
 
+    const nfc = await this.nfcCoreService.getNfcByUid(dto.uid);
+    if (nfc) {
+      throw new ConflictException(`Nfc with uid ${dto.uid} already exists`);
+    }
+
     return NfcEntity.fromModel(
       await this.nfcCoreService.createNfc({
         placeIdx,
         score: dto.score,
         uid: dto.uid,
-        cooldown: dto.cooldown,
+        cooldown: dto.cooldown ?? null,
         activatedAt: null,
       }),
     );

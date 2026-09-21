@@ -26,7 +26,7 @@ export class NfcModel {
   /**
    * NFC 쿨다운 시간
    */
-  public cooldown: number;
+  public cooldown: number | null;
 
   /**
    * NFC 활성화 시간

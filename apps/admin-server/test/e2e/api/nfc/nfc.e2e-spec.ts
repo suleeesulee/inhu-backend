@@ -465,7 +465,7 @@ describe('Nfc E2E test', () => {
       expect(nfc.placeIdx).toBe(place.idx);
       expect(nfc.score).toBe(0);
       expect(nfc.uid).toBe('04DE5F1EACC045');
-      expect(nfc.cooldown).toBe(0);
+      expect(nfc.cooldown).toBeNull();
       expect(nfc.activatedAt).toBeNull();
       expect(nfc.createdAt).toBeDefined();
     });
@@ -598,6 +598,29 @@ describe('Nfc E2E test', () => {
       expect(nfc.activatedAt).toBeNull();
     });
 
+    it('200 - null cooldown applies the default cooldown', async () => {
+      const admin = testHelper.loginAdmin.admin1;
+      const place = await placeSeedHelper.seed({});
+      const nfcSeed = await nfcSeedHelper.seed({
+        placeIdx: place.idx,
+        uid: '04DE5F1EACC061',
+        cooldown: 30,
+      });
+
+      await testHelper
+        .test()
+        .put(`/nfc/${nfcSeed.idx}`)
+        .set('Cookie', `token=Bearer ${admin.token}`)
+        .send({ score: 3, uid: nfcSeed.uid, cooldown: null })
+        .expect(200);
+
+      await expect(
+        testHelper.getPrisma().nfc.findUniqueOrThrow({
+          where: { idx: nfcSeed.idx },
+        }),
+      ).resolves.toEqual(expect.objectContaining({ cooldown: null }));
+    });
+
     it('400 - nfc idx is invalid', async () => {
       const admin = testHelper.loginAdmin.admin1;
 
@@ -690,6 +713,31 @@ describe('Nfc E2E test', () => {
         .set('Cookie', `token=Bearer ${admin.token}`)
         .send({ cooldown: -1 })
         .expect(400);
+    });
+
+    it('200 - null cooldown applies the default cooldown to every nfc', async () => {
+      const admin = testHelper.loginAdmin.admin1;
+      const place = await placeSeedHelper.seed({});
+      const nfcList = await nfcSeedHelper.seedAll([
+        { placeIdx: place.idx, cooldown: 30 },
+        { placeIdx: place.idx, cooldown: 60 },
+      ]);
+
+      await testHelper
+        .test()
+        .put(`/place/${place.idx}/nfc/all`)
+        .set('Cookie', `token=Bearer ${admin.token}`)
+        .send({ cooldown: null })
+        .expect(200);
+
+      const updatedNfcList = await testHelper.getPrisma().nfc.findMany({
+        where: { idx: { in: nfcList.map(({ idx }) => idx) } },
+      });
+
+      expect(updatedNfcList.map(({ cooldown }) => cooldown)).toEqual([
+        null,
+        null,
+      ]);
     });
 
     it('400 - place idx is invalid', async () => {

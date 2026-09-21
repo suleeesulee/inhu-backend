@@ -364,12 +364,39 @@ describe('Place Visit E2E test', () => {
         .send({ picc_data: piccData, cmac, latitude, longitude })
         .expect(409);
 
-      expect(response.body).toEqual({
-        message: 'NFC cooldown is active',
-      });
+      expect(response.body.message).toMatch(
+        /^NFC cooldown is active\. \d+ seconds remaining$/,
+      );
     });
 
-    it('409 - default cooldown applies when nfc cooldown is zero', async () => {
+    it('409 - default cooldown applies when nfc cooldown is null', async () => {
+      const loginUser = testHelper.loginUsers.user1;
+      const place = await placeSeedHelper.seed({ activatedAt: new Date() });
+      const nfc = await nfcSeedHelper.seed({
+        placeIdx: place.idx,
+        uid: uid.toString('hex').toUpperCase(),
+        activatedAt: new Date(),
+        cooldown: null,
+      });
+      await placeVisitSeedHelper.seed({
+        userIdx: loginUser.idx,
+        nfcIdx: nfc.idx,
+        createdAt: new Date(Date.now() - 30 * 60 * 1000),
+      });
+
+      const response = await testHelper
+        .test()
+        .post('/place-visit/nfc')
+        .set('Authorization', `Bearer ${loginUser.web.accessToken}`)
+        .send({ picc_data: piccData, cmac, latitude, longitude })
+        .expect(409);
+
+      expect(response.body.message).toMatch(
+        /^NFC cooldown is active\. \d+ seconds remaining$/,
+      );
+    });
+
+    it('201 - cooldown does not apply when nfc cooldown is zero', async () => {
       const loginUser = testHelper.loginUsers.user1;
       const place = await placeSeedHelper.seed({ activatedAt: new Date() });
       const nfc = await nfcSeedHelper.seed({
@@ -381,7 +408,7 @@ describe('Place Visit E2E test', () => {
       await placeVisitSeedHelper.seed({
         userIdx: loginUser.idx,
         nfcIdx: nfc.idx,
-        createdAt: new Date(Date.now() - 30 * 60 * 1000),
+        createdAt: new Date(),
       });
 
       await testHelper
@@ -389,7 +416,7 @@ describe('Place Visit E2E test', () => {
         .post('/place-visit/nfc')
         .set('Authorization', `Bearer ${loginUser.web.accessToken}`)
         .send({ picc_data: piccData, cmac, latitude, longitude })
-        .expect(409, { message: 'NFC cooldown is active' });
+        .expect(201);
     });
 
     it('201 - cooldown does not apply to another place', async () => {

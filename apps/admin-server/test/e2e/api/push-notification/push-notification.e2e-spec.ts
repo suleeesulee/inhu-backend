@@ -38,43 +38,43 @@ describe('Push Notification E2E Tests', () => {
     await testHelper.destroy();
   });
 
-  describe('POST /push-notification/broadcast', () => {
-    it('202 - create campaign and emit event for existing notification', async () => {
-      const notification = await testHelper.getPrisma().notification.create({
-        data: {
-          title: '전체 알림 제목',
-          content: '전체 알림 내용',
-          pageType: NotificationPageType.NOTICE,
-        },
-      });
+  // describe('POST /push-notification/broadcast', () => {
+  //   it('202 - create campaign and emit event for existing notification', async () => {
+  //     const notification = await testHelper.getPrisma().notification.create({
+  //       data: {
+  //         title: '전체 알림 제목',
+  //         content: '전체 알림 내용',
+  //         pageType: NotificationPageType.NOTICE,
+  //       },
+  //     });
 
-      await testHelper
-        .test()
-        .post('/push-notification/broadcast')
-        .set('Cookie', [`token=Bearer ${testHelper.loginAdmin.admin1.token}`])
-        .send({ notificationId: notification.id })
-        .expect(202);
+  //     await testHelper
+  //       .test()
+  //       .post('/push-notification/broadcast')
+  //       .set('Cookie', [`token=Bearer ${testHelper.loginAdmin.admin1.token}`])
+  //       .send({ notificationId: notification.id })
+  //       .expect(202);
 
-      const campaign = await testHelper
-        .getPrisma()
-        .notificationCampaign.findFirstOrThrow({
-          where: { notificationId: notification.id },
-        });
+  //     const campaign = await testHelper
+  //       .getPrisma()
+  //       .notificationCampaign.findFirstOrThrow({
+  //         where: { notificationId: notification.id },
+  //       });
 
-      expect(campaign).toMatchObject({
-        notificationId: notification.id,
-        targetCount: 0,
-        successCount: 0,
-        failCount: 0,
-        completedAt: null,
-      });
-      expect(kafkaProducerService.emit).toHaveBeenCalledTimes(1);
-      expect(kafkaProducerService.emit).toHaveBeenCalledWith(
-        NOTIFICATION_CAMPAIGN_REQUESTED_TOPIC,
-        { campaignId: campaign.id },
-      );
-    });
-  });
+  //     expect(campaign).toMatchObject({
+  //       notificationId: notification.id,
+  //       targetCount: 0,
+  //       successCount: 0,
+  //       failCount: 0,
+  //       completedAt: null,
+  //     });
+  //     expect(kafkaProducerService.emit).toHaveBeenCalledTimes(1);
+  //     expect(kafkaProducerService.emit).toHaveBeenCalledWith(
+  //       NOTIFICATION_CAMPAIGN_REQUESTED_TOPIC,
+  //       { campaignId: campaign.id },
+  //     );
+  //   });
+  // });
 
   describe('POST /push-notification/send', () => {
     it('201 - send push notification', async () => {

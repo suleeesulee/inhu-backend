@@ -10697,8 +10697,8 @@
         "name": "cooldown",
         "comment": "",
         "dataType": "int",
-        "default": "0",
-        "options": 8,
+        "default": "",
+        "options": 0,
         "ui": {
           "keys": 0,
           "widthName": 60,
@@ -10707,7 +10707,7 @@
           "widthDefault": 60
         },
         "meta": {
-          "updateAt": 1789367227391,
+          "updateAt": 1789970210084,
           "createAt": 1789367214287
         }
       },
