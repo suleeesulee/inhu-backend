@@ -35,6 +35,10 @@ export class CreateNfcDto {
 
   /**
    * NFC 쿨다운 시간 (초 단위)
+   * - 미전달: 기존 설정 유지
+   * - null: 서버 기본 쿨타임 적용
+   * - 0: 쿨타임 미적용
+   * - 1 이상: 입력한 시간만큼 쿨타임 적용
    *
    * @example 60
    */
@@ -42,5 +46,5 @@ export class CreateNfcDto {
   @Type(() => Number)
   @IsInt()
   @Min(0)
-  cooldown?: number;
+  cooldown?: number | null;
 }

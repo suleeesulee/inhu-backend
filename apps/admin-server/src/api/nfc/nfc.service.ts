@@ -68,7 +68,7 @@ export class NfcService {
         placeIdx,
         score: dto.score,
         uid: dto.uid,
-        cooldown: dto.cooldown,
+        cooldown: dto.cooldown ?? null,
         activatedAt: null,
       }),
     );

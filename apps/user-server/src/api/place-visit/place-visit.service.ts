@@ -119,10 +119,10 @@ export class PlaceVisitService {
   private async validatePlaceVisitCooldown(
     userIdx: number,
     placeIdx: number,
-    cooldown: number,
+    cooldown: number | null,
   ): Promise<void> {
     const appliedCooldown =
-      cooldown === 0 ? this.defaultCooldownSeconds : cooldown;
+      cooldown === null ? this.defaultCooldownSeconds : cooldown;
     if (appliedCooldown === 0) {
       return;
     }
@@ -146,9 +146,9 @@ export class PlaceVisitService {
       return;
     }
 
-    throw new ConflictException({
-      message: 'NFC cooldown is active',
-    });
+    throw new ConflictException(
+      `NFC cooldown is active. ${Math.ceil(remainingMilliseconds / 1000)} seconds remaining`,
+    );
   }
 
   private readKey(configService: ConfigService, name: string): Buffer {

@@ -34,7 +34,7 @@ export class NfcEntity {
    *
    * @example 60
    */
-  public cooldown: number;
+  public cooldown: number | null;
 
   /**
    * NFC 활성화 시간
