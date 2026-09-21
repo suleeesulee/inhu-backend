@@ -18,7 +18,7 @@ export class NfcSeedHelper extends ISeedHelper<NfcSeedInput, NfcSeedOutput> {
       placeIdx: input.placeIdx,
       score: defaultValue(input.score, 1),
       uid: defaultValue(input.uid, faker.string.uuid()),
-      cooldown: defaultValue(input.cooldown, 0),
+      cooldown: defaultValue(input.cooldown, null),
       activatedAt: defaultValue(input.activatedAt, null),
       deletedAt: defaultValue(input.deletedAt, null),
     };

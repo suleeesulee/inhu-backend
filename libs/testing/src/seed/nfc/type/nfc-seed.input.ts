@@ -7,7 +7,7 @@ export type NfcSeedInput = {
   placeIdx: number;
   score?: number;
   uid?: string;
-  cooldown?: number;
+  cooldown?: number | null;
   activatedAt?: Date | null;
   deletedAt?: Date | null;
 };
