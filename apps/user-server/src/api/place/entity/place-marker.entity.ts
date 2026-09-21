@@ -24,6 +24,7 @@ export class PlaceMarkerEntity extends PickType(PlaceEntity, [
   'mainCategoryList',
   'moodCategoryList',
   'typeList',
+  'hasNfc',
 ]) {
   constructor(data: PlaceMarkerEntity) {
     super();
@@ -54,6 +55,7 @@ export class PlaceMarkerEntity extends PickType(PlaceEntity, [
       mainCategoryList: model.mainCategoryList,
       moodCategoryList: model.moodCategoryList,
       typeList: model.typeList,
+      hasNfc: model.hasNfc,
     });
   }
 }
