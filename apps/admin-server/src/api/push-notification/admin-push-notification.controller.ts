@@ -15,14 +15,14 @@ export class AdminPushNotificationController {
   /**
    * 전체 사용자 대상 알림 발송
    */
-  @Post('broadcast')
-  @HttpCode(HttpStatus.ACCEPTED)
-  @AdminAuth()
-  public async broadcastNotification(
-    @Body() dto: BroadcastNotificationDto,
-  ): Promise<void> {
-    await this.adminPushNotificationService.broadcastNotification(dto);
-  }
+  // @Post('broadcast')
+  // @HttpCode(HttpStatus.ACCEPTED)
+  // @AdminAuth()
+  // public async broadcastNotification(
+  //   @Body() dto: BroadcastNotificationDto,
+  // ): Promise<void> {
+  //   await this.adminPushNotificationService.broadcastNotification(dto);
+  // }
 
   /**
    * 입력한 디바이스 토큰으로 푸시 알림 발송
