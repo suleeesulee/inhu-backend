@@ -1,4 +1,5 @@
 import { Prisma } from '@prisma/client';
+import { SELECT_NFC_PLACE } from './select-nfc-place';
 
 export const SELECT_NFC = Prisma.validator<Prisma.NfcDefaultArgs>()({
   select: {
@@ -9,6 +10,7 @@ export const SELECT_NFC = Prisma.validator<Prisma.NfcDefaultArgs>()({
     cooldown: true,
     activatedAt: true,
     createdAt: true,
+    place: SELECT_NFC_PLACE,
   },
 });
 
