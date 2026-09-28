@@ -8,6 +8,7 @@ import { PlaceVisitService } from './place-visit.service';
 import { CreatePlaceVisitByNfcDto } from './dto/request/create-place-visit-by-nfc.dto';
 import { GetPlaceVisitAllDto } from './dto/request/get-place-visit-all.dto';
 import { GetPlaceVisitAllResponseDto } from './dto/response/get-place-visit-all.response.dto';
+import { PlaceVisitByNfcTestDto } from './dto/request/place-visit-by-nfc-test.dto';
 
 @Controller('place-visit')
 export class PlaceVisitController {
@@ -45,5 +46,18 @@ export class PlaceVisitController {
     @User() user: LoginUser,
   ): Promise<PlaceVisitEntity> {
     return await this.placeVisitService.createPlaceVisitByNfc(user.idx, dto);
+  }
+
+  @Post('nfc/test')
+  @LoginAuth()
+  @Exception(400, 'Invalid NFC payload')
+  @Exception(403, 'NFC is inactive or SDM MAC is invalid')
+  @Exception(404, 'NFC not found')
+  @Exception(409, `NFC cooldown is active. xxx seconds remaining`)
+  public async placeVisitByNfcTest(
+    @Body() dto: PlaceVisitByNfcTestDto,
+    @User() user: LoginUser,
+  ): Promise<void> {
+    await this.placeVisitService.placeVisitByNfcTest(user.idx, dto);
   }
 }
