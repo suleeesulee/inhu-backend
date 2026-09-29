@@ -8,7 +8,7 @@ export class LeagueSeasonResultCronSchedule {
     private readonly leagueSeasonResultCronService: LeagueSeasonResultCronService,
   ) {}
 
-  @Cron('*/2 * * * *')
+  @Cron('0 0 1 * * *')
   public async leagueSeasonResultCronJob(): Promise<void> {
     await this.leagueSeasonResultCronService.finalizeLeagueSeasonResultAll();
   }
