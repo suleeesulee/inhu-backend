@@ -1,13 +1,27 @@
-import { Injectable } from '@nestjs/common';
-import { PushTokenCoreRepository } from './push-token-core.repository';
 import { Transactional } from '@nestjs-cls/transactional';
+import { Injectable } from '@nestjs/common';
+import { GetPushTokenAllInput } from './inputs/get-push-token-all.input';
 import { PushTokenModel } from './model/push-token.model';
+import { PushTokenCoreRepository } from './push-token-core.repository';
 
 @Injectable()
 export class PushTokenCoreService {
   constructor(
     private readonly pushTokenCoreRepository: PushTokenCoreRepository,
   ) {}
+
+  /**
+   * 푸시 알림 발송 대상 조회
+   *
+   * @publicApi
+   */
+  public async getPushTokenAll(
+    input: GetPushTokenAllInput,
+  ): Promise<PushTokenModel[]> {
+    return (await this.pushTokenCoreRepository.selectPushTokenAll(input)).map(
+      PushTokenModel.fromPrisma,
+    );
+  }
 
   /**
    * push token 동기화
@@ -55,20 +69,20 @@ export class PushTokenCoreService {
     return pushToken && PushTokenModel.fromPrisma(pushToken);
   }
 
-  // /**
-  //  * push token 삭제 (hard delete)
-  //  * 앱 삭제 감지 등으로 해당 token이 더 이상 유효하지 않을 때 사용
-  //  * 토큰이 존재하지 않으면 무시함
-  //  *
-  //  * @publicApi
-  //  */
-  // public async deletePushTokenIfExists(id: string): Promise<void> {
-  //   const existing = await this.pushTokenCoreRepository.selectPushTokenById(id);
+  /**
+   * push token 삭제 (hard delete)
+   * 앱 삭제 감지 등으로 해당 token이 더 이상 유효하지 않을 때 사용
+   * 토큰이 존재하지 않으면 무시함
+   *
+   * @publicApi
+   */
+  public async deletePushTokenIfExists(id: string): Promise<void> {
+    const existing = await this.pushTokenCoreRepository.selectPushTokenById(id);
 
-  //   if (!existing) return;
+    if (!existing) return;
 
-  //   await this.pushTokenCoreRepository.deletePushToken(id);
-  // }
+    await this.pushTokenCoreRepository.deletePushToken(id);
+  }
 
   // /**
   //  * push token 조회

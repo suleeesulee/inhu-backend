@@ -1,4 +1,4 @@
-import { OmitType, PickType } from '@nestjs/swagger';
+import { OmitType } from '@nestjs/swagger';
 import { PlaceRoadAddressEntity } from '@user/api/place/entity/place-road-address.entity';
 import { KeywordEntity } from '@user/api/keyword/entity/keyword.entity';
 import { PlaceOverviewModel } from '@libs/core/place/model/place-overview.model';
@@ -6,7 +6,6 @@ import { PlaceOverviewEntity } from '@user/api/place/entity/place-overview.entit
 
 export class SectionPlaceOverviewEntity extends OmitType(PlaceOverviewEntity, [
   'bookmark',
-  'hasNfc',
 ]) {
   constructor(data: SectionPlaceOverviewEntity) {
     super();
@@ -31,6 +30,7 @@ export class SectionPlaceOverviewEntity extends OmitType(PlaceOverviewEntity, [
       mainCategoryList: model.mainCategoryList,
       moodCategoryList: model.moodCategoryList,
       typeList: model.typeList,
+      hasNfc: model.hasNfc,
     });
   }
 }

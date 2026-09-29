@@ -38,6 +38,7 @@ import { UserRewardModule } from './api/user-reward/user-reward.module';
 import { PlaceVisitModule } from './api/place-visit/place-visit.module';
 import { InstallationLifecycleModule } from './api/installation-lifecyle/installation-lifecycle.module';
 import { NoticeModule } from './api/notice/notice.module';
+import { NotificationModule } from './api/notification/notification.module';
 
 @Module({
   imports: [
@@ -83,6 +84,7 @@ import { NoticeModule } from './api/notice/notice.module';
     PlaceVisitModule,
     InstallationLifecycleModule,
     NoticeModule,
+    NotificationModule,
   ],
   providers: [
     {

@@ -17,6 +17,7 @@ import { NfcEntity } from './entity/nfc.entity';
 import { UpdateNfcDto } from './dto/request/update-nfc.dto';
 import { GetNfcAllDto } from './dto/request/get-nfc-all.dto';
 import { GetNfcAllResponseDto } from './dto/response/get-nfc-all.response.dto';
+import { UpdateNfcAllByPlaceIdxDto } from './dto/request/update-nfc-all-by-place-idx.dto';
 
 @Controller()
 export class NfcController {
@@ -72,6 +73,20 @@ export class NfcController {
     @Body() dto: UpdateNfcDto,
   ): Promise<void> {
     return await this.nfcService.updateNfcByIdx(idx, dto);
+  }
+
+  /**
+   * 특정 장소에 속한 nfc 전체 수정
+   */
+  @Put('place/:placeIdx/nfc/all')
+  @AdminAuth()
+  @Exception(400, 'Invalid nfc update request')
+  @Exception(404, 'Place not found')
+  public async updateNfcAllByPlaceIdx(
+    @Param('placeIdx', ParseIntPipe) placeIdx: number,
+    @Body() dto: UpdateNfcAllByPlaceIdxDto,
+  ): Promise<void> {
+    return await this.nfcService.updateNfcAllByPlaceIdx(placeIdx, dto);
   }
 
   /**

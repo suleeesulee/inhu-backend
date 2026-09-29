@@ -7,5 +7,6 @@ export class CreateNfcInput {
   placeIdx: number;
   score: number;
   uid: string;
+  cooldown: number | null;
   activatedAt: Date | null;
 }

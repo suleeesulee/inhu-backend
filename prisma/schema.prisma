@@ -278,6 +278,7 @@ model User {
   service1ResultList        Service1Result[]
   service2ResultList        Service2Result[]
   userEmail                 UserEmail?
+  loginUserNotificationList LoginUserNotification[]
   userProvider              UserProvider?
   withdrawServiceResultList WithdrawServiceResult[]
 
@@ -657,43 +658,47 @@ model MealType {
 }
 
 model LeagueSeasonResult {
-  id              String          @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
-  leagueSeasonIdx Int             @map("league_season_idx")
-  userIdx         Int             @map("user_idx")
-  finalScore      Int             @map("final_score")
-  createdAt       DateTime        @default(now()) @map("created_at") @db.Timestamptz(6)
+  id              String       @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  leagueSeasonIdx Int          @map("league_season_idx")
+  userIdx         Int          @map("user_idx")
+  finalScore      Int          @map("final_score")
+  createdAt       DateTime     @default(now()) @map("created_at") @db.Timestamptz(6)
   leagueSeason    LeagueSeason @relation(fields: [leagueSeasonIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_league_season_tb_to_league_season_result_tb")
-  user            User            @relation(fields: [userIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_user_tb_to_league_season_result_tb")
+  user            User         @relation(fields: [userIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_user_tb_to_league_season_result_tb")
   userRewardList  UserReward[]
 
+  @@index([leagueSeasonIdx, finalScore(sort: Desc), userIdx], map: "idx_league_season_result_season_score")
+  @@index([userIdx, createdAt(sort: Desc)], map: "idx_league_season_result_user_created")
   @@map("league_season_result_tb")
 }
 
 model LeagueSeason {
-  idx                    Int                    @id @default(autoincrement())
-  name                   String                 @db.VarChar
-  startAt                DateTime               @map("start_at") @db.Timestamptz(6)
-  endAt                  DateTime               @map("end_at") @db.Timestamptz(6)
-  activatedAt            DateTime?              @map("activated_at") @db.Timestamptz(6)
-  createdAt              DateTime               @default(now()) @map("created_at") @db.Timestamptz(6)
-  finalizedAt            DateTime?              @map("finalized_at") @db.Timestamptz(6)
-  leagueSeasonResultList LeagueSeasonResult[]
+  idx                    Int                  @id @default(autoincrement())
+  name                   String               @db.VarChar
+  startAt                DateTime             @map("start_at") @db.Timestamptz(6)
+  endAt                  DateTime             @map("end_at") @db.Timestamptz(6)
+  activatedAt            DateTime?            @map("activated_at") @db.Timestamptz(6)
+  createdAt              DateTime             @default(now()) @map("created_at") @db.Timestamptz(6)
+  finalizedAt            DateTime?            @map("finalized_at") @db.Timestamptz(6)
   rewardOptionList       LeagueRewardOption[]
+  leagueSeasonResultList LeagueSeasonResult[]
 
   @@map("league_season_tb")
 }
 
 model Nfc {
-  idx            Int            @id @default(autoincrement())
-  placeIdx       Int            @map("place_idx")
+  idx            Int          @id @default(autoincrement())
+  placeIdx       Int          @map("place_idx")
   score          Int
-  uid            String         @map("uid") @db.VarChar
-  activatedAt    DateTime?      @map("activated_at") @db.Timestamptz(6)
-  createdAt      DateTime       @default(now()) @map("created_at") @db.Timestamptz(6)
-  deletedAt      DateTime?      @map("deleted_at") @db.Timestamptz(6)
-  place          Place          @relation(fields: [placeIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_place_tb_to_nfc_tb")
+  uid            String       @map("uid") @db.VarChar
+  cooldown       Int?
+  activatedAt    DateTime?    @map("activated_at") @db.Timestamptz(6)
+  createdAt      DateTime     @default(now()) @map("created_at") @db.Timestamptz(6)
+  deletedAt      DateTime?    @map("deleted_at") @db.Timestamptz(6)
+  place          Place        @relation(fields: [placeIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_place_tb_to_nfc_tb")
   placeVisitList PlaceVisit[]
 
+  @@index([placeIdx, deletedAt], map: "idx_nfc_place_deleted")
   @@map("nfc_tb")
 }
 
@@ -706,32 +711,36 @@ model PlaceVisit {
   longitude Decimal   @db.Decimal
   createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
   deletedAt DateTime? @map("deleted_at") @db.Timestamptz(6)
-  nfc       Nfc    @relation(fields: [nfcIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_nfc_tb_to_place_visit_tb")
-  user      User     @relation(fields: [userIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_user_tb_to_place_visit_tb")
+  nfc       Nfc       @relation(fields: [nfcIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_nfc_tb_to_place_visit_tb")
+  user      User      @relation(fields: [userIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_user_tb_to_place_visit_tb")
 
+  @@index([createdAt, userIdx], map: "idx_place_visit_created_user")
+  @@index([nfcIdx, createdAt(sort: Desc)], map: "idx_place_visit_nfc_created")
+  @@index([userIdx, createdAt(sort: Desc)], map: "idx_place_visit_user_created")
   @@map("place_visit_tb")
 }
 
 model LeagueRewardOption {
-  id              String          @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
-  leagueSeasonIdx Int             @map("league_season_idx")
-  rewardIdx       Int             @map("reward_idx")
-  targetRank      Int             @map("target_rank")
-  createdAt       DateTime        @default(now()) @map("created_at") @db.Timestamptz(6)
-  deletedAt       DateTime?       @map("deleted_at") @db.Timestamptz(6)
+  id              String       @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  leagueSeasonIdx Int          @map("league_season_idx")
+  rewardIdx       Int          @map("reward_idx")
+  targetRank      Int          @map("target_rank")
+  createdAt       DateTime     @default(now()) @map("created_at") @db.Timestamptz(6)
+  deletedAt       DateTime?    @map("deleted_at") @db.Timestamptz(6)
   leagueSeason    LeagueSeason @relation(fields: [leagueSeasonIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_league_season_tb_to_league_reward_option_tb")
-  reward          Reward        @relation(fields: [rewardIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_reward_tb_to_league_reward_option_tb")
+  reward          Reward       @relation(fields: [rewardIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_reward_tb_to_league_reward_option_tb")
 
+  @@index([rewardIdx], map: "idx_league_reward_option_reward")
   @@map("league_reward_option_tb")
 }
 
 model Reward {
-  idx              Int              @id @default(autoincrement())
-  name             String           @db.VarChar
-  imagePath        String?          @map("image_path") @db.VarChar
-  activatedAt      DateTime?        @map("activated_at") @db.Timestamptz(6)
-  createdAt        DateTime         @default(now()) @map("created_at") @db.Timestamptz(6)
-  deletedAt        DateTime?        @map("deleted_at") @db.Timestamptz(6)
+  idx              Int                  @id @default(autoincrement())
+  name             String               @db.VarChar
+  imagePath        String?              @map("image_path") @db.VarChar
+  activatedAt      DateTime?            @map("activated_at") @db.Timestamptz(6)
+  createdAt        DateTime             @default(now()) @map("created_at") @db.Timestamptz(6)
+  deletedAt        DateTime?            @map("deleted_at") @db.Timestamptz(6)
   rewardOptionList LeagueRewardOption[]
   userRewardList   UserReward[]
 
@@ -758,18 +767,19 @@ model UserReward {
   leagueSeasonResult   LeagueSeasonResult @relation(fields: [leagueSeasonResultId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_league_season_result_tb_to_user_reward_tb")
   reward               Reward?            @relation(fields: [rewardIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_reward_tb_to_user_reward_tb")
 
+  @@index([rewardIdx], map: "idx_user_reward_reward")
   @@map("user_reward_tb")
 }
 
 model Installation {
-  id                    String      @id @db.Uuid
-  userIdx               Int?        @map("user_idx")
-  platform              String      @db.VarChar
-  appVersion            String      @map("app_version") @db.VarChar
-  refreshTokenExpiresAt DateTime?   @map("refresh_token_expires_at") @db.Timestamptz(6)
-  updatedAt             DateTime    @default(now()) @map("updated_at") @db.Timestamptz(6)
-  createdAt             DateTime    @default(now()) @map("created_at") @db.Timestamptz(6)
-  user                  User?       @relation(fields: [userIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_user_tb_to_installation_tb")
+  id                    String     @id @db.Uuid
+  userIdx               Int?       @map("user_idx")
+  platform              String     @db.VarChar
+  appVersion            String     @map("app_version") @db.VarChar
+  refreshTokenExpiresAt DateTime?  @map("refresh_token_expires_at") @db.Timestamptz(6)
+  updatedAt             DateTime   @default(now()) @map("updated_at") @db.Timestamptz(6)
+  createdAt             DateTime   @default(now()) @map("created_at") @db.Timestamptz(6)
+  user                  User?      @relation(fields: [userIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_user_tb_to_installation_tb")
   pushToken             PushToken?
 
   @@map("installation_tb")
@@ -794,4 +804,43 @@ model Notice {
   author    User     @relation(fields: [authorIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_user_tb_to_notice_tb")
 
   @@map("notice_tb")
+}
+
+model NotificationCampaign {
+  id             String       @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  notificationId String       @map("notification_id") @db.Uuid
+  targetCount    Int          @map("target_count")
+  successCount   Int          @map("success_count")
+  failCount      Int          @map("fail_count")
+  completedAt    DateTime?    @map("completed_at") @db.Timestamptz(6)
+  createdAt      DateTime     @default(now()) @map("created_at") @db.Timestamptz(6)
+  notification   Notification @relation(fields: [notificationId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_notification_tb_to_notification_campaign_tb")
+
+  @@index([notificationId, createdAt(sort: Desc)], map: "idx_notification_campaign_notification_created_at")
+  @@map("notification_campaign_tb")
+}
+
+model Notification {
+  id                        String                  @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  title                     String                  @db.VarChar
+  content                   String                  @db.VarChar
+  pageType                  Int                     @map("page_type")
+  createdAt                 DateTime                @default(now()) @map("created_at") @db.Timestamptz(6)
+  notificationCampaignList  NotificationCampaign[]
+  loginUserNotificationList LoginUserNotification[]
+
+  @@index([createdAt(sort: Desc), id(sort: Desc)], map: "idx_notification_created_at_id")
+  @@map("notification_tb")
+}
+
+model LoginUserNotification {
+  notificationId String       @map("notification_id") @db.Uuid
+  userIdx        Int          @map("user_idx")
+  createdAt      DateTime     @default(now()) @map("created_at") @db.Timestamptz(6)
+  notification   Notification @relation(fields: [notificationId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_notification_tb_to_login_user_notification_tb")
+  user           User         @relation(fields: [userIdx], references: [idx], onDelete: NoAction, onUpdate: NoAction, map: "fk_user_tb_to_login_user_notification_tb")
+
+  @@id([notificationId, userIdx])
+  @@index([userIdx, createdAt(sort: Desc), notificationId], map: "idx_login_user_notification_user_created_at_notification")
+  @@map("login_user_notification_tb")
 }

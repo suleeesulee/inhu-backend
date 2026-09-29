@@ -19,6 +19,7 @@ export class RouletteItemEntity extends PickType(PlaceEntity, [
   'mainCategoryList',
   'moodCategoryList',
   'typeList',
+  'hasNfc',
 ]) {
   public weight: number;
 
@@ -46,6 +47,7 @@ export class RouletteItemEntity extends PickType(PlaceEntity, [
       mainCategoryList: model.mainCategoryList,
       moodCategoryList: model.moodCategoryList,
       typeList: model.typeList,
+      hasNfc: model.hasNfc,
       weight,
     });
   }

@@ -10,6 +10,8 @@ import { UpdateNfcDto } from './dto/request/update-nfc.dto';
 import { ConfigService } from '@nestjs/config';
 import { GetNfcAllDto } from './dto/request/get-nfc-all.dto';
 import { GetNfcAllResponseDto } from './dto/response/get-nfc-all.response.dto';
+import { UpdateNfcAllByPlaceIdxDto } from './dto/request/update-nfc-all-by-place-idx.dto';
+import { PlaceCoreService } from '@libs/core/place/place-core.service';
 
 @Injectable()
 export class NfcService {
@@ -17,6 +19,7 @@ export class NfcService {
 
   constructor(
     private readonly nfcCoreService: NfcCoreService,
+    private readonly placeCoreService: PlaceCoreService,
     configService: ConfigService,
   ) {
     this.masterKey = this.readKey(configService, 'nfc.masterKey');
@@ -55,11 +58,22 @@ export class NfcService {
     placeIdx: number,
     dto: CreateNfcDto,
   ): Promise<NfcEntity> {
+    const place = await this.placeCoreService.getPlaceByIdx(placeIdx);
+    if (!place) {
+      throw new NotFoundException(`Place with idx ${placeIdx} not found`);
+    }
+
+    const nfc = await this.nfcCoreService.getNfcByUid(dto.uid);
+    if (nfc) {
+      throw new ConflictException(`Nfc with uid ${dto.uid} already exists`);
+    }
+
     return NfcEntity.fromModel(
       await this.nfcCoreService.createNfc({
         placeIdx,
         score: dto.score,
         uid: dto.uid,
+        cooldown: dto.cooldown ?? null,
         activatedAt: null,
       }),
     );
@@ -74,7 +88,23 @@ export class NfcService {
     await this.nfcCoreService.updateNfcByIdx(idx, {
       score: dto.score,
       uid: dto.uid,
+      cooldown: dto.cooldown,
       activatedAt: nfc.uid === dto.uid ? undefined : null,
+    });
+  }
+
+  public async updateNfcAllByPlaceIdx(
+    placeIdx: number,
+    dto: UpdateNfcAllByPlaceIdxDto,
+  ): Promise<void> {
+    const place = await this.placeCoreService.getPlaceByIdx(placeIdx);
+    if (!place) {
+      throw new NotFoundException(`Place with idx ${placeIdx} not found`);
+    }
+
+    await this.nfcCoreService.updateNfcAllByPlaceIdx(placeIdx, {
+      score: dto.score,
+      cooldown: dto.cooldown,
     });
   }
 

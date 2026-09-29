@@ -9,6 +9,7 @@ import {
 } from '@libs/core/nfc/nfc-crypto';
 import {
   BadRequestException,
+  ConflictException,
   ForbiddenException,
   Injectable,
   NotFoundException,
@@ -18,17 +19,26 @@ import { GetPlaceVisitAllDto } from './dto/request/get-place-visit-all.dto';
 import { GetPlaceVisitAllResponseDto } from './dto/response/get-place-visit-all.response.dto';
 import { PlaceVisitEntity } from './entity/place-visit.entity';
 import { CreatePlaceVisitByNfcDto } from './dto/request/create-place-visit-by-nfc.dto';
+import { Locker } from '@libs/common/decorator/locker.decorator';
+import { PlaceVisitByNfcTestDto } from './dto/request/place-visit-by-nfc-test.dto';
+import { NfcModel } from '@libs/core/nfc/model/nfc.model';
+import { RedisService } from '@libs/common/modules/redis/redis.service';
 
 @Injectable()
 export class PlaceVisitService {
   private readonly masterKey: Buffer;
+  private readonly defaultCooldownSeconds: number;
 
   constructor(
     private readonly placeVisitCoreService: PlaceVisitCoreService,
     private readonly nfcCoreService: NfcCoreService,
+    private readonly redisService: RedisService,
     configService: ConfigService,
   ) {
     this.masterKey = this.readKey(configService, 'nfc.masterKey');
+    this.defaultCooldownSeconds = configService.getOrThrow<number>(
+      'nfc.defaultCooldownSeconds',
+    );
   }
 
   public async getPlaceVisitAllByUserIdx(
@@ -52,10 +62,43 @@ export class PlaceVisitService {
     };
   }
 
+  @Locker({
+    key: (userIdx: number) => `place-visit:${userIdx}`,
+    ttl: 10_000,
+  })
   public async createPlaceVisitByNfc(
     userIdx: number,
     dto: CreatePlaceVisitByNfcDto,
   ): Promise<PlaceVisitEntity> {
+    const nfc = await this.validateNfc(dto);
+
+    await this.validatePlaceVisitCooldown(userIdx, nfc.placeIdx, nfc.cooldown);
+
+    return PlaceVisitEntity.fromModel(
+      await this.placeVisitCoreService.createPlaceVisit({
+        userIdx,
+        nfcIdx: nfc.idx,
+        score: nfc.score,
+        latitude: dto.latitude,
+        longitude: dto.longitude,
+      }),
+    );
+  }
+
+  public async placeVisitByNfcTest(
+    userIdx: number,
+    dto: PlaceVisitByNfcTestDto,
+  ): Promise<void> {
+    const nfc = await this.validateNfc(dto);
+
+    await this.validatePlaceVisitTestCooldown(
+      userIdx,
+      nfc.placeIdx,
+      nfc.cooldown,
+    );
+  }
+
+  private async validateNfc(dto: PlaceVisitByNfcTestDto): Promise<NfcModel> {
     const encryptedPiccData = Buffer.from(dto.picc_data, 'hex');
     const receivedMac = Buffer.from(dto.cmac, 'hex');
     const metaReadKey = deriveNfcMetaReadKey(this.masterKey);
@@ -93,15 +136,76 @@ export class PlaceVisitService {
       throw new ForbiddenException('Invalid NFC MAC');
     }
 
-    return PlaceVisitEntity.fromModel(
-      await this.placeVisitCoreService.createPlaceVisit({
+    return nfc;
+  }
+
+  private async validatePlaceVisitCooldown(
+    userIdx: number,
+    placeIdx: number,
+    cooldown: number | null,
+  ): Promise<void> {
+    const appliedCooldown =
+      cooldown === null ? this.defaultCooldownSeconds : cooldown;
+    if (appliedCooldown === 0) {
+      return;
+    }
+
+    const [latestPlaceVisit] =
+      await this.placeVisitCoreService.getPlaceVisitAll({
         userIdx,
-        nfcIdx: nfc.idx,
-        score: nfc.score,
-        latitude: dto.latitude,
-        longitude: dto.longitude,
-      }),
+        placeIdx,
+        take: 1,
+        skip: 0,
+        order: 'desc',
+      });
+    if (!latestPlaceVisit) {
+      return;
+    }
+
+    const cooldownEndsAt =
+      latestPlaceVisit.createdAt.getTime() + appliedCooldown * 1000;
+    const remainingMilliseconds = cooldownEndsAt - Date.now();
+    if (remainingMilliseconds <= 0) {
+      return;
+    }
+
+    throw new ConflictException(
+      `NFC cooldown is active. ${Math.ceil(remainingMilliseconds / 1000)} seconds remaining`,
     );
+  }
+
+  private async validatePlaceVisitTestCooldown(
+    userIdx: number,
+    placeIdx: number,
+    cooldown: number | null,
+  ): Promise<void> {
+    const appliedCooldown =
+      cooldown === null ? this.defaultCooldownSeconds : cooldown;
+    if (appliedCooldown === 0) {
+      return;
+    }
+
+    const key = `place-visit-test-cooldown:${userIdx}:${placeIdx}`;
+
+    while (true) {
+      const result = await this.redisService.set(
+        key,
+        '1',
+        'EX',
+        appliedCooldown,
+        'NX',
+      );
+      if (result === 'OK') {
+        return;
+      }
+
+      const remainingSeconds = await this.redisService.ttl(key);
+      if (remainingSeconds > 0) {
+        throw new ConflictException(
+          `NFC cooldown is active. ${remainingSeconds} seconds remaining`,
+        );
+      }
+    }
   }
 
   private readKey(configService: ConfigService, name: string): Buffer {

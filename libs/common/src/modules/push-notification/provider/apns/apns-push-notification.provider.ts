@@ -93,11 +93,8 @@ export class ApnsPushNotificationProvider implements IPushNotificationProvider {
           return;
         }
 
-        // 디바이스 토큰 만료/미등록 → 호출부에서 토큰 삭제 처리 가능하도록 별도 에러
-        if (status === 410 || status === 404) {
-          reject(
-            new ApnsDeviceTokenInvalidException(token, status, responseBody),
-          );
+        if (this.isDeviceTokenUnregistered(status, responseBody)) {
+          reject(new ApnsDeviceTokenUnregisteredException(token, responseBody));
           return;
         }
 
@@ -146,9 +143,7 @@ export class ApnsPushNotificationProvider implements IPushNotificationProvider {
     const header = this.base64url(
       JSON.stringify({ alg: 'ES256', kid: this.keyId }),
     );
-    const payload = this.base64url(
-      JSON.stringify({ iss: this.teamId, iat }),
-    );
+    const payload = this.base64url(JSON.stringify({ iss: this.teamId, iat }));
 
     const unsignedToken = `${header}.${payload}`;
 
@@ -201,6 +196,19 @@ export class ApnsPushNotificationProvider implements IPushNotificationProvider {
     });
   }
 
+  private isDeviceTokenUnregistered(
+    status: number,
+    responseBody: string,
+  ): boolean {
+    try {
+      const { reason } = JSON.parse(responseBody) as { reason?: string };
+
+      return status === 410 && reason === 'Unregistered';
+    } catch {
+      return false;
+    }
+  }
+
   private base64url(input: string): string {
     return Buffer.from(input)
       .toString('base64')
@@ -226,5 +234,11 @@ export class ApnsDeviceTokenInvalidException extends ApnsException {
     responseBody: string,
   ) {
     super(statusCode, responseBody);
+  }
+}
+
+export class ApnsDeviceTokenUnregisteredException extends ApnsDeviceTokenInvalidException {
+  constructor(deviceToken: string, responseBody: string) {
+    super(deviceToken, 410, responseBody);
   }
 }

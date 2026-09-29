@@ -65,12 +65,20 @@ describe('Nfc E2E test', () => {
           expect.objectContaining({
             idx: activatedNfc.idx,
             placeIdx: firstPlace.idx,
+            place: expect.objectContaining({
+              idx: firstPlace.idx,
+              name: firstPlace.name,
+            }),
             score: activatedNfc.score,
             uid: activatedNfc.uid,
           }),
           expect.objectContaining({
             idx: deactivatedNfc.idx,
             placeIdx: secondPlace.idx,
+            place: expect.objectContaining({
+              idx: secondPlace.idx,
+              name: secondPlace.name,
+            }),
             score: deactivatedNfc.score,
             uid: deactivatedNfc.uid,
             activatedAt: null,
@@ -391,6 +399,18 @@ describe('Nfc E2E test', () => {
 
       expect(nfc.idx).toBe(nfcSeed.idx);
       expect(nfc.placeIdx).toBe(place.idx);
+      expect(nfc.place).toEqual({
+        idx: place.idx,
+        name: place.name,
+        tel: place.tel,
+        roadAddress: {
+          name: place.roadAddress.name,
+          detail: place.roadAddress.detail,
+          addressX: place.roadAddress.addressX,
+          addressY: place.roadAddress.addressY,
+        },
+        imagePathList: place.placeImgList,
+      });
       expect(nfc.score).toBe(nfcSeed.score);
       expect(nfc.uid).toBe(nfcSeed.uid);
       expect(nfc.activatedAt).toBeNull();
@@ -448,7 +468,7 @@ describe('Nfc E2E test', () => {
   });
 
   describe('POST /place/:placeIdx/nfc', () => {
-    it('201 - creates inactive nfc and normalizes uid to uppercase', async () => {
+    it('201 - creates inactive nfc with default cooldown', async () => {
       const admin = testHelper.loginAdmin.admin1;
       const place = await placeSeedHelper.seed({});
 
@@ -463,10 +483,28 @@ describe('Nfc E2E test', () => {
 
       expect(nfc.idx).toBeDefined();
       expect(nfc.placeIdx).toBe(place.idx);
+      expect(nfc.place).toEqual(
+        expect.objectContaining({ idx: place.idx, name: place.name }),
+      );
       expect(nfc.score).toBe(0);
       expect(nfc.uid).toBe('04DE5F1EACC045');
+      expect(nfc.cooldown).toBeNull();
       expect(nfc.activatedAt).toBeNull();
       expect(nfc.createdAt).toBeDefined();
+    });
+
+    it('201 - creates nfc with cooldown', async () => {
+      const admin = testHelper.loginAdmin.admin1;
+      const place = await placeSeedHelper.seed({});
+
+      const response = await testHelper
+        .test()
+        .post(`/place/${place.idx}/nfc`)
+        .set('Cookie', `token=Bearer ${admin.token}`)
+        .send({ score: 1, uid: '04DE5F1EACC060', cooldown: 60 })
+        .expect(201);
+
+      expect(response.body.cooldown).toBe(60);
     });
 
     it('400 - nfc score is negative', async () => {
@@ -534,6 +572,7 @@ describe('Nfc E2E test', () => {
         placeIdx: place.idx,
         score: 3,
         uid: '04DE5F1EACC050',
+        cooldown: 30,
         activatedAt,
       });
 
@@ -550,6 +589,7 @@ describe('Nfc E2E test', () => {
 
       expect(nfc.score).toBe(10);
       expect(nfc.uid).toBe(nfcSeed.uid);
+      expect(nfc.cooldown).toBe(30);
       expect(nfc.activatedAt).toEqual(activatedAt);
     });
 
@@ -560,6 +600,7 @@ describe('Nfc E2E test', () => {
         placeIdx: place.idx,
         score: 3,
         uid: '04DE5F1EACC051',
+        cooldown: 30,
         activatedAt: new Date(),
       });
 
@@ -567,7 +608,7 @@ describe('Nfc E2E test', () => {
         .test()
         .put(`/nfc/${nfcSeed.idx}`)
         .set('Cookie', `token=Bearer ${admin.token}`)
-        .send({ score: 7, uid: '04DE5F1EACC052' })
+        .send({ score: 7, uid: '04DE5F1EACC052', cooldown: 60 })
         .expect(200);
 
       const nfc = await testHelper.getPrisma().nfc.findUniqueOrThrow({
@@ -576,7 +617,31 @@ describe('Nfc E2E test', () => {
 
       expect(nfc.score).toBe(7);
       expect(nfc.uid).toBe('04DE5F1EACC052');
+      expect(nfc.cooldown).toBe(60);
       expect(nfc.activatedAt).toBeNull();
+    });
+
+    it('200 - null cooldown applies the default cooldown', async () => {
+      const admin = testHelper.loginAdmin.admin1;
+      const place = await placeSeedHelper.seed({});
+      const nfcSeed = await nfcSeedHelper.seed({
+        placeIdx: place.idx,
+        uid: '04DE5F1EACC061',
+        cooldown: 30,
+      });
+
+      await testHelper
+        .test()
+        .put(`/nfc/${nfcSeed.idx}`)
+        .set('Cookie', `token=Bearer ${admin.token}`)
+        .send({ score: 3, uid: nfcSeed.uid, cooldown: null })
+        .expect(200);
+
+      await expect(
+        testHelper.getPrisma().nfc.findUniqueOrThrow({
+          where: { idx: nfcSeed.idx },
+        }),
+      ).resolves.toEqual(expect.objectContaining({ cooldown: null }));
     });
 
     it('400 - nfc idx is invalid', async () => {
@@ -630,6 +695,112 @@ describe('Nfc E2E test', () => {
         .put('/nfc/999999')
         .set('Cookie', `token=Bearer ${admin.token}`)
         .send({ score: 1, uid: '04DE5F1EACC056' })
+        .expect(404);
+    });
+  });
+
+  describe('PUT /place/:placeIdx/nfc/all', () => {
+    it('200 - updates cooldown for every nfc in the place only', async () => {
+      const admin = testHelper.loginAdmin.admin1;
+      const [targetPlace, otherPlace] = await placeSeedHelper.seedAll([{}, {}]);
+      const [firstNfc, secondNfc, otherNfc] = await nfcSeedHelper.seedAll([
+        { placeIdx: targetPlace.idx, cooldown: 30 },
+        { placeIdx: targetPlace.idx, cooldown: 30 },
+        { placeIdx: otherPlace.idx, cooldown: 30 },
+      ]);
+
+      await testHelper
+        .test()
+        .put(`/place/${targetPlace.idx}/nfc/all`)
+        .set('Cookie', `token=Bearer ${admin.token}`)
+        .send({ cooldown: 120 })
+        .expect(200);
+
+      const nfcList = await testHelper.getPrisma().nfc.findMany({
+        where: { idx: { in: [firstNfc.idx, secondNfc.idx, otherNfc.idx] } },
+        orderBy: { idx: 'asc' },
+      });
+
+      expect(nfcList.map(({ cooldown }) => cooldown)).toStrictEqual([
+        120, 120, 30,
+      ]);
+    });
+
+    it('400 - cooldown is negative', async () => {
+      const admin = testHelper.loginAdmin.admin1;
+      const place = await placeSeedHelper.seed({});
+
+      await testHelper
+        .test()
+        .put(`/place/${place.idx}/nfc/all`)
+        .set('Cookie', `token=Bearer ${admin.token}`)
+        .send({ cooldown: -1 })
+        .expect(400);
+    });
+
+    it('200 - null cooldown applies the default cooldown to every nfc', async () => {
+      const admin = testHelper.loginAdmin.admin1;
+      const place = await placeSeedHelper.seed({});
+      const nfcList = await nfcSeedHelper.seedAll([
+        { placeIdx: place.idx, cooldown: 30 },
+        { placeIdx: place.idx, cooldown: 60 },
+      ]);
+
+      await testHelper
+        .test()
+        .put(`/place/${place.idx}/nfc/all`)
+        .set('Cookie', `token=Bearer ${admin.token}`)
+        .send({ cooldown: null })
+        .expect(200);
+
+      const updatedNfcList = await testHelper.getPrisma().nfc.findMany({
+        where: { idx: { in: nfcList.map(({ idx }) => idx) } },
+      });
+
+      expect(updatedNfcList.map(({ cooldown }) => cooldown)).toEqual([
+        null,
+        null,
+      ]);
+    });
+
+    it('400 - place idx is invalid', async () => {
+      const admin = testHelper.loginAdmin.admin1;
+
+      await testHelper
+        .test()
+        .put('/place/invalid-place-idx/nfc/all')
+        .set('Cookie', `token=Bearer ${admin.token}`)
+        .send({ cooldown: 60 })
+        .expect(400);
+    });
+
+    it('401 - access token is missing', async () => {
+      await testHelper
+        .test()
+        .put('/place/1/nfc/all')
+        .send({ cooldown: 60 })
+        .expect(401);
+    });
+
+    it('403 - insufficient role', async () => {
+      const magazineAdmin = testHelper.loginAdmin.magazineAdmin1;
+
+      await testHelper
+        .test()
+        .put('/place/1/nfc/all')
+        .set('Cookie', `token=Bearer ${magazineAdmin.token}`)
+        .send({ cooldown: 60 })
+        .expect(403);
+    });
+
+    it('404 - place does not exist', async () => {
+      const admin = testHelper.loginAdmin.admin1;
+
+      await testHelper
+        .test()
+        .put('/place/999999/nfc/all')
+        .set('Cookie', `token=Bearer ${admin.token}`)
+        .send({ cooldown: 60 })
         .expect(404);
     });
   });

@@ -4,9 +4,10 @@ import { NfcController } from './nfc.controller';
 import { NfcService } from './nfc.service';
 import { ConfigModule } from '@nestjs/config';
 import nfcConfig from './config/nfc.config';
+import { PlaceCoreModule } from '@libs/core/place/place-core.module';
 
 @Module({
-  imports: [NfcCoreModule, ConfigModule.forFeature(nfcConfig)],
+  imports: [NfcCoreModule, PlaceCoreModule, ConfigModule.forFeature(nfcConfig)],
   controllers: [NfcController],
   providers: [NfcService],
 })

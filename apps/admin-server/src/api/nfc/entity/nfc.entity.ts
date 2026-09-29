@@ -1,4 +1,5 @@
 import { NfcModel } from '@libs/core/nfc/model/nfc.model';
+import { NfcPlaceEntity } from './nfc-place.entity';
 
 export class NfcEntity {
   /**
@@ -30,6 +31,13 @@ export class NfcEntity {
   public uid: string;
 
   /**
+   * NFC 쿨다운 시간 (초 단위)
+   *
+   * @example 60
+   */
+  public cooldown: number | null;
+
+  /**
    * NFC 활성화 시간
    */
   public activatedAt: Date | null;
@@ -38,6 +46,11 @@ export class NfcEntity {
    * 생성 시간
    */
   public createdAt: Date;
+
+  /**
+   * NFC가 설치된 장소
+   */
+  public place: NfcPlaceEntity;
 
   constructor(data: NfcEntity) {
     Object.assign(this, data);
@@ -49,8 +62,10 @@ export class NfcEntity {
       placeIdx: model.placeIdx,
       score: model.score,
       uid: model.uid,
+      cooldown: model.cooldown,
       activatedAt: model.activatedAt,
       createdAt: model.createdAt,
+      place: NfcPlaceEntity.fromModel(model.place),
     });
   }
 }
