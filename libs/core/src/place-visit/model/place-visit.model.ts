@@ -25,12 +25,12 @@ export class PlaceVisitModel {
   /**
    * 방문 인증 위도
    */
-  public latitude: number;
+  public latitude: number | null;
 
   /**
    * 방문 인증 경도
    */
-  public longitude: number;
+  public longitude: number | null;
 
   /**
    * 방문 장소 정보
@@ -52,8 +52,8 @@ export class PlaceVisitModel {
       userIdx: placeVisit.userIdx,
       nfcIdx: placeVisit.nfcIdx,
       score: placeVisit.score,
-      latitude: placeVisit.latitude.toNumber(),
-      longitude: placeVisit.longitude.toNumber(),
+      latitude: placeVisit.latitude?.toNumber() ?? null,
+      longitude: placeVisit.longitude?.toNumber() ?? null,
       place: PlaceVisitPlaceModel.fromPrisma(placeVisit.nfc.place),
       createdAt: placeVisit.createdAt,
     });
