@@ -35,14 +35,14 @@ export class PlaceVisitEntity {
    *
    * @example 37.4508371
    */
-  public latitude: number;
+  public latitude: number | null;
 
   /**
    * 방문 인증 경도
    *
    * @example 126.6531324
    */
-  public longitude: number;
+  public longitude: number | null;
 
   /**
    * 방문 장소 정보

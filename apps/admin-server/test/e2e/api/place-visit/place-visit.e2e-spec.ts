@@ -137,6 +137,37 @@ describe('Place Visit E2E test', () => {
       expect(response.body.placeVisitList[0].id).not.toBe(otherPlaceVisit.id);
     });
 
+    it('200 - return nullable coordinates', async () => {
+      const admin = testHelper.loginAdmin.admin1;
+      const user = await userSeedHelper.seed({
+        nickname: '좌표 없는 방문 사용자',
+      });
+      const place = await placeSeedHelper.seed({});
+      const nfc = await nfcSeedHelper.seed({ placeIdx: place.idx });
+      const placeVisit = await placeVisitSeedHelper.seed({
+        userIdx: user.idx,
+        nfcIdx: nfc.idx,
+        latitude: null,
+        longitude: null,
+      });
+
+      const response = await testHelper
+        .test()
+        .get('/place-visit/all')
+        .set('Cookie', `token=Bearer ${admin.token}`)
+        .query({ page: 1, user: user.idx })
+        .expect(200);
+
+      expect(response.body.count).toBe(1);
+      expect(response.body.placeVisitList).toStrictEqual([
+        expect.objectContaining({
+          id: placeVisit.id,
+          latitude: null,
+          longitude: null,
+        }),
+      ]);
+    });
+
     it('200 - user filter check', async () => {
       const admin = testHelper.loginAdmin.admin1;
       const [targetUser, otherUser] = await userSeedHelper.seedAll([

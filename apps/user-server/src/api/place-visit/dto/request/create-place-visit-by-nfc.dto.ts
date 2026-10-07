@@ -41,20 +41,22 @@ export class CreatePlaceVisitByNfcDto {
    *
    * @example 37.4508371
    */
+  @IsOptional()
   @Type(() => Number)
   @IsNumber()
   @Min(-90)
   @Max(90)
-  latitude: number;
+  latitude?: number | null;
 
   /**
    * 방문 인증 경도
    *
    * @example 126.6531324
    */
+  @IsOptional()
   @Type(() => Number)
   @IsNumber()
   @Min(-180)
   @Max(180)
-  longitude: number;
+  longitude?: number | null;
 }

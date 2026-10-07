@@ -328,8 +328,8 @@ describe('Place Visit E2E test', () => {
       expect(placeVisit.userIdx).toBe(loginUser.idx);
       expect(placeVisit.nfcIdx).toBe(nfc.idx);
       expect(placeVisit.score).toBe(nfc.score);
-      expect(placeVisit.latitude.toNumber()).toBe(latitude);
-      expect(placeVisit.longitude.toNumber()).toBe(longitude);
+      expect(placeVisit.latitude?.toNumber()).toBe(latitude);
+      expect(placeVisit.longitude?.toNumber()).toBe(longitude);
       expect(placeVisit.createdAt.getTime()).toBeGreaterThanOrEqual(
         beforeRequest.getTime(),
       );
@@ -636,26 +636,38 @@ describe('Place Visit E2E test', () => {
         .expect(400);
     });
 
-    it('400 - latitude is missing', async () => {
+    it('201 - create place visit without coordinates', async () => {
       const loginUser = testHelper.loginUsers.user1;
+      const place = await placeSeedHelper.seed({ activatedAt: new Date() });
+      const nfc = await nfcSeedHelper.seed({
+        placeIdx: place.idx,
+        uid: uid.toString('hex').toUpperCase(),
+        activatedAt: new Date(),
+      });
 
-      await testHelper
+      const response = await testHelper
         .test()
         .post('/place-visit/nfc')
         .set('Authorization', `Bearer ${loginUser.web.accessToken}`)
-        .send({ picc_data: piccData, cmac, longitude })
-        .expect(400);
-    });
+        .send({ picc_data: piccData, cmac })
+        .expect(201);
 
-    it('400 - longitude is missing', async () => {
-      const loginUser = testHelper.loginUsers.user1;
+      expect(response.body).toEqual(
+        expect.objectContaining({
+          nfcIdx: nfc.idx,
+          latitude: null,
+          longitude: null,
+        }),
+      );
 
-      await testHelper
-        .test()
-        .post('/place-visit/nfc')
-        .set('Authorization', `Bearer ${loginUser.web.accessToken}`)
-        .send({ picc_data: piccData, cmac, latitude })
-        .expect(400);
+      const placeVisit = await testHelper
+        .getPrisma()
+        .placeVisit.findUniqueOrThrow({
+          where: { id: response.body.id },
+        });
+
+      expect(placeVisit.latitude).toBeNull();
+      expect(placeVisit.longitude).toBeNull();
     });
 
     it('400 - latitude is out of range', async () => {
@@ -736,6 +748,30 @@ describe('Place Visit E2E test', () => {
         .set('Authorization', `Bearer ${loginUser.web.accessToken}`)
         .send({ picc_data: piccData, cmac, latitude, longitude })
         .expect(404);
+    });
+  });
+
+  describe('POST /place-visit/nfc/test', () => {
+    it('201 - validate NFC with nullable coordinates', async () => {
+      const loginUser = testHelper.loginUsers.user1;
+      const place = await placeSeedHelper.seed({ activatedAt: new Date() });
+      await nfcSeedHelper.seed({
+        placeIdx: place.idx,
+        uid: uid.toString('hex').toUpperCase(),
+        activatedAt: new Date(),
+      });
+
+      await testHelper
+        .test()
+        .post('/place-visit/nfc/test')
+        .set('Authorization', `Bearer ${loginUser.web.accessToken}`)
+        .send({
+          picc_data: piccData,
+          cmac,
+          latitude: null,
+          longitude: null,
+        })
+        .expect(201);
     });
   });
 });
