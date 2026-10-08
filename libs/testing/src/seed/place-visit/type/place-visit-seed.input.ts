@@ -7,8 +7,8 @@ export type PlaceVisitSeedInput = {
   userIdx: number;
   nfcIdx: number;
   score?: number;
-  latitude?: number;
-  longitude?: number;
+  latitude?: number | null;
+  longitude?: number | null;
   createdAt?: Date;
   deletedAt?: Date | null;
 };
