@@ -1,50 +1,43 @@
 import { Page } from 'puppeteer';
 import { NaverCrawlingStrategy } from './naver-crawling.strategy';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { NaverMenu } from '../naver-menu';
 import { ConfigService } from '@nestjs/config';
+import { NaverMenuSelectorProfile } from '../config/menu-selector-profile';
+
+type PcmapConfig = {
+  profiles: NaverMenuSelectorProfile[];
+  expandButtonSelector: string;
+  expandTimeout: number;
+};
 
 @Injectable()
 export class PcmapStrategy extends NaverCrawlingStrategy {
-  private readonly selectors: {
-    liSelector: string;
-    expandButtonSelector: string;
-    nameSelector: string;
-    priceSelector: string;
-    contentSelector: string;
-    imageSelector: string;
-  };
+  private readonly profiles: NaverMenuSelectorProfile[];
+  private readonly expandButtonSelector: string;
   private readonly expandTimeout: number;
 
   constructor(private readonly configService: ConfigService) {
     super();
-    this.selectors = this.configService.get('naverMenu.pcmap') || {
-      liSelector: 'li.E2jtL',
-      expandButtonSelector: 'a.fvwqf',
-      nameSelector: 'span.lPzHi',
-      priceSelector: 'div.GXS1X > em',
-      contentSelector: 'div.okI98',
-      imageSelector: 'img.K0PDV',
-    };
-    this.expandTimeout =
-      this.configService.get<number>('naverMenu.pcmap.expandTimeout') || 10000;
+    const config = this.configService.get<PcmapConfig>('naverMenu.pcmap');
+    this.profiles = config?.profiles || [];
+    this.expandButtonSelector = config?.expandButtonSelector || '';
+    this.expandTimeout = config?.expandTimeout || 10000;
   }
 
   public async crawl(page: Page): Promise<NaverMenu[]> {
-    await this.expandAllMenus(page);
-
-    const selector = this.selectors;
-    const liSelector = selector.liSelector;
-    try {
-      await page.waitForSelector(liSelector);
-    } catch (error) {
-      throw new NotFoundException(
-        `크롤링 타임아웃: 셀렉터('${liSelector}')를 찾지 못했습니다.`,
-      );
-    }
+    const selector = await this.resolveSelectorProfile(
+      page,
+      this.profiles,
+      'pcmap',
+    );
+    await this.expandAllMenus(
+      page,
+      selector.expandButtonSelector || this.expandButtonSelector,
+    );
 
     return await page.$$eval(
-      liSelector,
+      selector.liSelector,
       (elements, selector) => {
         const menuMap = new Map<string, NaverMenu>();
 
@@ -85,8 +78,10 @@ export class PcmapStrategy extends NaverCrawlingStrategy {
   /**
    * 메뉴 펼쳐서 더보기 버튼을 모두 클릭하는 메서드
    */
-  private async expandAllMenus(page: Page): Promise<void> {
-    const selector = this.selectors.expandButtonSelector;
+  private async expandAllMenus(page: Page, selector: string): Promise<void> {
+    if (!selector) {
+      return;
+    }
 
     try {
       await page.waitForSelector(selector, { timeout: this.expandTimeout });
