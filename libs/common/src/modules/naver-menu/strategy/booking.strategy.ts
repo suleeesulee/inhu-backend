@@ -3,55 +3,63 @@ import { NaverCrawlingStrategy } from './naver-crawling.strategy';
 import { NaverMenu } from '../naver-menu';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { NaverMenuSelectorProfile } from '../config/menu-selector-profile';
+
+type BookingConfig = {
+  profiles: NaverMenuSelectorProfile[];
+  rootDivSelector: string;
+  tabBoxSelector: string;
+  tabItemSelector: string;
+  soldOutSelector: string;
+};
 
 @Injectable()
 export class BookingStrategy extends NaverCrawlingStrategy {
-  private readonly selectors: {
-    rootDivSelector: string;
-    liSelector: string;
-    nameSelector: string;
-    priceSelector: string;
-    contentSelector: string;
-    imageSelector: string;
-    tabBoxSelector: string;
-    tabItemSelector: string;
-    soldOutSelector: string;
-  };
+  private readonly profiles: NaverMenuSelectorProfile[];
+  private readonly rootDivSelector: string;
+  private readonly tabBoxSelector: string;
+  private readonly tabItemSelector: string;
+  private readonly soldOutSelector: string;
 
   constructor(private readonly configService: ConfigService) {
     super();
-    this.selectors = this.configService.get('naverMenu.booking') || {
-      rootDivSelector: 'div.user_app',
-      liSelector: 'li[class^="MenuContent__order_list_item"]',
-      nameSelector: 'div[class^="MenuContent__tit"]',
-      priceSelector: 'div[class^="MenuContent__price"] strong',
-      contentSelector: 'span.detail_txt',
-      imageSelector: 'img[class^="MenuContent__img"]',
-      tabBoxSelector: 'div[class^="SelectOrderType__tab_switch_box"]',
-      tabItemSelector: 'a[role="tab"]',
-      soldOutSelector: 'i.fn-booking-check1',
-    };
+    const config = this.configService.get<BookingConfig>('naverMenu.booking');
+    this.profiles = config?.profiles || [];
+    this.rootDivSelector = config?.rootDivSelector || '';
+    this.tabBoxSelector = config?.tabBoxSelector || '';
+    this.tabItemSelector = config?.tabItemSelector || '';
+    this.soldOutSelector = config?.soldOutSelector || '';
   }
 
   public async crawl(page: Page): Promise<NaverMenu[]> {
-    await this.showSoldOutMenus(this.selectors.soldOutSelector, page);
+    const selectors = await this.resolveSelectorProfile(
+      page,
+      this.profiles,
+      'booking',
+    );
+    const soldOutSelector = selectors.soldOutSelector || this.soldOutSelector;
+    const rootDivSelector = selectors.rootDivSelector || this.rootDivSelector;
+    const tabBoxSelector = selectors.tabBoxSelector || this.tabBoxSelector;
+    const tabItemSelector = selectors.tabItemSelector || this.tabItemSelector;
 
-    try {
-      await page.waitForSelector(this.selectors.rootDivSelector);
-    } catch (error) {
-      throw new NotFoundException(
-        `크롤링 타임아웃: 셀렉터('${this.selectors.rootDivSelector}')를 찾지 못했습니다.`,
-      );
+    await this.showSoldOutMenus(soldOutSelector, page);
+
+    if (rootDivSelector) {
+      try {
+        await page.waitForSelector(rootDivSelector);
+      } catch (error) {
+        throw new NotFoundException(
+          `크롤링 타임아웃: 셀렉터('${rootDivSelector}')를 찾지 못했습니다.`,
+        );
+      }
     }
 
-    const tabBox = await page.$(`${this.selectors.tabBoxSelector}`);
+    const tabBox = tabBoxSelector ? await page.$(tabBoxSelector) : null;
     const hasTabs = tabBox !== null;
 
     const menuList: NaverMenu[] = [];
     if (hasTabs) {
-      const tabs = await page.$$(
-        `${this.selectors.tabBoxSelector} ${this.selectors.tabItemSelector}`,
-      );
+      const tabs = await page.$$(`${tabBoxSelector} ${tabItemSelector}`);
       for (const tab of tabs) {
         const tabText = await tab.evaluate((el) => el.textContent || '');
 
@@ -62,7 +70,7 @@ export class BookingStrategy extends NaverCrawlingStrategy {
         await this.randomDelay(400, 800);
         await tab.click();
 
-        const liSelector = this.selectors.liSelector;
+        const liSelector = selectors.liSelector;
         try {
           await page.waitForSelector(liSelector);
         } catch (error) {
@@ -71,17 +79,21 @@ export class BookingStrategy extends NaverCrawlingStrategy {
           );
         }
 
-        const menus = await this.extractMenusFromCurrentTabs(page);
+        const menus = await this.extractMenusFromCurrentTabs(page, selectors);
         menuList.push(...menus);
       }
     } else {
-      const menus = await this.extractMenusFromCurrentTabs(page);
+      const menus = await this.extractMenusFromCurrentTabs(page, selectors);
       menuList.push(...menus);
     }
     return this.removeDuplicateMenu(menuList);
   }
 
   private async showSoldOutMenus(selector: string, page: Page): Promise<void> {
+    if (!selector) {
+      return;
+    }
+
     try {
       const checkbox = await page.waitForSelector(selector, {
         visible: true,
@@ -121,8 +133,10 @@ export class BookingStrategy extends NaverCrawlingStrategy {
     });
   }
 
-  private async extractMenusFromCurrentTabs(page: Page): Promise<NaverMenu[]> {
-    const selectors = this.selectors;
+  private async extractMenusFromCurrentTabs(
+    page: Page,
+    selectors: NaverMenuSelectorProfile,
+  ): Promise<NaverMenu[]> {
     await this.autoScroll(page);
 
     return await page.$$eval(
