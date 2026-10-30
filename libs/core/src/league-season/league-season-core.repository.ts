@@ -269,8 +269,8 @@ export class LeagueSeasonCoreRepository {
       ...SELECT_LEAGUE_SEASON,
       data: {
         name: input.name,
-        startAt: `${input.startAt}T00:00:00Z`,
-        endAt: `${input.endAt}T23:59:59Z`,
+        startAt: this.getKoreanDateStart(input.startAt),
+        endAt: this.getKoreanDateEnd(input.endAt),
         activatedAt: input.activatedAt,
         rewardOptionList: input.rewardOptionList
           ? {
@@ -311,8 +311,10 @@ export class LeagueSeasonCoreRepository {
       },
       data: {
         name: input.name,
-        startAt: input.startAt ? `${input.startAt}T00:00:00Z` : undefined,
-        endAt: input.endAt ? `${input.endAt}T23:59:59Z` : undefined,
+        startAt: input.startAt
+          ? this.getKoreanDateStart(input.startAt)
+          : undefined,
+        endAt: input.endAt ? this.getKoreanDateEnd(input.endAt) : undefined,
         activatedAt: input.activatedAt,
         finalizedAt: input.finalizedAt,
         rewardOptionList: input.rewardOptionList
@@ -363,9 +365,17 @@ export class LeagueSeasonCoreRepository {
     }
 
     return {
-      startAt: `${startAt}T00:00:00Z`,
-      endAt: `${endAt}T23:59:59Z`,
+      startAt: this.getKoreanDateStart(startAt),
+      endAt: this.getKoreanDateEnd(endAt),
     };
+  }
+
+  private getKoreanDateStart(date: string): Date {
+    return new Date(`${date}T00:00:00.000+09:00`);
+  }
+
+  private getKoreanDateEnd(date: string): Date {
+    return new Date(`${date}T23:59:59.999+09:00`);
   }
 
   private getFinalizedAtFilterWhereClause(
