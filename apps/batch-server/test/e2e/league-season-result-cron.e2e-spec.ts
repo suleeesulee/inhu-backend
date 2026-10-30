@@ -1,5 +1,6 @@
 import { BatchServerModule } from '@batch/batch-server.module';
 import { LeagueSeasonResultCronService } from '@batch/league-season-result-cron/league-season-result-cron.service';
+import { DiscordWebhookContext } from '@libs/common/modules/discord-webhook/constants/discord-webhook-context.enum';
 import { LeagueSeasonSeedHelper } from '@libs/testing/seed/league-season/league-season.seed';
 import { NfcSeedHelper } from '@libs/testing/seed/nfc/nfc.seed';
 import { PlaceVisitSeedHelper } from '@libs/testing/seed/place-visit/place-visit.seed';
@@ -22,7 +23,68 @@ describe('League Season Result Cron E2E test', () => {
   });
 
   afterEach(async () => {
+    jest.restoreAllMocks();
     await testHelper.destroy();
+  });
+
+  describe('finalizeLeagueSeasonResultAll', () => {
+    it('send completion message with success and failure counts', async () => {
+      const leagueSeason = await leagueSeasonSeedHelper.seed({
+        name: '종료 알림 대상 리그',
+        startAt: new Date('2026-01-01T00:00:00.000Z'),
+        endAt: new Date('2026-01-15T23:59:59.999Z'),
+        activatedAt: new Date('2025-12-31T00:00:00.000Z'),
+        finalizedAt: null,
+      });
+      const cronService = testHelper.get<LeagueSeasonResultCronService>(
+        LeagueSeasonResultCronService,
+      );
+      const sendWebhookMessage =
+        testHelper.mockDiscordWebhookSendWebhookMessage();
+
+      await cronService.finalizeLeagueSeasonResultAll();
+
+      const updatedLeagueSeason = await testHelper
+        .getPrisma()
+        .leagueSeason.findUniqueOrThrow({ where: { idx: leagueSeason.idx } });
+      expect(updatedLeagueSeason.finalizedAt).not.toBeNull();
+      expect(sendWebhookMessage).toHaveBeenCalledWith(
+        '리그 시즌 종료 배치 완료',
+        ['대상: 1개', '성공: 1개', '실패: 0개'].join('\n'),
+        DiscordWebhookContext.BATCH_SERVER,
+      );
+    });
+
+    it('include failed league season idx in completion message', async () => {
+      const leagueSeason = await leagueSeasonSeedHelper.seed({
+        name: '종료 알림 실패 리그',
+        startAt: new Date('2026-02-01T00:00:00.000Z'),
+        endAt: new Date('2026-02-15T23:59:59.999Z'),
+        activatedAt: new Date('2026-01-31T00:00:00.000Z'),
+        finalizedAt: null,
+      });
+      const cronService = testHelper.get<LeagueSeasonResultCronService>(
+        LeagueSeasonResultCronService,
+      );
+      jest
+        .spyOn(cronService, 'finalizeLeagueSeasonResultByLeagueSeasonIdx')
+        .mockRejectedValue(new Error('batch failure'));
+      const sendWebhookMessage =
+        testHelper.mockDiscordWebhookSendWebhookMessage();
+
+      await cronService.finalizeLeagueSeasonResultAll();
+
+      expect(sendWebhookMessage).toHaveBeenCalledWith(
+        '리그 시즌 종료 배치 완료',
+        [
+          '대상: 1개',
+          '성공: 0개',
+          '실패: 1개',
+          `실패 시즌: ${leagueSeason.idx}`,
+        ].join('\n'),
+        DiscordWebhookContext.BATCH_SERVER,
+      );
+    });
   });
 
   describe('finalizeLeagueSeasonResultByLeagueSeasonIdx', () => {

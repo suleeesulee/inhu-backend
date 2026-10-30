@@ -165,4 +165,14 @@ export abstract class ITestHelper {
         return;
       });
   }
+
+  public mockDiscordWebhookSendWebhookMessage() {
+    const discordWebhookService = this.app.get(DiscordWebhookService);
+
+    return jest
+      .spyOn(discordWebhookService, 'sendWebhookMessage')
+      .mockImplementation(async () => {
+        return;
+      });
+  }
 }
