@@ -263,13 +263,13 @@ describe('User Ranking E2E test', () => {
 
     it('200 - count and pagination check', async () => {
       const userList = await userSeedHelper.seedAll(
-        Array.from({ length: 11 }, (_, index) => ({
+        Array.from({ length: 16 }, (_, index) => ({
           nickname: `페이지 랭킹 사용자 ${index + 1}`,
         })),
       );
       const leagueSeason = await leagueSeasonSeedHelper.seed({
         startAt: new Date('2026-04-01T00:00:00.000Z'),
-        endAt: new Date('2026-04-15T23:59:59.000Z'),
+        endAt: new Date('2026-04-30T23:59:59.000Z'),
         activatedAt: new Date('2026-03-15T00:00:00.000Z'),
       });
       const place = await placeSeedHelper.seed({
@@ -316,9 +316,9 @@ describe('User Ranking E2E test', () => {
 
       expect(firstPageResponse.body.count).toBe(count);
       expect(secondPageResponse.body.count).toBe(count);
-      expect(firstPageResponse.body.userRankingList).toHaveLength(10);
+      expect(firstPageResponse.body.userRankingList).toHaveLength(15);
       expect(secondPageResponse.body.userRankingList).toHaveLength(
-        Math.min(10, count - 10),
+        Math.min(15, count - 15),
       );
       expect(
         firstPageUserIdxList.some((userIdx: number) =>
