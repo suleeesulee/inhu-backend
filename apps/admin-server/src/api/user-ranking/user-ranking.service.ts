@@ -28,7 +28,7 @@ export class UserRankingService {
       throw new NotFoundException('League season not found');
     }
 
-    const pageSize = 10;
+    const pageSize = 15;
     const [userRankingList, count, userRewardList] = await Promise.all([
       this.userRankingCoreService.getUserRankingAllByLeagueSeasonIdx(
         leagueSeasonIdx,
