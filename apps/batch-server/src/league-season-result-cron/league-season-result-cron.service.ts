@@ -26,22 +26,39 @@ export class LeagueSeasonResultCronService {
         finalized: false,
       });
 
+    if (leagueSeasonList.length === 0) {
+      return;
+    }
+
+    let successCount = 0;
+    const failedLeagueSeasonIdxList: number[] = [];
+
     for (const leagueSeason of leagueSeasonList) {
       try {
         await this.finalizeLeagueSeasonResultByLeagueSeasonIdx(
           leagueSeason.idx,
           now,
         );
-      } catch (error) {
-        const message = `League season result batch failed (leagueSeasonIdx: ${leagueSeason.idx})`;
-        this.discordWebhookService.sendErrorMessage(
-          '리그 결과 배치 실패 알림',
-          message,
-          error instanceof Error ? error : new Error(String(error)),
-          DiscordWebhookContext.BATCH_SERVER,
-        );
+        successCount++;
+      } catch {
+        failedLeagueSeasonIdxList.push(leagueSeason.idx);
       }
     }
+
+    await this.discordWebhookService.sendWebhookMessage(
+      '리그 시즌 종료 배치 완료',
+      [
+        `대상: ${leagueSeasonList.length}개`,
+        `성공: ${successCount}개`,
+        `실패: ${failedLeagueSeasonIdxList.length}개`,
+        failedLeagueSeasonIdxList.length > 0
+          ? `실패 시즌: ${failedLeagueSeasonIdxList.join(', ')}`
+          : null,
+      ]
+        .filter((message): message is string => message !== null)
+        .join('\n'),
+      DiscordWebhookContext.BATCH_SERVER,
+    );
   }
 
   @Locker({
