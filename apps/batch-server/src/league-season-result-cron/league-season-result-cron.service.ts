@@ -7,6 +7,12 @@ import { UserRewardCoreService } from '@libs/core/user-reward/user-reward-core.s
 import { Transactional } from '@nestjs-cls/transactional';
 import { Injectable } from '@nestjs/common';
 
+type FinalizeLeagueSeasonResult = {
+  targetCount: number;
+  successCount: number;
+  failureCount: number;
+};
+
 @Injectable()
 export class LeagueSeasonResultCronService {
   constructor(
@@ -30,16 +36,20 @@ export class LeagueSeasonResultCronService {
       return;
     }
 
+    let targetCount = 0;
     let successCount = 0;
+    let failureCount = 0;
     const failedLeagueSeasonIdxList: number[] = [];
 
     for (const leagueSeason of leagueSeasonList) {
       try {
-        await this.finalizeLeagueSeasonResultByLeagueSeasonIdx(
+        const result = await this.finalizeLeagueSeasonResultByLeagueSeasonIdx(
           leagueSeason.idx,
           now,
         );
-        successCount++;
+        targetCount += result.targetCount;
+        successCount += result.successCount;
+        failureCount += result.failureCount;
       } catch {
         failedLeagueSeasonIdxList.push(leagueSeason.idx);
       }
@@ -48,9 +58,9 @@ export class LeagueSeasonResultCronService {
     await this.discordWebhookService.sendWebhookMessage(
       '리그 시즌 종료 배치 완료',
       [
-        `대상: ${leagueSeasonList.length}개`,
+        `대상: ${targetCount}개`,
         `성공: ${successCount}개`,
-        `실패: ${failedLeagueSeasonIdxList.length}개`,
+        `실패: ${failureCount}개`,
         failedLeagueSeasonIdxList.length > 0
           ? `실패 시즌: ${failedLeagueSeasonIdxList.join(', ')}`
           : null,
@@ -68,7 +78,7 @@ export class LeagueSeasonResultCronService {
   public async finalizeLeagueSeasonResultByLeagueSeasonIdx(
     leagueSeasonIdx: number,
     now: Date,
-  ): Promise<void> {
+  ): Promise<FinalizeLeagueSeasonResult> {
     const leagueSeason =
       await this.leagueSeasonCoreService.getLeagueSeasonByIdx(leagueSeasonIdx);
 
@@ -78,7 +88,7 @@ export class LeagueSeasonResultCronService {
       leagueSeason.finalizedAt ||
       leagueSeason.endAt >= now
     ) {
-      return;
+      return { targetCount: 0, successCount: 0, failureCount: 0 };
     }
 
     const userScoreList =
@@ -112,19 +122,19 @@ export class LeagueSeasonResultCronService {
       ),
     );
     if (rewardTargetRankSet.size === 0) {
-      return;
+      return { targetCount: 0, successCount: 0, failureCount: 0 };
     }
 
     const userRankingList =
       await this.leagueSeasonCoreService.getLeagueSeasonResultUserRankingAllByLeagueSeasonIdx(
         leagueSeason.idx,
       );
+    const rewardTargetUserRankingList = userRankingList.filter((userRanking) =>
+      rewardTargetRankSet.has(userRanking.seasonRank),
+    );
+    let successCount = 0;
 
-    for (const userRanking of userRankingList) {
-      if (!rewardTargetRankSet.has(userRanking.seasonRank)) {
-        continue;
-      }
-
+    for (const userRanking of rewardTargetUserRankingList) {
       const leagueSeasonResultId = leagueSeasonResultIdByUserIdx.get(
         userRanking.userIdx,
       );
@@ -140,6 +150,13 @@ export class LeagueSeasonResultCronService {
         selectedAt: null,
         issuedAt: null,
       });
+      successCount++;
     }
+
+    return {
+      targetCount: rewardTargetUserRankingList.length,
+      successCount,
+      failureCount: rewardTargetUserRankingList.length - successCount,
+    };
   }
 }

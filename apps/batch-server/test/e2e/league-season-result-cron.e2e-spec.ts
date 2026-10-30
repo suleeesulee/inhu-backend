@@ -29,13 +29,41 @@ describe('League Season Result Cron E2E test', () => {
 
   describe('finalizeLeagueSeasonResultAll', () => {
     it('send completion message with success and failure counts', async () => {
+      const [firstUser, secondUser] = await userSeedHelper.seedAll([
+        { nickname: '종료 알림 1위 사용자' },
+        { nickname: '종료 알림 2위 사용자' },
+      ]);
+      const reward = await rewardSeedHelper.seed({
+        name: '종료 알림 대상 리워드',
+        activatedAt: new Date('2025-12-31T00:00:00.000Z'),
+      });
       const leagueSeason = await leagueSeasonSeedHelper.seed({
         name: '종료 알림 대상 리그',
         startAt: new Date('2026-01-01T00:00:00.000Z'),
         endAt: new Date('2026-01-15T23:59:59.999Z'),
         activatedAt: new Date('2025-12-31T00:00:00.000Z'),
         finalizedAt: null,
+        rewardOptionList: [
+          { rewardIdx: reward.idx, targetRank: 1 },
+          { rewardIdx: reward.idx, targetRank: 2 },
+        ],
       });
+      const place = await placeSeedHelper.seed({});
+      const nfc = await nfcSeedHelper.seed({ placeIdx: place.idx });
+      await placeVisitSeedHelper.seedAll([
+        {
+          userIdx: firstUser.idx,
+          nfcIdx: nfc.idx,
+          score: 20,
+          createdAt: new Date('2026-01-03T10:00:00.000Z'),
+        },
+        {
+          userIdx: secondUser.idx,
+          nfcIdx: nfc.idx,
+          score: 10,
+          createdAt: new Date('2026-01-04T10:00:00.000Z'),
+        },
+      ]);
       const cronService = testHelper.get<LeagueSeasonResultCronService>(
         LeagueSeasonResultCronService,
       );
@@ -50,7 +78,7 @@ describe('League Season Result Cron E2E test', () => {
       expect(updatedLeagueSeason.finalizedAt).not.toBeNull();
       expect(sendWebhookMessage).toHaveBeenCalledWith(
         '리그 시즌 종료 배치 완료',
-        ['대상: 1개', '성공: 1개', '실패: 0개'].join('\n'),
+        ['대상: 2개', '성공: 2개', '실패: 0개'].join('\n'),
         DiscordWebhookContext.BATCH_SERVER,
       );
     });
@@ -77,9 +105,9 @@ describe('League Season Result Cron E2E test', () => {
       expect(sendWebhookMessage).toHaveBeenCalledWith(
         '리그 시즌 종료 배치 완료',
         [
-          '대상: 1개',
+          '대상: 0개',
           '성공: 0개',
-          '실패: 1개',
+          '실패: 0개',
           `실패 시즌: ${leagueSeason.idx}`,
         ].join('\n'),
         DiscordWebhookContext.BATCH_SERVER,
