@@ -454,8 +454,8 @@ describe('League Season E2E test', () => {
 
       expect(leagueSeason.idx).toBeDefined();
       expect(leagueSeason.name).toBe('2026년 10월 첫 번째 리그');
-      expect(leagueSeason.startAt).toBe('2026-10-01T00:00:00.000Z');
-      expect(leagueSeason.endAt).toBe('2026-10-14T23:59:59.000Z');
+      expect(leagueSeason.startAt).toBe('2026-09-30T15:00:00.000Z');
+      expect(leagueSeason.endAt).toBe('2026-10-14T14:59:59.999Z');
       expect(leagueSeason.activatedAt).toBeNull();
       expect(leagueSeason.finalizedAt).toBeNull();
       expect(leagueSeason.participantCount).toBe(0);
@@ -476,8 +476,8 @@ describe('League Season E2E test', () => {
         })
         .expect(201);
 
-      expect(response.body.startAt).toBe('2026-11-11T00:00:00.000Z');
-      expect(response.body.endAt).toBe('2026-11-11T23:59:59.000Z');
+      expect(response.body.startAt).toBe('2026-11-10T15:00:00.000Z');
+      expect(response.body.endAt).toBe('2026-11-11T14:59:59.999Z');
     });
 
     it('400 - start date is after end date', async () => {
@@ -785,8 +785,8 @@ describe('League Season E2E test', () => {
         .expect(200);
 
       expect(response.body.name).toBe('수정 후 리그');
-      expect(response.body.startAt).toBe('2026-02-01T00:00:00.000Z');
-      expect(response.body.endAt).toBe('2026-02-28T23:59:59.000Z');
+      expect(response.body.startAt).toBe('2026-01-31T15:00:00.000Z');
+      expect(response.body.endAt).toBe('2026-02-28T14:59:59.999Z');
       expect(response.body.rewardOptionList).toHaveLength(2);
       expect(
         response.body.rewardOptionList.map(
@@ -830,10 +830,10 @@ describe('League Season E2E test', () => {
         });
 
       expect(savedLeagueSeason.startAt.toISOString()).toBe(
-        '2026-06-15T00:00:00.000Z',
+        '2026-06-14T15:00:00.000Z',
       );
       expect(savedLeagueSeason.endAt.toISOString()).toBe(
-        '2026-06-15T23:59:59.000Z',
+        '2026-06-15T14:59:59.999Z',
       );
     });
 
